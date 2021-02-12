@@ -129,8 +129,7 @@ export default inject('screenStore')(
                 ...screenStore!.currLayer.events,
                 [currEvent]: { code, isSync }
               }
-            },
-            true
+            }
           )
           .then(() => {
             message.success('保存成功');
