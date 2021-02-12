@@ -1,0 +1,6 @@
+client/node_modules/
+server/node_modules/
+package-lock.json
+server/static/libs/GaugeChartv1.0.0/bundle.js
+server/static/libs/
+server/static/upload/

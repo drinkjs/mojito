@@ -1,0 +1,21 @@
+@import "../../resources/css/variable";
+
+.root{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content{
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+.backIcon{
+  color: $textColor;
+}
+.backIcon:hover{
+  color: $heightLightBgColor;
+}

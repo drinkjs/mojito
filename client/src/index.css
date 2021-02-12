@@ -1,0 +1,51 @@
+/* autoprefixer grid: autoplace */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  background: #040609;
+  clear: both;
+  font-family: "Microsoft Yahei", serif;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+p {
+  margin-bottom: 0.5em;
+}
+
+.clear {
+  clear: both;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar,
+html::-webkit-scrollbar-track {
+  background-color: #1d2636;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: #1d2636;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #304057;
+  border-radius: 5px;
+  border: 2px solid #1d2636;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-track {
+  background-color: #1d2636;
+}

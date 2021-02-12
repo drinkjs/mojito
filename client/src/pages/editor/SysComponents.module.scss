@@ -1,0 +1,61 @@
+.componentImg{
+  text-align: center;
+  pointer-events: none
+}
+
+.componentView{
+  width: 100%;
+  height: 102px;
+  background: #191b23;
+  display: inline-block;
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  
+}
+
+.componentView:hover{
+  border: 1px solid #3b50ff
+}
+
+.componentTitle{
+  text-align: center;
+  position: absolute;
+  top: 68px;
+  width: 100%;
+}
+
+.itemView{
+  width: 240px;
+  height: 160px;
+  background: #191b23;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  margin: 6px;
+}
+
+.toolBar{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  text-align: right;
+  display: none;
+  >a{
+    margin:0 6px ;
+  }
+}
+
+.itemView:hover{
+  border: 1px solid #3b50ff;
+  .toolBar{
+    display: block;
+  }
+}

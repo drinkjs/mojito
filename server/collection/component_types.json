@@ -1,0 +1,78 @@
+[{
+  "_id": {
+    "$oid": "5ff51e221e55c532f07fa880"
+  },
+  "name": "图表",
+  "__v": 0,
+  "icon": "icon-tubiaozhuzhuangtu"
+},{
+  "_id": {
+    "$oid": "5ff5217fbd5fc91e3c7bc672"
+  },
+  "name": "文本",
+  "__v": 0,
+  "icon": "icon-wenzi"
+},{
+  "_id": {
+    "$oid": "5ff521b7ae405915d45996d0"
+  },
+  "name": "多媒体",
+  "__v": 0,
+  "icon": "icon-tupian"
+},{
+  "_id": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "name": "自定义",
+  "__v": 0,
+  "icon": "icon-zidingyi"
+},{
+  "_id": {
+    "$oid": "5ff522ccd1ccf52bccbec2ad"
+  },
+  "name": "折线图",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff52309ca47cc1cd8933560"
+  },
+  "name": "柱状图",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff52325f5e8fa0e44729958"
+  },
+  "name": "饼图",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff5233ea1268c3ee8b6844d"
+  },
+  "name": "条形图",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff52528c47d093f440db11b"
+  },
+  "name": "雷达图",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff5255008c04b0e48293f2a"
+  },
+  "name": "仪表盘",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff52c2f625fbe31200e6bf5"
+  },
+  "name": "关系图",
+  "pid": "5ff51e221e55c532f07fa880",
+  "__v": 0
+}]
