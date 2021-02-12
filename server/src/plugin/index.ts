@@ -9,6 +9,6 @@ export default function plugin (server: FastifyInstance) {
   // 静态目录
   server.register(fastifyStatic, {
     root: config.staticPath,
-    prefix: "/static/",
+    prefix: config.staticPrefix,
   });
 }

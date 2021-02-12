@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
 import {
   Input,
   Radio,
@@ -10,27 +10,27 @@ import {
   Tooltip,
   Select,
   Modal
-} from 'antd'
+} from 'antd';
 import {
   ApiOutlined,
   ExclamationCircleOutlined,
   DeleteOutlined
-} from '@ant-design/icons'
-import { toJS } from 'mobx'
-import UploadImg from 'components/UploadImg'
-import Monaco from 'components/Monaco'
-import { limitChange, formatJson, typeis, parseJson } from 'common/util'
-import { ScreenStore } from 'types'
-import DataSourceModal from './DataSourceModal'
-import styles from './index.module.scss'
+} from '@ant-design/icons';
+import { toJS } from 'mobx';
+import UploadImg from 'components/UploadImg';
+import Monaco from 'components/Monaco';
+import { limitChange, formatJson, typeis, parseJson } from 'common/util';
+import { ScreenStore } from 'types';
+import DataSourceModal from './DataSourceModal';
+import styles from './index.module.scss';
 
-const { useCallback, useState } = React
+const { useCallback, useState } = React;
 
 function isenum (arg: any) {
-  return typeis.isArray(arg) && arg.length > 0
+  return typeis.isArray(arg) && arg.length > 0;
 }
 
-const typeComp:any = {
+const typeComp: any = {
   object: () => (
     <Monaco style={{ width: '100%', height: '200px' }} language="json" />
   ),
@@ -56,7 +56,7 @@ const typeComp:any = {
     </Select>
   ),
   image: () => <UploadImg />
-}
+};
 
 interface Props {
   screenStore?: ScreenStore;
@@ -64,29 +64,29 @@ interface Props {
 
 export default inject('screenStore')(
   observer((props: Props) => {
-    const { screenStore } = props
-    const { currLayer } = screenStore || {}
-    const [form] = Form.useForm()
-    const [dataSourceVisible, setDataSourceVisible] = useState(false)
+    const { screenStore } = props;
+    const { currLayer } = screenStore || {};
+    const [form] = Form.useForm();
+    const [dataSourceVisible, setDataSourceVisible] = useState(false);
 
     const componentProps =
       screenStore!.currLayer && screenStore!.currLayer.component
         ? toJS(screenStore!.currLayer.component.props)
-        : null
+        : null;
 
     /**
      * 显示数据源弹框
      */
     const showDataSource = useCallback(() => {
-      setDataSourceVisible(true)
-    }, [])
+      setDataSourceVisible(true);
+    }, []);
 
     /**
      * 关闭数据源弹框
      */
     const closeDataSource = useCallback(() => {
-      setDataSourceVisible(false)
-    }, [])
+      setDataSourceVisible(false);
+    }, []);
 
     /**
      * 删除数据源
@@ -97,50 +97,61 @@ export default inject('screenStore')(
         okText: '确定',
         cancelText: '取消',
         onOk: () => {
-          if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
-            screenStore.updateLayer(screenStore.currLayer.id, { api: null })
+          if (
+            screenStore &&
+            screenStore.currLayer &&
+            screenStore.currLayer.id
+          ) {
+            screenStore.updateLayer(screenStore.currLayer.id, { api: null });
           }
         }
-      })
-    }, [])
+      });
+    }, []);
 
     /**
      * 保存属性
      */
     const onPropsChange = useCallback(
       limitChange((changeValues: any, values: any) => {
-        const keys = Object.keys(changeValues)
-        const submitObj:any = {}
-        if (!componentProps) { return; }
+        const keys = Object.keys(changeValues);
+        const submitObj: any = {};
+        if (!componentProps) {
+          return;
+        }
         keys.forEach((key) => {
-          const propsType = componentProps[key].type
-          const toValue = changeValues[key]
-          submitObj[key] = toValue
+          const propsType = componentProps[key].type;
+          const toValue = changeValues[key];
+          submitObj[key] = toValue;
           if (typeis.isString(propsType)) {
             if (propsType === 'object' || propsType === 'array') {
-              submitObj[key] = parseJson(toValue)
+              submitObj[key] = parseJson(toValue);
             }
           } else if (typeis.isArray(propsType) && !isenum(propsType)) {
-            submitObj[key] = parseJson(toValue)
+            submitObj[key] = parseJson(toValue);
           } else if (typeis.isObject(propsType)) {
-            submitObj[key] = parseJson(toValue)
+            submitObj[key] = parseJson(toValue);
           }
           if (submitObj[key] === undefined || submitObj[key] === '') {
-            submitObj[key] = componentProps[key].default
+            submitObj[key] = componentProps[key].default;
           }
-        })
+        });
 
-        if (Object.keys(submitObj).length > 0 && screenStore && screenStore.currLayer && screenStore.currLayer.id) {
+        if (
+          Object.keys(submitObj).length > 0 &&
+          screenStore &&
+          screenStore.currLayer &&
+          screenStore.currLayer.id
+        ) {
           screenStore.updateLayer(screenStore.currLayer.id, {
             props: {
               ...screenStore.currLayer.props,
               ...submitObj
             }
-          })
+          });
         }
       }, 1000),
       [componentProps]
-    )
+    );
 
     return (
       <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
@@ -186,31 +197,31 @@ export default inject('screenStore')(
             {componentProps &&
               currLayer &&
               Object.keys(componentProps).map((key) => {
-                const propsValue = componentProps[key]
-                let propsType: string = 'undefined'
+                const propsValue = componentProps[key];
+                let propsType: string = 'undefined';
 
                 if (typeis.isString(propsValue.type)) {
-                  const types = Object.keys(typeComp)
-                  const type = propsValue.type.toLocaleLowerCase()
+                  const types = Object.keys(typeComp);
+                  const type = propsValue.type.toLocaleLowerCase();
                   if (types.indexOf(type) >= 0) {
-                    propsType = type
+                    propsType = type;
                   } else {
-                    propsType = 'string'
+                    propsType = 'string';
                   }
                 } else if (typeis.isArray(propsValue.type)) {
-                  propsType = propsValue.type.length > 0 ? 'enum' : 'array'
+                  propsType = propsValue.type.length > 0 ? 'enum' : 'array';
                 } else if (typeis.isObject(propsValue.type)) {
-                  propsType = 'object'
+                  propsType = 'object';
                 } else if (typeis.isBoolean(propsValue.type)) {
-                  propsType = 'boolean'
+                  propsType = 'boolean';
                 }
 
-                const typeComFun = typeComp[propsType]
+                const typeComFun = typeComp[propsType];
                 const defValue = toJS(
                   currLayer.props && currLayer.props[key]
                     ? currLayer.props[key]
                     : propsValue.default
-                )
+                );
                 return (
                   <div className={styles.title} key={key}>
                     <p style={{ paddingBottom: '6px' }}>
@@ -241,7 +252,7 @@ export default inject('screenStore')(
                           )}
                     </Form.Item>
                   </div>
-                )
+                );
               })}
           </Form>
         </div>
@@ -250,6 +261,6 @@ export default inject('screenStore')(
           onCancel={closeDataSource}
         />
       </div>
-    )
+    );
   })
-)
+);

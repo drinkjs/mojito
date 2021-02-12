@@ -1,16 +1,16 @@
 /* eslint-disable no-eval */
-import * as React from "react";
-import { observer, inject } from "mobx-react";
-import { Select, Button, Tooltip, Switch, message } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-import * as monaco from "monaco-editor";
-import Monaco from "components/Monaco";
-import { GlobalEventer } from "common/eventer";
-import { toJS } from "mobx";
-import { ScreenStore } from "types";
-import { eventRequest, LayerEvent } from "components/Layer";
-import { buildCode } from "common/util";
-import styles from "./index.module.scss";
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Select, Button, Tooltip, Switch, message } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import * as monaco from 'monaco-editor';
+import Monaco from 'components/Monaco';
+import { GlobalEventer } from 'common/eventer';
+import { toJS } from 'mobx';
+import { ScreenStore } from 'types';
+import { eventRequest, LayerEvent } from 'components/Layer';
+import { buildCode } from 'common/util';
+import styles from './index.module.scss';
 
 const eventer = new GlobalEventer();
 eventer.setMaxListeners(1024);
@@ -29,38 +29,38 @@ const myConsole = {
 let myConsoleArgs: any[] = [];
 
 const DEFAULT_CODE = [
-  "// 请不要使用export default方式导出",
-  "// 可以通过this对象获取组件的style和props",
-  "// 要使用this必需使用function方式定义事件处理",
-  "// 可以通过返回值或者调用this.setValue方法修改style和props",
-  "// 可以通过this.eventer进行组件通信，用法与EventEmitter一致",
-  "//export function handler(){",
-  "//\tconsole.log(this)",
-  "//}"
-].join("\n");
+  '// 请不要使用export default方式导出',
+  '// 可以通过this对象获取组件的style和props',
+  '// 要使用this必需使用function方式定义事件处理',
+  '// 可以通过返回值或者调用this.setValue方法修改style和props',
+  '// 可以通过this.eventer进行组件通信，用法与EventEmitter一致',
+  '//export function handler(){',
+  '//\tconsole.log(this)',
+  '//}'
+].join('\n');
 
 const systemEvent = [
   {
-    label: "组件加载",
+    label: '组件加载',
     value: LayerEvent.onLoad
   },
   {
-    label: "组件销毁",
+    label: '组件销毁',
     value: LayerEvent.onUnload
   },
   {
-    label: "数据源加载",
+    label: '数据源加载',
     value: LayerEvent.onDataSource
   }
 ];
 
-export default inject("screenStore")(
+export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
     const currCodeRef = useRef<string>();
     const currLayerId = useRef<string>();
-    const [currEvent, setCurrEvent] = useState<string>("");
+    const [currEvent, setCurrEvent] = useState<string>('');
     const [consoleArgs, setConsoleArgs] = useState<any[]>([]);
     const [debugerRel, setDebugerRel] = useState<any>();
     const [error, setError] = useState<Error>();
@@ -88,13 +88,13 @@ export default inject("screenStore")(
         screenStore!.currLayer &&
         currLayerId.current !== screenStore!.currLayer.id
       ) {
-        setCurrEvent("");
+        setCurrEvent('');
         setConsoleArgs([]);
         setDebugerRel(undefined);
         setError(undefined);
-        setEventTips("");
+        setEventTips('');
         setIsSync(false);
-        editorRef.current && editorRef.current.setValue("");
+        editorRef.current && editorRef.current.setValue('');
         currLayerId.current = screenStore!.currLayer.id;
       }
     }, [screenStore!.currLayer]);
@@ -113,7 +113,12 @@ export default inject("screenStore")(
      * 主动保存代码
      */
     const onSave = useCallback(() => {
-      if (screenStore && screenStore.currLayer && screenStore.currLayer.id && editorRef.current) {
+      if (
+        screenStore &&
+        screenStore.currLayer &&
+        screenStore.currLayer.id &&
+        editorRef.current
+      ) {
         const code = editorRef.current.getValue();
         currCodeRef.current = code;
         screenStore!
@@ -128,7 +133,7 @@ export default inject("screenStore")(
             true
           )
           .then(() => {
-            message.success("保存成功");
+            message.success('保存成功');
           });
       }
     }, [currEvent, isSync]);
@@ -138,11 +143,11 @@ export default inject("screenStore")(
      */
     const onDebug = useCallback(() => {
       myConsoleArgs = [];
-      setDebugerRel("");
+      setDebugerRel('');
       setError(undefined);
 
       try {
-        const code = editorRef.current ? editorRef.current.getValue() : "";
+        const code = editorRef.current ? editorRef.current.getValue() : '';
         const fun = buildCode(code);
         if (fun) {
           const rel = fun.call(createThis());
@@ -159,9 +164,9 @@ export default inject("screenStore")(
      */
     const onEventChange = useCallback((value) => {
       setCurrEvent(value);
-      setDebugerRel("");
+      setDebugerRel('');
       setError(undefined);
-      currCodeRef.current = "";
+      currCodeRef.current = '';
       if (
         value &&
         screenStore &&
@@ -169,7 +174,8 @@ export default inject("screenStore")(
         screenStore.currLayer.events &&
         screenStore.currLayer.events[value]
       ) {
-        editorRef.current && editorRef.current.setValue(screenStore.currLayer.events[value].code);
+        editorRef.current &&
+          editorRef.current.setValue(screenStore.currLayer.events[value].code);
         setIsSync(screenStore!.currLayer.events[value].isSync);
       } else {
         editorRef.current && editorRef.current.setValue(DEFAULT_CODE);
@@ -185,7 +191,7 @@ export default inject("screenStore")(
       ) {
         setEventTips(screenStore!.currLayer.component.events[value].comment);
       } else {
-        setEventTips("");
+        setEventTips('');
       }
     }, []);
 
@@ -193,7 +199,9 @@ export default inject("screenStore")(
      * 回调事件this
      */
     const createThis = () => {
-      if (!screenStore || !screenStore.currLayer) { return {} }
+      if (!screenStore || !screenStore.currLayer) {
+        return {};
+      }
       return {
         props: toJS(screenStore!.currLayer.props),
         style: toJS(screenStore!.currLayer.style),
@@ -209,7 +217,7 @@ export default inject("screenStore")(
     const printDebug = () => {
       return consoleArgs.map((args) => {
         const formatArgs = args.map((v: any) => JSON.stringify(v));
-        return <div key="printDebug">{formatArgs.join(",")}</div>;
+        return <div key="printDebug">{formatArgs.join(',')}</div>;
       });
     };
 
@@ -223,7 +231,7 @@ export default inject("screenStore")(
           <p>绑定事件</p>
           <Select
             placeholder="请选择事件"
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
             onChange={onEventChange}
             value={currEvent}
           >
@@ -234,8 +242,9 @@ export default inject("screenStore")(
                 </Option>
               );
             })}
-            {screenStore && screenStore.currLayer &&
-            screenStore.currLayer.component &&
+            {screenStore &&
+              screenStore.currLayer &&
+              screenStore.currLayer.component &&
               screenStore.currLayer.component.events &&
               Object.keys(screenStore!.currLayer.component.events).map(
                 (key) => {
@@ -252,16 +261,16 @@ export default inject("screenStore")(
         <div className={styles.title}>
           <section
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingBottom: "12px"
+              display: 'flex',
+              justifyContent: 'space-between',
+              paddingBottom: '12px'
             }}
           >
             <div>
               事件处理
               {eventTips && (
                 <Tooltip title={eventTips}>
-                  <span style={{ color: "#666", marginLeft: "6px" }}>
+                  <span style={{ color: '#666', marginLeft: '6px' }}>
                     <ExclamationCircleOutlined />
                   </span>
                 </Tooltip>
@@ -271,7 +280,7 @@ export default inject("screenStore")(
                   <Switch
                     checkedChildren="同步"
                     unCheckedChildren="同步"
-                    style={{ marginLeft: "6px" }}
+                    style={{ marginLeft: '6px' }}
                     onChange={onSetSync}
                     checked={isSync}
                   />
@@ -286,7 +295,7 @@ export default inject("screenStore")(
                   type="primary"
                   size="small"
                   onClick={onSave}
-                  style={{ marginLeft: "6px", minWidth: "32px" }}
+                  style={{ marginLeft: '6px', minWidth: '32px' }}
                   loading={screenStore!.saveLoading}
                 >
                   保存
@@ -295,7 +304,7 @@ export default inject("screenStore")(
             )}
           </section>
           <Monaco
-            style={{ width: "100%", height: "300px" }}
+            style={{ width: '100%', height: '300px' }}
             // value={DEFAULT_CODE}
             onCreate={onEditorCreate}
           />
@@ -305,39 +314,39 @@ export default inject("screenStore")(
           <div className={styles.title}>
             <section
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingBottom: "12px"
+                display: 'flex',
+                justifyContent: 'space-between',
+                paddingBottom: '12px'
               }}
             >
-              调试信息{" "}
+              调试信息{' '}
               <Button
                 type="primary"
                 size="small"
                 onClick={() => {
                   setConsoleArgs([]);
-                  setDebugerRel("");
+                  setDebugerRel('');
                   setError(undefined);
                 }}
-                style={{ marginLeft: "6px" }}
+                style={{ marginLeft: '6px' }}
               >
                 清空
               </Button>
             </section>
             <div
               style={{
-                background: "#1e1e1e",
-                height: "100px",
-                overflow: "auto",
-                padding: "3px"
+                background: '#1e1e1e',
+                height: '100px',
+                overflow: 'auto',
+                padding: '3px'
               }}
             >
               {printDebug()}
-              {debugerRel !== "" && (
+              {debugerRel !== '' && (
                 <div>返回值：{JSON.stringify(debugerRel)}</div>
               )}
               {error && (
-                <div style={{ color: "#cc0000" }}>
+                <div style={{ color: '#cc0000' }}>
                   Error：{JSON.stringify(error)}
                 </div>
               )}

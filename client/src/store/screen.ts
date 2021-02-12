@@ -1,18 +1,18 @@
-import { CSSProperties } from "react";
-import { makeAutoObservable, toJS, runInAction, computed } from "mobx";
-import { message, Modal } from "antd";
-import { v4 as uuidv4 } from "uuid";
-import * as service from "services/screen";
-import * as layerService from "services/layer";
-import { loadCDN } from "components/Loader";
+import { CSSProperties } from 'react';
+import { makeAutoObservable, toJS, runInAction, computed } from 'mobx';
+import { message, Modal } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
+import * as service from 'services/screen';
+import * as layerService from 'services/layer';
+import { loadCDN } from 'components/Loader';
 import {
   ComponentStyleQuery,
   LayerInfo,
   LayerQuery,
   ScreenDetailDto,
   ScreenDto
-} from "types";
-import { DefaultPageSize } from "config";
+} from 'types';
+import { DefaultPageSize } from 'config';
 
 const MAX_UNDO = 100;
 
@@ -59,15 +59,17 @@ export default class Screen {
     });
   }
 
-  get layers ():LayerInfo[] {
-    return this.screenInfo && this.screenInfo.layers ? this.screenInfo.layers : [];
+  get layers (): LayerInfo[] {
+    return this.screenInfo && this.screenInfo.layers
+      ? this.screenInfo.layers
+      : [];
   }
 
   get layerStyle () {
     return this.currLayer ? this.currLayer.style : undefined;
   }
 
-  get layerGroup ():LayerInfo[] {
+  get layerGroup (): LayerInfo[] {
     const layers = this.layers
       ? this.layers.filter((v) => v.id && this.selectedLayerIds.has(v.id))
       : [];
@@ -149,7 +151,7 @@ export default class Screen {
     return true;
   }
 
-  setCurrLayer (layer: LayerInfo|undefined) {
+  setCurrLayer (layer: LayerInfo | undefined) {
     runInAction(() => {
       this.currLayer = layer;
     });
@@ -290,9 +292,10 @@ export default class Screen {
     return service
       .screenDetail({ id })
       .then((data: ScreenDetailDto) => {
-        data.layers && data.layers.sort((a, b) => {
-          return b.style.z - a.style.z;
-        });
+        data.layers &&
+          data.layers.sort((a, b) => {
+            return b.style.z - a.style.z;
+          });
         runInAction(() => {
           this.screenInfo = data;
         });
@@ -319,7 +322,9 @@ export default class Screen {
     if (!this.screenInfo) return;
     const oldStyle = toJS(this.screenInfo.options);
     runInAction(() => {
-      if (this.screenInfo) { this.screenInfo.options = { ...styles }; }
+      if (this.screenInfo) {
+        this.screenInfo.options = { ...styles };
+      }
     });
     service
       .screenUpdate({
@@ -344,9 +349,10 @@ export default class Screen {
     return service
       .screenDetail({ id: this.screenInfo.id })
       .then((data: ScreenDetailDto) => {
-        data.layers && data.layers.sort((a, b) => {
-          return b.style.z - a.style.z;
-        });
+        data.layers &&
+          data.layers.sort((a, b) => {
+            return b.style.z - a.style.z;
+          });
         runInAction(() => {
           this.screenInfo = data;
         });
@@ -425,18 +431,18 @@ export default class Screen {
     isUndo?: boolean
   ) {
     const keys = Object.keys(data);
-    const dataAny:any = data;
+    const dataAny: any = data;
     const layerIndex = this.layers.findIndex((v) => v.id === layerId);
-    if (layerIndex === -1 || !this.screenInfo || !this.screenInfo.layers) return;
+    if (layerIndex === -1 || !this.screenInfo || !this.screenInfo.layers) { return; }
 
     const undoData: UpdateHistory = {
       args: [layerId, {}, reload, !isUndo],
       action: this.updateLayer
     };
-    const layer:any = this.screenInfo.layers[layerIndex];
+    const layer: any = this.screenInfo.layers[layerIndex];
     keys.forEach((key) => {
       // 事件不做保存，因为实际使中用撤销属性和事件用户可能无感知，很容易产生不可预料的问题
-      if (key !== "events") undoData.args[1][key] = toJS(layer[key]);
+      if (key !== 'events') undoData.args[1][key] = toJS(layer[key]);
       layer[key] = dataAny[key];
     });
 
@@ -447,7 +453,7 @@ export default class Screen {
         layer.reloadKey = layer.reloadKey === 0 ? 1 : 0;
         this.selectedLayerIds = new Set();
       }
-      if (this.screenInfo) this.screenInfo.layers = toJS(this.screenInfo.layers); // 刷新数据
+      if (this.screenInfo) { this.screenInfo.layers = toJS(this.screenInfo.layers); } // 刷新数据
       if (!isUndo) this.setCurrLayer(layer);
     });
 
@@ -517,11 +523,12 @@ export default class Screen {
     reload?: boolean,
     isUndo?: boolean
   ) {
-    const undoData = data.map((v:any) => {
+    const undoData = data.map((v: any) => {
       const oldData: any = {};
-      const currLayer = this.screenInfo && this.screenInfo.layers && this.screenInfo.layers.find(
-        (layer) => layer.id === v.id
-      );
+      const currLayer =
+        this.screenInfo &&
+        this.screenInfo.layers &&
+        this.screenInfo.layers.find((layer) => layer.id === v.id);
       if (currLayer) {
         const currLayerAny: any = currLayer;
         runInAction(() => {
@@ -553,8 +560,8 @@ export default class Screen {
         } else {
           runInAction(() => {
             // 刷新数据
-            if (this.screenInfo) this.screenInfo.layers = toJS(this.screenInfo.layers);
-          })
+            if (this.screenInfo) { this.screenInfo.layers = toJS(this.screenInfo.layers); }
+          });
         }
         return rel;
       })
@@ -589,7 +596,7 @@ export default class Screen {
         if (this.selectedLayerIds.size === 0) {
           this.selectedLayerIds = new Set(layerIds);
         }
-        message.success({ content: "群组成功", key: "群组成功" });
+        message.success({ content: '群组成功', key: '群组成功' });
         return rel;
       })
       .finally(() => {
@@ -602,7 +609,7 @@ export default class Screen {
    */
   async disbandLayer (layerIds: string[], isUndo?: boolean) {
     const groups = layerIds.map((id) => {
-      return { id, group: "", groupLock: false, groupHide: false };
+      return { id, group: '', groupLock: false, groupHide: false };
     });
 
     return layerService
@@ -619,7 +626,7 @@ export default class Screen {
         if (this.selectedLayerIds.size === 0) {
           this.selectedLayerIds = new Set(layerIds);
         }
-        message.success({ content: "解组成功", key: "解组成功" });
+        message.success({ content: '解组成功', key: '解组成功' });
         return rel;
       })
       .finally(() => {
@@ -646,7 +653,7 @@ export default class Screen {
   saveLayerStyle (layerId: string, style: ComponentStyleQuery) {
     const layer = this.layers.find((v) => v.id === layerId);
     if (!layer) return;
-    const newStyle:any = { ...this.layerStyle, ...style };
+    const newStyle: any = { ...this.layerStyle, ...style };
     this.updateLayer(layerId, {
       style: newStyle
     });
@@ -689,7 +696,7 @@ export default class Screen {
       }
       runInAction(() => {
         this.selectedLayerIds = new Set();
-      })
+      });
       this.reload();
     });
   }

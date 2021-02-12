@@ -1,21 +1,21 @@
-@import "../../resources/css/variable";
+@import '../../resources/css/variable';
 
-.root{
+.root {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.content{
+.content {
   flex-grow: 1;
   height: 100%;
   display: flex;
   overflow: hidden;
 }
 
-.backIcon{
+.backIcon {
   color: $textColor;
 }
-.backIcon:hover{
+.backIcon:hover {
   color: $heightLightBgColor;
 }

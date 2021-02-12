@@ -5,7 +5,7 @@
  * @LastEditTime: 2020-05-28 13:48:35
  * @Description: file content
  */
-import RootLayout from 'layout/RootLayout'
+import RootLayout from 'layout/RootLayout';
 
 const routes = [
   {
@@ -33,6 +33,6 @@ const routes = [
       }
     ]
   }
-]
+];
 
-export default routes
+export default routes;

@@ -1,12 +1,12 @@
-@import "../../../../resources/css/variable";
+@import '../../../../resources/css/variable';
 
-.root{
+.root {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.header{
+.header {
   border-bottom: 1px solid rgb(73, 84, 103);
   line-height: 40px;
   font-size: 16px;
@@ -16,7 +16,7 @@
   color: $textColor;
 }
 
-.screenBox{
+.screenBox {
   flex-grow: 1;
   overflow: auto;
   height: 100%;
@@ -27,28 +27,28 @@
   // align-content: flex-start;
 }
 
-.item{
+.item {
   position: relative;
   border-radius: 4px;
   width: 367px;
   overflow: hidden;
   cursor: pointer;
-  background-color:#24364E;
+  background-color: #24364e;
   box-shadow: rgba(0, 0, 0, 0.27) 0 2px 3px 2px;
   flex-shrink: 0;
-  .toolBar{
+  .toolBar {
     display: none;
   }
 }
 
-.item:hover{
+.item:hover {
   cursor: pointer;
-  .toolBar{
+  .toolBar {
     display: block;
   }
 }
 
-.itemPre{
+.itemPre {
   width: 100%;
   height: 182px;
   background: #000;
@@ -59,40 +59,40 @@
   overflow: hidden;
 }
 
-.itemName{
+.itemName {
   height: 48px;
   // background-color: #2b2d32;
-  color: #FFF;
-  padding:0 12px;
+  color: #fff;
+  padding: 0 12px;
 }
 
-.updateTime{
+.updateTime {
   font-size: 12px;
-  color: $textColor 
+  color: $textColor;
 }
 
-.toolBar{
+.toolBar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   padding: 3px;
-  background:rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   text-align: right;
   z-index: 2;
-  a{
+  a {
     color: $textColor;
-    margin:0 6px ;
+    margin: 0 6px;
   }
-  a:hover{
+  a:hover {
     color: $heightLightBgColor;
   }
 }
 
-.coverIcon{
+.coverIcon {
   color: $textColor;
 }
 
-.coverIcon:hover{
+.coverIcon:hover {
   color: $heightLightBgColor;
 }

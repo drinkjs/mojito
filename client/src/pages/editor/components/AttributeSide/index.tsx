@@ -1,24 +1,24 @@
 /* eslint-disable react/display-name */
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
-import { Tooltip, Input } from 'antd'
-import IconFont from 'components/IconFont'
-import { Resizable } from 're-resizable'
-import { LoadingComponent, lazyLoader } from 'components/Loader'
-import { ScreenStore } from 'types'
-import styles from './index.module.scss'
-import Style from './Style'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Tooltip, Input } from 'antd';
+import IconFont from 'components/IconFont';
+import { Resizable } from 're-resizable';
+import { LoadingComponent, lazyLoader } from 'components/Loader';
+import { ScreenStore } from 'types';
+import styles from './index.module.scss';
+import Style from './Style';
 // import PropsSet from "./Props";
 // import Events from "./Events";
-import PageSet from './PageSet'
-import Layers from './Layers'
-import GroupSet from './GroupSet'
+import PageSet from './PageSet';
+import Layers from './Layers';
+import GroupSet from './GroupSet';
 
-const classNames = require('classnames')
+const classNames = require('classnames');
 
-const { useState, useEffect, Suspense } = React
-const Events = lazyLoader(() => import('./Events'))
-const PropsSet = lazyLoader(() => import('./Props'))
+const { useState, useEffect, Suspense } = React;
+const Events = lazyLoader(() => import('./Events'));
+const PropsSet = lazyLoader(() => import('./Props'));
 
 type TabObj = { label: string; key: string; icon: string; render: () => any };
 
@@ -67,9 +67,9 @@ const tabs: TabObj[] = [
     icon: 'icon-changyongtubiao_xiangmuzushezhi',
     render: () => <GroupSet />
   }
-]
+];
 
-const compTabKeys = ['style', 'props', 'events']
+const compTabKeys = ['style', 'props', 'events'];
 
 interface Props {
   screenStore?: ScreenStore;
@@ -77,9 +77,9 @@ interface Props {
 
 export default inject('screenStore')(
   observer((props: Props) => {
-    const { screenStore } = props
-    const [selectedTab, setSelectedTab] = useState<TabObj>()
-    const [editLayerNameFlag, setEditLayerNameFlag] = useState(false)
+    const { screenStore } = props;
+    const [selectedTab, setSelectedTab] = useState<TabObj>();
+    const [editLayerNameFlag, setEditLayerNameFlag] = useState(false);
 
     useEffect(() => {
       if (
@@ -87,7 +87,7 @@ export default inject('screenStore')(
         selectedTab &&
         compTabKeys.indexOf(selectedTab.key) >= 0
       ) {
-        setSelectedTab(tabs[0])
+        setSelectedTab(tabs[0]);
       }
 
       if (
@@ -95,25 +95,30 @@ export default inject('screenStore')(
         selectedTab &&
         selectedTab.key === 'group'
       ) {
-        setSelectedTab(tabs[0])
+        setSelectedTab(tabs[0]);
       }
 
-      setEditLayerNameFlag(false)
-    }, [screenStore!.currLayer, screenStore!.selectedLayerIds])
+      setEditLayerNameFlag(false);
+    }, [screenStore!.currLayer, screenStore!.selectedLayerIds]);
 
     /**
      * 修改图层名称
      * @param e
      */
     const onUpdateLayerName = (e: any) => {
-      setEditLayerNameFlag(false)
-      if (!e.target.value || !screenStore || !screenStore.currLayer || !screenStore.currLayer.id) {
-        return
+      setEditLayerNameFlag(false);
+      if (
+        !e.target.value ||
+        !screenStore ||
+        !screenStore.currLayer ||
+        !screenStore.currLayer.id
+      ) {
+        return;
       }
       screenStore.updateLayer(screenStore.currLayer.id, {
         name: e.target.value
-      })
-    }
+      });
+    };
 
     /**
      * 切换属性面板
@@ -121,21 +126,21 @@ export default inject('screenStore')(
      */
     const onTab = (tab: TabObj) => {
       return (e: any) => {
-        e.stopPropagation()
-        if (tab === selectedTab) setSelectedTab(undefined)
-        else setSelectedTab(tab)
-      }
-    }
+        e.stopPropagation();
+        if (tab === selectedTab) setSelectedTab(undefined);
+        else setSelectedTab(tab);
+      };
+    };
 
     const renderTab = () => {
       return (
         <div className={styles.tabBox}>
           {tabs.map((v) => {
             if (!screenStore!.currLayer && compTabKeys.indexOf(v.key) >= 0) {
-              return null
+              return null;
             }
             if (screenStore!.layerGroup.length < 2 && v.key === 'group') {
-              return null
+              return null;
             }
             return (
               <Tooltip key={v.key} title={v.label} placement="left">
@@ -149,14 +154,14 @@ export default inject('screenStore')(
                   <IconFont type={v.icon} />
                 </div>
               </Tooltip>
-            )
+            );
           })}
         </div>
-      )
-    }
+      );
+    };
 
     if (!selectedTab) {
-      return <section className={styles.attrRoot}>{renderTab()}</section>
+      return <section className={styles.attrRoot}>{renderTab()}</section>;
     }
 
     return (
@@ -196,7 +201,7 @@ export default inject('screenStore')(
                       : (
                       <div
                         onDoubleClick={() => {
-                          setEditLayerNameFlag(true)
+                          setEditLayerNameFlag(true);
                         }}
                         style={{ width: '70%', overflow: 'hidden' }}
                       >
@@ -204,13 +209,13 @@ export default inject('screenStore')(
                       </div>
                         )}
                   </div>
-              )}
+                )}
               {selectedTab.render()}
             </div>
           )}
           {renderTab()}
         </section>
       </Resizable>
-    )
+    );
   })
-)
+);

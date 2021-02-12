@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 
 export default class ErrorCatch extends React.Component {
   // eslint-disable-next-line react/state-in-constructor
@@ -8,15 +8,15 @@ export default class ErrorCatch extends React.Component {
   };
 
   componentDidCatch (error, info) {
-    this.setState({ error, info })
+    this.setState({ error, info });
     // 上传错误到到服务器
     // logErrorToMyService(error, info);
   }
 
   render () {
-    const { error, info } = this.state
+    const { error, info } = this.state;
     // eslint-disable-next-line react/prop-types
-    const { children, style } = this.props
+    const { children, style } = this.props;
     if (error) {
       return (
         <div
@@ -29,8 +29,8 @@ export default class ErrorCatch extends React.Component {
           <br />
           {info.componentStack}
         </div>
-      )
+      );
     }
-    return children
+    return children;
   }
 }

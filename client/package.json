@@ -1,5 +1,5 @@
 {
-  "name": "drinkview",
+  "name": "mojito",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -51,7 +51,8 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "esfix": "eslint --fix --ext .js --ext .jsx --ext .tsx --ext .ts src/"
+    "esfix": "eslint --fix --ext .js --ext .jsx --ext .tsx --ext .ts src/",
+    "format": "prettier --single-quote --write ."
   },
   "eslintConfig": {
     "extends": [

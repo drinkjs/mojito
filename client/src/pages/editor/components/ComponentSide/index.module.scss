@@ -1,12 +1,12 @@
-@import "../../../../resources/css/variable.scss";
+@import '../../../../resources/css/variable.scss';
 
-.bar{
+.bar {
   display: flex;
   height: 100%;
   // padding: 6px 0 0 6px;
 }
 
-.category{
+.category {
   height: 100%;
   background: $mainColor;
   overflow: hidden;
@@ -14,7 +14,7 @@
   width: 40px;
 }
 
-.icon{
+.icon {
   font-size: 18px;
   padding: 5px 0;
   margin: 10px 5px;
@@ -27,13 +27,13 @@
   cursor: pointer;
 }
 
-.iconSelected{
+.iconSelected {
   color: $heightLightTextColor;
   background-color: $heightLightBgColor;
   border-radius: 4px;
 }
 
-.components{
+.components {
   height: 100%;
   width: 240px;
   background: $subColor;
@@ -43,7 +43,7 @@
   flex-direction: column;
 }
 
-.cateTitle{
+.cateTitle {
   height: 36px;
   line-height: 36px;
   text-align: center;
@@ -51,17 +51,17 @@
   border-bottom: 1px solid $borderColor;
 }
 
-.close{
+.close {
   position: absolute;
   right: 12px;
   cursor: pointer;
 }
 
-.close:hover{
+.close:hover {
   color: #3b50ff;
 }
 
-.componentBox{
+.componentBox {
   flex-grow: 1;
   flex-basis: 0;
   overflow: auto;
@@ -72,12 +72,12 @@
   align-content: flex-start;
 }
 
-.componentImg{
+.componentImg {
   text-align: center;
-  pointer-events: none
+  pointer-events: none;
 }
 
-.componentView{
+.componentView {
   width: 100%;
   height: 102px;
   background: #191b23;
@@ -87,21 +87,20 @@
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
-  
 }
 
-.componentView:hover{
-  border: 1px solid #3b50ff
+.componentView:hover {
+  border: 1px solid #3b50ff;
 }
 
-.componentTitle{
+.componentTitle {
   text-align: center;
   position: absolute;
   top: 68px;
   width: 100%;
 }
 
-.itemView{
+.itemView {
   width: 100%;
   background: #191b23;
   border: 1px solid transparent;
@@ -112,7 +111,7 @@
   position: relative;
 }
 
-.toolBar{
+.toolBar {
   position: absolute;
   top: 0;
   left: 0;
@@ -121,23 +120,23 @@
   background: rgba(0, 0, 0, 0.3);
   text-align: right;
   display: none;
-  >a{
-    margin:0 6px ;
+  > a {
+    margin: 0 6px;
   }
 }
 
-.itemView:hover{
+.itemView:hover {
   border: 1px solid #3b50ff;
-  .toolBar{
+  .toolBar {
     display: block;
   }
 }
 
-.itemImgBox{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  :global(.ant-image-img){
+.itemImgBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  :global(.ant-image-img) {
     width: auto;
   }
 }

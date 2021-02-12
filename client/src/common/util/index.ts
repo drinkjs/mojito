@@ -1,60 +1,60 @@
-import * as babel from '@babel/standalone'
-import * as typeis from './typeis'
+import * as babel from '@babel/standalone';
+import * as typeis from './typeis';
 
 /**
  * 限流函数
  * @param callback
  */
 export const limitChange = (callback: Function, delay: number = 500) => {
-  let t: any = null
+  let t: any = null;
   return (...args: any[]) => {
-    clearTimeout(t)
-    t = setTimeout(callback, delay, ...args)
-  }
-}
+    clearTimeout(t);
+    t = setTimeout(callback, delay, ...args);
+  };
+};
 
 export function formatJson (json: any) {
-  if (json === undefined || typeof json === 'string') return json
+  if (json === undefined || typeof json === 'string') return json;
   try {
-    return JSON.stringify(json, null, 2)
+    return JSON.stringify(json, null, 2);
   } catch (e) {
-    return ''
+    return '';
   }
 }
 
 export function parseJson (json: string): any {
   try {
-    return JSON.parse(json)
+    return JSON.parse(json);
   } catch (e) {
-    return json
+    return json;
   }
 }
 
 // 查找父节点
 export function getTreeParent (tree: any[], id: any) {
-  const temp: any[] = []
+  const temp: any[] = [];
   const forFn = function (childrenTree: any[], itemId: any) {
     for (let i = 0; i < childrenTree.length; i++) {
-      const item = childrenTree[i]
+      const item = childrenTree[i];
       if (item.id === itemId) {
-        temp.push(item)
-        forFn(tree, item.pid)
-        break
+        temp.push(item);
+        forFn(tree, item.pid);
+        break;
       } else if (item.children) {
-        forFn(item.children, itemId)
+        forFn(item.children, itemId);
       }
     }
-  }
-  forFn(tree, id)
-  return temp.reverse()
+  };
+  forFn(tree, id);
+  return temp.reverse();
 }
 
 export function buildCode (code: string): Function | null {
-  if (!code) return null
-  const result = babel.transform(code, { presets: ['env'] })
+  if (!code) return null;
+  const result = babel.transform(code, { presets: ['env'] });
   // eslint-disable-next-line no-eval
-  const fun: Function = result.code ? eval(result.code) : null
-  return fun
+  const fun: Function = result.code ? eval(result.code) : null;
+  return fun;
 }
 
-export { typeis }
+export { typeis };

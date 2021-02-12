@@ -6,13 +6,13 @@
  * @Description: file content
  */
 
-import axios from 'axios'
-import { message } from 'antd'
+import axios from 'axios';
+import { message } from 'antd';
 
-const API = '/api'
+const API = '/api';
 
 function showError (content) {
-  message.error(content)
+  message.error(content);
 }
 
 /**
@@ -22,10 +22,10 @@ function showError (content) {
  * @return {Promise<T | void>}
  */
 function request (originUrl, method = 'get', params = {}, options = {}) {
-  const reg = /^(http|https):\/\/.+/
-  const { prefix, checkCode = true, ...opts } = options
+  const reg = /^(http|https):\/\/.+/;
+  const { prefix, checkCode = true, ...opts } = options;
   return new Promise((resolve, reject) => {
-    const lowerMethod = method.toLocaleLowerCase()
+    const lowerMethod = method.toLocaleLowerCase();
     axios({
       method,
       url: reg.test(originUrl)
@@ -41,28 +41,28 @@ function request (originUrl, method = 'get', params = {}, options = {}) {
     })
       .then((response) => {
         if (!response || !response.data) {
-          showError(`${originUrl}请求错误`)
-          reject(new Error(`${originUrl}请求错误`))
-          return
+          showError(`${originUrl}请求错误`);
+          reject(new Error(`${originUrl}请求错误`));
+          return;
         }
-        return response.data
+        return response.data;
       })
       .then((data) => {
         if (!checkCode) {
-          return resolve(data)
+          return resolve(data);
         }
         if (data && data.code === 0) {
-          return resolve(data.data)
+          return resolve(data.data);
         }
-        showError(data.msg || `${originUrl}请求错误`)
+        showError(data.msg || `${originUrl}请求错误`);
         // if (response.data.code === 403) window.location.href = "/login";
-        reject(data)
+        reject(data);
       })
       .catch((err) => {
-        showError(`${originUrl}请求失败`)
-        reject(err)
-      })
-  })
+        showError(`${originUrl}请求失败`);
+        reject(err);
+      });
+  });
 }
 
-export default request
+export default request;

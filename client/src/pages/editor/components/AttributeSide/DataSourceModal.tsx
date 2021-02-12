@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
-import { ModalFuncProps } from 'antd/lib/modal'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { ModalFuncProps } from 'antd/lib/modal';
 import {
   Modal,
   Form,
@@ -10,13 +10,13 @@ import {
   Select,
   Space,
   InputNumber
-} from 'antd'
-import Monaco from 'components/Monaco'
-import { request } from 'common/network'
-import { formatJson } from 'common/util'
-import { ScreenStore } from 'types'
+} from 'antd';
+import Monaco from 'components/Monaco';
+import { request } from 'common/network';
+import { formatJson } from 'common/util';
+import { ScreenStore } from 'types';
 
-const { useCallback, useState, useEffect } = React
+const { useCallback, useState, useEffect } = React;
 
 interface Props extends ModalFuncProps {
   onSubmit?: (values: any) => void;
@@ -26,87 +26,88 @@ interface Props extends ModalFuncProps {
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 }
-}
+};
 
 export default inject('screenStore')(
   observer((props: Props) => {
-    const { onSubmit, screenStore, visible, ...restProps } = props
-    const currLayer = screenStore!.currLayer
-    const [form] = Form.useForm()
-    const [testData, setTestData] = useState<any>()
-    const [testing, setTesting] = useState(false)
+    const { onSubmit, screenStore, visible, ...restProps } = props;
+    const currLayer = screenStore!.currLayer;
+    const [form] = Form.useForm();
+    const [testData, setTestData] = useState<any>();
+    const [testing, setTesting] = useState(false);
 
     useEffect(() => {
-      if (!visible) setTestData('')
-    }, [visible])
+      if (!visible) setTestData('');
+    }, [visible]);
 
     const parseParams = (params: string) => {
-      if (!params) return {}
+      if (!params) return {};
       // 替换${xxx}变量，变量会映射global的值 {"a":"${myname}"}会替换会{"a":global["myname"]}
-      const globalObj:any = global;
+      const globalObj: any = global;
       try {
-        const regx = /"\${[\d\w_]+}"/g
+        const regx = /"\${[\d\w_]+}"/g;
         const newParams = params.replace(regx, (match: string) => {
-          const val = match.substring(3, match.length - 2)
+          const val = match.substring(3, match.length - 2);
           if (
             typeof globalObj[val] === 'object' ||
             typeof globalObj[val] === 'string'
           ) {
-            return JSON.stringify(globalObj[val])
+            return JSON.stringify(globalObj[val]);
           }
-          return globalObj[val] === undefined ? null : globalObj[val]
-        })
-        return JSON.parse(newParams)
+          return globalObj[val] === undefined ? null : globalObj[val];
+        });
+        return JSON.parse(newParams);
       } catch (e) {
-        message.error('参数解释错误')
-        return {}
+        message.error('参数解释错误');
+        return {};
       }
-    }
+    };
 
     const onOk = useCallback(() => {
       form.validateFields().then((values) => {
-        let params = {}
+        let params = {};
         if (values.params) {
           try {
-            params = JSON.parse(values.params)
+            params = JSON.parse(values.params);
           } catch (e) {
-            message.error('参数解释错误')
-            return
+            message.error('参数解释错误');
+            return;
           }
         }
         if (!screenStore!.currLayer || !screenStore!.currLayer.id) return;
-        screenStore!.updateLayer(screenStore!.currLayer.id, {
-          api: {
-            url: values.url,
-            method: values.method,
-            interval: values.interval,
-            params
-          }
-        })
-          .then(() => {
-            message.success('保存成功')
-            props.onCancel && props.onCancel()
+        screenStore!
+          .updateLayer(screenStore!.currLayer.id, {
+            api: {
+              url: values.url,
+              method: values.method,
+              interval: values.interval,
+              params
+            }
           })
-      })
-    }, [form, props])
+          .then(() => {
+            message.success('保存成功');
+            props.onCancel && props.onCancel();
+          });
+      });
+    }, [form, props]);
 
     const onTest = useCallback(() => {
       form.validateFields().then((values) => {
-        const params = parseParams(values.params)
-        setTestData({})
-        setTesting(true)
+        const params = parseParams(values.params);
+        setTestData({});
+        setTesting(true);
         request(values.url, values.method, params, { prefix: '' })
           .then((rel) => {
-            setTestData(rel)
+            setTestData(rel);
           })
           .catch((err) => {
-            setTestData(err)
+            setTestData(err);
           })
           .finally(() => {
-            setTesting(false)
-          })
-      })
-    }, [form])
+            setTesting(false);
+          });
+      });
+    }, [form]);
 
     return (
       <Modal
@@ -144,7 +145,8 @@ export default inject('screenStore')(
             <Select
               placeholder="请选择请求方式"
               getPopupContainer={(target) =>
-                document.getElementById('addDataSourceForm') || target}
+                document.getElementById('addDataSourceForm') || target
+              }
             >
               <Select.Option value="get">GET</Select.Option>
               <Select.Option value="post">POST</Select.Option>
@@ -165,9 +167,7 @@ export default inject('screenStore')(
             name="params"
             rules={[{ required: false, message: '请上传组件' }]}
             initialValue={
-              currLayer && currLayer.api
-                ? formatJson(currLayer.api.params)
-                : ''
+              currLayer && currLayer.api ? formatJson(currLayer.api.params) : ''
             }
           >
             <Monaco
@@ -208,6 +208,6 @@ export default inject('screenStore')(
           )}
         </Form>
       </Modal>
-    )
+    );
   })
-)
+);

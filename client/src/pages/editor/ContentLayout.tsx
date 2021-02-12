@@ -1,9 +1,9 @@
-import * as React from 'react'
-import { Link } from 'react-router-dom'
-import DocumentTitle from 'components/DocumentTitle'
-import IconFont from 'components/IconFont'
-import Header from './components/Header'
-import styles from './ContentLayout.module.scss'
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import DocumentTitle from 'components/DocumentTitle';
+import IconFont from 'components/IconFont';
+import Header from './components/Header';
+import styles from './ContentLayout.module.scss';
 
 interface Props {
   children?: any;
@@ -13,7 +13,13 @@ interface Props {
   backLink?: string;
 }
 
-const ContentLayout = ({ children, header, title, showBack, backLink }: Props) => {
+const ContentLayout = ({
+  children,
+  header,
+  title,
+  showBack,
+  backLink
+}: Props) => {
   return (
     <DocumentTitle title={title || ''}>
       <div className={styles.root}>
@@ -31,7 +37,7 @@ const ContentLayout = ({ children, header, title, showBack, backLink }: Props) =
         <div className={styles.content}>{children}</div>
       </div>
     </DocumentTitle>
-  )
-}
+  );
+};
 
-export default ContentLayout
+export default ContentLayout;

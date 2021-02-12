@@ -1,8 +1,8 @@
 /* eslint-disable react/no-this-in-sfc */
-import { message } from "antd";
-import * as React from "react";
-import { useState } from "react";
-import { ComponentStyle } from "types";
+import { message } from 'antd';
+import * as React from 'react';
+import { useState } from 'react';
+import { ComponentStyle } from 'types';
 
 const { useRef, useEffect } = React;
 
@@ -65,7 +65,7 @@ export default ({
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
-      message.error({ content: "Vue没定义", key: "noVue" });
+      message.error({ content: 'Vue没定义', key: 'noVue' });
       return;
     }
 
@@ -74,7 +74,7 @@ export default ({
       Object.keys(props).forEach((key) => {
         Vue.set(vueObj.current.$data, key, props[key]);
       });
-      Vue.set(vueObj.current.$data, "styles", styles);
+      Vue.set(vueObj.current.$data, 'styles', styles);
       return;
     }
 
@@ -115,7 +115,7 @@ export default ({
             vueRef.current = r;
           }}
         />
-      )}{" "}
+      )}{' '}
       {/* vue组件占位 */}
       {isVue ? createVue() : createReact()}
     </div>

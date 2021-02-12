@@ -1,11 +1,11 @@
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
-import { Radio } from 'antd'
-import UploadImg from 'components/UploadImg'
-import { ScreenStore } from 'types'
-import { DefaulBackgroundColor, DefaultFontColor } from 'config'
-import styles from './index.module.scss'
-import { SizeItem, ColorItem, FontItem } from './Style'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Radio } from 'antd';
+import UploadImg from 'components/UploadImg';
+import { ScreenStore } from 'types';
+import { DefaulBackgroundColor, DefaultFontColor } from 'config';
+import styles from './index.module.scss';
+import { SizeItem, ColorItem, FontItem } from './Style';
 
 const sizeItems = [
   {
@@ -16,9 +16,9 @@ const sizeItems = [
     label: '高度',
     key: 'height'
   }
-]
+];
 
-let timerId: any
+let timerId: any;
 
 interface Props {
   screenStore?: ScreenStore;
@@ -26,22 +26,22 @@ interface Props {
 
 export default inject('screenStore')(
   observer((props: Props) => {
-    const { screenStore } = props
+    const { screenStore } = props;
     const screenStyle: any =
       screenStore!.screenInfo && screenStore!.screenInfo.options
         ? screenStore!.screenInfo.options
-        : {}
+        : {};
     /**
      * 限流函数
      * @param callback
      */
     const limitChange = (callback: Function, timeout: number = 500) => {
       if (timerId) {
-        clearTimeout(timerId)
+        clearTimeout(timerId);
       }
       // 限流
-      timerId = setTimeout(callback, timeout)
-    }
+      timerId = setTimeout(callback, timeout);
+    };
 
     const onStyleChange = (type: string, value: any) => {
       // setDefaultStyle({ ...defaultStyle, [type]: value });
@@ -50,19 +50,19 @@ export default inject('screenStore')(
           screenStore.saveStyle({
             ...screenStore.screenInfo.options,
             [type]: value
-          })
+          });
         }
-      })
-    }
+      });
+    };
 
     const onUpload = React.useCallback((path: string | undefined) => {
       if (screenStore && screenStore.screenInfo) {
         screenStore.saveStyle({
           ...screenStore.screenInfo.options,
           backgroundImage: path
-        })
+        });
       }
-    }, [])
+    }, []);
 
     return (
       <section className={styles.styleSetting}>
@@ -75,11 +75,11 @@ export default inject('screenStore')(
                   key={v.key}
                   label={v.label}
                   onChange={(value) => {
-                    onStyleChange(v.key, value)
+                    onStyleChange(v.key, value);
                   }}
                   value={screenStyle[v.key]}
                 />
-              )
+              );
             })}
           </div>
         </div>
@@ -90,16 +90,16 @@ export default inject('screenStore')(
               label="背景颜色"
               defaultColor={DefaulBackgroundColor}
               value={screenStyle.backgroundColor}
-              onChange={(color: string|undefined) => {
-                onStyleChange('backgroundColor', color)
+              onChange={(color: string | undefined) => {
+                onStyleChange('backgroundColor', color);
               }}
             />
             <ColorItem
               label="字体颜色"
               defaultColor={DefaultFontColor}
               value={screenStyle.color}
-              onChange={(color: string|undefined) => {
-                onStyleChange('color', color)
+              onChange={(color: string | undefined) => {
+                onStyleChange('color', color);
               }}
             />
           </div>
@@ -134,16 +134,16 @@ export default inject('screenStore')(
                   }
                   buttonStyle="solid"
                   onChange={(e) => {
-                    onStyleChange('backgroundRepeat', e.target.value)
+                    onStyleChange('backgroundRepeat', e.target.value);
                   }}
                 >
                   <Radio.Button value="repeat">平铺</Radio.Button>
                   <Radio.Button value="no-repeat">拉伸</Radio.Button>
                 </Radio.Group>
-            )}
+              )}
           </div>
         )}
       </section>
-    )
+    );
   })
-)
+);

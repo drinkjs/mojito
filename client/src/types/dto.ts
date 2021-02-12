@@ -1,35 +1,35 @@
-import { LayerInfo, ScreenLayout } from './data'
+import { LayerInfo, ScreenLayout } from './data';
 
-export interface ProjectDto{
+export interface ProjectDto {
   id: string;
   name: string;
   createTime?: string;
   createUser?: string;
-  cdn?:string[]
+  cdn?: string[];
 }
 
-export interface ScreenDto{
+export interface ScreenDto {
   id: string;
   name: string;
   projectId: string;
   createTime: string;
-  updateTime:string;
+  updateTime: string;
   createUser?: string;
-  layout?:string;
-  coverImg?:string;
+  layout?: string;
+  coverImg?: string;
 }
 
-export interface ScreenDetailDto{
+export interface ScreenDetailDto {
   id: string;
   name: string;
-  options:ScreenLayout;
-  layers?:LayerInfo[];
-  project:ProjectDto
+  options: ScreenLayout;
+  layers?: LayerInfo[];
+  project: ProjectDto;
 }
 
-export interface ComponentTypeTree{
+export interface ComponentTypeTree {
   id: number;
   name: string;
-  icon?:string;
-  children?:ComponentTypeTree[]
+  icon?: string;
+  children?: ComponentTypeTree[];
 }

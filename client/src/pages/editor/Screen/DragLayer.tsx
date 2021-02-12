@@ -1,6 +1,6 @@
-import React from 'react'
-import { XYCoord, useDragLayer } from 'react-dnd'
-import BoxDragPreview from '../components/ComponentSide/ItemDragPreview'
+import React from 'react';
+import { XYCoord, useDragLayer } from 'react-dnd';
+import BoxDragPreview from '../components/ComponentSide/ItemDragPreview';
 
 const layerStyles: React.CSSProperties = {
   position: 'fixed',
@@ -10,12 +10,12 @@ const layerStyles: React.CSSProperties = {
   top: 0,
   width: '100%',
   height: '100%'
-}
+};
 
 const itemCenter = {
   x: 240 / 2,
   y: 124 / 2
-}
+};
 
 function getItemStyles (
   initialOffset: XYCoord | null,
@@ -24,15 +24,15 @@ function getItemStyles (
   if (!initialOffset || !currentOffset) {
     return {
       display: 'none'
-    }
+    };
   }
-  const { x, y } = currentOffset
-  const transform = `translate(${x - itemCenter.x}px, ${y - itemCenter.y}px)`
+  const { x, y } = currentOffset;
+  const transform = `translate(${x - itemCenter.x}px, ${y - itemCenter.y}px)`;
   return {
     transform,
     WebkitTransform: transform,
     transformOrigin: '0 0 0'
-  }
+  };
 }
 
 const DragLayer = () => {
@@ -48,19 +48,19 @@ const DragLayer = () => {
     initialOffset: monitor.getInitialSourceClientOffset(),
     currentOffset: monitor.getClientOffset(),
     isDragging: monitor.isDragging()
-  }))
+  }));
 
   function renderItem () {
     switch (itemType) {
       case 'ADD_COMPONENT':
-        return <BoxDragPreview value={item.value} />
+        return <BoxDragPreview value={item.value} />;
       default:
-        return null
+        return null;
     }
   }
 
   if (!isDragging) {
-    return null
+    return null;
   }
 
   return (
@@ -69,7 +69,7 @@ const DragLayer = () => {
         {renderItem()}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DragLayer
+export default DragLayer;

@@ -1,17 +1,17 @@
-import * as React from "react";
-import { Empty, Button, Modal, message, Input, Skeleton } from "antd";
-import { observer, inject } from "mobx-react";
+import * as React from 'react';
+import { Empty, Button, Modal, message, Input, Skeleton } from 'antd';
+import { observer, inject } from 'mobx-react';
 import {
   PlusOutlined,
   CodepenCircleOutlined,
   LoadingOutlined
-} from "@ant-design/icons";
-import IconFont from "components/IconFont";
-import UploadImg from "components/UploadImg";
-import Image from "components/Image";
-import { ProjectDto, ScreenDto, ScreenStore } from "types";
-import styles from "./screenList.module.scss";
-import noProject from "resources/images/noProject.png";
+} from '@ant-design/icons';
+import IconFont from 'components/IconFont';
+import UploadImg from 'components/UploadImg';
+import Image from 'components/Image';
+import { ProjectDto, ScreenDto, ScreenStore } from 'types';
+import styles from './screenList.module.scss';
+import noProject from 'resources/images/noProject.png';
 
 const { useCallback, useState, useEffect } = React;
 const { confirm } = Modal;
@@ -21,13 +21,13 @@ interface Props {
   screenStore?: ScreenStore;
 }
 
-export default inject("screenStore")(
+export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore, project } = props;
     const [visible, setVisible] = useState(false);
-    const [screenName, setScreenName] = useState("");
+    const [screenName, setScreenName] = useState('');
     const [editScreen, setEditScreen] = useState<ScreenDto>();
-    const [uploading, setUploading] = useState("");
+    const [uploading, setUploading] = useState('');
 
     useEffect(() => {
       if (project && project.id) {
@@ -40,7 +40,7 @@ export default inject("screenStore")(
      */
     const handleOk = useCallback(() => {
       if (!screenName) {
-        message.warning("请输入页面名称");
+        message.warning('请输入页面名称');
         return;
       }
 
@@ -69,7 +69,7 @@ export default inject("screenStore")(
      */
     const handleCancel = useCallback(() => {
       setVisible(false);
-      setScreenName("");
+      setScreenName('');
       setEditScreen(undefined);
     }, []);
 
@@ -108,8 +108,8 @@ export default inject("screenStore")(
         e.stopPropagation();
         confirm({
           title: `确定删除${data.name}?`,
-          okText: "确定",
-          cancelText: "取消",
+          okText: '确定',
+          cancelText: '取消',
           onOk: () => {
             screenStore!.remove(data.id).then(() => {
               screenStore!.getList(project.id);
@@ -137,12 +137,12 @@ export default inject("screenStore")(
     const onUploadImg = useCallback(
       (id: string, path: string | undefined) => {
         screenStore!
-          .updateCover(id, path || "")
+          .updateCover(id, path || '')
           .then(() => {
             screenStore!.getList(project.id);
           })
           .finally(() => {
-            setUploading("");
+            setUploading('');
           });
       },
       [project]
@@ -159,14 +159,14 @@ export default inject("screenStore")(
       <div className={styles.root}>
         <header className={styles.header}>
           <div>
-            <span style={{ marginLeft: "6px" }}>
-              {project ? project.name : ""}项目页面列表
+            <span style={{ marginLeft: '6px' }}>
+              {project ? project.name : ''}项目页面列表
             </span>
           </div>
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            style={{ borderRadius: "4px" }}
+            style={{ borderRadius: '4px' }}
             onClick={onAdd}
             disabled={!(project && project.id)}
           >
@@ -178,14 +178,14 @@ export default inject("screenStore")(
             className={styles.screenBox}
             style={{
               alignContent:
-                screenStore!.screenList.length === 0 ? "center" : "flex-start"
+                screenStore!.screenList.length === 0 ? 'center' : 'flex-start'
             }}
           >
             {project &&
               project.id &&
               screenStore!.screenList.map((v) => {
                 return (
-                  <div key={v.id} style={{ padding: "12px" }}>
+                  <div key={v.id} style={{ padding: '12px' }}>
                     <div className={styles.item}>
                       <div className={styles.toolBar}>
                         <UploadImg
@@ -254,14 +254,14 @@ export default inject("screenStore")(
                       <div className={styles.itemName}>
                         <div
                           style={{
-                            fontSize: "16px",
-                            height: "25px",
-                            overflow: "hidden"
+                            fontSize: '16px',
+                            height: '25px',
+                            overflow: 'hidden'
                           }}
                         >
                           {v.name}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#92abcf" }}>
+                        <div style={{ fontSize: '12px', color: '#92abcf' }}>
                           {v.updateTime}
                         </div>
                       </div>
@@ -272,14 +272,14 @@ export default inject("screenStore")(
             {screenStore!.screenList.length === 0 && (
               <Empty
                 image={noProject}
-                style={{ margin: "auto" }}
+                style={{ margin: 'auto' }}
                 imageStyle={{
                   height: 289,
                   width: 381
                 }}
                 description={
-                  <span style={{ fontSize: "18px" }}>
-                    {project ? "暂没数据" : "请选择项目"}
+                  <span style={{ fontSize: '18px' }}>
+                    {project ? '暂没数据' : '请选择项目'}
                   </span>
                 }
               />

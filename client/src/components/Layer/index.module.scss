@@ -4,10 +4,10 @@
   height: 200px;
 }
 
-.noSelected{
-  :global{
-    .moveable-line{
-      background: none!important;
+.noSelected {
+  :global {
+    .moveable-line {
+      background: none !important;
     }
   }
 }

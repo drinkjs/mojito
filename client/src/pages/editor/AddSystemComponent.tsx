@@ -1,29 +1,29 @@
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
-import { Modal, Form, Input, Cascader, message } from 'antd'
-import { ModalFuncProps } from 'antd/lib/modal'
-import { FormOutlined, DeleteOutlined } from '@ant-design/icons'
-import Image from 'components/Image'
-import UploadImg from 'components/UploadImg'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Modal, Form, Input, Cascader, message } from 'antd';
+import { ModalFuncProps } from 'antd/lib/modal';
+import { FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import Image from 'components/Image';
+import UploadImg from 'components/UploadImg';
 // import {getByLibname} from "services/component"
-import { toJS } from 'mobx'
-import { getTreeParent } from 'common/util'
-import { ComponentInfo, ComponentStore } from 'types'
-import styles from './SysComponents.module.scss'
+import { toJS } from 'mobx';
+import { getTreeParent } from 'common/util';
+import { ComponentInfo, ComponentStore } from 'types';
+import styles from './SysComponents.module.scss';
 
-const { useCallback, useState, useEffect } = React
+const { useCallback, useState, useEffect } = React;
 
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 }
-}
+};
 
 const Item = (props: {
   value: ComponentInfo;
   onEdit: (value: ComponentInfo) => void;
   onRemove: (value: ComponentInfo) => void;
 }) => {
-  const { value, onEdit, onRemove } = props
+  const { value, onEdit, onRemove } = props;
   return (
     <div className={styles.itemView}>
       <div>
@@ -33,22 +33,22 @@ const Item = (props: {
       <div className={styles.toolBar}>
         <a
           onClick={() => {
-            onEdit(value)
+            onEdit(value);
           }}
         >
           <FormOutlined />
         </a>
         <a
           onClick={() => {
-            onRemove(value)
+            onRemove(value);
           }}
         >
           <DeleteOutlined />
         </a>
       </div>
     </div>
-  )
-}
+  );
+};
 
 interface Props extends ModalFuncProps {
   onSubmit: () => void;
@@ -57,15 +57,15 @@ interface Props extends ModalFuncProps {
 
 export default inject('componentStore')(
   observer((props: Props) => {
-    const { componentStore } = props
-    const [form] = Form.useForm()
-    const [visible, setVisible] = useState(false)
-    const [currValue, setCurrValue] = useState<ComponentInfo>()
+    const { componentStore } = props;
+    const [form] = Form.useForm();
+    const [visible, setVisible] = useState(false);
+    const [currValue, setCurrValue] = useState<ComponentInfo>();
 
     useEffect(() => {
-      componentStore!.getTypeTree()
-      componentStore!.getComponentSystem()
-    }, [])
+      componentStore!.getTypeTree();
+      componentStore!.getComponentSystem();
+    }, []);
 
     const onOk = useCallback(() => {
       form.validateFields().then((values) => {
@@ -73,19 +73,19 @@ export default inject('componentStore')(
           ...currValue,
           ...values,
           type: values.type[values.type.length - 1]
-        }
+        };
         componentStore!.addSystemComponent(submitValue).then(() => {
-          componentStore!.getComponentSystem()
-          onCancel()
-          message.success('更新成功')
-        })
-      })
-    }, [form, currValue])
+          componentStore!.getComponentSystem();
+          onCancel();
+          message.success('更新成功');
+        });
+      });
+    }, [form, currValue]);
 
     const onEdit = useCallback((value: ComponentInfo) => {
-      setCurrValue(value)
-      setVisible(true)
-    }, [])
+      setCurrValue(value);
+      setVisible(true);
+    }, []);
 
     const onRemove = useCallback((value: ComponentInfo) => {
       Modal.confirm({
@@ -94,19 +94,19 @@ export default inject('componentStore')(
         cancelText: '取消',
         onOk: () => {
           componentStore!.removeComponent(value.id).then(() => {
-            componentStore!.getComponentSystem()
-            onCancel()
-            message.success('删除成功')
-          })
+            componentStore!.getComponentSystem();
+            onCancel();
+            message.success('删除成功');
+          });
         }
-      })
-    }, [])
+      });
+    }, []);
 
     const onCancel = useCallback(() => {
-      setVisible(false)
-      setCurrValue(undefined)
-      form.resetFields()
-    }, [])
+      setVisible(false);
+      setCurrValue(undefined);
+      form.resetFields();
+    }, []);
 
     return (
       <div style={{ padding: '12px' }}>
@@ -119,7 +119,7 @@ export default inject('componentStore')(
                 onRemove={onRemove}
                 key={v.id}
               />
-            )
+            );
           })}
         </div>
         <Modal
@@ -147,7 +147,9 @@ export default inject('componentStore')(
                 fieldNames={{ label: 'name', value: 'id' }}
                 options={componentStore!.typeTree}
                 placeholder="请选择组件类型"
-                getPopupContainer={(target) => document.getElementById('addModalForm') || target}
+                getPopupContainer={(target) =>
+                  document.getElementById('addModalForm') || target
+                }
               />
             </Form.Item>
             <Form.Item
@@ -169,6 +171,6 @@ export default inject('componentStore')(
           </Form>
         </Modal>
       </div>
-    )
+    );
   })
-)
+);

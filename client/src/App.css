@@ -1,6 +1,6 @@
 /* autoprefixer grid: autoplace */
 @import-normalize;
-@import "~antd/dist/antd.dark.css";
+@import '~antd/dist/antd.dark.css';
 
 .moveable-control {
   width: 8px !important;

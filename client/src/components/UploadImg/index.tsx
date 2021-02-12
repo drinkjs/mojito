@@ -1,18 +1,18 @@
-import * as React from 'react'
-import { Upload, message } from 'antd'
+import * as React from 'react';
+import { Upload, message } from 'antd';
 import {
   DeleteOutlined,
   LoadingOutlined,
   PlusOutlined
-} from '@ant-design/icons'
-import { RcFile } from 'antd/lib/upload'
-import { UploadListType } from 'antd/lib/upload/interface'
-import styles from './index.module.scss'
+} from '@ant-design/icons';
+import { RcFile } from 'antd/lib/upload';
+import { UploadListType } from 'antd/lib/upload/interface';
+import styles from './index.module.scss';
 
-const { useCallback, useState } = React
+const { useCallback, useState } = React;
 
 interface Props {
-  onChange?: (filePath: string|undefined) => void;
+  onChange?: (filePath: string | undefined) => void;
   action?: string;
   data?: any;
   value?: string;
@@ -28,14 +28,14 @@ const UploadImg = (props: Props) => {
     showFile = true,
     listType = 'picture-card',
     onProcess
-  } = props
-  const [loading, setLoading] = useState(false)
-  const [imageUrl, setImageUrl] = useState<string>()
-  const { value, onChange } = props
+  } = props;
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>();
+  const { value, onChange } = props;
 
   React.useEffect(() => {
-    setImageUrl(value)
-  }, [value])
+    setImageUrl(value);
+  }, [value]);
 
   const beforeUpload = useCallback(
     (file: RcFile, FileList: RcFile[]) => {
@@ -45,49 +45,49 @@ const UploadImg = (props: Props) => {
         file.type === 'image/jpeg' ||
         file.type === 'image/gif'
       ) {
-        return true
+        return true;
       }
-      message.error('只支持上传图片格式文件')
-      setImageUrl(undefined)
-      onChange && onChange(undefined)
-      return false
+      message.error('只支持上传图片格式文件');
+      setImageUrl(undefined);
+      onChange && onChange(undefined);
+      return false;
     },
     [props]
-  )
+  );
 
   const onUpload = useCallback(
     (info) => {
       if (info.file.status === 'done') {
         //  上传完成
-        setLoading(false)
-        const { response } = info.file
+        setLoading(false);
+        const { response } = info.file;
         if (response.code === 0) {
-          const { path } = response.data
-          setImageUrl(path)
-          onChange && onChange(path)
+          const { path } = response.data;
+          setImageUrl(path);
+          onChange && onChange(path);
         } else {
           // 上传失败
-          message.error(response.msg)
-          onChange && onChange(undefined)
+          message.error(response.msg);
+          onChange && onChange(undefined);
         }
       } else {
-        setLoading(true)
+        setLoading(true);
         if (onProcess) {
-          onProcess()
+          onProcess();
         }
       }
     },
     [props]
-  )
+  );
 
   const handleRemove = useCallback((e: React.MouseEvent<any>) => {
-    e.stopPropagation()
-    setImageUrl(undefined)
-    onChange && onChange(undefined)
-  }, [])
+    e.stopPropagation();
+    setImageUrl(undefined);
+    onChange && onChange(undefined);
+  }, []);
 
   const showPre = () => {
-    if (!showFile) return null
+    if (!showFile) return null;
 
     return imageUrl
       ? (
@@ -105,10 +105,10 @@ const UploadImg = (props: Props) => {
         {loading ? <LoadingOutlined /> : <PlusOutlined />}
         <div style={{ marginTop: 8 }}>Upload</div>
       </div>
-        )
-  }
+        );
+  };
 
-  const { data, children } = props
+  const { data, children } = props;
 
   return (
     <Upload
@@ -124,7 +124,7 @@ const UploadImg = (props: Props) => {
       {showPre()}
       {children}
     </Upload>
-  )
-}
+  );
+};
 
-export default UploadImg
+export default UploadImg;

@@ -4,3 +4,6 @@ package-lock.json
 server/static/libs/GaugeChartv1.0.0/bundle.js
 server/static/libs/
 server/static/upload/
+client/build/
+server/public/libs/
+server/public/upload/

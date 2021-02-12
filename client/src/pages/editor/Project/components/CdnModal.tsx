@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
-import * as React from "react";
-import { Modal, Input, Table, Button, Space } from "antd";
-import { ModalProps } from "antd/lib/modal";
+import * as React from 'react';
+import { Modal, Input, Table, Button, Space } from 'antd';
+import { ModalProps } from 'antd/lib/modal';
 
 const { useState, useEffect, useCallback } = React;
 
@@ -30,7 +30,7 @@ export default (props: Props) => {
     const data =
       value && value.length > 0
         ? value.map((v) => ({ id: v, url: v }))
-        : [{ id: ++addId, url: "" }];
+        : [{ id: ++addId, url: '' }];
     setCdnData(data);
   }, [value]);
 
@@ -38,7 +38,7 @@ export default (props: Props) => {
    * 新增一行
    */
   const onAdd = useCallback(() => {
-    cdnData.push({ id: ++addId, url: "" });
+    cdnData.push({ id: ++addId, url: '' });
     setCdnData([...cdnData]);
   }, [cdnData]);
 
@@ -48,7 +48,7 @@ export default (props: Props) => {
   const onRemove = useCallback(
     (id: string) => {
       const data = cdnData.filter((v) => v.id !== id);
-      setCdnData(data && data.length > 0 ? data : [{ id: ++addId, url: "" }]);
+      setCdnData(data && data.length > 0 ? data : [{ id: ++addId, url: '' }]);
     },
     [cdnData]
   );
@@ -71,9 +71,9 @@ export default (props: Props) => {
 
   const columns = [
     {
-      title: "CDN",
-      dataIndex: "url",
-      key: "url",
+      title: 'CDN',
+      dataIndex: 'url',
+      key: 'url',
       render: (url: string, data: any) => {
         return (
           <Input
@@ -87,9 +87,9 @@ export default (props: Props) => {
       }
     },
     {
-      title: "操作",
-      dataIndex: "id",
-      key: "id",
+      title: '操作',
+      dataIndex: 'id',
+      key: 'id',
       width: 50,
       render: (id: string) => {
         return (
@@ -117,7 +117,7 @@ export default (props: Props) => {
       confirmLoading={confirmLoading}
       maskClosable={false}
       width={650}
-      bodyStyle={{ maxHeight: 500, overflow: "auto" }}
+      bodyStyle={{ maxHeight: 500, overflow: 'auto' }}
       footer={
         <Space>
           <Button ghost onClick={onAdd}>

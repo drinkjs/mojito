@@ -1,17 +1,17 @@
-import * as React from 'react'
-import { Tooltip, Row, Col, Skeleton } from 'antd'
-import { CloseOutlined, RollbackOutlined } from '@ant-design/icons'
-import IconFont from 'components/IconFont'
-import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
-import { ComponentInfo, ComponentStore, ComponentTypeTree } from 'types'
-import Item from './Item'
-import AddComponent from './AddComponent'
-import styles from './index.module.scss'
+import * as React from 'react';
+import { Tooltip, Row, Col, Skeleton } from 'antd';
+import { CloseOutlined, RollbackOutlined } from '@ant-design/icons';
+import IconFont from 'components/IconFont';
+import { observer, inject } from 'mobx-react';
+import { toJS } from 'mobx';
+import { ComponentInfo, ComponentStore, ComponentTypeTree } from 'types';
+import Item from './Item';
+import AddComponent from './AddComponent';
+import styles from './index.module.scss';
 
-const classNames = require('classnames')
+const classNames = require('classnames');
 
-const { useCallback, useState, useEffect } = React
+const { useCallback, useState, useEffect } = React;
 
 interface Props {
   componentStore?: ComponentStore;
@@ -19,62 +19,62 @@ interface Props {
 
 export default inject('componentStore')(
   observer((props: Props) => {
-    const { componentStore } = props
-    const [currCategory, setCurrCategory] = useState<ComponentTypeTree[]>([])
-    const [showAdd, setShowAdd] = useState(false)
-    const [editCompoent, setEditComponent] = useState<ComponentInfo>()
-    const [currRoot, setCurrRoot] = useState<ComponentTypeTree>()
+    const { componentStore } = props;
+    const [currCategory, setCurrCategory] = useState<ComponentTypeTree[]>([]);
+    const [showAdd, setShowAdd] = useState(false);
+    const [editCompoent, setEditComponent] = useState<ComponentInfo>();
+    const [currRoot, setCurrRoot] = useState<ComponentTypeTree>();
 
     useEffect(() => {
-      componentStore!.getTypeTree()
-    }, [])
+      componentStore!.getTypeTree();
+    }, []);
 
     const onCateClick = useCallback(
       (category: ComponentTypeTree, isRoot: boolean) => {
         if (isRoot) {
-          setCurrCategory([category])
-          setCurrRoot(category)
+          setCurrCategory([category]);
+          setCurrRoot(category);
         } else {
-          setCurrCategory(currCategory.concat(category))
+          setCurrCategory(currCategory.concat(category));
         }
 
         if (!category.children) {
           // 最后一层请求组件
-          componentStore!.getTypeComponent(category.id)
+          componentStore!.getTypeComponent(category.id);
         }
       },
       [currCategory]
-    )
+    );
 
     const onClose = useCallback(
       (/* e: React.MouseEvent<any> */) => {
-        setCurrCategory(currCategory.slice(0, -1))
+        setCurrCategory(currCategory.slice(0, -1));
       },
       [currCategory]
-    )
+    );
 
     const onShow = useCallback(() => {
-      setShowAdd(true)
-    }, [])
+      setShowAdd(true);
+    }, []);
 
     const onCancel = useCallback(() => {
-      setShowAdd(false)
-      setEditComponent(undefined)
-    }, [])
+      setShowAdd(false);
+      setEditComponent(undefined);
+    }, []);
 
     const onEditComponent = useCallback((comp: ComponentInfo) => {
-      setEditComponent(toJS(comp))
-      setShowAdd(true)
-    }, [])
+      setEditComponent(toJS(comp));
+      setShowAdd(true);
+    }, []);
 
     const onRemoveComponent = useCallback((comp: ComponentInfo) => {
       componentStore!.removeComponent(comp.id).then(() => {
-        componentStore!.getTypeComponent(comp.type)
-      })
-    }, [])
+        componentStore!.getTypeComponent(comp.type);
+      });
+    }, []);
 
     const currType =
-      currCategory.length > 0 ? currCategory[currCategory.length - 1] : null
+      currCategory.length > 0 ? currCategory[currCategory.length - 1] : null;
 
     /**
      * 显示组件
@@ -92,11 +92,11 @@ export default inject('componentStore')(
                     onRemove={onRemoveComponent}
                   />
                 </Col>
-              )
+              );
             })}
         </Row>
-      )
-    }
+      );
+    };
 
     /**
      * 显示字类型
@@ -104,14 +104,15 @@ export default inject('componentStore')(
     const showChildrenType = () => {
       return (
         <Row className={styles.componentBox} key="types">
-          {currType && currType.children &&
+          {currType &&
+            currType.children &&
             currType.children.map((v) => {
               return (
                 <Col span={12} key={v.id} style={{ padding: '6px' }}>
                   <div
                     className={styles.componentView}
                     onClick={() => {
-                      onCateClick(v, false)
+                      onCateClick(v, false);
                     }}
                   >
                     <div className={styles.componentImg}>
@@ -124,11 +125,11 @@ export default inject('componentStore')(
                     <div className={styles.componentTitle}>{v.name}</div>
                   </div>
                 </Col>
-              )
+              );
             })}
         </Row>
-      )
-    }
+      );
+    };
 
     return (
       <section className={styles.bar}>
@@ -148,13 +149,13 @@ export default inject('componentStore')(
                     [styles.iconSelected]: currRoot && currRoot.id === v.id
                   })}
                   onClick={() => {
-                    onCateClick(v, true)
+                    onCateClick(v, true);
                   }}
                 >
-                  <IconFont type={v.icon || ""} />
+                  <IconFont type={v.icon || ''} />
                 </div>
               </Tooltip>
-            )
+            );
           })}
         </div>
         {currType && (
@@ -183,6 +184,6 @@ export default inject('componentStore')(
           value={editCompoent}
         />
       </section>
-    )
+    );
   })
-)
+);

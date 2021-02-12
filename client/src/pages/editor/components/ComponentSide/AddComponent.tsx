@@ -1,20 +1,20 @@
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
-import { Modal, Form, Input, Cascader, Upload, Button, message } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
-import { ModalFuncProps } from 'antd/lib/modal'
-import { RcFile } from 'antd/lib/upload'
-import UploadImg from 'components/UploadImg'
-import { toJS } from 'mobx'
-import { getTreeParent } from 'common/util'
-import { ComponentInfo, ComponentStore } from 'types'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Modal, Form, Input, Cascader, Upload, Button, message } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { ModalFuncProps } from 'antd/lib/modal';
+import { RcFile } from 'antd/lib/upload';
+import UploadImg from 'components/UploadImg';
+import { toJS } from 'mobx';
+import { getTreeParent } from 'common/util';
+import { ComponentInfo, ComponentStore } from 'types';
 
-const { useCallback, useState } = React
+const { useCallback, useState } = React;
 
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 }
-}
+};
 
 interface Props extends ModalFuncProps {
   value?: ComponentInfo;
@@ -22,8 +22,8 @@ interface Props extends ModalFuncProps {
 }
 
 const UploadComp = (props: any) => {
-  const [fileList, setFileList] = useState<any[]>([])
-  const { onChange, libId } = props
+  const [fileList, setFileList] = useState<any[]>([]);
+  const { onChange, libId } = props;
 
   // eslint-disable-next-line no-unused-vars
   const beforeUpload = useCallback((file: RcFile, FileList: RcFile[]) => {
@@ -32,24 +32,24 @@ const UploadComp = (props: any) => {
       file.type === 'application/zip' ||
       file.type === 'application/x-zip'
     ) {
-      return true
+      return true;
     }
-    message.error('只支持上传zip格式文件')
-    setFileList([])
-    onChange(undefined)
-    return false
-  }, [])
+    message.error('只支持上传zip格式文件');
+    setFileList([]);
+    onChange(undefined);
+    return false;
+  }, []);
 
   const onUpload = useCallback((info) => {
     if (info.fileList.length > 0) {
-      setFileList([info.file])
+      setFileList([info.file]);
     } else {
-      setFileList([])
-      onChange(undefined)
+      setFileList([]);
+      onChange(undefined);
     }
     if (info.file.status === 'done') {
       //  上传完成
-      const { response } = info.file
+      const { response } = info.file;
       if (response.code === 0) {
         // const {libName, version} = response.data
         // if (props.libName && libName != props.libName) {
@@ -58,7 +58,7 @@ const UploadComp = (props: any) => {
         //   onChange(undefined);
         //   return;
         // }
-        onChange(response.data)
+        onChange(response.data);
         // 是否有相同版本的组件
         // getByLibname({libName, version, origin:2}).then((data)=>{
         //   if(!data){
@@ -71,12 +71,12 @@ const UploadComp = (props: any) => {
         // })
       } else {
         // 上传失败
-        message.error(response.msg)
-        setFileList([])
-        onChange(undefined)
+        message.error(response.msg);
+        setFileList([]);
+        onChange(undefined);
       }
     }
-  }, [])
+  }, []);
 
   return (
     <Upload
@@ -93,15 +93,15 @@ const UploadComp = (props: any) => {
     >
       <Button icon={<UploadOutlined />}>上传组件zip包</Button>
     </Upload>
-  )
-}
+  );
+};
 
 export default inject('componentStore')(
   observer((props: Props) => {
-    const { componentStore, value, ...restProps } = props
-    const oldType = value ? value.type : undefined
+    const { componentStore, value, ...restProps } = props;
+    const oldType = value ? value.type : undefined;
     // const [origin, setOrigin] = useState(2);
-    const [form] = Form.useForm()
+    const [form] = Form.useForm();
 
     const onOk = useCallback(() => {
       form.validateFields().then((values) => {
@@ -112,27 +112,29 @@ export default inject('componentStore')(
           componentInfo: undefined,
           type: values.type[values.type.length - 1],
           coverImg: values.coverImg || ''
-        }
+        };
 
         if (value && value.id) {
           componentStore!.updateComponent(submitValue).then(() => {
-            componentStore!.getTypeComponent(oldType)
-            message.success('修改成功')
+            componentStore!.getTypeComponent(oldType);
+            message.success('修改成功');
             // 修改完之后重置
-            const globalVal:any = global;
-            globalVal[value.libName + value.version] = null
-            props.onCancel && props.onCancel()
-          })
-          return
+            const globalVal: any = global;
+            globalVal[value.libName + value.version] = null;
+            props.onCancel && props.onCancel();
+          });
+          return;
         }
 
         componentStore!.addComponent(submitValue).then(() => {
-          if (componentStore!.currSelectType === submitValue.type) { componentStore!.getTypeComponent(submitValue.type) }
-          message.success('新增成功')
-          props.onCancel && props.onCancel()
-        })
-      })
-    }, [form, props])
+          if (componentStore!.currSelectType === submitValue.type) {
+            componentStore!.getTypeComponent(submitValue.type);
+          }
+          message.success('新增成功');
+          props.onCancel && props.onCancel();
+        });
+      });
+    }, [form, props]);
 
     const onUploadComp = useCallback(
       (uploadValue: any) => {
@@ -147,10 +149,10 @@ export default inject('componentStore')(
             : uploadValue
               ? `${uploadValue.libName} ${uploadValue.version}`
               : undefined
-        })
+        });
       },
       [value]
-    )
+    );
 
     return (
       <Modal
@@ -204,7 +206,9 @@ export default inject('componentStore')(
               fieldNames={{ label: 'name', value: 'id' }}
               options={componentStore!.typeTree}
               placeholder="请选择组件类型"
-              getPopupContainer={(target) => document.getElementById('addModalForm') || target}
+              getPopupContainer={(target) =>
+                document.getElementById('addModalForm') || target
+              }
             />
           </Form.Item>
           <Form.Item
@@ -217,6 +221,6 @@ export default inject('componentStore')(
           </Form.Item>
         </Form>
       </Modal>
-    )
+    );
   })
-)
+);

@@ -1,4 +1,4 @@
-@import "../../../../resources/css/variable";
+@import '../../../../resources/css/variable';
 .root {
   width: 100%;
   flex-grow: 1;
@@ -57,14 +57,14 @@
   line-height: 45px;
 }
 
-.noLockHide{
-    color: rgba(255,255,255,0.2);
+.noLockHide {
+  color: rgba(255, 255, 255, 0.2);
 }
 
-.preview{
-    color: $textColor;
+.preview {
+  color: $textColor;
 }
 
-.preview:hover{
-    color: $heightLightBgColor;
+.preview:hover {
+  color: $heightLightBgColor;
 }

@@ -1,12 +1,12 @@
-import * as React from 'react'
-import { Modal } from 'antd'
-import IconFont from 'components/IconFont'
-import { ProjectDto } from 'types'
-import styles from './projectItemList.module.scss'
+import * as React from 'react';
+import { Modal } from 'antd';
+import IconFont from 'components/IconFont';
+import { ProjectDto } from 'types';
+import styles from './projectItemList.module.scss';
 
-const classNames = require('classnames')
+const classNames = require('classnames');
 
-const { confirm } = Modal
+const { confirm } = Modal;
 
 interface Props {
   value: ProjectDto[];
@@ -18,29 +18,29 @@ interface Props {
 }
 
 const projectItemList = (props: Props) => {
-  const { value, onSelect, selected, onEdit, onRemove, onCdn } = props
+  const { value, onSelect, selected, onEdit, onRemove, onCdn } = props;
 
   const handleEdit = (e: React.MouseEvent<any>, data: ProjectDto) => {
-    e.stopPropagation()
-    onEdit(data)
-  }
+    e.stopPropagation();
+    onEdit(data);
+  };
 
   const handleRemove = (e: React.MouseEvent<any>, data: ProjectDto) => {
-    e.stopPropagation()
+    e.stopPropagation();
     confirm({
       title: `确定删除${data.name}?`,
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        onRemove(data)
+        onRemove(data);
       }
-    })
-  }
+    });
+  };
 
   const handleCdn = (e: React.MouseEvent<any>, data: ProjectDto) => {
-    e.stopPropagation()
-    onCdn(data)
-  }
+    e.stopPropagation();
+    onCdn(data);
+  };
 
   return (
     <aside className={styles.myProjectBox}>
@@ -54,7 +54,7 @@ const projectItemList = (props: Props) => {
               })}
               key={v.name}
               onClick={() => {
-                onSelect(v)
+                onSelect(v);
               }}
             >
               <div style={{ color: '#eee', fontSize: '18px' }}>{v.name}</div>
@@ -62,32 +62,32 @@ const projectItemList = (props: Props) => {
               <div className={styles.toolBar}>
                 <a
                   onClick={(e) => {
-                    handleCdn(e, v)
+                    handleCdn(e, v);
                   }}
                 >
                   <IconFont type="icon-cdn" style={{ fontSize: '16px' }} />
                 </a>
                 <a
                   onClick={(e) => {
-                    handleEdit(e, v)
+                    handleEdit(e, v);
                   }}
                 >
                   <IconFont type="icon-edit-square" />
                 </a>
                 <a
                   onClick={(e) => {
-                    handleRemove(e, v)
+                    handleRemove(e, v);
                   }}
                 >
                   <IconFont type="icon-shanchu1" />
                 </a>
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default projectItemList
+export default projectItemList;

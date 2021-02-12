@@ -1,13 +1,13 @@
-import * as React from "react";
-import { observer, inject } from "mobx-react";
-import { Input } from "antd";
-import { runInAction, toJS } from "mobx";
-import { DndProvider, DropTargetMonitor, useDrag, useDrop } from "react-dnd";
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Input } from 'antd';
+import { runInAction, toJS } from 'mobx';
+import { DndProvider, DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 
-import { HTML5Backend } from "react-dnd-html5-backend";
-import IconFont from "components/IconFont";
-import { LayerInfo, ScreenStore } from "types";
-import styles from "./index.module.scss";
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import IconFont from 'components/IconFont';
+import { LayerInfo, ScreenStore } from 'types';
+import styles from './index.module.scss';
 
 const { useState, useCallback, useEffect, useRef } = React;
 
@@ -37,7 +37,7 @@ interface DragItem {
   type: string;
 }
 
-const ACCEPT = "LayerItem";
+const ACCEPT = 'LayerItem';
 
 const LayerItem = ({
   value,
@@ -101,7 +101,7 @@ const LayerItem = ({
       }
 
       // Time to actually perform the action
-      moveCard(item, { id: value.id || "", index, type: ACCEPT });
+      moveCard(item, { id: value.id || '', index, type: ACCEPT });
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -134,7 +134,7 @@ const LayerItem = ({
 
   return (
     <div
-      className={styles.layer + (selected ? ` ${styles.layerSelected}` : "")}
+      className={styles.layer + (selected ? ` ${styles.layerSelected}` : '')}
       ref={ref}
       style={{ opacity }}
     >
@@ -142,8 +142,8 @@ const LayerItem = ({
         type="icon-suoding"
         className={styles.icons}
         style={{
-          color: value.isLock ? "#fff" : "#444",
-          fontSize: "16px"
+          color: value.isLock ? '#fff' : '#444',
+          fontSize: '16px'
         }}
         onClick={() => {
           onLock(value);
@@ -153,9 +153,9 @@ const LayerItem = ({
         type="icon-xianshi1"
         className={styles.icons}
         style={{
-          right: "0",
-          color: value.isHide ? "#444" : "#fff",
-          fontSize: "16px",
+          right: '0',
+          color: value.isHide ? '#444' : '#fff',
+          fontSize: '16px',
           marginLeft: 6
         }}
         onClick={() => {
@@ -167,7 +167,7 @@ const LayerItem = ({
         <Input
           defaultValue={value.name}
           autoFocus
-          style={{ marginLeft: "12px", flexGrow: 1 }}
+          style={{ marginLeft: '12px', flexGrow: 1 }}
           onBlur={(e) => {
             onEditLayerName(value, e.target.value);
             setEditFlag(false);
@@ -180,13 +180,13 @@ const LayerItem = ({
             setEditFlag(true);
           }}
           style={{
-            marginLeft: "12px",
-            width: "100%",
-            height: "33px",
-            lineHeight: "33px",
-            overflow: "hidden",
+            marginLeft: '12px',
+            width: '100%',
+            height: '33px',
+            lineHeight: '33px',
+            overflow: 'hidden',
             flexGrow: 1,
-            cursor: "pointer"
+            cursor: 'pointer'
           }}
           onClick={(e) => {
             onClick(value, e);
@@ -200,8 +200,8 @@ const LayerItem = ({
         type="icon-shanchu1"
         className={styles.icons}
         style={{
-          right: "0",
-          fontSize: "14px"
+          right: '0',
+          fontSize: '14px'
         }}
         onClick={() => {
           onRemove(value);
@@ -211,7 +211,7 @@ const LayerItem = ({
   );
 };
 
-export default inject("screenStore")(
+export default inject('screenStore')(
   observer(({ screenStore }: Props) => {
     const [screenLayers, setScreenLayers] = useState<LayerInfo[]>([]);
 
@@ -226,7 +226,7 @@ export default inject("screenStore")(
         // eslint-disable-next-line no-param-reassign
         layer.isHide = !layer.isHide;
         setScreenLayers([...screenLayers]);
-        screenStore!.updateLayer(layer.id || "", { isHide: layer.isHide });
+        screenStore!.updateLayer(layer.id || '', { isHide: layer.isHide });
       },
       [screenLayers]
     );
@@ -236,7 +236,7 @@ export default inject("screenStore")(
         // eslint-disable-next-line no-param-reassign
         layer.isLock = !layer.isLock;
         setScreenLayers([...screenLayers]);
-        screenStore!.updateLayer(layer.id || "", { isLock: layer.isLock });
+        screenStore!.updateLayer(layer.id || '', { isLock: layer.isLock });
       },
       [screenLayers]
     );
@@ -249,7 +249,9 @@ export default inject("screenStore")(
         event.stopPropagation();
         const { selectedLayerIds } = screenStore || {};
 
-        if (selectedLayerIds && selectedLayerIds.has(layerData.id || "")) { return; }
+        if (selectedLayerIds && selectedLayerIds.has(layerData.id || '')) {
+          return;
+        }
 
         const ids = toJS(selectedLayerIds);
         if (!event || !event.ctrlKey) {
@@ -326,7 +328,7 @@ export default inject("screenStore")(
 
     const onEditLayerName = useCallback((value: LayerInfo, newName: string) => {
       if (!newName) return;
-      screenStore!.updateLayer(value.id || "", { name: newName });
+      screenStore!.updateLayer(value.id || '', { name: newName });
     }, []);
 
     return (
@@ -345,7 +347,7 @@ export default inject("screenStore")(
                 dragEnd={onDragEnd}
                 onEditLayerName={onEditLayerName}
                 index={index}
-                selected={screenStore!.selectedLayerIds.has(layer.id || "")}
+                selected={screenStore!.selectedLayerIds.has(layer.id || '')}
               />
             );
           })}

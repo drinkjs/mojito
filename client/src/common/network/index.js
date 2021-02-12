@@ -1,4 +1,4 @@
-import request from './request'
+import request from './request';
 
 /**
  * get 方法
@@ -8,7 +8,7 @@ import request from './request'
  * @return {Promise}
  */
 const get = (url, params = {}, options = {}) =>
-  request(url, 'get', params, options)
+  request(url, 'get', params, options);
 /**
  * POST请求
  * @param url {String}
@@ -17,6 +17,6 @@ const get = (url, params = {}, options = {}) =>
  * @return {Promise}
  */
 const post = (url, params = {}, options = {}) =>
-  request(url, 'post', params, options)
+  request(url, 'post', params, options);
 
-export { request, get, post }
+export { request, get, post };

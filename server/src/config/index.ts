@@ -8,8 +8,9 @@ export default {
   websocket: true, // 是否启用websocket
   cluster: false, // 是否启用多进程
   logger: false,
-  libPath: `${process.cwd()}/static/libs`,
-  staticPath: `${process.cwd()}/static`,
+  staticPrefix: "/public/",
+  staticPath: `${process.cwd()}/public`,
+  libPath: `${process.cwd()}/public/libs`,
   mongo: {
     // see https://mongoosejs.com/
     uri: "mongodb://localhost:27017/",

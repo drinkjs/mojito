@@ -6,34 +6,34 @@
  * @Description: file content
  */
 
-import React, { Suspense } from 'react'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
-import { matchPath, Router } from 'react-router'
-import routesConf from './app.routes'
-import { LoadingComponent } from '../components/Loader'
+import React, { Suspense } from 'react';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { matchPath, Router } from 'react-router';
+import routesConf from './app.routes';
+import { LoadingComponent } from '../components/Loader';
 
 export default function RouterConfig () {
-  const pages = formatRoutes(routesConf)
+  const pages = formatRoutes(routesConf);
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingComponent />}>{renderRoutes(pages)}</Suspense>
     </BrowserRouter>
-  )
+  );
 }
 
 export function renderRoutes (routes) {
-  if (!routes) return null
+  if (!routes) return null;
   return (
     <>
       {routes.map((route, index) => {
-        const key = `router${index}`
+        const key = `router${index}`;
         if (route.redirect) {
           return (
             <Switch key={key}>
               <Redirect exact push from={route.path} to={route.redirect} />
               {renderRoutes(route.routes)}
             </Switch>
-          )
+          );
         }
         return (
           <Switch key={key}>
@@ -48,13 +48,14 @@ export function renderRoutes (routes) {
                     )
                   : (
                       renderRoutes(route.routes)
-                    )}
+                    )
+              }
             />
           </Switch>
-        )
+        );
       })}
     </>
-  )
+  );
 }
 
 export function matchRoutes (
@@ -67,31 +68,31 @@ export function matchRoutes (
       ? matchPath(pathname, route)
       : branch.length
         ? branch[branch.length - 1].match // use parent match
-        : Router.computeRootMatch(pathname) // use default "root" match
+        : Router.computeRootMatch(pathname); // use default "root" match
 
     if (match) {
-      branch.push({ route, match })
+      branch.push({ route, match });
 
       if (route.routes) {
-        matchRoutes(route.routes, pathname, branch)
+        matchRoutes(route.routes, pathname, branch);
       }
     }
 
-    return match
-  })
+    return match;
+  });
 
-  return branch
+  return branch;
 }
 
 function formatRoutes (routes) {
-  const routeArr = []
+  const routeArr = [];
   if (routes) {
     routes.forEach((v) => {
       routeArr.push({
         ...v,
         routes: formatRoutes(v.routes)
-      })
-    })
+      });
+    });
   }
-  return routeArr
+  return routeArr;
 }

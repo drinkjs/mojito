@@ -1,11 +1,11 @@
-.myProjectBox{
+.myProjectBox {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.myProject{
-  border-bottom: #2b2d32 1px solid; 
+.myProject {
+  border-bottom: #2b2d32 1px solid;
   border-radius: 4px;
   height: 40px;
   line-height: 40px;
@@ -15,7 +15,7 @@
   margin: 12px 0;
 }
 
-.itemBox{
+.itemBox {
   flex-grow: 1;
   overflow: auto;
   height: 100%;
@@ -23,7 +23,7 @@
   padding: 0 6px;
 }
 
-.projectItem{
+.projectItem {
   height: 137px;
   background: url(../../../../resources/images/project_item.png);
   border-radius: 4px;
@@ -32,25 +32,25 @@
   padding-top: 20px;
   padding-left: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  cursor:pointer;
+  cursor: pointer;
   position: relative;
-  .toolBar{
+  .toolBar {
     display: none;
   }
 }
 
-.projectItem:hover{
+.projectItem:hover {
   border: 1px dashed #3b50ff;
-  .toolBar{
+  .toolBar {
     display: block;
   }
 }
 
-.projectItemSelected{
-  border: 1px solid #3b50ff
+.projectItemSelected {
+  border: 1px solid #3b50ff;
 }
 
-.toolBar{
+.toolBar {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -58,7 +58,7 @@
   padding: 3px;
   background: rgba(0, 0, 0, 0.3);
   text-align: right;
-  >a{
-    margin:0 6px ;
+  > a {
+    margin: 0 6px;
   }
 }

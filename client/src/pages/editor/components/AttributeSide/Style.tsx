@@ -1,12 +1,12 @@
 /* eslint-disable react/require-default-props */
-import * as React from "react";
-import { InputNumber, Select, Slider, Row, Col, Popover } from "antd";
-import { observer, inject } from "mobx-react";
-import { ChromePicker } from "react-color";
-import { ScreenStore } from "types";
-import { toJS } from "mobx";
-import IconFont from "components/IconFont";
-import styles from "./index.module.scss";
+import * as React from 'react';
+import { InputNumber, Select, Slider, Row, Col, Popover } from 'antd';
+import { observer, inject } from 'mobx-react';
+import { ChromePicker } from 'react-color';
+import { ScreenStore } from 'types';
+import { toJS } from 'mobx';
+import IconFont from 'components/IconFont';
+import styles from './index.module.scss';
 
 const { useCallback, useState, useEffect } = React;
 const { Option } = Select;
@@ -22,7 +22,7 @@ export const SizeItem = (props: {
       <label htmlFor={label}>{label}</label>
       <span>
         <InputNumber
-          style={{ width: "80px", marginLeft: "6px" }}
+          style={{ width: '80px', marginLeft: '6px' }}
           onChange={onChange}
           value={value}
         />
@@ -53,11 +53,11 @@ export const ColorItem = (props: {
       <label htmlFor={label}>{label}</label>
       <div
         style={{
-          width: "40px",
-          height: "24px",
-          padding: "2px",
-          border: "1px solid #ccc",
-          marginLeft: "6px"
+          width: '40px',
+          height: '24px',
+          padding: '2px',
+          border: '1px solid #ccc',
+          marginLeft: '6px'
         }}
       >
         <Popover
@@ -75,16 +75,16 @@ export const ColorItem = (props: {
         >
           <div
             style={{
-              width: "100%",
-              height: "100%",
-              background: value || defaultColor || "#FFF",
-              cursor: "pointer"
+              width: '100%',
+              height: '100%',
+              background: value || defaultColor || '#FFF',
+              cursor: 'pointer'
             }}
           />
         </Popover>
       </div>
       <div
-        style={{ marginLeft: "3px", cursor: "pointer" }}
+        style={{ marginLeft: '3px', cursor: 'pointer' }}
         onClick={() => {
           onChange(defaultColor);
         }}
@@ -102,31 +102,31 @@ export const FontItem = (props: {
 }) => {
   const { onChange, value } = props;
   const subTitle = {
-    display: "inline-block",
-    width: "50%",
-    padding: "0 3px",
-    fontSize: "12px"
+    display: 'inline-block',
+    width: '50%',
+    padding: '0 3px',
+    fontSize: '12px'
   };
   let { showItems } = props;
   if (!showItems) {
-    showItems = ["fontFamily", "fontSize", "fontWeight", "textAlign"];
+    showItems = ['fontFamily', 'fontSize', 'fontWeight', 'textAlign'];
   }
   return (
     <article
       className={styles.itemBox}
-      style={{ width: "100%", flexWrap: "wrap" }}
+      style={{ width: '100%', flexWrap: 'wrap' }}
     >
       {/* <label style={{ width: "25px" }}>字体</label> */}
-      <section style={{ width: "100%" }}>
-        {showItems.indexOf("fontFamily") >= 0 && (
+      <section style={{ width: '100%' }}>
+        {showItems.indexOf('fontFamily') >= 0 && (
           <div style={subTitle}>
             <div>字体</div>
             <Select
-              style={{ width: "100%", marginTop: "6px" }}
+              style={{ width: '100%', marginTop: '6px' }}
               defaultValue="auto"
-              value={value.fontFamily || "auto"}
+              value={value.fontFamily || 'auto'}
               onChange={(val) => {
-                onChange("fontFamily", val);
+                onChange('fontFamily', val);
               }}
             >
               <Option value="auto">auto</Option>
@@ -136,27 +136,27 @@ export const FontItem = (props: {
             </Select>
           </div>
         )}
-        {showItems.indexOf("fontSize") >= 0 && (
+        {showItems.indexOf('fontSize') >= 0 && (
           <div style={subTitle}>
             <div>大小</div>
             <InputNumber
               value={value.fontSize || 14}
-              style={{ width: "100%", marginTop: "6px" }}
+              style={{ width: '100%', marginTop: '6px' }}
               onChange={(val) => {
-                onChange("fontSize", val);
+                onChange('fontSize', val);
               }}
             />
           </div>
         )}
         <br />
-        {showItems.indexOf("fontWeight") >= 0 && (
-          <div style={{ ...subTitle, marginTop: "6px" }}>
+        {showItems.indexOf('fontWeight') >= 0 && (
+          <div style={{ ...subTitle, marginTop: '6px' }}>
             <div>加粗</div>
             <Select
-              style={{ width: "100%", marginTop: "6px" }}
-              value={value.fontWeight || "normal"}
+              style={{ width: '100%', marginTop: '6px' }}
+              value={value.fontWeight || 'normal'}
               onChange={(val) => {
-                onChange("fontWeight", val);
+                onChange('fontWeight', val);
               }}
             >
               <Option value="normal">normal</Option>
@@ -169,14 +169,14 @@ export const FontItem = (props: {
             </Select>
           </div>
         )}
-        {showItems.indexOf("textAlign") >= 0 && (
-          <div style={{ ...subTitle, marginTop: "6px" }}>
+        {showItems.indexOf('textAlign') >= 0 && (
+          <div style={{ ...subTitle, marginTop: '6px' }}>
             <div>对齐</div>
             <Select
-              style={{ width: "100%", marginTop: "6px" }}
-              value={value.textAlign || "left"}
+              style={{ width: '100%', marginTop: '6px' }}
+              value={value.textAlign || 'left'}
               onChange={(val) => {
-                onChange("textAlign", val);
+                onChange('textAlign', val);
               }}
             >
               <Option value="left">left</Option>
@@ -198,7 +198,7 @@ export const SliderItem = (props: {
   max?: number;
   formatter?: string;
 }) => {
-  const { value, onChange, label, min, max, formatter = "" } = props;
+  const { value, onChange, label, min, max, formatter = '' } = props;
   return (
     <div>
       {label}
@@ -212,13 +212,13 @@ export const SliderItem = (props: {
             onChange={onChange}
           />
         </Col>
-        <Col span={7} style={{ marginLeft: "12px" }}>
+        <Col span={7} style={{ marginLeft: '12px' }}>
           <InputNumber
             min={min}
             max={max}
             formatter={(val) => `${val}${formatter}`}
-            parser={(val) => (val ? val.replace(formatter, "") : "")}
-            style={{ width: "100%" }}
+            parser={(val) => (val ? val.replace(formatter, '') : '')}
+            style={{ width: '100%' }}
             value={Math.round(value)}
             onChange={onChange}
             step={1}
@@ -235,20 +235,20 @@ interface Props {
 
 const sizeItems = [
   {
-    label: "X轴",
-    key: "x"
+    label: 'X轴',
+    key: 'x'
   },
   {
-    label: "Y轴",
-    key: "y"
+    label: 'Y轴',
+    key: 'y'
   },
   {
-    label: "宽",
-    key: "width"
+    label: '宽',
+    key: 'width'
   },
   {
-    label: "高",
-    key: "height"
+    label: '高',
+    key: 'height'
   }
 ];
 
@@ -264,7 +264,7 @@ const limitChange = (callback: Function, timeout: number = 500) => {
   timerId = setTimeout(callback, timeout);
 };
 
-export default inject("screenStore")(
+export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
     const layerStyle = screenStore!.layerStyle;
@@ -297,7 +297,7 @@ export default inject("screenStore")(
       <section className={styles.styleSetting}>
         <div className={styles.title}>
           <p>位置和尺寸</p>
-          <div style={{ display: "flex", flexWrap: "wrap" }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {sizeItems.map((v) => {
               const defaultStyleValue: any = defaultStyle;
               return (
@@ -315,7 +315,7 @@ export default inject("screenStore")(
         </div>
         <div className={styles.title}>
           <p>颜色</p>
-          <div style={{ display: "flex", flexWrap: "wrap" }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             <ColorItem
               label="背景颜色"
               value={
@@ -324,7 +324,7 @@ export default inject("screenStore")(
                   : undefined
               }
               onChange={(color: string | undefined) => {
-                onStyleChange("backgroundColor", color);
+                onStyleChange('backgroundColor', color);
               }}
             />
             <ColorItem
@@ -332,14 +332,14 @@ export default inject("screenStore")(
               defaultColor="#000"
               value={defaultStyle ? defaultStyle.color : undefined}
               onChange={(color: string | undefined) => {
-                onStyleChange("color", color);
+                onStyleChange('color', color);
               }}
             />
           </div>
         </div>
         <div className={styles.title}>
           <p>文字</p>
-          <div style={{ marginTop: "12px" }}>
+          <div style={{ marginTop: '12px' }}>
             <FontItem onChange={onStyleChange} value={defaultStyle} />
           </div>
         </div>
@@ -355,7 +355,7 @@ export default inject("screenStore")(
                 : 100
             }
             onChange={(value) => {
-              onStyleChange("opacity", (value / 100).toFixed(2));
+              onStyleChange('opacity', (value / 100).toFixed(2));
             }}
           />
         </div>
@@ -366,12 +366,12 @@ export default inject("screenStore")(
             label="缩放比例"
             formatter="%"
             value={
-              defaultStyle && defaultStyle["transform-scale"] !== undefined
-                ? defaultStyle["transform-scale"] * 100
+              defaultStyle && defaultStyle['transform-scale'] !== undefined
+                ? defaultStyle['transform-scale'] * 100
                 : 100
             }
             onChange={(value) => {
-              onStyleChange("transform-scale", `${(value / 100).toFixed(2)}`);
+              onStyleChange('transform-scale', `${(value / 100).toFixed(2)}`);
             }}
           />
         </div>
@@ -382,12 +382,12 @@ export default inject("screenStore")(
             label="旋转角度"
             formatter="deg"
             value={
-              defaultStyle && defaultStyle["transform-rotate"] !== undefined
-                ? defaultStyle["transform-rotate"].replace("deg", "")
+              defaultStyle && defaultStyle['transform-rotate'] !== undefined
+                ? defaultStyle['transform-rotate'].replace('deg', '')
                 : 0
             }
             onChange={(value) => {
-              onStyleChange("transform-rotate", `${value}deg`);
+              onStyleChange('transform-rotate', `${value}deg`);
             }}
           />
         </div>

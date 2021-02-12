@@ -1,37 +1,37 @@
 /* eslint-disable multiline-ternary */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
-import * as React from "react";
-import { useDrop } from "react-dnd";
-import Moveable from "react-moveable";
-import { observer, inject } from "mobx-react";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { Tooltip, Switch } from "antd";
-import { runInAction, toJS } from "mobx";
+import * as React from 'react';
+import { useDrop } from 'react-dnd';
+import Moveable from 'react-moveable';
+import { observer, inject } from 'mobx-react';
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { Tooltip, Switch } from 'antd';
+import { runInAction, toJS } from 'mobx';
 import {
   ContextMenu,
   MenuItem,
   connectMenu,
   ContextMenuTrigger
-} from "react-contextmenu";
-import IconFont, { IconLink } from "components/IconFont";
-import Layer from "components/Layer";
-import Eventer from "common/eventer";
-import "./react-contextmenu.css";
+} from 'react-contextmenu';
+import IconFont, { IconLink } from 'components/IconFont';
+import Layer from 'components/Layer';
+import Eventer from 'common/eventer';
+import './react-contextmenu.css';
 import {
   ComponentStore,
   ComponentStyle,
   LayerInfo,
   LayerQuery,
   ScreenStore
-} from "types";
+} from 'types';
 import {
   DefaulBackgroundColor,
   DefaultFontColor,
   DefaultLayerSize
-} from "config";
-import styles from "./index.module.scss";
-import { CHANGE_GROUP } from "../AttributeSide/GroupSet";
+} from 'config';
+import styles from './index.module.scss';
+import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
 
 const { useCallback, useRef, useEffect, useState } = React;
 let compCount: { [key: string]: number } = {};
@@ -47,7 +47,7 @@ interface FrameInfo {
 }
 
 const toolStyles = {
-  margin: "0 6px"
+  margin: '0 6px'
 };
 
 // 右键菜单
@@ -57,30 +57,30 @@ const LayerContextMenu = (props: any) => {
   const layer: LayerInfo = trigger ? trigger.layer : null;
 
   return (
-    <ContextMenu id={id} style={{ display: trigger ? "block" : "none" }}>
+    <ContextMenu id={id} style={{ display: trigger ? 'block' : 'none' }}>
       {trigger ? (
         <>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: "SET_TOP", layer }}
+            data={{ action: 'SET_TOP', layer }}
           >
             置顶
           </MenuItem>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: "SET_UP", layer }}
+            data={{ action: 'SET_UP', layer }}
           >
             上移
           </MenuItem>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: "SET_DOWN", layer }}
+            data={{ action: 'SET_DOWN', layer }}
           >
             下移
           </MenuItem>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: "SET_BOTTOM", layer }}
+            data={{ action: 'SET_BOTTOM', layer }}
           >
             置底
           </MenuItem>
@@ -89,7 +89,7 @@ const LayerContextMenu = (props: any) => {
           </MenuItem> */}
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: "REMOVE", layer }}
+            data={{ action: 'REMOVE', layer }}
           >
             删除
           </MenuItem>
@@ -101,10 +101,10 @@ const LayerContextMenu = (props: any) => {
   );
 };
 
-const MENU_TYPE = "LAYER_CONTEXT_MENU";
+const MENU_TYPE = 'LAYER_CONTEXT_MENU';
 const ConnectedMenu = connectMenu(MENU_TYPE)(LayerContextMenu);
 
-export default inject("screenStore")(
+export default inject('screenStore')(
   observer(({ screenStore }: Props) => {
     const {
       screenInfo,
@@ -140,7 +140,7 @@ export default inject("screenStore")(
      * 接受组件拖入
      */
     const [, dropTarget] = useDrop({
-      accept: "ADD_COMPONENT",
+      accept: 'ADD_COMPONENT',
       drop: (item: any, monitor) => {
         const { value } = item;
         let x = 0;
@@ -209,10 +209,10 @@ export default inject("screenStore")(
 
     useEffect(() => {
       dropTarget(ref);
-      document.addEventListener("keydown", onKeyDown);
+      document.addEventListener('keydown', onKeyDown);
       return () => {
         Eventer.remove(CHANGE_GROUP);
-        document.removeEventListener("keydown", onKeyDown);
+        document.removeEventListener('keydown', onKeyDown);
       };
     }, []);
 
@@ -263,7 +263,9 @@ export default inject("screenStore")(
         screenStore!.setCurrLayer(undefined);
       } else {
         const layerGroups = screenStore!.layerGroup;
-        setGroupElement(layerGroups.map((v) => document.getElementById(v.id) as any));
+        setGroupElement(
+          layerGroups.map((v) => document.getElementById(v.id) as any)
+        );
         setGroupFrames([]);
 
         if (selectedLayerIds.size > 1) {
@@ -363,7 +365,7 @@ export default inject("screenStore")(
       scaleInt = parseFloat((scaleInt / 10).toFixed(2));
       if (ref.current && zoomRef.current && pageLayout) {
         ref.current.style.transform = `scale(${scaleInt})`;
-        ref.current.style.transformOrigin = "0 0 0";
+        ref.current.style.transformOrigin = '0 0 0';
         zoomRef.current.style.width = `${pageLayout.width * scaleInt}px`;
         zoomRef.current.style.height = `${pageLayout.height * scaleInt}px`;
         setScale(scaleInt);
@@ -390,7 +392,7 @@ export default inject("screenStore")(
         const { width } = areaRef.current.getBoundingClientRect();
         const zoom = parseFloat((width / pageLayout.width).toFixed(2));
         ref.current.style.transform = `scale(${zoom})`;
-        ref.current.style.transformOrigin = "0 0 0";
+        ref.current.style.transformOrigin = '0 0 0';
         zoomRef.current.style.width = `${pageLayout.width * zoom}px`;
         zoomRef.current.style.height = `${pageLayout.height * zoom}px`;
         setScale(zoom);
@@ -413,29 +415,29 @@ export default inject("screenStore")(
         e.preventDefault();
         e.stopPropagation();
       }
-      if (e.key === "Delete" && screenStore!.currLayer) {
+      if (e.key === 'Delete' && screenStore!.currLayer) {
         // 删除图层
         return screenStore!.confirmDeleteLayer(screenStore!.currLayer);
       }
       // esc取消选中
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         return screenStore!.setCurrLayer(undefined);
       }
 
-      if (e.ctrlKey && e.key === "z") {
+      if (e.ctrlKey && e.key === 'z') {
         return undo();
       }
 
-      if (e.ctrlKey && e.key === "y") {
+      if (e.ctrlKey && e.key === 'y') {
         return redo();
       }
       // 群组
-      if (e.ctrlKey && e.key === "g" && currLayerIds.current.size > 1) {
+      if (e.ctrlKey && e.key === 'g' && currLayerIds.current.size > 1) {
         return groupLayer();
       }
 
       // 解除群组
-      if (e.ctrlKey && e.key === "b" && currLayerIds.current.size > 1) {
+      if (e.ctrlKey && e.key === 'b' && currLayerIds.current.size > 1) {
         return disbandLayer();
       }
     };
@@ -534,10 +536,10 @@ export default inject("screenStore")(
         }
 
         switch (data.action) {
-          case "REMOVE":
+          case 'REMOVE':
             screenStore!.confirmDeleteLayer(data.layer);
             break;
-          case "SET_TOP": {
+          case 'SET_TOP': {
             const topZ = screenLayers[0].style.z;
             if (screenLayers[0].id !== layer.id) {
               layer.style.z = topZ + 1;
@@ -545,7 +547,7 @@ export default inject("screenStore")(
             }
             break;
           }
-          case "SET_BOTTOM": {
+          case 'SET_BOTTOM': {
             const bottomZ = screenLayers[screenLayers.length - 1].style.z;
             if (screenLayers[screenLayers.length - 1].id !== layer.id) {
               layer.style.z = bottomZ - 1;
@@ -553,7 +555,7 @@ export default inject("screenStore")(
             }
             break;
           }
-          case "SET_UP": {
+          case 'SET_UP': {
             const index = screenLayers.findIndex((v) => v.id === layer.id);
             if (index <= 0) return;
             const upLayer = screenLayers[index - 1];
@@ -565,7 +567,7 @@ export default inject("screenStore")(
             screenStore!.batchUpdateLayer([upLayer, layer], true);
             break;
           }
-          case "SET_DOWN": {
+          case 'SET_DOWN': {
             const downIndex = screenLayers.findIndex((v) => v.id === layer.id);
             if (downIndex < 0 || downIndex === screenLayers.length - 1) return;
             const downLayer = screenLayers[downIndex + 1];
@@ -577,7 +579,7 @@ export default inject("screenStore")(
             screenStore!.batchUpdateLayer([downLayer, layer], true);
             break;
           }
-          case "EDIT":
+          case 'EDIT':
             onLayer(layer, undefined);
             break;
           default:
@@ -615,7 +617,7 @@ export default inject("screenStore")(
             <Tooltip placement="bottom" title="自适应">
               <div
                 onClick={() => onZoomReset(true)}
-                style={{ width: "50px" }}
+                style={{ width: '50px' }}
                 className={styles.zoomBtn}
               >
                 {(scale * 100).toFixed(0)}%
@@ -632,7 +634,7 @@ export default inject("screenStore")(
           </div>
           {screenInfo && (
             <div className={styles.toolbar}>
-              <span style={{ ...toolStyles, fontSize: "12px" }}>
+              <span style={{ ...toolStyles, fontSize: '12px' }}>
                 事件锁定
                 <Switch
                   size="small"
@@ -665,7 +667,7 @@ export default inject("screenStore")(
                 }
                 style={toolStyles}
                 disabled={selectedLayerIds.size === 0}
-                title={screenStore!.isLayerLock ? "解锁组件" : "锁定组件"}
+                title={screenStore!.isLayerLock ? '解锁组件' : '锁定组件'}
                 onClick={() => {
                   screenStore!.lockLayer(!screenStore!.isLayerLock);
                 }}
@@ -680,7 +682,7 @@ export default inject("screenStore")(
                 onClick={() => {
                   screenStore!.hideLayer(!screenStore!.isLayerHide);
                 }}
-                title={screenStore!.isLayerHide ? "显示组件" : "隐藏组件"}
+                title={screenStore!.isLayerHide ? '显示组件' : '隐藏组件'}
               />
               <IconLink
                 title="群组"
@@ -738,7 +740,7 @@ export default inject("screenStore")(
               ref={(ref) => {
                 zoomRef.current = ref || undefined;
               }}
-              style={{ margin: "auto" }}
+              style={{ margin: 'auto' }}
             >
               {pageLayout && (
                 <div
@@ -748,14 +750,14 @@ export default inject("screenStore")(
                       pageLayout.backgroundColor || DefaulBackgroundColor,
                     backgroundImage: pageLayout.backgroundImage
                       ? `url(${pageLayout.backgroundImage})`
-                      : "none",
+                      : 'none',
                     color: pageLayout.color || DefaultFontColor,
                     backgroundSize:
-                      pageLayout.backgroundRepeat === "no-repeat"
-                        ? "100% 100%"
+                      pageLayout.backgroundRepeat === 'no-repeat'
+                        ? '100% 100%'
                         : undefined,
                     backgroundRepeat: pageLayout.backgroundRepeat,
-                    position: "relative"
+                    position: 'relative'
                   }}
                   ref={(r) => {
                     ref.current = r || undefined;
@@ -832,7 +834,7 @@ export default inject("screenStore")(
                       events.forEach((ev, i) => {
                         const frame = groupframes[i];
                         // Set origin if transform-orgin use %.
-                        ev.setOrigin(["%", "%"]);
+                        ev.setOrigin(['%', '%']);
                         // If cssSize and offsetSize are different, set cssSize.
                         const style = window.getComputedStyle(ev.target);
                         const cssWidth = parseFloat(style.width);
@@ -847,7 +849,7 @@ export default inject("screenStore")(
                     onResizeGroup={({ events }) => {
                       events.forEach(({ target, width, height, drag }, i) => {
                         const frame = groupframes[i];
-                        target.style.overflow = "hidden";
+                        target.style.overflow = 'hidden';
                         frame.style.width = Math.round(width);
                         frame.style.height = Math.round(height);
                         frame.style.x = Math.round(drag.beforeTranslate[0]);
@@ -860,7 +862,7 @@ export default inject("screenStore")(
                     }}
                     onResizeGroupEnd={({ isDrag, targets }) => {
                       targets.forEach((target) => {
-                        target.style.overflow = "visible";
+                        target.style.overflow = 'visible';
                       });
                       screenStore!.setResizeing(false);
                       if (!isDrag) return;
@@ -883,7 +885,7 @@ export default inject("screenStore")(
                       }
                     }}
                     onResizeStart={({ setOrigin, dragStart }) => {
-                      setOrigin(["%", "%"]);
+                      setOrigin(['%', '%']);
                       screenStore!.setResizeing(true);
                       if (dragStart && layerFrame) {
                         dragStart.set([layerFrame.style.x, layerFrame.style.y]);

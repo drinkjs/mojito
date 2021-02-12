@@ -1,16 +1,16 @@
-import { createFromIconfontCN } from '@ant-design/icons'
-import { Tooltip } from 'antd'
-import { TooltipPlacement } from 'antd/lib/tooltip'
-import * as React from 'react'
-import styles from './index.module.scss'
+import { createFromIconfontCN } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { TooltipPlacement } from 'antd/lib/tooltip';
+import * as React from 'react';
+import styles from './index.module.scss';
 
-const classNames = require('classnames')
+const classNames = require('classnames');
 
 const IconFont = createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2171422_8u323xf0dss.js'
-})
+});
 
-export default IconFont
+export default IconFont;
 
 interface IconLinkProps {
   title: string;
@@ -41,10 +41,10 @@ export const IconLink = ({
         type={icon}
         onClick={() => {
           if (!disabled && onClick) {
-            onClick()
+            onClick();
           }
         }}
       />
     </Tooltip>
-  )
-}
+  );
+};

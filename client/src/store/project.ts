@@ -1,6 +1,6 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import * as service from "services/project";
-import { ProjectDto } from "types";
+import { makeAutoObservable, runInAction } from 'mobx';
+import * as service from 'services/project';
+import { ProjectDto } from 'types';
 
 export default class Project {
   projectList: ProjectDto[] = [];

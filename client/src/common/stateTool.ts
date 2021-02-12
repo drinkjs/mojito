@@ -1,13 +1,13 @@
 /* eslint-disable no-undef */
-import { useState, useRef, useEffect, MutableRefObject } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-import * as events from 'events'
-import WebSocketClient from 'common/network/WebSocketClient'
+import { useState, useRef, useEffect, MutableRefObject } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import * as events from 'events';
+import WebSocketClient from 'common/network/WebSocketClient';
 
-const eventUrl = '/wss'
+const eventUrl = '/wss';
 
-export const syncEventer = new events.EventEmitter()
-syncEventer.setMaxListeners(1024)
+export const syncEventer = new events.EventEmitter();
+syncEventer.setMaxListeners(1024);
 
 interface SyncData {
   key: string;
@@ -58,30 +58,30 @@ class SyncHelper {
     //   return
     // }
 
-    this.websocket = new WebSocketClient("ws://localhost:3000/ws")
-    this.websocket.connect()
+    this.websocket = new WebSocketClient('ws://localhost:3000/ws');
+    this.websocket.connect();
     this.websocket.on('connect', () => {
       if (this.connectNum > 0) {
         // 断开重连时重新
-        if (this.reconnectCallback) this.reconnectCallback()
+        if (this.reconnectCallback) this.reconnectCallback();
       }
-      this.connectNum += 1
-    })
+      this.connectNum += 1;
+    });
 
     //  服务器返回websokcet事件
     this.websocket.on('message', (msg: SyncMessage) => {
-      console.log('websocket msg：', msg)
-      const { data, event } = msg
+      console.log('websocket msg：', msg);
+      const { data, event } = msg;
       switch (event) {
         case 'join':
-          this.joinHandler(data)
-          break
+          this.joinHandler(data);
+          break;
         case 'sync':
-          this.syncHandler(data)
-          break
+          this.syncHandler(data);
+          break;
         case 'syncPage':
-          this.syncPageHandler(data)
-          break
+          this.syncPageHandler(data);
+          break;
         default:
           //   // const hadndler = this.eventHandlers.get(event);
           //   // if(hadndler){
@@ -90,29 +90,29 @@ class SyncHelper {
           //   //   console.error(`no [${event}] hander`)
           //   // }
           //   console.error(`no [${event}] hander`)
-          break
+          break;
       }
-      const hadndler = this.eventHandlers.get(event)
+      const hadndler = this.eventHandlers.get(event);
       if (hadndler) {
-        hadndler(data)
+        hadndler(data);
       }
-    })
+    });
   }
 
   on (event: string, callback: Function) {
-    this.eventHandlers.set(event, callback)
+    this.eventHandlers.set(event, callback);
   }
 
   removeEvent (event: string) {
-    this.eventHandlers.delete(event)
+    this.eventHandlers.delete(event);
   }
 
   onReconnect (callback: Function) {
-    this.reconnectCallback = callback
+    this.reconnectCallback = callback;
   }
 
   send (event: string, data?: any) {
-    if (this.websocket) this.websocket.emit(`${eventUrl}/${event}`, data)
+    if (this.websocket) this.websocket.emit(`${eventUrl}/${event}`, data);
   }
 
   /**
@@ -120,8 +120,8 @@ class SyncHelper {
    * @param {*} params
    */
   joinPage (page: string, data: { room: string; [key: string]: any }) {
-    this.currPage = page
-    this.send('join', { ...data, page, pageId: this.pageId })
+    this.currPage = page;
+    this.send('join', { ...data, page, pageId: this.pageId });
   }
 
   /**
@@ -129,7 +129,7 @@ class SyncHelper {
    * @param {SyncData} stateData
    */
   syncData (stateData: SyncData) {
-    this.send('sync', stateData)
+    this.send('sync', stateData);
   }
 
   /**
@@ -142,8 +142,8 @@ class SyncHelper {
       state,
       key,
       sender: this.currPage
-    }
-    this.send('syncPage', data)
+    };
+    this.send('syncPage', data);
   }
 
   /**
@@ -151,25 +151,25 @@ class SyncHelper {
    * @param {*} data
    */
   joinHandler (data: JoinPageData[]) {
-    this.joinPages = data
+    this.joinPages = data;
   }
 
   // eslint-disable-next-line class-methods-use-this
   syncHandler (data: SyncData) {
-    syncEventer.emit(`RECV_SYNC_${data.key}`, data)
+    syncEventer.emit(`RECV_SYNC_${data.key}`, data);
   }
 
   // eslint-disable-next-line class-methods-use-this
   syncPageHandler (data: SyncPageData) {
-    syncEventer.emit(`RECV_SYNC_${data.key}`, data)
+    syncEventer.emit(`RECV_SYNC_${data.key}`, data);
   }
 }
 
-const syncHelper = new SyncHelper()
-const rootNode = document.getElementById('root')
+const syncHelper = new SyncHelper();
+const rootNode = document.getElementById('root');
 
 export function useReconnect (callback: Function) {
-  syncHelper.onReconnect(callback)
+  syncHelper.onReconnect(callback);
 }
 
 /**
@@ -177,8 +177,8 @@ export function useReconnect (callback: Function) {
  * @param page
  */
 export function joinPage (room: string, data?: { [key: string]: any }) {
-  const { pathname } = window.location
-  syncHelper.joinPage(pathname, { room, ...data })
+  const { pathname } = window.location;
+  syncHelper.joinPage(pathname, { room, ...data });
 }
 
 /**
@@ -188,7 +188,7 @@ export function joinPage (room: string, data?: { [key: string]: any }) {
  * @param key
  */
 export function sendDataToPage (page: string, state: object, key: string) {
-  syncHelper.sendDataToPage(page, state, key)
+  syncHelper.sendDataToPage(page, state, key);
 }
 
 /**
@@ -197,7 +197,7 @@ export function sendDataToPage (page: string, state: object, key: string) {
  * @param data
  */
 export function sendEvent (event: string, data?: any) {
-  syncHelper.send(event, data)
+  syncHelper.send(event, data);
 }
 
 /**
@@ -206,7 +206,7 @@ export function sendEvent (event: string, data?: any) {
  * @param callback
  */
 export function onEvent (event: string, callback: Function) {
-  syncHelper.on(event, callback)
+  syncHelper.on(event, callback);
 }
 
 /**
@@ -214,7 +214,7 @@ export function onEvent (event: string, callback: Function) {
  * @param event
  */
 export function removeEvent (event: string) {
-  syncHelper.removeEvent(event)
+  syncHelper.removeEvent(event);
 }
 
 /**
@@ -226,70 +226,74 @@ export function useSync<T> (
   initialState: T,
   key?: string
 ): [T, (data: Partial<T>) => void, MutableRefObject<HTMLAnchorElement>] {
-  const ref = useRef<any>()
-  const [value, setValue] = useState(initialState)
-  const [xpath, setXpath] = useState<string>(key || '')
-  const [sender] = useState(uuidv4())
+  const ref = useRef<any>();
+  const [value, setValue] = useState(initialState);
+  const [xpath, setXpath] = useState<string>(key || '');
+  const [sender] = useState(uuidv4());
 
   const onSync = (data: SyncData) => {
     if (sender !== data.sender) {
-      setData(data.state)
+      setData(data.state);
     }
-  }
+  };
 
   useEffect(() => {
     if (!xpath) {
       // 确保组件已构建完成
       setTimeout(() => {
         // eslint-disable-next-line no-unused-expressions
-        if (ref.current && rootNode) { setXpath(getXPathForElement(ref.current, rootNode)) }
-      }, 1000)
+        if (ref.current && rootNode) {
+          setXpath(getXPathForElement(ref.current, rootNode));
+        }
+      }, 1000);
     }
     if (xpath) {
-      syncEventer.addListener(`RECV_SYNC_${xpath}`, onSync)
+      syncEventer.addListener(`RECV_SYNC_${xpath}`, onSync);
     }
     return () => {
-      syncEventer.removeListener(`RECV_SYNC_${xpath}`, onSync)
-    }
-  }, [xpath])
+      syncEventer.removeListener(`RECV_SYNC_${xpath}`, onSync);
+    };
+  }, [xpath]);
 
   const setData = (data: Partial<T>) => {
-    setValue({ ...initialState, ...data })
-  }
+    setValue({ ...initialState, ...data });
+  };
 
   const setSync = (data: Partial<T>) => {
-    setData(data)
-    let syncKey = xpath
+    setData(data);
+    let syncKey = xpath;
     if (!syncKey && rootNode) {
-      syncKey = getXPathForElement(ref.current, rootNode)
-      setXpath(syncKey)
+      syncKey = getXPathForElement(ref.current, rootNode);
+      setXpath(syncKey);
     }
-    syncHelper.syncData({ state: data, key: syncKey, sender })
-  }
+    syncHelper.syncData({ state: data, key: syncKey, sender });
+  };
 
-  return [value, setSync, ref]
+  return [value, setSync, ref];
 }
 
 function getXPathForElement (el: Node, root: Node) {
-  let xpath = ''
-  let pos
-  let tempitem2
+  let xpath = '';
+  let pos;
+  let tempitem2;
 
   while (el !== root && el !== document.documentElement) {
-    pos = 0
-    tempitem2 = el
+    pos = 0;
+    tempitem2 = el;
     while (tempitem2) {
       if (tempitem2.nodeType === 1 && tempitem2.nodeName === el.nodeName) {
         // If it is ELEMENT_NODE of the same name
-        pos += 1
+        pos += 1;
       }
-      tempitem2 = tempitem2.previousSibling
+      tempitem2 = tempitem2.previousSibling;
     }
-    xpath = `${el.nodeName}[${pos}]/${xpath}`
+    xpath = `${el.nodeName}[${pos}]/${xpath}`;
     // eslint-disable-next-line no-param-reassign
-    if (el && el.parentNode) { el = el.parentNode }
+    if (el && el.parentNode) {
+      el = el.parentNode;
+    }
   }
-  xpath = `${root.nodeName}/${xpath}`
-  xpath = xpath.substr(0, xpath.length - 1)
-  return xpath
+  xpath = `${root.nodeName}/${xpath}`;
+  xpath = xpath.substr(0, xpath.length - 1);
+  return xpath;
 }

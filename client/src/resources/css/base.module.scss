@@ -6,7 +6,7 @@
     width: 100%;
     background: #040609;
     clear: both;
-    font-family: "Microsoft Yahei", serif;
+    font-family: 'Microsoft Yahei', serif;
     margin: 0;
     padding: 0;
     font-size: 14px;
@@ -45,13 +45,12 @@
     background-color: #1d2636;
   }
 
-
   .moveable-control {
-    width: 8px!important;
-    height: 8px!important;
-    margin-top: -4px!important;
-    margin-left: -4px!important;
-    background: #fff!important;
-    border:1px solid #4af!important;
+    width: 8px !important;
+    height: 8px !important;
+    margin-top: -4px !important;
+    margin-left: -4px !important;
+    background: #fff !important;
+    border: 1px solid #4af !important;
   }
 }

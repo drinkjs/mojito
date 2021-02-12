@@ -1,17 +1,14 @@
-import * as React from 'react'
-import { useDrag } from 'react-dnd'
-import { getEmptyImage } from 'react-dnd-html5-backend'
-import { Modal } from 'antd'
-import {
-  FormOutlined,
-  DeleteOutlined
-} from '@ant-design/icons'
-import Image from 'components/Image'
-import { ComponentInfo } from 'types'
-import styles from './index.module.scss'
+import * as React from 'react';
+import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
+import { Modal } from 'antd';
+import { FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import Image from 'components/Image';
+import { ComponentInfo } from 'types';
+import styles from './index.module.scss';
 
-const { useCallback, useEffect } = React
-const { confirm } = Modal
+const { useCallback, useEffect } = React;
+const { confirm } = Modal;
 interface Props {
   value: ComponentInfo;
   onRemove: (value: ComponentInfo) => void;
@@ -30,31 +27,31 @@ export default ({ value, onRemove, onEdit }: Props) => {
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
     })
-  })
+  });
 
   useEffect(() => {
-    preview(getEmptyImage(), { captureDraggingState: true })
-  }, [])
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, []);
 
   const handleEdit = useCallback((e: React.MouseEvent<any>) => {
-    e.stopPropagation()
-    onEdit(value)
-  }, [])
+    e.stopPropagation();
+    onEdit(value);
+  }, []);
 
   const handleRemove = useCallback(
     (e: React.MouseEvent<any>) => {
-      e.stopPropagation()
+      e.stopPropagation();
       confirm({
         title: `确定删除${value.title}?`,
         okText: '确定',
         cancelText: '取消',
         onOk: () => {
-          onRemove(value)
+          onRemove(value);
         }
-      })
+      });
     },
     [value]
-  )
+  );
 
   return (
     <div className={styles.itemView} ref={drag}>
@@ -73,5 +70,5 @@ export default ({ value, onRemove, onEdit }: Props) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};

@@ -1,14 +1,14 @@
-import React, { useCallback, useState, useEffect } from 'react'
-import { Empty, Button, Modal, Input, message, Skeleton } from 'antd'
-import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
-import { PlusOutlined } from '@ant-design/icons'
-import { ProjectDto, ProjectStore } from 'types'
-import ProjectItemList from './components/projectItemList'
-import ScreenList from './components/screenList'
-import CdnModal from './components/CdnModal'
-import styles from './index.module.scss'
-import noProject from 'resources/images/noProject.png'
+import React, { useCallback, useState, useEffect } from 'react';
+import { Empty, Button, Modal, Input, message, Skeleton } from 'antd';
+import { observer, inject } from 'mobx-react';
+import { toJS } from 'mobx';
+import { PlusOutlined } from '@ant-design/icons';
+import { ProjectDto, ProjectStore } from 'types';
+import ProjectItemList from './components/projectItemList';
+import ScreenList from './components/screenList';
+import CdnModal from './components/CdnModal';
+import styles from './index.module.scss';
+import noProject from 'resources/images/noProject.png';
 
 // const { useCallback, useState, useEffect } = React;
 
@@ -18,25 +18,25 @@ interface Props {
 
 export default inject('projectStore')(
   observer((props: Props) => {
-    const { projectStore } = props
-    const { projectList } = projectStore
+    const { projectStore } = props;
+    const { projectList } = projectStore;
 
-    const [visible, setVisible] = useState(false)
-    const [cdnVisible, setCdnVisible] = useState(false)
-    const [projectName, setProjectName] = useState<string>()
-    const [selectedProject, setSelectedProject] = useState<ProjectDto>()
-    const [editProject, setEditProject] = useState<ProjectDto>()
+    const [visible, setVisible] = useState(false);
+    const [cdnVisible, setCdnVisible] = useState(false);
+    const [projectName, setProjectName] = useState<string>();
+    const [selectedProject, setSelectedProject] = useState<ProjectDto>();
+    const [editProject, setEditProject] = useState<ProjectDto>();
 
     useEffect(() => {
-      const selectedProjectCache = localStorage.getItem('selectedProject')
+      const selectedProjectCache = localStorage.getItem('selectedProject');
       const sel = selectedProjectCache
         ? JSON.parse(selectedProjectCache)
-        : undefined
+        : undefined;
       if (sel && sel.id) {
-        setSelectedProject(sel)
+        setSelectedProject(sel);
       }
-      projectStore!.getList()
-    }, [])
+      projectStore!.getList();
+    }, []);
 
     /**
      * 新增项目
@@ -44,77 +44,77 @@ export default inject('projectStore')(
     const handleOk = useCallback(
       (e: any) => {
         if (!projectName) {
-          message.warning('请输入项目名称')
-          return
+          message.warning('请输入项目名称');
+          return;
         }
         // 编辑项目
         if (editProject) {
           if (editProject.name === projectName) {
-            handleCancel()
-            setEditProject(undefined)
-            return
+            handleCancel();
+            setEditProject(undefined);
+            return;
           }
           projectStore!.edit(editProject.id, projectName).then(() => {
-            handleCancel()
-            setEditProject(undefined)
-            projectStore!.getList()
-          })
-          return
+            handleCancel();
+            setEditProject(undefined);
+            projectStore!.getList();
+          });
+          return;
         }
         // 新增项目
         projectStore!.add(projectName).then(() => {
-          handleCancel()
+          handleCancel();
           projectStore!.getList().then((data) => {
             if (data) {
-              onSelectProject(data[0])
+              onSelectProject(data[0]);
             }
-          })
-        })
+          });
+        });
       },
       [projectName, editProject]
-    )
+    );
 
     /**
      * 取消新增项目
      */
     const handleCancel = useCallback(() => {
-      setVisible(false)
-      setProjectName(undefined)
-    }, [])
+      setVisible(false);
+      setProjectName(undefined);
+    }, []);
 
     /**
      * 新增项目弹窗
      */
     const onAddProject = useCallback(() => {
-      setVisible(true)
-    }, [])
+      setVisible(true);
+    }, []);
 
     /**
      * 输入框change
      */
     const onInput = useCallback((e: React.ChangeEvent<any>) => {
-      setProjectName(e.target.value)
-    }, [])
+      setProjectName(e.target.value);
+    }, []);
 
     /**
      * 选择项目
      */
     const onSelectProject = useCallback((data?: ProjectDto) => {
-      setSelectedProject(toJS(data))
+      setSelectedProject(toJS(data));
       localStorage.setItem(
         'selectedProject',
         data ? JSON.stringify(data) : '{}'
-      )
-    }, [])
+      );
+    }, []);
 
     /**
      * 编辑项目
      */
     const onEditProject = useCallback((data: ProjectDto) => {
-      setEditProject(toJS(data))
-      setProjectName(data.name)
-      setVisible(true)
-    }, [])
+      setEditProject(toJS(data));
+      setProjectName(data.name);
+      setVisible(true);
+    }, []);
 
     /**
      * 删除项目
@@ -125,39 +125,41 @@ export default inject('projectStore')(
           projectStore!.getList().then((datas: any[]) => {
             // console.log(selectedProject.id, data.id)
             if (!datas || datas.length === 0) {
-              onSelectProject()
+              onSelectProject();
             } else if (selectedProject && selectedProject.id === data.id) {
-              onSelectProject(datas[0])
+              onSelectProject(datas[0]);
             }
-          })
-        })
+          });
+        });
       },
       [selectedProject]
-    )
+    );
 
     const onEditCdn = useCallback((data: ProjectDto) => {
-      setEditProject(data)
-      setCdnVisible(true)
-    }, [])
+      setEditProject(data);
+      setCdnVisible(true);
+    }, []);
 
     const onCdnCancel = useCallback(() => {
-      setCdnVisible(false)
-    }, [])
+      setCdnVisible(false);
+    }, []);
 
     /**
      * 保存cdn
      */
     const onCdnSave = useCallback(
       (cdns?: string[]) => {
-        if (!editProject || !cdns) { return }
+        if (!editProject || !cdns) {
+          return;
+        }
         projectStore!.updateCDN(editProject.id, cdns).then(() => {
-          onCdnCancel()
-          setEditProject(undefined)
-          projectStore!.getList()
-        })
+          onCdnCancel();
+          setEditProject(undefined);
+          projectStore!.getList();
+        });
       },
       [editProject]
-    )
+    );
 
     // return <div>xxxxxxxxxxxxx</div>
 
@@ -251,6 +253,6 @@ export default inject('projectStore')(
           value={editProject ? editProject.cdn : undefined}
         />
       </div>
-    )
+    );
   })
-)
+);

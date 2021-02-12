@@ -1,15 +1,15 @@
-import * as React from 'react'
-import { observer, inject } from 'mobx-react'
-import { Skeleton } from 'antd'
-import DocumentTitle from 'components/DocumentTitle'
-import { useParams } from 'react-router-dom'
-import { joinPage, useReconnect } from 'common/stateTool'
-import Layer from 'components/Layer'
-import { toJS } from 'mobx'
-import { ScreenLayout, ScreenStore } from 'types'
-import { DefaultLayerSize } from 'config'
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { Skeleton } from 'antd';
+import DocumentTitle from 'components/DocumentTitle';
+import { useParams } from 'react-router-dom';
+import { joinPage, useReconnect } from 'common/stateTool';
+import Layer from 'components/Layer';
+import { toJS } from 'mobx';
+import { ScreenLayout, ScreenStore } from 'types';
+import { DefaultLayerSize } from 'config';
 
-const { useEffect, useState } = React
+const { useEffect, useState } = React;
 interface Props {
   screenStore?: ScreenStore;
   onLayout?: (layout: ScreenLayout) => void;
@@ -17,38 +17,38 @@ interface Props {
 
 export default inject('screenStore')(
   observer((props: Props) => {
-    const { screenStore, onLayout } = props
-    const screenInfo = screenStore!.screenInfo
-    const [initFlag, setInitFlag] = useState(false)
-    const { id } = useParams<{ id: string }>()
+    const { screenStore, onLayout } = props;
+    const screenInfo = screenStore!.screenInfo;
+    const [initFlag, setInitFlag] = useState(false);
+    const { id } = useParams<{ id: string }>();
 
     useEffect(() => {
       screenStore!.getDetail(id).then((data) => {
         if (data) {
-          setInitFlag(true)
+          setInitFlag(true);
           if (onLayout) {
-            onLayout(screenInfo!.options)
+            onLayout(screenInfo!.options);
           }
         }
-      })
-    }, [])
+      });
+    }, []);
 
     useEffect(() => {
       if (initFlag) {
         // 状态同步时join
-        screenInfo && joinPage(screenInfo.project.name)
+        screenInfo && joinPage(screenInfo.project.name);
       }
-    }, [initFlag, screenInfo])
+    }, [initFlag, screenInfo]);
 
     // 断线重连
     useReconnect(() => {
-      screenInfo && joinPage(screenInfo.project.name)
-    })
+      screenInfo && joinPage(screenInfo.project.name);
+    });
 
     const { options, layers } = screenInfo || {
       layout: undefined,
       layers: undefined
-    }
+    };
 
     return (
       <DocumentTitle title={screenInfo ? screenInfo.name : ''}>
@@ -82,13 +82,13 @@ export default inject('screenStore')(
                         defaultWidth={DefaultLayerSize.width}
                         defaultHeight={DefaultLayerSize.height}
                       />
-                    )
+                    );
                   })}
               </div>
             </div>
           )}
         </Skeleton>
       </DocumentTitle>
-    )
+    );
   })
-)
+);

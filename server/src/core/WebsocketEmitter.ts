@@ -77,7 +77,10 @@ export default class WebsocketEmitter extends Events.EventEmitter {
 
   getClientsByRoom (room: string): WsClient[] {
     return this.clients.filter(
-      (client) => client.room === room && client.socket.readyState === Ws.OPEN
+      (client) =>
+        client.room === room &&
+        client.socket.readyState === Ws.OPEN &&
+        client.isAlive
     );
   }
 
@@ -100,6 +103,7 @@ export default class WebsocketEmitter extends Events.EventEmitter {
   }
 
   onClose (target: WsClient) {
+    target.isAlive = false;
     this.removeClient(target);
     this.emit(WebsocketEvent.disconnect, target);
   }
@@ -115,7 +119,9 @@ export default class WebsocketEmitter extends Events.EventEmitter {
   }
 
   removeClient (client: WsClient) {
-    if (client) { this.clients = this.clients.filter((v) => !v || v.id !== client.id); }
+    if (client) {
+      this.clients = this.clients.filter((v) => v && v.id !== client.id);
+    }
   }
 
   // 心跳检测
