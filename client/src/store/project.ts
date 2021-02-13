@@ -5,7 +5,7 @@ import { ProjectDto } from 'types';
 export default class Project {
   projectList: ProjectDto[] = [];
 
-  projectDetail: ProjectDto | undefined;
+  projectDetail?: ProjectDto;
 
   getListLoading = false;
 

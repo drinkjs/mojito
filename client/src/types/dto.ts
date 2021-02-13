@@ -22,7 +22,7 @@ export interface ScreenDto {
 export interface ScreenDetailDto {
   id: string;
   name: string;
-  options: ScreenLayout;
+  style: ScreenLayout;
   layers?: LayerInfo[];
   project: ProjectDto;
 }

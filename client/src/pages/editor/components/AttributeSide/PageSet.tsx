@@ -28,8 +28,8 @@ export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
     const screenStyle: any =
-      screenStore!.screenInfo && screenStore!.screenInfo.options
-        ? screenStore!.screenInfo.options
+      screenStore!.screenInfo && screenStore!.screenInfo.style
+        ? screenStore!.screenInfo.style
         : {};
     /**
      * 限流函数
@@ -48,7 +48,7 @@ export default inject('screenStore')(
       limitChange(() => {
         if (screenStore && screenStore.screenInfo) {
           screenStore.saveStyle({
-            ...screenStore.screenInfo.options,
+            ...screenStore.screenInfo.style,
             [type]: value
           });
         }
@@ -58,7 +58,7 @@ export default inject('screenStore')(
     const onUpload = React.useCallback((path: string | undefined) => {
       if (screenStore && screenStore.screenInfo) {
         screenStore.saveStyle({
-          ...screenStore.screenInfo.options,
+          ...screenStore.screenInfo.style,
           backgroundImage: path
         });
       }
@@ -121,16 +121,16 @@ export default inject('screenStore')(
               data={{ id: screenStore!.screenInfo.id }}
               onChange={onUpload}
               value={
-                screenStore!.screenInfo.options
-                  ? screenStore!.screenInfo.options.backgroundImage
+                screenStore!.screenInfo.style
+                  ? screenStore!.screenInfo.style.backgroundImage
                   : undefined
               }
             />
-            {screenStore!.screenInfo.options &&
-              screenStore!.screenInfo.options.backgroundImage && (
+            {screenStore!.screenInfo.style &&
+              screenStore!.screenInfo.style.backgroundImage && (
                 <Radio.Group
                   value={
-                    screenStore!.screenInfo.options.backgroundRepeat || 'repeat'
+                    screenStore!.screenInfo.style.backgroundRepeat || 'repeat'
                   }
                   buttonStyle="solid"
                   onChange={(e) => {

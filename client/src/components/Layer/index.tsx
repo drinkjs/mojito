@@ -4,25 +4,26 @@
  * 图层类，负责生成组件，控制组件的大小位置，请求数据
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { observer, inject } from 'mobx-react';
-import { message } from 'antd';
-import { cloneDeep } from 'lodash';
-import ErrorCatch from 'components/ErrorCatch';
-import eventer from 'common/eventer';
-import { request } from 'common/network';
-import { useSync } from 'common/stateTool';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { observer, inject } from "mobx-react";
+import { message } from "antd";
+import { cloneDeep } from "lodash";
+import ErrorCatch from "components/ErrorCatch";
+import eventer from "common/eventer";
+import { request } from "common/network";
+import { useSync } from "common/stateTool";
 import {
   ComponentStyle,
   ComponentStyleQuery,
+  LayerEvents,
   LayerInfo,
   ScreenStore
-} from 'types';
-import { buildCode } from 'common/util';
-import { loadLib, LoadingComponent } from '../Loader';
-import Render from './Render';
-import styles from './index.module.scss';
-import { DefaultLayerSize } from 'config';
+} from "types";
+import { buildCode } from "common/util";
+import { loadLib, LoadingComponent } from "../Loader";
+import Render from "./Render";
+import styles from "./index.module.scss";
+import { DefaultLayerSize } from "config";
 
 function showHandlerError (layerName: string, error: any) {
   message.error(`${layerName}事件处理错误:${error.message}`);
@@ -33,8 +34,8 @@ function parseStyle (style: ComponentStyle) {
   const pureStye: any = {};
   const styleObj: any = style;
   Object.keys(style).forEach((key) => {
-    if (key.indexOf('transform-') >= 0) {
-      const fun = key.split('-')[1];
+    if (key.indexOf("transform-") >= 0) {
+      const fun = key.split("-")[1];
       pureStye.transform = pureStye.transform
         ? `${pureStye.transform} ${fun}(${styleObj[key]})`
         : `${fun}(${styleObj[key]})`;
@@ -57,8 +58,8 @@ export function parseParams (params: string) {
     const newParams = params.replace(regx, (match: string) => {
       const val = match.substring(3, match.length - 2);
       if (
-        typeof globalObj[val] === 'object' ||
-        typeof globalObj[val] === 'string'
+        typeof globalObj[val] === "object" ||
+        typeof globalObj[val] === "string"
       ) {
         return JSON.stringify(globalObj[val]);
       }
@@ -66,7 +67,7 @@ export function parseParams (params: string) {
     });
     return JSON.parse(newParams);
   } catch (e) {
-    message.error('参数解释错误');
+    message.error("参数解释错误");
     return {};
   }
 }
@@ -81,15 +82,15 @@ export function eventRequest (
   options?: any
 ) {
   return request(originUrl, method, params || {}, {
-    prefix: '/',
+    prefix: "/",
     ...options
   });
 }
 
 export const LayerEvent = {
-  onLoad: '__onLayerLoad__',
-  onDataSource: '__onLayerData__',
-  onUnload: '__onLayerUnload__'
+  onLoad: "__onLayerLoad__",
+  onDataSource: "__onLayerData__",
+  onUnload: "__onLayerUnload__"
 };
 
 interface LayerProps extends React.HTMLAttributes<Element> {
@@ -116,7 +117,7 @@ interface EventSync {
   args: any;
 }
 
-export default inject('screenStore')(
+const Layer = inject("screenStore")(
   observer(
     ({
       screenStore,
@@ -131,6 +132,7 @@ export default inject('screenStore')(
       const targetRef = useRef<HTMLDivElement | null | undefined>();
       const initSizeFlag = useRef<boolean>(data.initSize);
       const dataSourceTimer = useRef<any>();
+      const initFlag = useRef<boolean>(false);
       // 事件回调返回值
       const [eventReturn, setEventReturn] = useState<EventValue>({
         style: {},
@@ -147,10 +149,7 @@ export default inject('screenStore')(
       // 事件同步处理
       const [eventySync, setEventSync] = enable
         ? []
-        : useSync<EventSync>(
-          { event: '', args: [] },
-          data.id
-        );
+        : useSync<EventSync>({ event: "", args: [] }, data.id);
 
       // 组件默认数据
       const defaultProps: any = {};
@@ -163,57 +162,9 @@ export default inject('screenStore')(
         });
       }
 
-      // 事件同步发生变化
-      useEffect(() => {
-        if (eventySync && eventySync.event && allEventHandlers[eventySync.event]) {
-          // 调用组件事件处理器
-          componentEventsHandler(
-            allEventHandlers[eventySync.event],
-            ...eventySync.args
-          );
-        }
-      }, [eventySync, allEventHandlers]);
-
       useEffect(() => {
         // 事件处理
-        const allEvnet: any = {};
-        const compEvent: any = {};
-        const { events } = data;
-        if (events) {
-          Object.keys(events).forEach((key) => {
-            let callFun: Function | null = null;
-            try {
-              callFun = events[key].code ? buildCode(events[key].code) : null;
-            } catch (e) {
-              showHandlerError(data.name, e);
-            }
-
-            if (!callFun || typeof callFun !== 'function') return;
-
-            allEvnet[key] = callFun;
-
-            if (
-              key === LayerEvent.onLoad ||
-              key === LayerEvent.onUnload ||
-              key === LayerEvent.onDataSource
-            ) {
-              // 系统事件
-              //  allEvnet[key] = callFun;
-            } else {
-              compEvent[key] = (...args: any[]) => {
-                // 同步事件 编辑状态下不做同步
-                if (events[key].isSync && setEventSync) {
-                  setEventSync({ event: key, args });
-                  return;
-                }
-                // 调用组件的事件处理
-                callFun && componentEventsHandler(callFun, ...args);
-              };
-            }
-          });
-          setCompEventHandlers(compEvent);
-          setAllEventHandlers(allEvnet);
-        }
+        const allEvnet: any = parseEvents(data.events);
 
         // 加载三方组件
         if (component && component.origin === 2) {
@@ -260,6 +211,69 @@ export default inject('screenStore')(
             runEventHandler(allEvnet[LayerEvent.onUnload]);
           }
         };
+      }, []);
+
+      /**
+       * 接收事件同步
+       */
+      useEffect(() => {
+        if (
+          eventySync &&
+            eventySync.event &&
+            allEventHandlers[eventySync.event]
+        ) {
+          // 调用组件事件处理器
+          componentEventsHandler(
+            allEventHandlers[eventySync.event],
+            ...eventySync.args
+          );
+        }
+      }, [eventySync, allEventHandlers]);
+
+      /**
+       * 解释组件事件
+       */
+      const parseEvents = useCallback((events: LayerEvents | undefined) => {
+        // 事件处理
+        const allEvnet: any = {};
+        const compEvent: any = {};
+        // const { events } = data;
+        if (events) {
+          Object.keys(events).forEach((key) => {
+            let callFun: Function | null = null;
+            try {
+              callFun = events[key].code ? buildCode(events[key].code) : null;
+            } catch (e) {
+              showHandlerError(data.name, e);
+            }
+
+            if (!callFun || typeof callFun !== "function") return;
+
+            allEvnet[key] = callFun;
+
+            if (
+              key === LayerEvent.onLoad ||
+              key === LayerEvent.onUnload ||
+              key === LayerEvent.onDataSource
+            ) {
+              // 系统事件
+              //  allEvnet[key] = callFun;
+            } else {
+              compEvent[key] = (...args: any[]) => {
+                // 同步事件 编辑状态下不做同步
+                if (events[key].isSync && setEventSync) {
+                  setEventSync({ event: key, args });
+                  return;
+                }
+                // 调用组件的事件处理
+                callFun && componentEventsHandler(callFun, ...args);
+              };
+            }
+          });
+          setCompEventHandlers(compEvent);
+          setAllEventHandlers(allEvnet);
+        }
+        return allEvnet;
       }, []);
 
       /**
@@ -395,6 +409,7 @@ export default inject('screenStore')(
           }
 
           if (initSizeFlag.current || data.initSize || !enable) {
+            initSizeFlag.current = true;
             return;
           }
 
@@ -426,6 +441,13 @@ export default inject('screenStore')(
         [data]
       );
 
+      /**
+       * 事件变化时绑定事件
+       */
+      useMemo(() => {
+        initFlag.current && parseEvents(data.events);
+      }, [JSON.stringify(data.events)])
+
       const mergeParms = mergeArgs();
 
       return (
@@ -441,14 +463,14 @@ export default inject('screenStore')(
             transform: `translate(${data.style.x}px, ${data.style.y}px)`,
             zIndex: data.style.z,
             display:
-              !enable && (data.isHide || data.groupHide) ? 'none' : 'block',
+              !enable && (data.isHide || data.groupHide) ? "none" : "block",
             opacity: enable && (data.groupHide || data.isHide) ? 0.2 : 1,
             overflow:
               screenStore!.resizeing &&
               screenStore!.currLayer &&
               screenStore!.currLayer.id === data.id
-                ? 'hidden'
-                : 'visible'
+                ? "hidden"
+                : "visible"
           }}
           onMouseDown={onClick}
           id={data.id}
@@ -465,12 +487,12 @@ export default inject('screenStore')(
                 events={compEventHandlers}
                 style={{
                   ...parseStyle(data.style),
-                  display: 'flex',
-                  width: '100%',
-                  height: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  pointerEvents: enable && data.eventLock ? 'none' : undefined,
+                  display: "flex",
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  pointerEvents: enable && data.eventLock ? "none" : undefined,
                   x: undefined,
                   y: undefined,
                   z: undefined
@@ -483,4 +505,11 @@ export default inject('screenStore')(
       );
     }
   )
+);
+
+export default React.memo(
+  Layer,
+  (prevProps: LayerProps, nextProps: LayerProps) => {
+    return prevProps.data.updateTime === nextProps.data.updateTime;
+  }
 );

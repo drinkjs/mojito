@@ -74,6 +74,7 @@ export default class LayerService extends BaseService {
         componentId: undefined,
         component: undefined,
         id: undefined,
+        updateTime: createStringDate(),
       },
       { omitUndefined: true }
     );
@@ -89,6 +90,7 @@ export default class LayerService extends BaseService {
       id,
       {
         status: 0,
+        updateTime: createStringDate(),
       },
       { omitUndefined: true }
     );
@@ -104,6 +106,7 @@ export default class LayerService extends BaseService {
       id,
       {
         status: 1,
+        updateTime: createStringDate(),
       },
       { omitUndefined: true }
     );
@@ -124,7 +127,7 @@ export default class LayerService extends BaseService {
       delete v.id;
       bulk
         .find({ _id: new mongoose.Types.ObjectId(id) })
-        .updateOne({ $set: { ...v } });
+        .updateOne({ $set: { ...v, updateTime: createStringDate() } });
     });
     const rel = await bulk.execute();
     return rel;

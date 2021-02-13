@@ -20,7 +20,7 @@ export default class Screen {
   name!: string;
 
   @prop({ type: mongoose.Schema.Types.Mixed })
-  options?: ScreenOptions;
+  style?: ScreenOptions;
 
   @prop()
   createTime: string;

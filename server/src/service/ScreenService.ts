@@ -36,7 +36,7 @@ export default class ScreenService extends BaseService {
     const project: ScreenEntity = {
       projectId: new mongoose.Types.ObjectId(data.projectId),
       name: data.name,
-      options: data.options,
+      style: data.style,
       createTime: createStringDate(),
       updateTime: createStringDate(),
       status: 1,
@@ -105,7 +105,7 @@ export default class ScreenService extends BaseService {
       data.id,
       {
         name: data.name,
-        options: data.options,
+        style: data.style,
         updateTime: createStringDate(),
       },
       { omitUndefined: true }

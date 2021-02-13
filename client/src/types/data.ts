@@ -48,6 +48,10 @@ export interface ComponentCategory {
   img?: string;
 }
 
+export interface LayerEvents {
+  [key: string]: { code: string; isSync: boolean }
+}
+
 export interface LayerInfo {
   id: string;
   name: string;
@@ -64,17 +68,17 @@ export interface LayerInfo {
     };
   } | null;
   props?: { [key: string]: any };
-  events?: { [key: string]: { code: string; isSync: boolean } };
+  events?: LayerEvents;
   eventLock?: boolean; // 事件锁定，锁定后图层不能交互
   data?: Object;
   style: ComponentStyle;
   isHide?: boolean;
   isLock?: boolean;
-  updateTime?: string;
+  updateTime?: string | Date;
   group?: string;
   groupLock?: boolean;
   groupHide?: boolean;
-  reloadKey?: number; // 用于强制刷新组件
+  reloadKey?: string | number; // 用于强制刷新组件
 }
 
 export interface ScreenLayout extends CSSProperties {

@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, Length } from "class-validator";
 import { IsObjectId } from "common/Mongoer";
 import { LayerApi, LayerStyle } from "entity/LayerEntity";
 import { ComponentDto } from "./ComponentDto";
@@ -6,20 +6,21 @@ import { ComponentDto } from "./ComponentDto";
 export class LayerDto {
   @IsObjectId({ message: "非法id", groups: ["update"] })
   @IsNotEmpty({ message: "缺少图层id", groups: ["update"] })
-  id: string | undefined;
+  id: string;
 
   @IsNotEmpty({ message: "name不能为空", groups: ["add"] })
-  name: string | undefined;
+  @Length(1, 20, { groups: ["add", "update"] })
+  name: string;
 
   @IsObjectId({ message: "非法id", groups: ["add"] })
   @IsNotEmpty({ message: "screenId不能为空", groups: ["add"] })
-  screenId: string | undefined;
+  screenId: string;
 
   @IsObjectId({ message: "非法id", groups: ["add"] })
   @IsNotEmpty({ message: "componentId不能为空", groups: ["add"] })
-  componentId: string | undefined;
+  componentId: string;
 
-  initSize: boolean | undefined;
+  initSize: boolean;
 
   component?: ComponentDto; // 图层的组件显示，通过componentId查询返回，新增时不需要
 

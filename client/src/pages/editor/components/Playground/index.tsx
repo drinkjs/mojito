@@ -59,7 +59,7 @@ const LayerContextMenu = (props: any) => {
   return (
     <ContextMenu id={id} style={{ display: trigger ? 'block' : 'none' }}>
       {trigger ? (
-        <>
+        <div onMouseDown={(e) => { e.stopPropagation() }}>
           <MenuItem
             onClick={handleItemClick}
             data={{ action: 'SET_TOP', layer }}
@@ -93,7 +93,7 @@ const LayerContextMenu = (props: any) => {
           >
             删除
           </MenuItem>
-        </>
+        </div>
       ) : (
         <div />
       )}
@@ -106,18 +106,6 @@ const ConnectedMenu = connectMenu(MENU_TYPE)(LayerContextMenu);
 
 export default inject('screenStore')(
   observer(({ screenStore }: Props) => {
-    const {
-      screenInfo,
-      layers: screenLayers,
-      selectedLayerIds,
-      layerGroup
-    } = screenStore || {
-      screenInfo: undefined,
-      layers: undefined,
-      selectedLayerIds: new Set(),
-      layerGroup: []
-    };
-
     const ref = useRef<HTMLDivElement>();
     const areaRef = useRef<HTMLDivElement>();
     const zoomRef = useRef<HTMLDivElement>();
@@ -125,7 +113,7 @@ export default inject('screenStore')(
     const currNativeEvent = useRef<any>();
     const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
 
-    const pageLayout = screenInfo ? screenInfo.options : null;
+    const pageLayout = screenStore!.screenInfo ? screenStore!.screenInfo.style : undefined;
     const [scale, setScale] = useState<number>(1);
     const [oldSize, setOldSize] = useState<{ width: number; height: number }>({
       width: 0,
@@ -242,6 +230,7 @@ export default inject('screenStore')(
         moveableRef.current.dragStart(currNativeEvent.current);
         currNativeEvent.current = null;
       }
+      moveableRef.current?.updateTarget();
       if (groupElement.length > 1) {
         // 右侧边栏改变群组位置
         Eventer.on(CHANGE_GROUP, onChangeGroup);
@@ -249,15 +238,15 @@ export default inject('screenStore')(
       return () => {
         Eventer.remove(CHANGE_GROUP);
       };
-    }, [groupElement, groupframes]);
+    }, [groupElement, groupframes, currNativeEvent]);
 
     /**
-     * 清空选中
+     * 选中的图层
      */
     useEffect(() => {
-      currLayerIds.current = toJS(selectedLayerIds);
+      currLayerIds.current = toJS(screenStore!.selectedLayerIds);
 
-      if (selectedLayerIds.size === 0) {
+      if (currLayerIds.current.size === 0) {
         setGroupElement([]);
         setGroupFrames([]);
         screenStore!.setCurrLayer(undefined);
@@ -268,7 +257,7 @@ export default inject('screenStore')(
         );
         setGroupFrames([]);
 
-        if (selectedLayerIds.size > 1) {
+        if (currLayerIds.current.size > 1) {
           screenStore!.setCurrLayer(undefined);
           // 判断是否选中的图层是在同一个群组，主要用于右上角图标显示状态
           const groupSet = new Set<string>();
@@ -292,7 +281,7 @@ export default inject('screenStore')(
           screenStore!.setCurrLayer(layerGroups[0]);
         }
       }
-    }, [selectedLayerIds]);
+    }, [screenStore!.selectedLayerIds]);
 
     /**
      * 通过右边栏修改组大小
@@ -465,15 +454,16 @@ export default inject('screenStore')(
     /**
      * 当前选中的图层
      */
-    const onLayer = useCallback(
+    const onSelectLayer = useCallback(
       (
         layerData: LayerInfo,
         event?: React.MouseEvent<HTMLDivElement, MouseEvent>
       ) => {
         currNativeEvent.current = event ? event.nativeEvent : null;
-        if (selectedLayerIds.has(layerData.id)) return;
 
-        const ids = toJS(selectedLayerIds);
+        if (screenStore!.selectedLayerIds.has(layerData.id)) return;
+
+        const ids = toJS(screenStore!.selectedLayerIds);
         if (!event || !event.ctrlKey) {
           ids.clear();
         }
@@ -495,12 +485,15 @@ export default inject('screenStore')(
           screenStore!.selectedLayerIds = ids;
         });
       },
-      [selectedLayerIds]
+      []
     );
 
+    /**
+     * 第一次生成组件
+     */
     const onLayerInit = useCallback((layer: LayerInfo) => {
       if (screenStore!.currLayer && screenStore!.currLayer.id === layer.id) {
-        onLayer(layer);
+        onSelectLayer(layer);
         onResize();
       }
     }, []);
@@ -527,13 +520,10 @@ export default inject('screenStore')(
     const onContentMenuClick = useCallback(
       (e, data) => {
         e.stopPropagation();
-        if (!data) return;
+        if (!data || !screenStore || !screenStore.layers) return;
 
-        // eslint-disable-next-line prefer-destructuring
+        const screenLayers = screenStore.layers;
         const layer: LayerInfo = data.layer;
-        if (!screenLayers) {
-          return;
-        }
 
         switch (data.action) {
           case 'REMOVE':
@@ -580,14 +570,15 @@ export default inject('screenStore')(
             break;
           }
           case 'EDIT':
-            onLayer(layer, undefined);
+            onSelectLayer(layer);
             break;
           default:
         }
       },
-      [screenLayers]
+      []
     );
 
+    const screenLayers = screenStore!.layers;
     // 计算辅助线
     const verLines = [0];
     const horLines = [0];
@@ -632,7 +623,7 @@ export default inject('screenStore')(
               <PlusOutlined />
             </div>
           </div>
-          {screenInfo && (
+          {screenStore!.screenInfo && (
             <div className={styles.toolbar}>
               <span style={{ ...toolStyles, fontSize: '12px' }}>
                 事件锁定
@@ -658,7 +649,7 @@ export default inject('screenStore')(
                   screenStore!.reloadLayer();
                 }}
                 title="刷新组件"
-                disabled={selectedLayerIds.size !== 1}
+                disabled={screenStore!.selectedLayerIds.size !== 1}
               />
               <IconLink
                 icon="icon-suoding"
@@ -666,7 +657,7 @@ export default inject('screenStore')(
                   screenStore!.isLayerLock ? undefined : styles.noLockHide
                 }
                 style={toolStyles}
-                disabled={selectedLayerIds.size === 0}
+                disabled={screenStore!.selectedLayerIds.size === 0}
                 title={screenStore!.isLayerLock ? '解锁组件' : '锁定组件'}
                 onClick={() => {
                   screenStore!.lockLayer(!screenStore!.isLayerLock);
@@ -678,7 +669,7 @@ export default inject('screenStore')(
                   screenStore!.isLayerHide ? styles.noLockHide : undefined
                 }
                 style={toolStyles}
-                disabled={selectedLayerIds.size === 0}
+                disabled={screenStore!.selectedLayerIds.size === 0}
                 onClick={() => {
                   screenStore!.hideLayer(!screenStore!.isLayerHide);
                 }}
@@ -689,7 +680,7 @@ export default inject('screenStore')(
                 icon="icon-hebing"
                 onClick={groupLayer}
                 disabled={
-                  screenStore!.isSelectedGroup || selectedLayerIds.size < 2
+                  screenStore!.isSelectedGroup || screenStore!.selectedLayerIds.size < 2
                 }
                 style={toolStyles}
               />
@@ -698,7 +689,7 @@ export default inject('screenStore')(
                 icon="icon-shoudongfenli"
                 onClick={disbandLayer}
                 disabled={
-                  !screenStore!.isSelectedGroup || layerGroup.length < 2
+                  !screenStore!.isSelectedGroup || screenStore!.layerGroup.length < 2
                 }
                 style={toolStyles}
               />
@@ -720,7 +711,7 @@ export default inject('screenStore')(
                 <a
                   rel="noreferrer"
                   target="_blank"
-                  href={`/screen/${screenInfo.id}`}
+                  href={`/screen/${screenStore!.screenInfo.id}`}
                   className={styles.preview}
                 >
                   <IconFont type="icon-chakan" />
@@ -793,7 +784,7 @@ export default inject('screenStore')(
                             defaultHeight={DefaultLayerSize.height}
                             data={layerData}
                             key={layerData.id + layerData.reloadKey}
-                            onSelected={onLayer}
+                            onSelected={onSelectLayer}
                             onReady={onLayerInit}
                           />
                         </ContextMenuTrigger>
@@ -825,6 +816,7 @@ export default inject('screenStore')(
                       });
                     }}
                     onDragGroupEnd={({ isDrag }) => {
+                      currNativeEvent.current = null;
                       screenStore!.setResizeing(false);
                       if (!isDrag) return;
                       saveGroup();
@@ -871,13 +863,14 @@ export default inject('screenStore')(
                     onDragStart={({ set }) => {
                       set([layerFrame!.style.x, layerFrame!.style.y]);
                     }}
-                    onDrag={({ target, beforeTranslate }) => {
+                    onDrag={({ target, beforeTranslate, clientX, clientY }) => {
                       if (!layerFrame) return;
                       layerFrame.style.x = Math.round(beforeTranslate[0]);
                       layerFrame.style.y = Math.round(beforeTranslate[1]);
                       target.style.transform = `translate(${layerFrame.style.x}px, ${layerFrame.style.y}px)`;
                     }}
                     onDragEnd={({ lastEvent }) => {
+                      currNativeEvent.current = null;
                       if (lastEvent && layerFrame) {
                         screenStore!.updateLayer(layerFrame.layerId, {
                           style: layerFrame.style

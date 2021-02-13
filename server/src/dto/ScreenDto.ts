@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, Length } from "class-validator";
 import { IsObjectId } from "common/Mongoer";
 import { ScreenOptions } from "entity/ScreenEntity";
 import { LayerDto } from "./LayerDto";
@@ -13,10 +13,11 @@ export class ScreenDto {
   @IsNotEmpty({ message: "请输入页面id", groups: ["update", "coverImg"] })
   id: string;
 
-  @IsNotEmpty({ message: "请输入项目名称", groups: ["add", "update"] })
+  @IsNotEmpty({ message: "请输入页面名称", groups: ["add", "update"] })
+  @Length(1, 50, { groups: ["add", "update"] })
   name: string;
 
-  options?: ScreenOptions;
+  style?: ScreenOptions;
 
   createUser?: string;
 

@@ -27,7 +27,7 @@ export default inject('screenStore')(
         if (data) {
           setInitFlag(true);
           if (onLayout) {
-            onLayout(screenInfo!.options);
+            onLayout(screenInfo!.style);
           }
         }
       });
@@ -45,7 +45,7 @@ export default inject('screenStore')(
       screenInfo && joinPage(screenInfo.project.name);
     });
 
-    const { options, layers } = screenInfo || {
+    const { style, layers } = screenInfo || {
       layout: undefined,
       layers: undefined
     };
@@ -53,21 +53,21 @@ export default inject('screenStore')(
     return (
       <DocumentTitle title={screenInfo ? screenInfo.name : ''}>
         <Skeleton loading={screenStore!.getDetailLoading}>
-          {options && (
+          {style && (
             <div>
               <div
                 style={{
-                  ...options,
-                  backgroundColor: options.backgroundColor || '#FFF',
-                  backgroundImage: options.backgroundImage
-                    ? `url(${options.backgroundImage})`
+                  ...style,
+                  backgroundColor: style.backgroundColor || '#FFF',
+                  backgroundImage: style.backgroundImage
+                    ? `url(${style.backgroundImage})`
                     : 'none',
                   backgroundSize:
-                    options.backgroundRepeat === 'no-repeat'
-                      ? '100% 100%'
-                      : undefined,
-                  backgroundRepeat: options.backgroundRepeat,
-                  color: options.color,
+                  style.backgroundRepeat === 'no-repeat'
+                    ? '100% 100%'
+                    : undefined,
+                  backgroundRepeat: style.backgroundRepeat,
+                  color: style.color,
                   position: 'relative',
                   overflow: 'hidden'
                 }}

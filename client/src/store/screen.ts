@@ -25,9 +25,9 @@ export default class Screen {
   screenList: ScreenDto[] = [];
 
   // 页面明细信息
-  screenInfo: ScreenDetailDto | undefined;
+  screenInfo?: ScreenDetailDto;
 
-  currLayer: LayerInfo | undefined;
+  currLayer?: LayerInfo;
 
   selectedLayerIds: Set<string> = new Set(); // 所有选中的图层id
 
@@ -122,11 +122,14 @@ export default class Screen {
     if (layers.length === 0) {
       return false;
     } else if (layers.length === 1) {
+      // 只选中一个图层
       return layers[0].isLock;
     } else if (layers.length > 1) {
       if (this.isSelectedGroup) {
+        // 选中群组
         return layers[0].groupLock;
       }
+      // 多选
       for (const v of layers) {
         if (!v.isLock) return false;
       }
@@ -137,13 +140,16 @@ export default class Screen {
   get isLayerHide () {
     const layers = this.layerGroup;
     if (layers.length === 0) {
+      // 只选中一个图层
       return false;
     } else if (layers.length === 1) {
       return layers[0].isHide;
     } else if (layers.length > 1) {
       if (this.isSelectedGroup) {
+        // 选中群组
         return layers[0].groupHide;
       }
+      // 多选
       for (const v of layers) {
         if (!v.isHide) return false;
       }
@@ -220,16 +226,16 @@ export default class Screen {
    * @param name
    * @param projectId
    */
-  async add (name: string, projectId: string, options?: CSSProperties) {
+  async add (name: string, projectId: string, style?: CSSProperties) {
     this.addLoading = true;
     return service
       .screenAdd({
         name,
         projectId,
-        options: {
+        style: {
           width: DefaultPageSize.width, // 页面默认宽度
           height: DefaultPageSize.height, // 页面默认高度
-          ...options
+          ...style
         }
       })
       .finally(() => {
@@ -320,10 +326,10 @@ export default class Screen {
    */
   async saveStyle (styles: any, isUndo?: boolean) {
     if (!this.screenInfo) return;
-    const oldStyle = toJS(this.screenInfo.options);
+    const oldStyle = toJS(this.screenInfo.style);
     runInAction(() => {
       if (this.screenInfo) {
-        this.screenInfo.options = { ...styles };
+        this.screenInfo.style = { ...styles };
       }
     });
     service
@@ -355,6 +361,7 @@ export default class Screen {
           });
         runInAction(() => {
           this.screenInfo = data;
+          this.selectedLayerIds = toJS(this.selectedLayerIds);
         });
         return data;
       });
@@ -391,8 +398,10 @@ export default class Screen {
    */
   lockLayer (isLock: boolean) {
     if (this.selectedLayerIds.size === 1) {
+      // 锁定图层
       this.updateLayer(Array.from(this.selectedLayerIds)[0], { isLock });
     } else if (this.selectedLayerIds.size > 1) {
+      // 锁定图层组
       const isGroup = this.isSelectedGroup;
       this.batchUpdateLayer(
         Array.from(this.selectedLayerIds).map((id) =>
@@ -408,8 +417,10 @@ export default class Screen {
    */
   hideLayer (isHide: boolean) {
     if (this.selectedLayerIds.size === 1) {
+      // 隐藏图层
       this.updateLayer(Array.from(this.selectedLayerIds)[0], { isHide });
     } else if (this.selectedLayerIds.size > 1) {
+      // 隐藏图层组
       const isGroup = this.isSelectedGroup;
       this.batchUpdateLayer(
         Array.from(this.selectedLayerIds).map((id) =>
@@ -439,27 +450,20 @@ export default class Screen {
       args: [layerId, {}, reload, !isUndo],
       action: this.updateLayer
     };
+    // 修改本地数据
     const layer: any = this.screenInfo.layers[layerIndex];
+    layer.updateTime = new Date();
+    if (reload) layer.reloadKey = layer.reloadKey === 1 ? 0 : 1;
     keys.forEach((key) => {
-      // 事件不做保存，因为实际使中用撤销属性和事件用户可能无感知，很容易产生不可预料的问题
+      // 事件不做undo保存，因为实际使中用撤销属性和事件用户可能无感知，很容易产生不可预料的问题
       if (key !== 'events') undoData.args[1][key] = toJS(layer[key]);
       layer[key] = dataAny[key];
     });
-
-    // 更新本地图层信息
-    runInAction(() => {
-      this.saveLoading = true;
-      if (reload) {
-        layer.reloadKey = layer.reloadKey === 0 ? 1 : 0;
-        this.selectedLayerIds = new Set();
-      }
-      if (this.screenInfo) { this.screenInfo.layers = toJS(this.screenInfo.layers); } // 刷新数据
-      if (!isUndo) this.setCurrLayer(layer);
-    });
-
+    this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
+    this.saveLoading = true;
     // 保存数据
     return layerService
-      .updatelayer({ id: layerId, ...data, reloadKey: layer.reloadKey })
+      .updatelayer({ id: layerId, name: layer.name, ...data, reloadKey: layer.reloadKey })
       .then((rel) => {
         // 保存成功
         if (!data.initSize) {
@@ -469,6 +473,9 @@ export default class Screen {
           } else {
             this.addRedoData(undoData);
           }
+        }
+        if (reload) {
+          this.reload();
         }
         return rel;
       })
@@ -523,6 +530,8 @@ export default class Screen {
     reload?: boolean,
     isUndo?: boolean
   ) {
+    if (!this.screenInfo || !this.screenInfo.layers) return;
+
     const undoData = data.map((v: any) => {
       const oldData: any = {};
       const currLayer =
@@ -531,15 +540,15 @@ export default class Screen {
         this.screenInfo.layers.find((layer) => layer.id === v.id);
       if (currLayer) {
         const currLayerAny: any = currLayer;
-        runInAction(() => {
-          Object.keys(v).forEach((key) => {
-            oldData[key] = toJS(currLayerAny[key]);
-            currLayerAny[key] = v[key];
-          });
+        Object.keys(v).forEach((key) => {
+          oldData[key] = toJS(currLayerAny[key]);
+          currLayerAny[key] = v[key];
         });
       }
       return oldData;
     });
+
+    this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
 
     return layerService
       .batchUpdateLayer(data)
@@ -557,11 +566,6 @@ export default class Screen {
         }
         if (reload) {
           this.reload();
-        } else {
-          runInAction(() => {
-            // 刷新数据
-            if (this.screenInfo) { this.screenInfo.layers = toJS(this.screenInfo.layers); }
-          });
         }
         return rel;
       })
@@ -635,18 +639,6 @@ export default class Screen {
   }
 
   /**
-   * 选中当前图层
-   * @param layer
-   */
-  // setCurrLayer(layer: LayerInfo) {
-  //   if (!layer) {
-  //     this.currLayer = null;
-  //     return;
-  //   }
-  //   this.currLayer = layer;
-  // }
-
-  /**
    * 当前组件样式
    * @param style
    */
@@ -714,5 +706,10 @@ export default class Screen {
       }
       this.reload();
     });
+  }
+
+  saveAll () {
+    const layers = toJS(this.screenInfo?.layers);
+    layers && this.batchUpdateLayer(layers, true);
   }
 }

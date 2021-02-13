@@ -12,7 +12,7 @@ import { message } from 'antd';
 const API = '/api';
 
 function showError (content) {
-  message.error(content);
+  message.error({ content, key: "networkError" });
 }
 
 /**
