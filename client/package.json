@@ -1,6 +1,6 @@
 {
   "name": "mojito",
-  "version": "0.1.0",
+  "version": "v1.0.0",
   "private": true,
   "dependencies": {
     "@babel/standalone": "^7.12.15",
@@ -50,9 +50,7 @@
     "start": "env-cmd -f .env.development craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject",
-    "esfix": "eslint --fix --ext .js --ext .jsx --ext .tsx --ext .ts src/",
-    "format": "prettier --single-quote --write ."
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

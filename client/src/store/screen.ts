@@ -481,6 +481,9 @@ export default class Screen {
       })
       .catch(() => {
         // 保存失败
+        runInAction(() => {
+          this.selectedLayerIds = new Set();
+        })
         this.reload();
       })
       .finally(() => {
@@ -583,6 +586,9 @@ export default class Screen {
         return rel;
       })
       .catch(() => {
+        runInAction(() => {
+          this.selectedLayerIds = new Set();
+        })
         this.reload();
       });
   }
