@@ -1,8 +1,8 @@
 /* eslint-disable react/no-this-in-sfc */
-import { message } from 'antd';
-import * as React from 'react';
-import { useState } from 'react';
-import { ComponentStyle } from 'types';
+import { message } from "antd";
+import * as React from "react";
+import { useState } from "react";
+import { ComponentStyle } from "types";
 
 const { useRef, useEffect } = React;
 
@@ -30,6 +30,7 @@ export default ({
 }: RenderProps) => {
   const ref = useRef<HTMLDivElement | null>();
   const vueRef = useRef<HTMLDivElement | null>();
+  const prevEvents = useRef<string>();
   const vueObj = useRef<any>(); // vue 组件对象
   const [isInit, setIsInit] = useState(false);
 
@@ -50,9 +51,7 @@ export default ({
   const createReact = () => {
     return React.createElement(component, {
       ...props,
-      style: {
-        ...styles
-      },
+      styles,
       ...events
     });
   };
@@ -65,16 +64,16 @@ export default ({
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
-      message.error({ content: 'Vue没定义', key: 'noVue' });
+      message.error({ content: "Vue没定义", key: "noVue" });
       return;
     }
 
     if (vueObj.current) {
       // 更新props
       Object.keys(props).forEach((key) => {
-        Vue.set(vueObj.current.$data, key, props[key]);
+        Vue.set(vueObj.current, key, props[key]);
       });
-      Vue.set(vueObj.current.$data, 'styles', styles);
+      Vue.set(vueObj.current, "styles", styles);
       return;
     }
 
@@ -115,7 +114,7 @@ export default ({
             vueRef.current = r;
           }}
         />
-      )}{' '}
+      )}{" "}
       {/* vue组件占位 */}
       {isVue ? createVue() : createReact()}
     </div>

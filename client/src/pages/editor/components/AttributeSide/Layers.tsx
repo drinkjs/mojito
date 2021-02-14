@@ -314,14 +314,7 @@ export default inject('screenStore')(
           maxZ--;
         });
         // 更新信息
-        screenLayers.sort((a, b) => {
-          if (a && b && b.style && a.style && a.style.z && b.style.z) {
-            return b.style.z - a.style.z;
-          }
-          return 0;
-        });
-        setScreenLayers([...screenLayers]);
-        screenStore!.batchUpdateLayer(screenLayers, true);
+        screenStore!.batchUpdateLayer(screenLayers.map((v) => ({ id: v.id, style: v.style })), true);
       },
       [screenLayers]
     );

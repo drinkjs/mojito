@@ -520,6 +520,10 @@ export default class Screen {
     }
   }
 
+  sortByLayers () {
+
+  }
+
   /**
    * 批量更新图层
    * @param data
@@ -532,6 +536,7 @@ export default class Screen {
   ) {
     if (!this.screenInfo || !this.screenInfo.layers) return;
 
+    let isSort = false;
     const undoData = data.map((v: any) => {
       const oldData: any = {};
       const currLayer =
@@ -541,12 +546,20 @@ export default class Screen {
       if (currLayer) {
         const currLayerAny: any = currLayer;
         Object.keys(v).forEach((key) => {
+          if (key === "style" && v.style.z !== currLayer.style.z) isSort = true;
           oldData[key] = toJS(currLayerAny[key]);
           currLayerAny[key] = v[key];
         });
       }
       return oldData;
     });
+
+    if (isSort) {
+      // 改变z后重新排序
+      this.screenInfo.layers.sort((a, b) => {
+        return b.style.z - a.style.z;
+      });
+    }
 
     this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
 

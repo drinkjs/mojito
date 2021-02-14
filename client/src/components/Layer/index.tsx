@@ -108,7 +108,7 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 }
 
 interface EventValue {
-  style?: ComponentStyleQuery;
+  styles?: ComponentStyleQuery;
   props?: { [key: string]: any };
 }
 
@@ -135,7 +135,7 @@ const Layer = inject("screenStore")(
       const initFlag = useRef<boolean>(false);
       // 事件回调返回值
       const [eventReturn, setEventReturn] = useState<EventValue>({
-        style: {},
+        styles: {},
         props: {}
       });
       // 组件的事件处理方法
@@ -336,10 +336,10 @@ const Layer = inject("screenStore")(
         (rel: EventValue) => {
           if (rel) {
             // eslint-disable-next-line no-shadow
-            const { style, props } = rel;
-            eventReturn.style = {
-              ...eventReturn.style,
-              ...style
+            const { styles, props } = rel;
+            eventReturn.styles = {
+              ...eventReturn.styles,
+              ...styles
             };
             eventReturn.props = {
               ...eventReturn.props,
@@ -380,10 +380,10 @@ const Layer = inject("screenStore")(
           left: undefined,
           zIndex: undefined,
           transform: undefined,
-          ...eventReturn.style // 事件返回改变样式
+          ...eventReturn.styles // 事件返回改变样式
         });
 
-        return { props: mergeProps, style: parseStyle(mergeStyle) };
+        return { props: mergeProps, styles: parseStyle(mergeStyle) };
       };
 
       /**
@@ -483,7 +483,7 @@ const Layer = inject("screenStore")(
                 component={lib.default}
                 initFlag={data.initSize}
                 props={mergeParms.props}
-                styles={mergeParms.style}
+                styles={mergeParms.styles}
                 events={compEventHandlers}
                 style={{
                   ...parseStyle(data.style),
