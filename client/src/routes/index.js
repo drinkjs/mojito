@@ -9,14 +9,18 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { matchPath, Router } from 'react-router';
+import RootLayout from 'layout/RootLayout';
 import routesConf from './app.routes';
 import { LoadingComponent } from '../components/Loader';
 
-export default function RouterConfig () {
-  const pages = formatRoutes(routesConf);
+export function AppRouter () {
   return (
     <BrowserRouter>
-      <Suspense fallback={<LoadingComponent />}>{renderRoutes(pages)}</Suspense>
+      <RootLayout>
+        <Suspense fallback={<LoadingComponent />}>
+          {renderRoutes(routesConf)}
+        </Suspense>
+      </RootLayout>
     </BrowserRouter>
   );
 }
@@ -24,37 +28,36 @@ export default function RouterConfig () {
 export function renderRoutes (routes) {
   if (!routes) return null;
   return (
-    <>
-      {routes.map((route, index) => {
-        const key = `router${index}`;
-        if (route.redirect) {
-          return (
-            <Switch key={key}>
-              <Redirect exact push from={route.path} to={route.redirect} />
-              {renderRoutes(route.routes)}
-            </Switch>
-          );
-        }
-        return (
-          <Switch key={key}>
-            <Route
-              path={route.path}
-              key={route.path}
-              exact={!!route.exact}
-              render={(props) =>
-                route.component
-                  ? (
-                  <route.component {...props} route={route} />
-                    )
-                  : (
-                      renderRoutes(route.routes)
-                    )
-              }
-            />
-          </Switch>
-        );
+    <Switch>
+      {routes.map((route) => {
+        return route.redirect
+          ? (
+          <Redirect
+            exact
+            push
+            from={route.path}
+            to={route.redirect}
+            key={route.path}
+          />
+            )
+          : (
+          <Route
+            path={route.path}
+            key={route.path}
+            exact={!!route.exact}
+            render={(props) =>
+              route.component
+                ? (
+                <route.component {...props} route={route} />
+                  )
+                : (
+                    renderRoutes(route.routes)
+                  )
+            }
+          />
+            );
       })}
-    </>
+    </Switch>
   );
 }
 
@@ -82,17 +85,4 @@ export function matchRoutes (
   });
 
   return branch;
-}
-
-function formatRoutes (routes) {
-  const routeArr = [];
-  if (routes) {
-    routes.forEach((v) => {
-      routeArr.push({
-        ...v,
-        routes: formatRoutes(v.routes)
-      });
-    });
-  }
-  return routeArr;
 }

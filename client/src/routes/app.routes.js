@@ -5,33 +5,29 @@
  * @LastEditTime: 2020-05-28 13:48:35
  * @Description: file content
  */
-import RootLayout from 'layout/RootLayout';
+
+// eslint-disable-next-line no-unused-vars
+import { lazyLoader } from 'components/Loader';
 
 const routes = [
   {
     path: '/',
-    component: RootLayout,
-    routes: [
-      {
-        path: '/',
-        redirect: '/editor/project',
-        routes: [
-          {
-            path: '/editor/project',
-            component: 'editor/Project'
-          },
-          {
-            path: '/editor/screen/:id',
-            component: 'editor/Screen'
-          }
-        ]
-      },
-      {
-        path: '/screen/:id',
-        exact: true,
-        component: 'preview'
-      }
-    ]
+    exact: true,
+    component: 'editor/Project'
+  },
+  {
+    path: '/editor/project',
+    component: 'editor/Project'
+  },
+  {
+    path: '/editor/screen/:id',
+    exact: true,
+    component: 'editor/Screen'
+  },
+  {
+    path: '/screen/:id',
+    exact: true,
+    component: 'preview'
   }
 ];
 
