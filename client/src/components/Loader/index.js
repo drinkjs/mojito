@@ -26,7 +26,7 @@ export const loadLib = ({ libName, version }, onload) => {
     return;
   }
   const bundleUrl = `${
-    LIB_URI || ''
+    REACT_APP_LIB_URI || ''
   }/${exportName}/bundle.js?t=${Math.random()}`;
   if (global[exportName]) {
     onload(global[exportName]);
@@ -91,7 +91,7 @@ export const LoadingComponent = (props) => {
         alignItems: 'center',
         height: '100%',
         width: '100%',
-        ...style
+        ...style,
       }}
     >
       {skeleton ? <Skeleton active /> : <Spin />}

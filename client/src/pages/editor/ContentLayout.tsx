@@ -18,7 +18,7 @@ const ContentLayout = ({
   header,
   title,
   showBack,
-  backLink
+  backLink,
 }: Props) => {
   return (
     <DocumentTitle title={title || ''}>
@@ -26,9 +26,9 @@ const ContentLayout = ({
         <Header style={{ borderBottom: '2px solid #000', display: 'flex' }}>
           {showBack && backLink && (
             <span style={{ padding: '0 12px' }}>
-              <Link to={backLink}>
+              <a href={backLink}>
                 <IconFont type="icon-fanhui1" className={styles.backIcon} />
-              </Link>
+              </a>
             </span>
           )}
           <span>{title}</span>
