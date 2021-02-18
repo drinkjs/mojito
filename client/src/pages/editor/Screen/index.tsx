@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
 import { useParams } from 'react-router-dom';
 import { Skeleton } from 'antd';
@@ -10,8 +10,6 @@ import ComponentSide from '../components/ComponentSide';
 import AttributeSide from '../components/AttributeSide';
 import Playground from '../components/Playground';
 import DragLayer from './DragLayer';
-
-const { useEffect } = React;
 
 interface Props {
   screenStore?: ScreenStore;

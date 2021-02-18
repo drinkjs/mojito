@@ -1,13 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-// const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
-const indexHtml =
-  process.env.NODE_ENV === 'development' ? 'index.dev.html' : 'index.html';
-
-const ROOT_PATH = path.resolve(process.cwd());
-const ENTRY_PATH = `${ROOT_PATH}/public`;
+console.log(process.env.REACT_APP_REACT_CDN);
 
 module.exports = {
   devServer: (devServerConfig, { env, paths, proxy, allowedHost }) => {
@@ -34,12 +29,6 @@ module.exports = {
     alias: {},
     plugins: {
       add: [
-        // new HtmlWebpackPlugin({
-        //   title: "Mojito | 大屏可视化编辑器",
-        //   filename: "index.html",
-        //   template: `${ENTRY_PATH}/${indexHtml}`,
-        //   hash: false
-        // }),
         new MonacoWebpackPlugin({
           languages: ['javascript', 'css', 'typescript', 'json'],
         }),

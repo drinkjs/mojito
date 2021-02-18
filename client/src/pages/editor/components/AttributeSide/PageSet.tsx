@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { Radio } from 'antd';
 import UploadImg from 'components/UploadImg';
@@ -10,12 +10,12 @@ import { SizeItem, ColorItem, FontItem } from './Style';
 const sizeItems = [
   {
     label: '宽度',
-    key: 'width'
+    key: 'width',
   },
   {
     label: '高度',
-    key: 'height'
-  }
+    key: 'height',
+  },
 ];
 
 let timerId: any;
@@ -49,7 +49,7 @@ export default inject('screenStore')(
         if (screenStore && screenStore.screenInfo) {
           screenStore.saveStyle({
             ...screenStore.screenInfo.style,
-            [type]: value
+            [type]: value,
           });
         }
       });
@@ -59,7 +59,7 @@ export default inject('screenStore')(
       if (screenStore && screenStore.screenInfo) {
         screenStore.saveStyle({
           ...screenStore.screenInfo.style,
-          backgroundImage: path
+          backgroundImage: path,
         });
       }
     }, []);

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Tooltip, Row, Col, Skeleton } from 'antd';
 import { CloseOutlined, RollbackOutlined } from '@ant-design/icons';
 import IconFont from 'components/IconFont';
@@ -10,8 +10,6 @@ import AddComponent from './AddComponent';
 import styles from './index.module.scss';
 
 const classNames = require('classnames');
-
-const { useCallback, useState, useEffect } = React;
 
 interface Props {
   componentStore?: ComponentStore;
@@ -146,7 +144,7 @@ export default inject('componentStore')(
               <Tooltip placement="right" title={v.name} key={v.name}>
                 <div
                   className={classNames(styles.icon, {
-                    [styles.iconSelected]: currRoot && currRoot.id === v.id
+                    [styles.iconSelected]: currRoot && currRoot.id === v.id,
                   })}
                   onClick={() => {
                     onCateClick(v, true);
@@ -163,13 +161,11 @@ export default inject('componentStore')(
             <div className={styles.cateTitle}>
               {currType.name}
               <span className={styles.close} onClick={onClose}>
-                {currCategory.length > 1
-                  ? (
+                {currCategory.length > 1 ? (
                   <RollbackOutlined />
-                    )
-                  : (
+                ) : (
                   <CloseOutlined />
-                    )}
+                )}
               </span>
             </div>
             <Skeleton loading={componentStore!.getTypeTreeLoading}>

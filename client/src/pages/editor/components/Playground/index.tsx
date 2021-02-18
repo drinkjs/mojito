@@ -1,7 +1,7 @@
 /* eslint-disable multiline-ternary */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
-import * as React from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import Moveable from 'react-moveable';
 import { observer, inject } from 'mobx-react';
@@ -12,7 +12,7 @@ import {
   ContextMenu,
   MenuItem,
   connectMenu,
-  ContextMenuTrigger
+  ContextMenuTrigger,
 } from 'react-contextmenu';
 import IconFont, { IconLink } from 'components/IconFont';
 import Layer from 'components/Layer';
@@ -23,17 +23,16 @@ import {
   ComponentStyle,
   LayerInfo,
   LayerQuery,
-  ScreenStore
+  ScreenStore,
 } from 'types';
 import {
   DefaulBackgroundColor,
   DefaultFontColor,
-  DefaultLayerSize
+  DefaultLayerSize,
 } from 'config';
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
 
-const { useCallback, useRef, useEffect, useState } = React;
 let compCount: { [key: string]: number } = {};
 
 interface Props {
@@ -47,7 +46,7 @@ interface FrameInfo {
 }
 
 const toolStyles = {
-  margin: '0 6px'
+  margin: '0 6px',
 };
 
 // 右键菜单
@@ -59,7 +58,11 @@ const LayerContextMenu = (props: any) => {
   return (
     <ContextMenu id={id} style={{ display: trigger ? 'block' : 'none' }}>
       {trigger ? (
-        <div onMouseDown={(e) => { e.stopPropagation() }}>
+        <div
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <MenuItem
             onClick={handleItemClick}
             data={{ action: 'SET_TOP', layer }}
@@ -113,11 +116,13 @@ export default inject('screenStore')(
     const currNativeEvent = useRef<any>();
     const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
 
-    const pageLayout = screenStore!.screenInfo ? screenStore!.screenInfo.style : undefined;
+    const pageLayout = screenStore!.screenInfo
+      ? screenStore!.screenInfo.style
+      : undefined;
     const [scale, setScale] = useState<number>(1);
     const [oldSize, setOldSize] = useState<{ width: number; height: number }>({
       width: 0,
-      height: 0
+      height: 0,
     });
 
     const [layerFrame, setLayerFrame] = useState<FrameInfo>(); // 单个图层位置信息
@@ -181,9 +186,9 @@ export default inject('screenStore')(
               y,
               z,
               width: DefaultLayerSize.width,
-              height: DefaultLayerSize.height
+              height: DefaultLayerSize.height,
             },
-            props
+            props,
           };
 
           screenStore.addLayer(newLayer);
@@ -191,8 +196,8 @@ export default inject('screenStore')(
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
-        canDrop: monitor.canDrop()
-      })
+        canDrop: monitor.canDrop(),
+      }),
     });
 
     useEffect(() => {
@@ -268,7 +273,7 @@ export default inject('screenStore')(
             layerGroups.map((layer) => {
               return {
                 layerId: layer.id,
-                style: { ...layer.style }
+                style: { ...layer.style },
               };
             })
           );
@@ -276,7 +281,7 @@ export default inject('screenStore')(
           // 只选中了一个图层
           setLayerFrame({
             layerId: layerGroups[0].id,
-            style: toJS(layerGroups[0].style)
+            style: toJS(layerGroups[0].style),
           });
           screenStore!.setCurrLayer(layerGroups[0]);
         }
@@ -295,7 +300,7 @@ export default inject('screenStore')(
         offsetX,
         offsetY,
         offsetWidth,
-        offsetHeight
+        offsetHeight,
       }) => {
         groupframes.forEach((frame, index) => {
           const { style } = frame;
@@ -324,7 +329,7 @@ export default inject('screenStore')(
         groupframes.map((frame) => {
           return {
             id: frame.layerId,
-            style: frame.style
+            style: frame.style,
           };
         })
       );
@@ -375,7 +380,7 @@ export default inject('screenStore')(
       }
       setOldSize({
         width: pageLayout.width,
-        height: pageLayout.height
+        height: pageLayout.height,
       });
       if (areaRef.current && ref.current && zoomRef.current) {
         const { width } = areaRef.current.getBoundingClientRect();
@@ -519,66 +524,63 @@ export default inject('screenStore')(
     /**
      * 处理右键菜单事件
      */
-    const onContentMenuClick = useCallback(
-      (e, data) => {
-        e.stopPropagation();
-        if (!data || !screenStore || !screenStore.layers) return;
+    const onContentMenuClick = useCallback((e, data) => {
+      e.stopPropagation();
+      if (!data || !screenStore || !screenStore.layers) return;
 
-        const screenLayers = screenStore.layers;
-        const layer: LayerInfo = data.layer;
+      const screenLayers = screenStore.layers;
+      const layer: LayerInfo = data.layer;
 
-        switch (data.action) {
-          case 'REMOVE':
-            screenStore!.confirmDeleteLayer(data.layer);
-            break;
-          case 'SET_TOP': {
-            const topZ = screenLayers[0].style.z;
-            if (screenLayers[0].id !== layer.id) {
-              layer.style.z = topZ + 1;
-              screenStore!.batchUpdateLayer([layer], true);
-            }
-            break;
+      switch (data.action) {
+        case 'REMOVE':
+          screenStore!.confirmDeleteLayer(data.layer);
+          break;
+        case 'SET_TOP': {
+          const topZ = screenLayers[0].style.z;
+          if (screenLayers[0].id !== layer.id) {
+            layer.style.z = topZ + 1;
+            screenStore!.batchUpdateLayer([layer], true);
           }
-          case 'SET_BOTTOM': {
-            const bottomZ = screenLayers[screenLayers.length - 1].style.z;
-            if (screenLayers[screenLayers.length - 1].id !== layer.id) {
-              layer.style.z = bottomZ - 1;
-              screenStore!.batchUpdateLayer([layer], true);
-            }
-            break;
-          }
-          case 'SET_UP': {
-            const index = screenLayers.findIndex((v) => v.id === layer.id);
-            if (index <= 0) return;
-            const upLayer = screenLayers[index - 1];
-            const upZ = upLayer.style.z;
-            runInAction(() => {
-              upLayer.style.z = layer.style.z;
-              layer.style.z = upZ;
-            });
-            screenStore!.batchUpdateLayer([upLayer, layer], true);
-            break;
-          }
-          case 'SET_DOWN': {
-            const downIndex = screenLayers.findIndex((v) => v.id === layer.id);
-            if (downIndex < 0 || downIndex === screenLayers.length - 1) return;
-            const downLayer = screenLayers[downIndex + 1];
-            const downZ = downLayer.style.z;
-            runInAction(() => {
-              downLayer.style.z = layer.style.z;
-              layer.style.z = downZ;
-            });
-            screenStore!.batchUpdateLayer([downLayer, layer], true);
-            break;
-          }
-          case 'EDIT':
-            onSelectLayer(layer);
-            break;
-          default:
+          break;
         }
-      },
-      []
-    );
+        case 'SET_BOTTOM': {
+          const bottomZ = screenLayers[screenLayers.length - 1].style.z;
+          if (screenLayers[screenLayers.length - 1].id !== layer.id) {
+            layer.style.z = bottomZ - 1;
+            screenStore!.batchUpdateLayer([layer], true);
+          }
+          break;
+        }
+        case 'SET_UP': {
+          const index = screenLayers.findIndex((v) => v.id === layer.id);
+          if (index <= 0) return;
+          const upLayer = screenLayers[index - 1];
+          const upZ = upLayer.style.z;
+          runInAction(() => {
+            upLayer.style.z = layer.style.z;
+            layer.style.z = upZ;
+          });
+          screenStore!.batchUpdateLayer([upLayer, layer], true);
+          break;
+        }
+        case 'SET_DOWN': {
+          const downIndex = screenLayers.findIndex((v) => v.id === layer.id);
+          if (downIndex < 0 || downIndex === screenLayers.length - 1) return;
+          const downLayer = screenLayers[downIndex + 1];
+          const downZ = downLayer.style.z;
+          runInAction(() => {
+            downLayer.style.z = layer.style.z;
+            layer.style.z = downZ;
+          });
+          screenStore!.batchUpdateLayer([downLayer, layer], true);
+          break;
+        }
+        case 'EDIT':
+          onSelectLayer(layer);
+          break;
+        default:
+      }
+    }, []);
 
     const screenLayers = screenStore!.layers;
     // 计算辅助线
@@ -638,7 +640,7 @@ export default inject('screenStore')(
                   onChange={(checked) => {
                     screenStore!.currLayer &&
                       screenStore!.updateLayer(screenStore!.currLayer.id, {
-                        eventLock: checked
+                        eventLock: checked,
                       });
                   }}
                   disabled={!screenStore!.currLayer}
@@ -682,7 +684,8 @@ export default inject('screenStore')(
                 icon="icon-hebing"
                 onClick={groupLayer}
                 disabled={
-                  screenStore!.isSelectedGroup || screenStore!.selectedLayerIds.size < 2
+                  screenStore!.isSelectedGroup ||
+                  screenStore!.selectedLayerIds.size < 2
                 }
                 style={toolStyles}
               />
@@ -691,7 +694,8 @@ export default inject('screenStore')(
                 icon="icon-shoudongfenli"
                 onClick={disbandLayer}
                 disabled={
-                  !screenStore!.isSelectedGroup || screenStore!.layerGroup.length < 2
+                  !screenStore!.isSelectedGroup ||
+                  screenStore!.layerGroup.length < 2
                 }
                 style={toolStyles}
               />
@@ -750,7 +754,7 @@ export default inject('screenStore')(
                         ? '100% 100%'
                         : undefined,
                     backgroundRepeat: pageLayout.backgroundRepeat,
-                    position: 'relative'
+                    position: 'relative',
                   }}
                   ref={(r) => {
                     ref.current = r || undefined;
@@ -774,7 +778,7 @@ export default inject('screenStore')(
                             return {
                               ...data,
                               layer: layerData,
-                              onItemClick: onContentMenuClick
+                              onItemClick: onContentMenuClick,
                             };
                           }}
                           disableIfShiftIsPressed
@@ -875,7 +879,7 @@ export default inject('screenStore')(
                       currNativeEvent.current = null;
                       if (lastEvent && layerFrame) {
                         screenStore!.updateLayer(layerFrame.layerId, {
-                          style: layerFrame.style
+                          style: layerFrame.style,
                         });
                       }
                     }}
@@ -910,7 +914,7 @@ export default inject('screenStore')(
                         layerFrame.style.height = Math.round(lastEvent.height);
                         // 更新图层
                         screenStore!.updateLayer(layerFrame.layerId, {
-                          style: layerFrame.style
+                          style: layerFrame.style,
                         });
                       }
                       screenStore!.setResizeing(false);

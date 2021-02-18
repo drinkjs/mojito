@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Modal } from 'antd';
 import IconFont from 'components/IconFont';
 import { ProjectDto } from 'types';
@@ -33,7 +33,7 @@ const projectItemList = (props: Props) => {
       cancelText: '取消',
       onOk: () => {
         onRemove(data);
-      }
+      },
     });
   };
 
@@ -50,7 +50,7 @@ const projectItemList = (props: Props) => {
           return (
             <div
               className={classNames(styles.projectItem, {
-                [styles.projectItemSelected]: selected === v.id
+                [styles.projectItemSelected]: selected === v.id,
               })}
               key={v.name}
               onClick={() => {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { Modal } from 'antd';
@@ -7,7 +7,6 @@ import Image from 'components/Image';
 import { ComponentInfo } from 'types';
 import styles from './index.module.scss';
 
-const { useCallback, useEffect } = React;
 const { confirm } = Modal;
 interface Props {
   value: ComponentInfo;
@@ -25,8 +24,8 @@ export default ({ value, onRemove, onEdit }: Props) => {
     //   }
     // },
     collect: (monitor) => ({
-      isDragging: monitor.isDragging()
-    })
+      isDragging: monitor.isDragging(),
+    }),
   });
 
   useEffect(() => {
@@ -47,7 +46,7 @@ export default ({ value, onRemove, onEdit }: Props) => {
         cancelText: '取消',
         onOk: () => {
           onRemove(value);
-        }
+        },
       });
     },
     [value]

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-undef */
 /* eslint-disable prefer-template */
-import * as React from 'react';
+import React from 'react';
 import { Spin, Skeleton } from 'antd';
 
 const loadingLib = {};

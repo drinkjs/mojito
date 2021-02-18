@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import * as React from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Tooltip, Input } from 'antd';
 import IconFont from 'components/IconFont';
@@ -16,7 +16,6 @@ import GroupSet from './GroupSet';
 
 const classNames = require('classnames');
 
-const { useState, useEffect, Suspense } = React;
 const Events = lazyLoader(() => import('./Events'));
 const PropsSet = lazyLoader(() => import('./Props'));
 
@@ -27,19 +26,19 @@ const tabs: TabObj[] = [
     label: '图层',
     key: 'layers',
     icon: 'icon-tuceng',
-    render: () => <Layers />
+    render: () => <Layers />,
   },
   {
     label: '页面设置',
     key: 'pageSet',
     icon: 'icon-weixuanzhong',
-    render: () => <PageSet />
+    render: () => <PageSet />,
   },
   {
     label: '组件样式',
     key: 'style',
     icon: 'icon-css',
-    render: () => <Style />
+    render: () => <Style />,
   },
   {
     label: '组件属性',
@@ -49,7 +48,7 @@ const tabs: TabObj[] = [
       <Suspense fallback={<LoadingComponent skeleton />}>
         <PropsSet />
       </Suspense>
-    )
+    ),
   },
   {
     label: '交互事件',
@@ -59,14 +58,14 @@ const tabs: TabObj[] = [
       <Suspense fallback={<LoadingComponent skeleton />}>
         <Events />
       </Suspense>
-    )
+    ),
   },
   {
     label: '群组设置',
     key: 'group',
     icon: 'icon-changyongtubiao_xiangmuzushezhi',
-    render: () => <GroupSet />
-  }
+    render: () => <GroupSet />,
+  },
 ];
 
 const compTabKeys = ['style', 'props', 'events'];
@@ -116,7 +115,7 @@ export default inject('screenStore')(
         return;
       }
       screenStore.updateLayer(screenStore.currLayer.id, {
-        name: e.target.value
+        name: e.target.value,
       });
     };
 
@@ -147,7 +146,7 @@ export default inject('screenStore')(
                 <div
                   className={classNames(styles.tab, {
                     [styles.tabSelected]:
-                      selectedTab && v.key === selectedTab.key
+                      selectedTab && v.key === selectedTab.key,
                   })}
                   onClick={onTab(v)}
                 >
@@ -177,7 +176,7 @@ export default inject('screenStore')(
           top: false,
           topLeft: false,
           topRight: false,
-          left: true
+          left: true,
         }}
       >
         <section className={styles.attrRoot}>
@@ -189,16 +188,14 @@ export default inject('screenStore')(
                     className={styles.title}
                     style={{ display: 'flex', justifyContent: 'space-between' }}
                   >
-                    {editLayerNameFlag
-                      ? (
+                    {editLayerNameFlag ? (
                       <Input
                         defaultValue={screenStore!.currLayer.name}
                         autoFocus
                         onBlur={onUpdateLayerName}
                         style={{ width: '70%' }}
                       />
-                        )
-                      : (
+                    ) : (
                       <div
                         onDoubleClick={() => {
                           setEditLayerNameFlag(true);
@@ -207,7 +204,7 @@ export default inject('screenStore')(
                       >
                         {screenStore!.currLayer.name}
                       </div>
-                        )}
+                    )}
                   </div>
                 )}
               {selectedTab.render()}

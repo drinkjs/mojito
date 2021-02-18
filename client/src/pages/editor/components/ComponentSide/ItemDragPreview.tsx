@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Image from 'components/Image';
 import { ComponentInfo } from 'types';
 import styles from './index.module.scss';

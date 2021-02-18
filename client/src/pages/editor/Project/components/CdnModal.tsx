@@ -1,9 +1,7 @@
 /* eslint-disable react/display-name */
-import * as React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Input, Table, Button, Space } from 'antd';
 import { ModalProps } from 'antd/lib/modal';
-
-const { useState, useEffect, useCallback } = React;
 
 let addId = 0;
 
@@ -20,7 +18,7 @@ export default (props: Props) => {
     onCancel,
     onConfirm,
     value,
-    projectName
+    projectName,
   } = props;
   const [cdnData, setCdnData] = useState<
     { id: number | string; url: string }[]
@@ -84,7 +82,7 @@ export default (props: Props) => {
             }}
           />
         );
-      }
+      },
     },
     {
       title: '操作',
@@ -103,8 +101,8 @@ export default (props: Props) => {
             删除
           </Button>
         );
-      }
-    }
+      },
+    },
   ];
 
   return (

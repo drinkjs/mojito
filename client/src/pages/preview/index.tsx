@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Skeleton } from 'antd';
 import DocumentTitle from 'components/DocumentTitle';
@@ -9,7 +9,6 @@ import { toJS } from 'mobx';
 import { ScreenLayout, ScreenStore } from 'types';
 import { DefaultLayerSize } from 'config';
 
-const { useEffect, useState } = React;
 interface Props {
   screenStore?: ScreenStore;
   onLayout?: (layout: ScreenLayout) => void;
@@ -47,7 +46,7 @@ export default inject('screenStore')(
 
     const { style, layers } = screenInfo || {
       layout: undefined,
-      layers: undefined
+      layers: undefined,
     };
 
     return (
@@ -63,13 +62,13 @@ export default inject('screenStore')(
                     ? `url(${style.backgroundImage})`
                     : 'none',
                   backgroundSize:
-                  style.backgroundRepeat === 'no-repeat'
-                    ? '100% 100%'
-                    : undefined,
+                    style.backgroundRepeat === 'no-repeat'
+                      ? '100% 100%'
+                      : undefined,
                   backgroundRepeat: style.backgroundRepeat,
                   color: style.color,
                   position: 'relative',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
                 }}
               >
                 {layers &&
