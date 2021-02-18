@@ -4,7 +4,7 @@ import { observer, inject } from 'mobx-react';
 import {
   PlusOutlined,
   CodepenCircleOutlined,
-  LoadingOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import IconFont from 'components/IconFont';
 import UploadImg from 'components/UploadImg';
@@ -114,7 +114,7 @@ export default inject('screenStore')(
             screenStore!.remove(data.id).then(() => {
               screenStore!.getList(project.id);
             });
-          },
+          }
         });
       },
       [project]
@@ -178,7 +178,7 @@ export default inject('screenStore')(
             className={styles.screenBox}
             style={{
               alignContent:
-                screenStore!.screenList.length === 0 ? 'center' : 'flex-start',
+                screenStore!.screenList.length === 0 ? 'center' : 'flex-start'
             }}
           >
             {project &&
@@ -237,22 +237,26 @@ export default inject('screenStore')(
                           gotoLayout(e, v);
                         }}
                       >
-                        {uploading !== v.id ? (
-                          v.coverImg ? (
+                        {uploading !== v.id
+                          ? (
+                              v.coverImg
+                                ? (
                             <Image src={v.coverImg} />
-                          ) : (
+                                  )
+                                : (
                             <CodepenCircleOutlined />
-                          )
-                        ) : (
+                                  )
+                            )
+                          : (
                           <LoadingOutlined />
-                        )}
+                            )}
                       </div>
                       <div className={styles.itemName}>
                         <div
                           style={{
                             fontSize: '16px',
                             height: '25px',
-                            overflow: 'hidden',
+                            overflow: 'hidden'
                           }}
                         >
                           {v.name}
@@ -271,7 +275,7 @@ export default inject('screenStore')(
                 style={{ margin: 'auto' }}
                 imageStyle={{
                   height: 289,
-                  width: 381,
+                  width: 381
                 }}
                 description={
                   <span style={{ fontSize: '18px' }}>
