@@ -1,7 +1,7 @@
-import { Controller, Get, Query, Post, Body } from "core/decorator";
-import { Validation } from "core";
-import { ProjectDto } from "dto";
-import ProjectService from "service/ProjectService";
+import { Controller, Get, Query, Post, Body } from "../core/decorator";
+import { Validation } from "../core";
+import { ProjectDto } from "../dto";
+import ProjectService from "../service/ProjectService";
 import BaseController from "./BaseController";
 
 @Controller("/project")

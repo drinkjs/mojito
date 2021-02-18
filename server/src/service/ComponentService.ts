@@ -1,8 +1,8 @@
-import { Injectable, MgModel, MgModelType } from "core/decorator";
-import ComponentTypeEntity from "entity/ComponentTypeEntity";
-import ComponentEntity from "entity/ComponentEntity";
-import { ComponentDto, ComponentTypeDto } from "dto";
-import { createStringDate } from "common/utils";
+import { Injectable, MgModel, MgModelType } from "../core/decorator";
+import ComponentTypeEntity from "../entity/ComponentTypeEntity";
+import ComponentEntity from "../entity/ComponentEntity";
+import { ComponentDto, ComponentTypeDto } from "../dto";
+import { createStringDate } from "../common/utils";
 import { mongoose } from "@typegoose/typegoose";
 import BaseService from "./BaseService";
 

@@ -8,12 +8,12 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=develop nodemon",
+    "dev": "nodemon",
     "stop": "pm2 stop mojito-server",
     "remove": "pm2 delete mojito-server",
     "list": "pm2 list",
     "start": "pm2 start ecosystem.config.js",
-    "build": "tsc --build tsconfig.json"
+    "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "@typegoose/typegoose": "^7.4.5",
@@ -22,7 +22,6 @@
     "class-validator": "^0.12.2",
     "colors": "^1.4.0",
     "compressing": "^1.5.1",
-    "cross-env": "^7.0.2",
     "dayjs": "^1.9.8",
     "dotenv": "^8.2.0",
     "eslint-plugin-html": "^6.1.1",
@@ -49,6 +48,7 @@
     "@types/ws": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.14.2",
+    "cross-env": "^7.0.3",
     "eslint": "^7.19.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",

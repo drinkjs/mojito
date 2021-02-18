@@ -4,7 +4,7 @@ import {
   ValidatorOptions,
 } from "class-validator";
 import { plainToClass } from "class-transformer";
-import AppError from "common/AppError";
+import AppError from "../common/AppError";
 
 export interface ValidationOptions extends ValidatorOptions {
   // 转换类型

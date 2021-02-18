@@ -1,5 +1,5 @@
 import { IsNotEmpty, Length } from "class-validator";
-import { IsObjectId } from "common/Mongoer";
+import { IsObjectId } from "../common/Mongoer";
 
 export class ProjectDto {
   @IsNotEmpty({ message: "请输入项目id", groups: ["update"] })

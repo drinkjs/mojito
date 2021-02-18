@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
-import Router from "core/Router";
-import config from "config";
-import Mongoer from "common/Mongoer";
-import Ormer from "common/Ormer";
-import GlobalExceptionFilter from "filter/GlobalExceptionFilter";
-import plugin from "plugin";
+import Router from "../core/Router";
+import config from "../config";
+import Mongoer from "../common/Mongoer";
+import Ormer from "../common/Ormer";
+import GlobalExceptionFilter from "../filter/GlobalExceptionFilter";
+import plugin from "../plugin";
 
 export default function loader (fastify: FastifyInstance) {
   const configData = config as any;

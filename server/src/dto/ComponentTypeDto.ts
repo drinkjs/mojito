@@ -1,5 +1,5 @@
 import { IsNotEmpty } from "class-validator";
-import { IsObjectId } from "common/Mongoer";
+import { IsObjectId } from "../common/Mongoer";
 
 export class ComponentTypeDto {
   @IsNotEmpty({ message: "id不能为空", groups: ["add"] })

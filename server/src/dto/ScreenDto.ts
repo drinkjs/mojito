@@ -1,6 +1,6 @@
 import { IsNotEmpty, Length } from "class-validator";
-import { IsObjectId } from "common/Mongoer";
-import { ScreenOptions } from "entity/ScreenEntity";
+import { IsObjectId } from "../common/Mongoer";
+import { ScreenOptions } from "../entity/ScreenEntity";
 import { LayerDto } from "./LayerDto";
 import { ProjectDto } from "./ProjectDto";
 

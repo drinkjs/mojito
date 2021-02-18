@@ -1,8 +1,8 @@
-import { Controller, Get, Query, WebSocketServer, Ws } from "core";
+import { Controller, Get, Query, WebSocketServer, Ws } from "../core";
 import WebsocketEmitter, {
   WebsocketEvent,
   WsClient,
-} from "core/WebsocketEmitter";
+} from "../core/WebsocketEmitter";
 import BaseController from "./BaseController";
 
 interface JoinPage {

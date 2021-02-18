@@ -7,3 +7,4 @@ server/static/upload/
 client/build/
 server/public/libs/
 server/public/upload/
+server/dist/

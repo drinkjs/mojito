@@ -9,7 +9,7 @@
     "emitDecoratorMetadata":true,
     "forceConsistentCasingInFileNames":true,
     "importHelpers": true,
-    "baseUrl":"src",
+    "baseUrl":"./",
   },
   "files": [
     "src/main.ts"

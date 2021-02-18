@@ -1,6 +1,6 @@
 import { IsNotEmpty, Length } from "class-validator";
-import { IsObjectId } from "common/Mongoer";
-import { LayerApi, LayerStyle } from "entity/LayerEntity";
+import { IsObjectId } from "../common/Mongoer";
+import { LayerApi, LayerStyle } from "../entity/LayerEntity";
 import { ComponentDto } from "./ComponentDto";
 
 export class LayerDto {

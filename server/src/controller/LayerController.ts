@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, Query, Validation } from "core";
-import { LayerDto } from "dto";
+import { Body, Controller, Get, Post, Query, Validation } from "../core";
+import { LayerDto } from "../dto";
 import LayerService from "../service/LayerService";
 import BaseController from "./BaseController";
 

@@ -15,7 +15,7 @@ export default {
     // see https://mongoosejs.com/
     uri: "mongodb://localhost:27017/",
     options: {
-      dbName: "test",
+      dbName: "mojito",
       useNewUrlParser: true,
       useUnifiedTopology: true,
       autoIndex: false,

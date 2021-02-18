@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import { Controller, Post } from "core/decorator";
-import { createStringDate } from "common/utils";
-import config from "config";
+import { Controller, Post } from "../core/decorator";
+import { createStringDate } from "../common/utils";
+import config from "../config";
 import BaseController from "./BaseController";
 
 @Controller()

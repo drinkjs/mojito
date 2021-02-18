@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as compressing from "compressing";
-import { Body, Controller, Get, Post, Query, Validation } from "core";
-import { ComponentDto, ComponentTypeDto } from "dto";
-import ComponentService from "service/ComponentService";
-import AppError from "common/AppError";
+import { Body, Controller, Get, Post, Query, Validation } from "../core";
+import { ComponentDto, ComponentTypeDto } from "../dto";
+import ComponentService from "../service/ComponentService";
+import AppError from "../common/AppError";
 import { tmpdir } from "os";
-import config from "config";
+import config from "../config";
 import BaseController from "./BaseController";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
