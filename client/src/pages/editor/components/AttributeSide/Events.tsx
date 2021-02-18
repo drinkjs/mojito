@@ -21,7 +21,7 @@ interface Props {
 }
 
 const myConsole = {
-  log: console.log,
+  log: console.log
 };
 
 let myConsoleArgs: any[] = [];
@@ -34,22 +34,22 @@ const DEFAULT_CODE = [
   '// 可以通过this.eventer进行组件通信，用法与EventEmitter一致',
   '//export function handler(){',
   '//\tconsole.log(this)',
-  '//}',
+  '//}'
 ].join('\n');
 
 const systemEvent = [
   {
     label: '组件加载',
-    value: LayerEvent.onLoad,
+    value: LayerEvent.onLoad
   },
   {
     label: '组件销毁',
-    value: LayerEvent.onUnload,
+    value: LayerEvent.onUnload
   },
   {
     label: '数据源加载',
-    value: LayerEvent.onDataSource,
-  },
+    value: LayerEvent.onDataSource
+  }
 ];
 
 export default inject('screenStore')(
@@ -123,8 +123,8 @@ export default inject('screenStore')(
           .updateLayer(screenStore!.currLayer.id, {
             events: {
               ...screenStore!.currLayer.events,
-              [currEvent]: { code, isSync },
-            },
+              [currEvent]: { code, isSync }
+            }
           })
           .then(() => {
             message.success({ content: '保存成功', key: 'saveEvent' });
@@ -201,7 +201,7 @@ export default inject('screenStore')(
         style: toJS(screenStore!.currLayer.style),
         eventer,
         request: eventRequest,
-        setValue: () => {},
+        setValue: () => {}
       };
     };
 
@@ -257,7 +257,7 @@ export default inject('screenStore')(
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              paddingBottom: '12px',
+              paddingBottom: '12px'
             }}
           >
             <div>
@@ -278,7 +278,7 @@ export default inject('screenStore')(
                     onChange={onSetSync}
                     checked={isSync}
                   />
-                )}
+              )}
             </div>
             {currEvent && (
               <div>
@@ -310,7 +310,7 @@ export default inject('screenStore')(
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                paddingBottom: '12px',
+                paddingBottom: '12px'
               }}
             >
               调试信息{' '}
@@ -332,7 +332,7 @@ export default inject('screenStore')(
                 background: '#1e1e1e',
                 height: '100px',
                 overflow: 'auto',
-                padding: '3px',
+                padding: '3px'
               }}
             >
               {printDebug()}

@@ -3,7 +3,7 @@ import { Upload, message } from 'antd';
 import {
   DeleteOutlined,
   LoadingOutlined,
-  PlusOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { RcFile } from 'antd/lib/upload';
 import { UploadListType } from 'antd/lib/upload/interface';
@@ -25,7 +25,7 @@ const UploadImg = (props: Props) => {
     action = '/api/upload/image',
     showFile = true,
     listType = 'picture-card',
-    onProcess,
+    onProcess
   } = props;
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
@@ -87,7 +87,8 @@ const UploadImg = (props: Props) => {
   const showPre = () => {
     if (!showFile) return null;
 
-    return imageUrl ? (
+    return imageUrl
+      ? (
       <div className={styles.upload}>
         <img src={imageUrl} alt="cover" style={{ width: '100%' }} />
         <div className={styles.toolBar}>
@@ -96,12 +97,13 @@ const UploadImg = (props: Props) => {
           </a>
         </div>
       </div>
-    ) : (
+        )
+      : (
       <div>
         {loading ? <LoadingOutlined /> : <PlusOutlined />}
         <div style={{ marginTop: 8 }}>Upload</div>
       </div>
-    );
+        );
   };
 
   const { data, children } = props;

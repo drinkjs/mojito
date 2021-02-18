@@ -18,7 +18,7 @@ export default (props: Props) => {
     onCancel,
     onConfirm,
     value,
-    projectName,
+    projectName
   } = props;
   const [cdnData, setCdnData] = useState<
     { id: number | string; url: string }[]
@@ -82,7 +82,7 @@ export default (props: Props) => {
             }}
           />
         );
-      },
+      }
     },
     {
       title: '操作',
@@ -101,8 +101,8 @@ export default (props: Props) => {
             删除
           </Button>
         );
-      },
-    },
+      }
+    }
   ];
 
   return (

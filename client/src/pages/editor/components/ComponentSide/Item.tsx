@@ -24,8 +24,8 @@ export default ({ value, onRemove, onEdit }: Props) => {
     //   }
     // },
     collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
+      isDragging: monitor.isDragging()
+    })
   });
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default ({ value, onRemove, onEdit }: Props) => {
         cancelText: '取消',
         onOk: () => {
           onRemove(value);
-        },
+        }
       });
     },
     [value]

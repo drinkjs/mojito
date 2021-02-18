@@ -50,7 +50,8 @@
     "start": "env-cmd -f .env.development craco start",
     "build": "env-cmd -f .env.production craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "fix": "eslint --fix --ext .js --ext .jsx --ext .ts --ext .tsx src/"
   },
   "eslintConfig": {
     "extends": [

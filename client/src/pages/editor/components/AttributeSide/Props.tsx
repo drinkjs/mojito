@@ -9,12 +9,12 @@ import {
   Form,
   Tooltip,
   Select,
-  Modal,
+  Modal
 } from 'antd';
 import {
   ApiOutlined,
   ExclamationCircleOutlined,
-  DeleteOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import { toJS } from 'mobx';
 import UploadImg from 'components/UploadImg';
@@ -24,7 +24,7 @@ import { ScreenStore } from 'types';
 import DataSourceModal from './DataSourceModal';
 import styles from './index.module.scss';
 
-function isenum(arg: any) {
+function isenum (arg: any) {
   return typeis.isArray(arg) && arg.length > 0;
 }
 
@@ -53,7 +53,7 @@ const typeComp: any = {
       ))}
     </Select>
   ),
-  image: () => <UploadImg />,
+  image: () => <UploadImg />
 };
 
 interface Props {
@@ -102,7 +102,7 @@ export default inject('screenStore')(
           ) {
             screenStore.updateLayer(screenStore.currLayer.id, { api: null });
           }
-        },
+        }
       });
     }, []);
 
@@ -143,8 +143,8 @@ export default inject('screenStore')(
           screenStore.updateLayer(screenStore.currLayer.id, {
             props: {
               ...screenStore.currLayer.props,
-              ...submitObj,
-            },
+              ...submitObj
+            }
           });
         }
       }, 1000),
@@ -182,7 +182,7 @@ export default inject('screenStore')(
             height: '100%',
             overflow: 'auto',
             flexGrow: 1,
-            flexBasis: 0,
+            flexBasis: 0
           }}
         >
           <Form
@@ -241,11 +241,13 @@ export default inject('screenStore')(
                           : defValue
                       }
                     >
-                      {typeComFun ? (
-                        typeComFun(propsValue.type)
-                      ) : (
+                      {typeComFun
+                        ? (
+                            typeComFun(propsValue.type)
+                          )
+                        : (
                         <Input.TextArea />
-                      )}
+                          )}
                     </Form.Item>
                   </div>
                 );

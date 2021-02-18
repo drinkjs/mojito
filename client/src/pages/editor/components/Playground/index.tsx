@@ -12,7 +12,7 @@ import {
   ContextMenu,
   MenuItem,
   connectMenu,
-  ContextMenuTrigger,
+  ContextMenuTrigger
 } from 'react-contextmenu';
 import IconFont, { IconLink } from 'components/IconFont';
 import Layer from 'components/Layer';
@@ -23,12 +23,12 @@ import {
   ComponentStyle,
   LayerInfo,
   LayerQuery,
-  ScreenStore,
+  ScreenStore
 } from 'types';
 import {
   DefaulBackgroundColor,
   DefaultFontColor,
-  DefaultLayerSize,
+  DefaultLayerSize
 } from 'config';
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
@@ -46,7 +46,7 @@ interface FrameInfo {
 }
 
 const toolStyles = {
-  margin: '0 6px',
+  margin: '0 6px'
 };
 
 // 右键菜单
@@ -122,7 +122,7 @@ export default inject('screenStore')(
     const [scale, setScale] = useState<number>(1);
     const [oldSize, setOldSize] = useState<{ width: number; height: number }>({
       width: 0,
-      height: 0,
+      height: 0
     });
 
     const [layerFrame, setLayerFrame] = useState<FrameInfo>(); // 单个图层位置信息
@@ -186,9 +186,9 @@ export default inject('screenStore')(
               y,
               z,
               width: DefaultLayerSize.width,
-              height: DefaultLayerSize.height,
+              height: DefaultLayerSize.height
             },
-            props,
+            props
           };
 
           screenStore.addLayer(newLayer);
@@ -196,8 +196,8 @@ export default inject('screenStore')(
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
+        canDrop: monitor.canDrop()
+      })
     });
 
     useEffect(() => {
@@ -273,7 +273,7 @@ export default inject('screenStore')(
             layerGroups.map((layer) => {
               return {
                 layerId: layer.id,
-                style: { ...layer.style },
+                style: { ...layer.style }
               };
             })
           );
@@ -281,7 +281,7 @@ export default inject('screenStore')(
           // 只选中了一个图层
           setLayerFrame({
             layerId: layerGroups[0].id,
-            style: toJS(layerGroups[0].style),
+            style: toJS(layerGroups[0].style)
           });
           screenStore!.setCurrLayer(layerGroups[0]);
         }
@@ -300,7 +300,7 @@ export default inject('screenStore')(
         offsetX,
         offsetY,
         offsetWidth,
-        offsetHeight,
+        offsetHeight
       }) => {
         groupframes.forEach((frame, index) => {
           const { style } = frame;
@@ -329,7 +329,7 @@ export default inject('screenStore')(
         groupframes.map((frame) => {
           return {
             id: frame.layerId,
-            style: frame.style,
+            style: frame.style
           };
         })
       );
@@ -380,7 +380,7 @@ export default inject('screenStore')(
       }
       setOldSize({
         width: pageLayout.width,
-        height: pageLayout.height,
+        height: pageLayout.height
       });
       if (areaRef.current && ref.current && zoomRef.current) {
         const { width } = areaRef.current.getBoundingClientRect();
@@ -640,7 +640,7 @@ export default inject('screenStore')(
                   onChange={(checked) => {
                     screenStore!.currLayer &&
                       screenStore!.updateLayer(screenStore!.currLayer.id, {
-                        eventLock: checked,
+                        eventLock: checked
                       });
                   }}
                   disabled={!screenStore!.currLayer}
@@ -754,7 +754,7 @@ export default inject('screenStore')(
                         ? '100% 100%'
                         : undefined,
                     backgroundRepeat: pageLayout.backgroundRepeat,
-                    position: 'relative',
+                    position: 'relative'
                   }}
                   ref={(r) => {
                     ref.current = r || undefined;
@@ -778,7 +778,7 @@ export default inject('screenStore')(
                             return {
                               ...data,
                               layer: layerData,
-                              onItemClick: onContentMenuClick,
+                              onItemClick: onContentMenuClick
                             };
                           }}
                           disableIfShiftIsPressed
@@ -879,7 +879,7 @@ export default inject('screenStore')(
                       currNativeEvent.current = null;
                       if (lastEvent && layerFrame) {
                         screenStore!.updateLayer(layerFrame.layerId, {
-                          style: layerFrame.style,
+                          style: layerFrame.style
                         });
                       }
                     }}
@@ -914,7 +914,7 @@ export default inject('screenStore')(
                         layerFrame.style.height = Math.round(lastEvent.height);
                         // 更新图层
                         screenStore!.updateLayer(layerFrame.layerId, {
-                          style: layerFrame.style,
+                          style: layerFrame.style
                         });
                       }
                       screenStore!.setResizeing(false);

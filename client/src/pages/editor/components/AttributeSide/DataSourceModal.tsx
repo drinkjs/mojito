@@ -9,7 +9,7 @@ import {
   message,
   Select,
   Space,
-  InputNumber,
+  InputNumber
 } from 'antd';
 import Monaco from 'components/Monaco';
 import { request } from 'common/network';
@@ -23,7 +23,7 @@ interface Props extends ModalFuncProps {
 
 const layout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  wrapperCol: { span: 20 }
 };
 
 export default inject('screenStore')(
@@ -79,8 +79,8 @@ export default inject('screenStore')(
               url: values.url,
               method: values.method,
               interval: values.interval,
-              params,
-            },
+              params
+            }
           })
           .then(() => {
             message.success('保存成功');
@@ -172,7 +172,7 @@ export default inject('screenStore')(
               style={{
                 width: '100%',
                 height: '100px',
-                border: '1px solid #303247',
+                border: '1px solid #303247'
               }}
               language="json"
             />
@@ -197,7 +197,7 @@ export default inject('screenStore')(
                   height: '100px',
                   overflow: 'auto',
                   padding: '3px',
-                  border: '1px solid #303247',
+                  border: '1px solid #303247'
                 }}
               >
                 {JSON.stringify(testData)}

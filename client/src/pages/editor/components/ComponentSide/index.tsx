@@ -144,7 +144,7 @@ export default inject('componentStore')(
               <Tooltip placement="right" title={v.name} key={v.name}>
                 <div
                   className={classNames(styles.icon, {
-                    [styles.iconSelected]: currRoot && currRoot.id === v.id,
+                    [styles.iconSelected]: currRoot && currRoot.id === v.id
                   })}
                   onClick={() => {
                     onCateClick(v, true);
@@ -161,11 +161,13 @@ export default inject('componentStore')(
             <div className={styles.cateTitle}>
               {currType.name}
               <span className={styles.close} onClick={onClose}>
-                {currCategory.length > 1 ? (
+                {currCategory.length > 1
+                  ? (
                   <RollbackOutlined />
-                ) : (
+                    )
+                  : (
                   <CloseOutlined />
-                )}
+                    )}
               </span>
             </div>
             <Skeleton loading={componentStore!.getTypeTreeLoading}>

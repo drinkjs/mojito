@@ -11,7 +11,7 @@ import { ComponentInfo, ComponentStore } from 'types';
 
 const layout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  wrapperCol: { span: 20 }
 };
 
 interface Props extends ModalFuncProps {
@@ -86,7 +86,7 @@ const UploadComp = (props: any) => {
       fileList={fileList}
       data={{
         origin: 2,
-        libId,
+        libId
       }}
     >
       <Button icon={<UploadOutlined />}>上传组件zip包</Button>
@@ -109,7 +109,7 @@ export default inject('componentStore')(
           ...values.componentInfo,
           componentInfo: undefined,
           type: values.type[values.type.length - 1],
-          coverImg: values.coverImg || '',
+          coverImg: values.coverImg || ''
         };
 
         if (value && value.id) {
@@ -140,13 +140,13 @@ export default inject('componentStore')(
           libName: uploadValue
             ? uploadValue.libName
             : value
-            ? value.libName
-            : undefined,
+              ? value.libName
+              : undefined,
           title: value
             ? value.title
             : uploadValue
-            ? `${uploadValue.libName} ${uploadValue.version}`
-            : undefined,
+              ? `${uploadValue.libName} ${uploadValue.version}`
+              : undefined
         });
       },
       [value]
@@ -195,8 +195,8 @@ export default inject('componentStore')(
             initialValue={
               value && value.type
                 ? getTreeParent(toJS(componentStore!.typeTree), value.type).map(
-                    (v) => v.id
-                  )
+                  (v) => v.id
+                )
                 : undefined
             }
           >

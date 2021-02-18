@@ -46,7 +46,7 @@ export default inject('screenStore')(
 
     const { style, layers } = screenInfo || {
       layout: undefined,
-      layers: undefined,
+      layers: undefined
     };
 
     return (
@@ -68,7 +68,7 @@ export default inject('screenStore')(
                   backgroundRepeat: style.backgroundRepeat,
                   color: style.color,
                   position: 'relative',
-                  overflow: 'hidden',
+                  overflow: 'hidden'
                 }}
               >
                 {layers &&

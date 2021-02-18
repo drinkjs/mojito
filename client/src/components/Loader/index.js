@@ -91,7 +91,7 @@ export const LoadingComponent = (props) => {
         alignItems: 'center',
         height: '100%',
         width: '100%',
-        ...style,
+        ...style
       }}
     >
       {skeleton ? <Skeleton active /> : <Spin />}

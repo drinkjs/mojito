@@ -46,7 +46,7 @@ const LayerItem = ({
   dragEnd,
   onEditLayerName,
   selected,
-  index,
+  index
 }: LayerItemProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [editFlag, setEditFlag] = useState(false);
@@ -106,7 +106,7 @@ const LayerItem = ({
       // to avoid expensive index searches.
       // eslint-disable-next-line no-param-reassign
       item.index = hoverIndex;
-    },
+    }
     // collect: (monitor: any) => {
     //   return {
     //     isOver: monitor.isOver({ shallow: true }),
@@ -117,13 +117,13 @@ const LayerItem = ({
   const [{ isDragging }, drag] = useDrag({
     item: { type: ACCEPT, index, id: value.id },
     collect: (monitor: any) => ({
-      isDragging: monitor.isDragging(),
+      isDragging: monitor.isDragging()
     }),
     end: (dropResult, monitor) => {
       // const { id: droppedId, originalIndex } = monitor.getItem()
       const didDrop = monitor.didDrop();
       dragEnd(didDrop);
-    },
+    }
   });
 
   const opacity = isDragging ? 0 : 1;
@@ -140,7 +140,7 @@ const LayerItem = ({
         className={styles.icons}
         style={{
           color: value.isLock ? '#fff' : '#444',
-          fontSize: '16px',
+          fontSize: '16px'
         }}
         onClick={() => {
           onLock(value);
@@ -153,13 +153,14 @@ const LayerItem = ({
           right: '0',
           color: value.isHide ? '#444' : '#fff',
           fontSize: '16px',
-          marginLeft: 6,
+          marginLeft: 6
         }}
         onClick={() => {
           onHide(value);
         }}
       />
-      {editFlag ? (
+      {editFlag
+        ? (
         <Input
           defaultValue={value.name}
           autoFocus
@@ -169,7 +170,8 @@ const LayerItem = ({
             setEditFlag(false);
           }}
         />
-      ) : (
+          )
+        : (
         <div
           onDoubleClick={() => {
             setEditFlag(true);
@@ -181,7 +183,7 @@ const LayerItem = ({
             lineHeight: '33px',
             overflow: 'hidden',
             flexGrow: 1,
-            cursor: 'pointer',
+            cursor: 'pointer'
           }}
           onClick={(e) => {
             onClick(value, e);
@@ -190,13 +192,13 @@ const LayerItem = ({
         >
           {value.name}
         </div>
-      )}
+          )}
       <IconFont
         type="icon-shanchu1"
         className={styles.icons}
         style={{
           right: '0',
-          fontSize: '14px',
+          fontSize: '14px'
         }}
         onClick={() => {
           onRemove(value);

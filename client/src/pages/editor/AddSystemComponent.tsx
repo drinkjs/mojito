@@ -13,7 +13,7 @@ import styles from './SysComponents.module.scss';
 
 const layout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  wrapperCol: { span: 20 }
 };
 
 const Item = (props: {
@@ -70,7 +70,7 @@ export default inject('componentStore')(
         const submitValue = {
           ...currValue,
           ...values,
-          type: values.type[values.type.length - 1],
+          type: values.type[values.type.length - 1]
         };
         componentStore!.addSystemComponent(submitValue).then(() => {
           componentStore!.getComponentSystem();
@@ -96,7 +96,7 @@ export default inject('componentStore')(
             onCancel();
             message.success('删除成功');
           });
-        },
+        }
       });
     }, []);
 
@@ -135,9 +135,9 @@ export default inject('componentStore')(
               initialValue={
                 currValue && currValue.type
                   ? getTreeParent(
-                      toJS(componentStore!.typeTree),
-                      currValue.type
-                    ).map((v) => v.id)
+                    toJS(componentStore!.typeTree),
+                    currValue.type
+                  ).map((v) => v.id)
                   : undefined
               }
             >

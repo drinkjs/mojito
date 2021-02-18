@@ -23,7 +23,7 @@ export default ({
   events,
   component,
   isVue,
-  style,
+  style
 }: RenderProps) => {
   const ref = useRef<HTMLDivElement | null>();
   const vueRef = useRef<HTMLDivElement | null>();
@@ -48,7 +48,7 @@ export default ({
     return React.createElement(component, {
       ...props,
       styles,
-      ...events,
+      ...events
     });
   };
 
@@ -77,23 +77,23 @@ export default ({
       el: vueRef.current,
       data: {
         ...props,
-        styles,
+        styles
       },
-      mounted() {
+      mounted () {
         this.$nextTick(() => {
           onInitSize(this.$el.offsetWidth, this.$el.offsetHeight);
         });
       },
-      render(createElement: any) {
+      render (createElement: any) {
         return createElement(component, {
           props: {
-            ...this,
+            ...this
           },
           on: {
-            ...events,
-          },
+            ...events
+          }
         });
-      },
+      }
     });
   };
 

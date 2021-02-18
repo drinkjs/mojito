@@ -56,7 +56,7 @@ export const ColorItem = (props: {
           height: '24px',
           padding: '2px',
           border: '1px solid #ccc',
-          marginLeft: '6px',
+          marginLeft: '6px'
         }}
       >
         <Popover
@@ -77,7 +77,7 @@ export const ColorItem = (props: {
               width: '100%',
               height: '100%',
               background: value || defaultColor || '#FFF',
-              cursor: 'pointer',
+              cursor: 'pointer'
             }}
           />
         </Popover>
@@ -104,7 +104,7 @@ export const FontItem = (props: {
     display: 'inline-block',
     width: '50%',
     padding: '0 3px',
-    fontSize: '12px',
+    fontSize: '12px'
   };
   let { showItems } = props;
   if (!showItems) {
@@ -235,20 +235,20 @@ interface Props {
 const sizeItems = [
   {
     label: 'X轴',
-    key: 'x',
+    key: 'x'
   },
   {
     label: 'Y轴',
-    key: 'y',
+    key: 'y'
   },
   {
     label: '宽',
-    key: 'width',
+    key: 'width'
   },
   {
     label: '高',
-    key: 'height',
-  },
+    key: 'height'
+  }
 ];
 
 let timerId: any;
@@ -286,7 +286,7 @@ export default inject('screenStore')(
       limitChange(() => {
         if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
           screenStore.saveLayerStyle(screenStore.currLayer.id, {
-            [type]: value,
+            [type]: value
           });
         }
       });

@@ -4,16 +4,16 @@ export default class ErrorCatch extends React.Component {
   // eslint-disable-next-line react/state-in-constructor
   state = {
     error: null,
-    info: null,
+    info: null
   };
 
-  componentDidCatch(error, info) {
+  componentDidCatch (error, info) {
     this.setState({ error, info });
     // 上传错误到到服务器
     // logErrorToMyService(error, info);
   }
 
-  render() {
+  render () {
     const { error, info } = this.state;
     // eslint-disable-next-line react/prop-types
     const { children, style } = this.props;
@@ -22,7 +22,7 @@ export default class ErrorCatch extends React.Component {
         <div
           style={{
             ...style,
-            color: '#cc0000',
+            color: '#cc0000'
           }}
         >
           发生错误: {error.toString()}

@@ -7,7 +7,7 @@ import styles from './index.module.scss';
 const classNames = require('classnames');
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_2171422_8u323xf0dss.js',
+  scriptUrl: '//at.alicdn.com/t/font_2171422_8u323xf0dss.js'
 });
 
 export default IconFont;
@@ -29,13 +29,13 @@ export const IconLink = ({
   disabled,
   className,
   icon,
-  style,
+  style
 }: IconLinkProps) => {
   return (
     <Tooltip placement={placement} title={title}>
       <IconFont
         className={classNames(styles.iconLink, className, {
-          [styles.iconLikDisabled]: disabled,
+          [styles.iconLikDisabled]: disabled
         })}
         style={{ ...style, cursor: 'pointer' }}
         type={icon}

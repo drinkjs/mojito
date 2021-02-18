@@ -26,12 +26,12 @@ export default (props: Props) => {
       theme: 'vs-dark',
       automaticLayout: true,
       minimap: {
-        enabled: false,
+        enabled: false
       },
       tabSize: 2,
       formatOnPaste: true,
       formatOnType: true,
-      ...opts,
+      ...opts
     });
     editorRef.current = editor;
     if (onCreate) onCreate(editor);

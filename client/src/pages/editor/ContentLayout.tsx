@@ -17,7 +17,7 @@ const ContentLayout = ({
   header,
   title,
   showBack,
-  backLink,
+  backLink
 }: Props) => {
   return (
     <DocumentTitle title={title || ''}>
