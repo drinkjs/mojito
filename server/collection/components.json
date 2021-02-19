@@ -1,0 +1,225 @@
+[{
+  "_id": {
+    "$oid": "5ff6dea00c2bf15a40521e1a"
+  },
+  "status": 1,
+  "origin": 2,
+  "libName": "PieChart",
+  "title": "PieChart v1.0.0",
+  "type": {
+    "$oid": "5ff52325f5e8fa0e44729958"
+  },
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": [],
+      "comment": "图表数据[{name:类型1, value:100}, ...]",
+      "default": [
+        {
+          "name": "Mon",
+          "value": 120
+        },
+        {
+          "name": "Tue",
+          "value": 200
+        },
+        {
+          "name": "Wed",
+          "value": 150
+        },
+        {
+          "name": "Thu",
+          "value": 80
+        },
+        {
+          "name": "Fri",
+          "value": 70
+        },
+        {
+          "name": "Sat",
+          "value": 110
+        },
+        {
+          "name": "Sun",
+          "value": 130
+        }
+      ]
+    },
+    "option": {
+      "comment": "echarts配置，具体参考echarts官网"
+    }
+  },
+  "events": {
+    "onCreated": {
+      "comment": "图表初始化完成事件(echart)=>void"
+    }
+  },
+  "createTime": "2021-01-07 18:12:48",
+  "updateTime": "2021-01-07 18:12:48",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5ff6defc0c2bf15a40521e1c"
+  },
+  "status": 1,
+  "origin": 2,
+  "libName": "BarChart",
+  "title": "基础柱状图",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "/public/upload/20210218/d9ff76b1-2cfc-47ea-8d47-26251f7bb816.png",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": [],
+      "comment": "图表数据[{name:类型1, value:100}, ...]",
+      "default": [
+        {
+          "name": "Mon",
+          "value": 120
+        },
+        {
+          "name": "Tue",
+          "value": 200
+        },
+        {
+          "name": "Wed",
+          "value": 150
+        },
+        {
+          "name": "Thu",
+          "value": 80
+        },
+        {
+          "name": "Fri",
+          "value": 70
+        },
+        {
+          "name": "Sat",
+          "value": 110
+        },
+        {
+          "name": "Sun",
+          "value": 130
+        }
+      ]
+    },
+    "option": {
+      "type": {},
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "events": {
+    "onCreated": {
+      "comment": "图表初始化完成事件(echart)=>void"
+    }
+  },
+  "createTime": "2021-01-07 18:14:20",
+  "updateTime": "2021-02-18 14:36:04",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fffd43511d27301fce742bb"
+  },
+  "origin": 2,
+  "libName": "GaugeChart",
+  "title": "基础仪表盘",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": [],
+      "comment": "图表数据[{name:类型1, value:100}, ...]",
+      "default": [
+        {
+          "value": 58,
+          "name": "完成率"
+        }
+      ]
+    },
+    "option": {
+      "type": {},
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "events": {
+    "onCreated": {
+      "comment": "图表初始化完成事件(echart)=>void"
+    }
+  },
+  "createTime": "2021-01-14 13:18:45",
+  "updateTime": "2021-02-18 14:41:46",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60010b3d2c25085f705418f3"
+  },
+  "origin": 2,
+  "libName": "VueButton",
+  "title": "VueButton v1.0.0",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "label": {
+      "type": "",
+      "comment": "按钮显示文本",
+      "default": ""
+    },
+    "primary": {
+      "type": false,
+      "default": false
+    },
+    "size": {
+      "type": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "default": "medium"
+    },
+    "backgroundColor": {
+      "type": ""
+    }
+  },
+  "events": {
+    "onAlert": {
+      "comment": "点击按钮弹框(label)=>void"
+    },
+    "onTest": {
+      "comment": "测试显示"
+    }
+  },
+  "createTime": "2021-01-15 11:25:49",
+  "updateTime": "2021-02-18 14:42:13",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6013c6720f27b70dccc1c8f0"
+  },
+  "origin": 2,
+  "libName": "TestView",
+  "title": "组件测试",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "label": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "createTime": "2021-01-29 16:25:22",
+  "updateTime": "2021-01-29 16:25:22",
+  "__v": 0
+}]
