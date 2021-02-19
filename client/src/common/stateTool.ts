@@ -53,12 +53,7 @@ class SyncHelper {
   eventHandlers: Map<string, Function> = new Map();
 
   constructor () {
-    // if (!DDS_URL) {
-    //   console.log('DSS_URL没配置')
-    //   return
-    // }
-
-    this.websocket = new WebSocketClient('ws://localhost:3000/ws');
+    this.websocket = new WebSocketClient(`ws://${window.location.host}/ws`); // 需要配置websocket代理
     this.websocket.connect();
     this.websocket.on('connect', () => {
       if (this.connectNum > 0) {

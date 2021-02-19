@@ -25,27 +25,18 @@ code {
     monospace;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+ /*滚动条整体样式*/
+ ::-webkit-scrollbar {
+  width: 6px; /*竖向滚动条的宽度*/
+  height: 6px; /*横向滚动条的高度*/
 }
-
-::-webkit-scrollbar,
-html::-webkit-scrollbar-track {
-  background-color: #1d2636;
-}
-
-::-webkit-scrollbar-corner {
-  background-color: #1d2636;
-}
-
 ::-webkit-scrollbar-thumb {
-  background-color: #304057;
+  /*滚动条里面的小方块*/
+  background: #666666;
   border-radius: 5px;
-  border: 2px solid #1d2636;
 }
-
-::-webkit-scrollbar,
 ::-webkit-scrollbar-track {
-  background-color: #1d2636;
+  /*滚动条轨道的样式*/
+  background: none;
+  border-radius: 5px;
 }

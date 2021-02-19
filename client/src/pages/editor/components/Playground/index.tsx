@@ -754,7 +754,8 @@ export default inject('screenStore')(
                         ? '100% 100%'
                         : undefined,
                     backgroundRepeat: pageLayout.backgroundRepeat,
-                    position: 'relative'
+                    position: 'relative',
+                    boxShadow: '3px 3px 15px rgb(0 0 0 / 15%)'
                   }}
                   ref={(r) => {
                     ref.current = r || undefined;

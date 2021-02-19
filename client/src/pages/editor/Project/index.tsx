@@ -194,7 +194,7 @@ export default inject('projectStore')(
               <>
                 <div className={styles.projectListBox}>
                   <div style={{ textAlign: 'center', margin: '12px 0' }}>
-                    DrinkJS
+                    Mojito
                   </div>
                   <Button
                     type="primary"
