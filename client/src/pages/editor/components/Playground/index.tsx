@@ -406,7 +406,7 @@ export default inject('screenStore')(
      */
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.preventDefault && e.ctrlKey) {
-        e.preventDefault();
+        // e.preventDefault();
         e.stopPropagation();
       }
       if (e.key === 'Delete' && screenStore!.currLayer) {

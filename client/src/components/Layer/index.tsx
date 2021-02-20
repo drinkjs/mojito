@@ -4,26 +4,32 @@
  * 图层类，负责生成组件，控制组件的大小位置，请求数据
  */
 
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { observer, inject } from "mobx-react";
-import { message } from "antd";
-import { cloneDeep } from "lodash";
-import ErrorCatch from "components/ErrorCatch";
-import eventer from "common/eventer";
-import { request } from "common/network";
-import { useSync } from "common/stateTool";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo
+} from 'react';
+import { observer, inject } from 'mobx-react';
+import { message } from 'antd';
+import { cloneDeep } from 'lodash';
+import ErrorCatch from 'components/ErrorCatch';
+import eventer from 'common/eventer';
+import { request } from 'common/network';
+import { useSync } from 'common/stateTool';
 import {
   ComponentStyle,
   ComponentStyleQuery,
   LayerEvents,
   LayerInfo,
   ScreenStore
-} from "types";
-import { buildCode } from "common/util";
-import { loadLib, LoadingComponent } from "../Loader";
-import Render from "./Render";
-import styles from "./index.module.scss";
-import { DefaultLayerSize } from "config";
+} from 'types';
+import { buildCode } from 'common/util';
+import { loadLib, LoadingComponent } from '../Loader';
+import Render from './Render';
+import styles from './index.module.scss';
+import { DefaultLayerSize } from 'config';
 
 function showHandlerError (layerName: string, error: any) {
   message.error(`${layerName}事件处理错误:${error.message}`);
@@ -34,8 +40,8 @@ function parseStyle (style: ComponentStyle) {
   const pureStye: any = {};
   const styleObj: any = style;
   Object.keys(style).forEach((key) => {
-    if (key.indexOf("transform-") >= 0) {
-      const fun = key.split("-")[1];
+    if (key.indexOf('transform-') >= 0) {
+      const fun = key.split('-')[1];
       pureStye.transform = pureStye.transform
         ? `${pureStye.transform} ${fun}(${styleObj[key]})`
         : `${fun}(${styleObj[key]})`;
@@ -58,8 +64,8 @@ export function parseParams (params: string) {
     const newParams = params.replace(regx, (match: string) => {
       const val = match.substring(3, match.length - 2);
       if (
-        typeof globalObj[val] === "object" ||
-        typeof globalObj[val] === "string"
+        typeof globalObj[val] === 'object' ||
+        typeof globalObj[val] === 'string'
       ) {
         return JSON.stringify(globalObj[val]);
       }
@@ -67,7 +73,7 @@ export function parseParams (params: string) {
     });
     return JSON.parse(newParams);
   } catch (e) {
-    message.error("参数解释错误");
+    message.error('参数解释错误');
     return {};
   }
 }
@@ -82,15 +88,16 @@ export function eventRequest (
   options?: any
 ) {
   return request(originUrl, method, params || {}, {
-    prefix: "/",
+    prefix: '/',
+    checkCode: false,
     ...options
   });
 }
 
 export const LayerEvent = {
-  onLoad: "__onLayerLoad__",
-  onDataSource: "__onLayerData__",
-  onUnload: "__onLayerUnload__"
+  onLoad: '__onLayerLoad__',
+  onDataSource: '__onLayerData__',
+  onUnload: '__onLayerUnload__'
 };
 
 interface LayerProps extends React.HTMLAttributes<Element> {
@@ -117,7 +124,7 @@ interface EventSync {
   args: any;
 }
 
-const Layer = inject("screenStore")(
+const Layer = inject('screenStore')(
   observer(
     ({
       screenStore,
@@ -149,7 +156,7 @@ const Layer = inject("screenStore")(
       // 事件同步处理
       const [eventySync, setEventSync] = enable
         ? []
-        : useSync<EventSync>({ event: "", args: [] }, data.id);
+        : useSync<EventSync>({ event: '', args: [] }, data.id);
 
       // 组件默认数据
       const defaultProps: any = {};
@@ -219,8 +226,8 @@ const Layer = inject("screenStore")(
       useEffect(() => {
         if (
           eventySync &&
-            eventySync.event &&
-            allEventHandlers[eventySync.event]
+          eventySync.event &&
+          allEventHandlers[eventySync.event]
         ) {
           // 调用组件事件处理器
           componentEventsHandler(
@@ -247,7 +254,7 @@ const Layer = inject("screenStore")(
               showHandlerError(data.name, e);
             }
 
-            if (!callFun || typeof callFun !== "function") return;
+            if (!callFun || typeof callFun !== 'function') return;
 
             allEvnet[key] = callFun;
 
@@ -446,7 +453,7 @@ const Layer = inject("screenStore")(
        */
       useMemo(() => {
         initFlag.current && parseEvents(data.events);
-      }, [JSON.stringify(data.events)])
+      }, [JSON.stringify(data.events)]);
 
       const mergeParms = mergeArgs();
 
@@ -463,14 +470,14 @@ const Layer = inject("screenStore")(
             transform: `translate(${data.style.x}px, ${data.style.y}px)`,
             zIndex: data.style.z,
             display:
-              !enable && (data.isHide || data.groupHide) ? "none" : "block",
+              !enable && (data.isHide || data.groupHide) ? 'none' : 'block',
             opacity: enable && (data.groupHide || data.isHide) ? 0.2 : 1,
             overflow:
               screenStore!.resizeing &&
               screenStore!.currLayer &&
               screenStore!.currLayer.id === data.id
-                ? "hidden"
-                : "visible"
+                ? 'hidden'
+                : 'visible'
           }}
           onMouseDown={onClick}
           id={data.id}
@@ -487,12 +494,12 @@ const Layer = inject("screenStore")(
                 events={compEventHandlers}
                 style={{
                   ...parseStyle(data.style),
-                  display: "flex",
-                  width: "100%",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  pointerEvents: enable && data.eventLock ? "none" : undefined,
+                  display: 'flex',
+                  width: '100%',
+                  height: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  pointerEvents: enable && data.eventLock ? 'none' : undefined,
                   x: undefined,
                   y: undefined,
                   z: undefined

@@ -335,7 +335,7 @@ export default class Screen {
     service
       .screenUpdate({
         id: this.screenInfo.id,
-        options: styles,
+        style: styles,
         name: this.screenInfo.name
       })
       .then(() => {
@@ -444,7 +444,9 @@ export default class Screen {
     const keys = Object.keys(data);
     const dataAny: any = data;
     const layerIndex = this.layers.findIndex((v) => v.id === layerId);
-    if (layerIndex === -1 || !this.screenInfo || !this.screenInfo.layers) { return; }
+    if (layerIndex === -1 || !this.screenInfo || !this.screenInfo.layers) {
+      return;
+    }
 
     const undoData: UpdateHistory = {
       args: [layerId, {}, reload, !isUndo],
@@ -463,7 +465,12 @@ export default class Screen {
     this.saveLoading = true;
     // 保存数据
     return layerService
-      .updatelayer({ id: layerId, name: layer.name, ...data, reloadKey: layer.reloadKey })
+      .updatelayer({
+        id: layerId,
+        name: layer.name,
+        ...data,
+        reloadKey: layer.reloadKey
+      })
       .then((rel) => {
         // 保存成功
         if (!data.initSize) {
@@ -483,7 +490,7 @@ export default class Screen {
         // 保存失败
         runInAction(() => {
           this.selectedLayerIds = new Set();
-        })
+        });
         this.reload();
       })
       .finally(() => {
@@ -523,9 +530,7 @@ export default class Screen {
     }
   }
 
-  sortByLayers () {
-
-  }
+  sortByLayers () {}
 
   /**
    * 批量更新图层
@@ -549,7 +554,7 @@ export default class Screen {
       if (currLayer) {
         const currLayerAny: any = currLayer;
         Object.keys(v).forEach((key) => {
-          if (key === "style" && v.style.z !== currLayer.style.z) isSort = true;
+          if (key === 'style' && v.style.z !== currLayer.style.z) isSort = true;
           oldData[key] = toJS(currLayerAny[key]);
           currLayerAny[key] = v[key];
         });
@@ -588,7 +593,7 @@ export default class Screen {
       .catch(() => {
         runInAction(() => {
           this.selectedLayerIds = new Set();
-        })
+        });
         this.reload();
       });
   }
