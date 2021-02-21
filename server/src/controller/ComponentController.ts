@@ -137,7 +137,7 @@ export default class ComponentController extends BaseController {
   @Get("/types")
   async getTypes (): PromiseRes<ComponentTypeDto[]> {
     const rel = await this.service.findTypes();
-    return this.success(this.formatTypes(rel, undefined));
+    return this.success(rel ? this.formatTypes(rel, undefined) : []);
   }
 
   /**

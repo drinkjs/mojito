@@ -1,16 +1,16 @@
 @import '../../resources/css/variable';
 
 .iconLink {
-  color: $textColor;
+  color: $textColor !important;
 }
 
 .iconLink:hover {
-  color: $heightLightBgColor;
+  color: $heightLightBgColor !important;
 }
 
 .iconLikDisabled {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.2) !important;
 }
 .iconLikDisabled:hover {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.2) !important;
 }

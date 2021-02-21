@@ -1,5 +1,5 @@
 /* eslint-disable react/no-this-in-sfc */
-import { message } from 'antd';
+import { message, ConfigProvider } from 'antd';
 import React, { useRef, useEffect, useState } from 'react';
 import { ComponentStyle } from 'types';
 
@@ -110,9 +110,16 @@ export default ({
             vueRef.current = r;
           }}
         />
-      )}{' '}
-      {/* vue组件占位 */}
-      {isVue ? createVue() : createReact()}
+      )}
+      {isVue
+        ? (
+            createVue()
+          )
+        : (
+        <ConfigProvider prefixCls="ant" iconPrefixCls="anticon">
+          {createReact()}
+        </ConfigProvider>
+          )}
     </div>
   );
 };

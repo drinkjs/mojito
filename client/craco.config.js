@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const CracoLessPlugin = require('craco-less');
 
 console.log(process.env.REACT_APP_REACT_CDN);
 
@@ -25,6 +26,22 @@ module.exports = {
       }
     };
   },
+  plugins: [
+    {
+      plugin: CracoLessPlugin,
+      options: {
+        lessLoaderOptions: {
+          lessOptions: {
+            modifyVars: {
+              '@ant-prefix': 'mojito',
+              '@iconfont-css-prefix': 'mojito-anticon'
+            },
+            javascriptEnabled: true
+          }
+        }
+      }
+    }
+  ],
   webpack: {
     alias: {},
     plugins: {
