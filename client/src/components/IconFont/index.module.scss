@@ -2,15 +2,14 @@
 
 .iconLink {
   color: $textColor !important;
-}
-
-.iconLink:hover {
-  color: $heightLightBgColor !important;
+  &:hover {
+    color: $heightLightBgColor !important;
+  }
 }
 
 .iconLikDisabled {
   color: rgba(255, 255, 255, 0.2) !important;
-}
-.iconLikDisabled:hover {
-  color: rgba(255, 255, 255, 0.2) !important;
+  &:hover {
+    color: rgba(255, 255, 255, 0.2) !important;
+  }
 }

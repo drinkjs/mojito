@@ -55,10 +55,9 @@
   position: absolute;
   right: 12px;
   cursor: pointer;
-}
-
-.close:hover {
-  color: #3b50ff;
+  &:hover {
+    color: #3b50ff;
+  }
 }
 
 .componentBox {
@@ -87,10 +86,9 @@
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
-}
-
-.componentView:hover {
-  border: 1px solid #3b50ff;
+  &:hover {
+    border: 1px solid #3b50ff;
+  }
 }
 
 .componentTitle {
@@ -109,6 +107,12 @@
   cursor: pointer;
   padding-bottom: 6px;
   position: relative;
+  &:hover {
+    border: 1px solid #3b50ff;
+    .toolBar {
+      display: block;
+    }
+  }
 }
 
 .toolBar {
@@ -122,13 +126,6 @@
   display: none;
   > a {
     margin: 0 6px;
-  }
-}
-
-.itemView:hover {
-  border: 1px solid #3b50ff;
-  .toolBar {
-    display: block;
   }
 }
 

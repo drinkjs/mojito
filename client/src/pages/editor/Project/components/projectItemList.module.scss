@@ -37,12 +37,11 @@
   .toolBar {
     display: none;
   }
-}
-
-.projectItem:hover {
-  border: 1px dashed #3b50ff;
-  .toolBar {
-    display: block;
+  &:hover {
+    border: 1px dashed #3b50ff;
+    .toolBar {
+      display: block;
+    }
   }
 }
 

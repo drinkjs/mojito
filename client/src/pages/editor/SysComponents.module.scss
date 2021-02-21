@@ -13,10 +13,9 @@
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
-}
-
-.componentView:hover {
-  border: 1px solid #3b50ff;
+  &:hover {
+    border: 1px solid #3b50ff;
+  }
 }
 
 .componentTitle {

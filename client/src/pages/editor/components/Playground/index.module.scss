@@ -79,8 +79,7 @@
 
 .preview {
   color: $textColor;
-}
-
-.preview:hover {
-  color: $heightLightBgColor;
+  &:hover {
+    color: $heightLightBgColor;
+  }
 }

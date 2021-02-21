@@ -106,16 +106,15 @@
   font-size: 14px;
   padding: 6px;
   align-items: center;
+  &:hover {
+    background: linear-gradient(
+      134deg,
+      rgba(51, 90, 233, 0.2),
+      rgba(111, 111, 245, 0.2)
+    );
+  }
 }
 
 .layerSelected {
   background: #012;
-}
-
-.layer:hover {
-  background: linear-gradient(
-    134deg,
-    rgba(51, 90, 233, 0.2),
-    rgba(111, 111, 245, 0.2)
-  );
 }

@@ -39,12 +39,11 @@
   .toolBar {
     display: none;
   }
-}
-
-.item:hover {
-  cursor: pointer;
-  .toolBar {
-    display: block;
+  &:hover {
+    cursor: pointer;
+    .toolBar {
+      display: block;
+    }
   }
 }
 
@@ -91,8 +90,7 @@
 
 .coverIcon {
   color: $textColor;
-}
-
-.coverIcon:hover {
-  color: $heightLightBgColor;
+  &:hover {
+    color: $heightLightBgColor;
+  }
 }

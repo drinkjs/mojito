@@ -15,7 +15,7 @@
 
 .backIcon {
   color: $textColor;
-}
-.backIcon:hover {
-  color: $heightLightBgColor;
+  &:hover {
+    color: $heightLightBgColor;
+  }
 }
