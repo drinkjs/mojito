@@ -1,9 +1,10 @@
+import { mongoose } from "@typegoose/typegoose";
 import { Injectable, MgModel, MgModelType } from "../core/decorator";
 import ComponentTypeEntity from "../entity/ComponentTypeEntity";
 import ComponentEntity from "../entity/ComponentEntity";
 import { ComponentDto, ComponentTypeDto } from "../dto";
 import { createStringDate } from "../common/utils";
-import { mongoose } from "@typegoose/typegoose";
+import { DefaultComponentTypes } from "../config";
 import BaseService from "./BaseService";
 
 @Injectable()
@@ -19,6 +20,7 @@ export default class ComponentService extends BaseService {
    */
   async findTypes () {
     const rel = await this.typeModel.find().exec();
+    if (!rel || rel.length === 0) return DefaultComponentTypes;
     return rel.map((v) => this.toDtoObject<ComponentTypeDto>(v));
   }
 

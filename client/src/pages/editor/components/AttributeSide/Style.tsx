@@ -285,9 +285,13 @@ export default inject('screenStore')(
       );
       limitChange(() => {
         if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
-          screenStore.saveLayerStyle(screenStore.currLayer.id, {
-            [type]: value
-          });
+          screenStore.updateLayer(
+            screenStore.currLayer.id,
+            {
+              style: { ...screenStore.currLayer.style, [type]: value }
+            },
+            true
+          );
         }
       });
     };

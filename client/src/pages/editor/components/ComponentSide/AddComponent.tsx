@@ -49,24 +49,7 @@ const UploadComp = (props: any) => {
       //  上传完成
       const { response } = info.file;
       if (response.code === 0) {
-        // const {libName, version} = response.data
-        // if (props.libName && libName != props.libName) {
-        //   message.error("上传组件与原组件的导出名称不一致");
-        //   setFileList([]);
-        //   onChange(undefined);
-        //   return;
-        // }
         onChange(response.data);
-        // 是否有相同版本的组件
-        // getByLibname({libName, version, origin:2}).then((data)=>{
-        //   if(!data){
-        //     onChange(response.data);
-        //   }else{
-        //     message.error(`${libName}-${version}已存在`);
-        //     setFileList([]);
-        //     onChange(undefined);
-        //   }
-        // })
       } else {
         // 上传失败
         message.error(response.msg);
@@ -145,7 +128,8 @@ export default inject('componentStore')(
           title: value
             ? value.title
             : uploadValue
-              ? `${uploadValue.libName} ${uploadValue.version}`
+              ? uploadValue.title ||
+              `${uploadValue.libName} ${uploadValue.version}`
               : undefined
         });
       },

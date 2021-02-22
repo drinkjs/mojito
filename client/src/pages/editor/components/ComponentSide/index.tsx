@@ -97,7 +97,7 @@ export default inject('componentStore')(
     };
 
     /**
-     * 显示字类型
+     * 显示二级类型
      */
     const showChildrenType = () => {
       return (
@@ -114,10 +114,9 @@ export default inject('componentStore')(
                     }}
                   >
                     <div className={styles.componentImg}>
-                      <img
-                        src={`/resources/images/${v.icon || 'media_image.png'}`}
-                        height={102}
-                        alt="icon"
+                      <IconFont
+                        type={v.icon || ''}
+                        style={{ fontSize: '48px' }}
                       />
                     </div>
                     <div className={styles.componentTitle}>{v.name}</div>

@@ -223,6 +223,10 @@ export default inject('screenStore')(
       onResize();
     }, [screenStore!.currLayer]);
 
+    useEffect(() => {
+      moveableRef.current?.updateTarget();
+    }, [groupElement]);
+
     /**
      * 拖动开始
      */
@@ -235,7 +239,7 @@ export default inject('screenStore')(
         moveableRef.current.dragStart(currNativeEvent.current);
         currNativeEvent.current = null;
       }
-      moveableRef.current?.updateTarget();
+
       if (groupElement.length > 1) {
         // 右侧边栏改变群组位置
         Eventer.on(CHANGE_GROUP, onChangeGroup);
@@ -405,9 +409,9 @@ export default inject('screenStore')(
      * 键盘事件
      */
     const onKeyDown = (e: KeyboardEvent) => {
+      e.stopPropagation();
       if (e.preventDefault && e.ctrlKey) {
         // e.preventDefault();
-        e.stopPropagation();
       }
       if (e.key === 'Delete' && screenStore!.currLayer) {
         // 删除图层
@@ -870,7 +874,7 @@ export default inject('screenStore')(
                     onDragStart={({ set }) => {
                       set([layerFrame!.style.x, layerFrame!.style.y]);
                     }}
-                    onDrag={({ target, beforeTranslate, clientX, clientY }) => {
+                    onDrag={({ target, beforeTranslate }) => {
                       if (!layerFrame) return;
                       layerFrame.style.x = Math.round(beforeTranslate[0]);
                       layerFrame.style.y = Math.round(beforeTranslate[1]);
@@ -880,7 +884,10 @@ export default inject('screenStore')(
                       currNativeEvent.current = null;
                       if (lastEvent && layerFrame) {
                         screenStore!.updateLayer(layerFrame.layerId, {
-                          style: layerFrame.style
+                          style: {
+                            ...screenStore!.currLayer!.style,
+                            ...layerFrame.style
+                          }
                         });
                       }
                     }}
@@ -915,7 +922,10 @@ export default inject('screenStore')(
                         layerFrame.style.height = Math.round(lastEvent.height);
                         // 更新图层
                         screenStore!.updateLayer(layerFrame.layerId, {
-                          style: layerFrame.style
+                          style: {
+                            ...screenStore!.currLayer!.style,
+                            ...layerFrame.style
+                          }
                         });
                       }
                       screenStore!.setResizeing(false);
