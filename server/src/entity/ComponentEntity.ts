@@ -2,7 +2,7 @@ import { mongoose, prop } from "@typegoose/typegoose";
 
 export interface ComponentProps {
   [propsName: string]: {
-    type?: any;
+    type?: string;
     comment?: string;
     default?: any;
   };

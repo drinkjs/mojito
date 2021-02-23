@@ -34,7 +34,7 @@ module.exports = {
           lessOptions: {
             modifyVars: {
               '@ant-prefix': 'mojito',
-              '@iconfont-css-prefix': 'mojito-anticon'
+              '@iconfont-css-prefix': 'mojitoicon'
             },
             javascriptEnabled: true
           }

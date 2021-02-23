@@ -158,20 +158,20 @@ export default inject('screenStore')(
             ? screenStore!.layers[0].style.z + 1
             : 1;
 
-        const props: { [key: string]: any } = {};
+        // const props: { [key: string]: any } = {};
 
         // 防止出现无限位小数
         x = Math.round(x - DefaultLayerSize.width / 2);
         y = Math.round(y - DefaultLayerSize.height / 2);
 
-        if (value.props) {
-          // 读取组件props的默认值
-          Object.keys(value.props).forEach((key) => {
-            if (value.props[key].default !== undefined) {
-              props[key] = value.props[key].default;
-            }
-          });
-        }
+        // if (value.props) {
+        //   // 读取组件props的默认值
+        //   Object.keys(value.props).forEach((key) => {
+        //     if (value.props[key].default !== undefined) {
+        //       props[key] = value.props[key].default;
+        //     }
+        //   });
+        // }
 
         // 新图层
         if (screenStore && screenStore.screenInfo) {
@@ -187,8 +187,8 @@ export default inject('screenStore')(
               z,
               width: DefaultLayerSize.width,
               height: DefaultLayerSize.height
-            },
-            props
+            }
+            // props
           };
 
           screenStore.addLayer(newLayer);

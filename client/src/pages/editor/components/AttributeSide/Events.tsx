@@ -127,7 +127,11 @@ export default inject('screenStore')(
             }
           })
           .then(() => {
-            message.success({ content: '保存成功', key: 'saveEvent' });
+            message.success({
+              content: '保存成功',
+              key: 'saveEvent',
+              duration: 0
+            });
           });
       }
     }, [currEvent, isSync]);
