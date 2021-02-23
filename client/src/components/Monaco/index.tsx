@@ -37,7 +37,7 @@ export default (props: Props) => {
     if (onCreate) onCreate(editor);
 
     if (onChange) {
-      editor.getModel()!.onDidChangeContent(() => {
+      editor.getModel()?.onDidChangeContent(() => {
         if (inChange.current) {
           inChange.current = false;
           return;
@@ -48,7 +48,7 @@ export default (props: Props) => {
     }
 
     return () => {
-      editor.getModel()!.dispose();
+      editor.getModel()?.dispose();
       editor.dispose();
     };
   }, []);

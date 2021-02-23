@@ -11,11 +11,13 @@ import {
   Space,
   InputNumber
 } from 'antd';
-import Monaco from 'components/Monaco';
+// import Monaco from 'components/Monaco';
 import { request } from 'common/network';
 import { formatJson } from 'common/util';
 import { ScreenStore } from 'types';
+import { lazyLoader } from 'components/Loader';
 
+const Monaco = lazyLoader(() => import('components/Monaco'));
 interface Props extends ModalFuncProps {
   onSubmit?: (values: any) => void;
   screenStore?: ScreenStore;

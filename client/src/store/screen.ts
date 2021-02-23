@@ -462,6 +462,7 @@ export default class Screen {
       layer[key] = dataAny[key];
     });
     this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
+    if (reload) this.selectedLayerIds = toJS(this.selectedLayerIds);
     this.saveLoading = true;
     // 保存数据
     return layerService

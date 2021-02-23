@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Select, Button, Tooltip, Switch, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import * as monaco from 'monaco-editor';
 import Monaco from 'components/Monaco';
 import { GlobalEventer } from 'common/eventer';
 import { toJS } from 'mobx';
@@ -55,7 +54,7 @@ const systemEvent = [
 export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
-    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+    const editorRef = useRef<any>();
     const currCodeRef = useRef<string>();
     const currLayerId = useRef<string>();
     const [currEvent, setCurrEvent] = useState<string>('');
@@ -100,12 +99,9 @@ export default inject('screenStore')(
     /**
      * 生成代码编辑器
      */
-    const onEditorCreate = useCallback(
-      (codeEditor: monaco.editor.IStandaloneCodeEditor) => {
-        editorRef.current = codeEditor;
-      },
-      []
-    );
+    const onEditorCreate = useCallback((codeEditor) => {
+      editorRef.current = codeEditor;
+    }, []);
 
     /**
      * 主动保存代码

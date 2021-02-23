@@ -6,17 +6,17 @@
   display: flex;
 
   :global {
-    .ant-slider-track {
-      background-color: #335ae9;
+    .mojito-slider-track {
+      background-color: #335ae9 !important;
     }
-    .ant-slider:hover .ant-slider-track {
-      background-color: #335ae9;
+    .mojito-slider:hover .ant-slider-track {
+      background-color: #335ae9 !important;
     }
-    .ant-slider-handle {
+    .mojito-slider-handle {
       border: 1px solid #fff;
       background: #6f6ff5;
     }
-    .ant-slider-rail {
+    .mojito-slider-rail {
       background: #444;
     }
   }
