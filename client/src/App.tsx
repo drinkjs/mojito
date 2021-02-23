@@ -7,7 +7,7 @@ import './App.less';
 const prefixCls = 'mojito';
 
 message.config({
-  prefixCls
+  prefixCls: `${prefixCls}-message`
 });
 
 notification.config({
@@ -23,7 +23,7 @@ function App () {
     <ConfigProvider
       locale={zhCN}
       prefixCls={prefixCls}
-      iconPrefixCls="mojitoicon"
+      // iconPrefixCls="mojitoicon"
     >
       <AppRouter />
     </ConfigProvider>
