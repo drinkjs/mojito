@@ -96,7 +96,10 @@ export default inject('screenStore')(
         const params = parseParams(values.params);
         setTestData({});
         setTesting(true);
-        request(values.url, values.method, params, { prefix: '' })
+        request(values.url, values.method, params, {
+          prefix: '',
+          checkCode: false
+        })
           .then((rel) => {
             setTestData(rel);
           })
