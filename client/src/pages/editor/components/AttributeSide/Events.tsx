@@ -282,7 +282,7 @@ export default inject('screenStore')(
             {currEvent && (
               <div>
                 <Button size="small" onClick={onDebug}>
-                  调式
+                  调试
                 </Button>
                 <Button
                   type="primary"

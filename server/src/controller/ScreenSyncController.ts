@@ -1,3 +1,4 @@
+import { OPEN } from "ws";
 import { Controller, Get, Query, WebSocketServer, Ws } from "../core";
 import WebsocketEmitter, {
   WebsocketEvent,
@@ -145,12 +146,14 @@ export default class ScreenSyncController extends BaseController {
    */
   sendMessage (client: WsClient, msg: any) {
     try {
-      const msgString = JSON.stringify(msg);
-      client.socket.send(msgString, (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
+      if (client && client.socket && client.socket.readyState === OPEN) {
+        const msgString = JSON.stringify(msg);
+        client.socket.send(msgString, (err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+      }
     } catch (e) {
       console.error(e);
     }
