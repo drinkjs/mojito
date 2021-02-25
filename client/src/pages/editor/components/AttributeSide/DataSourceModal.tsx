@@ -2,14 +2,11 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
 import { ModalFuncProps } from 'antd/lib/modal';
 import { Modal, Form, Input, Button, Select, Space, InputNumber } from 'antd';
-// import Monaco from 'components/Monaco';
+import CodeEditor from 'components/CodeEditor';
 import { request } from 'common/network';
 import { formatJson } from 'common/util';
 import { ScreenStore } from 'types';
-import { lazyLoader } from 'components/Loader';
 import Message from 'components/Message';
-
-const Monaco = lazyLoader(() => import('components/Monaco'));
 interface Props extends ModalFuncProps {
   onSubmit?: (values: any) => void;
   screenStore?: ScreenStore;
@@ -165,13 +162,12 @@ export default inject('screenStore')(
               currLayer && currLayer.api ? formatJson(currLayer.api.params) : ''
             }
           >
-            <Monaco
+            <CodeEditor
               style={{
                 width: '100%',
                 height: '100px',
                 border: '1px solid #303247'
               }}
-              language="json"
             />
           </Form.Item>
           <Form.Item

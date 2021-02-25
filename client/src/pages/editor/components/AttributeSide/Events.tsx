@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Select, Button, Tooltip, Switch } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import Monaco from 'components/Monaco';
+import CodeEditor from 'components/CodeEditor';
 import { GlobalEventer } from 'common/eventer';
 import { toJS } from 'mobx';
 import { ScreenStore } from 'types';
@@ -27,11 +27,6 @@ const myConsole = {
 let myConsoleArgs: any[] = [];
 
 const DEFAULT_CODE = [
-  '// 请不要使用export default方式导出',
-  '// 可以通过this对象获取组件的style和props',
-  '// 要使用this必需使用function方式定义事件处理',
-  '// 可以通过返回值或者调用this.setValue方法修改style和props',
-  '// 可以通过this.eventer进行组件通信，用法与EventEmitter一致',
   '//export function handler(){',
   '//\tconsole.log(this)',
   '//}'
@@ -55,14 +50,14 @@ const systemEvent = [
 export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
-    const editorRef = useRef<any>();
     const currCodeRef = useRef<string>();
     const currLayerId = useRef<string>();
-    const [currEvent, setCurrEvent] = useState<string>('');
+    const [currEvent, setCurrEvent] = useState<string>();
     const [consoleArgs, setConsoleArgs] = useState<any[]>([]);
     const [debugerRel, setDebugerRel] = useState<any>();
     const [error, setError] = useState<Error>();
     const [eventTips, setEventTips] = useState<string>();
+    const [codeString, setCodeString] = useState<string>('');
     const [isSync, setIsSync] = useState(false);
 
     useEffect(() => {
@@ -74,7 +69,6 @@ export default inject('screenStore')(
         myConsoleArgs.push(args);
       };
       return () => {
-        editorRef.current = undefined;
         myConsoleArgs = [];
         console.log = myConsole.log;
         eventer.removeAllListeners();
@@ -86,23 +80,16 @@ export default inject('screenStore')(
         screenStore!.currLayer &&
         currLayerId.current !== screenStore!.currLayer.id
       ) {
-        setCurrEvent('');
+        setCurrEvent(undefined);
         setConsoleArgs([]);
         setDebugerRel(undefined);
         setError(undefined);
         setEventTips('');
         setIsSync(false);
-        editorRef.current && editorRef.current.setValue('');
+        setCodeString('');
         currLayerId.current = screenStore!.currLayer.id;
       }
     }, [screenStore!.currLayer]);
-
-    /**
-     * 生成代码编辑器
-     */
-    const onEditorCreate = useCallback((codeEditor) => {
-      editorRef.current = codeEditor;
-    }, []);
 
     /**
      * 主动保存代码
@@ -112,22 +99,20 @@ export default inject('screenStore')(
         screenStore &&
         screenStore.currLayer &&
         screenStore.currLayer.id &&
-        editorRef.current
+        currEvent
       ) {
-        const code = editorRef.current.getValue();
-        currCodeRef.current = code;
         screenStore!
           .updateLayer(screenStore!.currLayer.id, {
             events: {
               ...screenStore!.currLayer.events,
-              [currEvent]: { code, isSync }
+              [currEvent]: { code: codeString, isSync }
             }
           })
           .then((rel) => {
             rel && Message.success('保存成功');
           });
       }
-    }, [currEvent, isSync]);
+    }, [currEvent, isSync, codeString]);
 
     /**
      * 调式代码
@@ -138,7 +123,7 @@ export default inject('screenStore')(
       setError(undefined);
 
       try {
-        const code = editorRef.current ? editorRef.current.getValue() : '';
+        const code = codeString;
         const fun = buildCode(code);
         if (fun) {
           const rel = fun.call(createThis());
@@ -148,7 +133,7 @@ export default inject('screenStore')(
       } catch (e) {
         setError(e);
       }
-    }, []);
+    }, [codeString]);
 
     /**
      * 选择事件
@@ -165,11 +150,10 @@ export default inject('screenStore')(
         screenStore.currLayer.events &&
         screenStore.currLayer.events[value]
       ) {
-        editorRef.current &&
-          editorRef.current.setValue(screenStore.currLayer.events[value].code);
+        setCodeString(screenStore.currLayer.events[value].code || '');
         setIsSync(screenStore!.currLayer.events[value].isSync);
       } else {
-        editorRef.current && editorRef.current.setValue(DEFAULT_CODE);
+        setCodeString(DEFAULT_CODE);
         setIsSync(false);
       }
 
@@ -214,6 +198,10 @@ export default inject('screenStore')(
 
     const onSetSync = useCallback((checked) => {
       setIsSync(checked);
+    }, []);
+
+    const onCodeChange = useCallback((value: string) => {
+      setCodeString(value || '');
     }, []);
 
     return (
@@ -294,10 +282,11 @@ export default inject('screenStore')(
               </div>
             )}
           </section>
-          <Monaco
-            style={{ width: '100%', height: '300px' }}
-            // value={DEFAULT_CODE}
-            onCreate={onEditorCreate}
+          <CodeEditor
+            style={{ width: '100%', height: '400px' }}
+            mode="javascript"
+            value={codeString}
+            onChange={onCodeChange}
           />
         </div>
 

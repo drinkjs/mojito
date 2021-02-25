@@ -8,7 +8,7 @@ import { LoadingComponent, lazyLoader } from 'components/Loader';
 import { ScreenStore } from 'types';
 import styles from './index.module.scss';
 import Style from './Style';
-import PropsSet from './Props';
+// import PropsSet from './Props';
 // import Events from "./Events";
 import PageSet from './PageSet';
 import Layers from './Layers';
@@ -17,9 +17,14 @@ import GroupSet from './GroupSet';
 const classNames = require('classnames');
 
 const Events = lazyLoader(() => import('./Events'));
-// const PropsSet = lazyLoader(() => import('./Props'));
+const PropsSet = lazyLoader(() => import('./Props'));
 
-type TabObj = { label: string; key: string; icon: string; render: () => any };
+type TabObj = {
+  label: string;
+  key: string;
+  icon: string;
+  render: (key?: string) => any;
+};
 
 const tabs: TabObj[] = [
   {
@@ -38,15 +43,15 @@ const tabs: TabObj[] = [
     label: '组件样式',
     key: 'style',
     icon: 'icon-css',
-    render: () => <Style />
+    render: (key?: string) => <Style key={key} />
   },
   {
     label: '组件属性',
     key: 'props',
     icon: 'icon-shuxing1',
-    render: () => (
+    render: (key?: string) => (
       <Suspense fallback={<LoadingComponent skeleton />}>
-        <PropsSet />
+        <PropsSet key={key} />
       </Suspense>
     )
   },
@@ -54,9 +59,9 @@ const tabs: TabObj[] = [
     label: '交互事件',
     key: 'events',
     icon: 'icon-dianjishijian',
-    render: () => (
+    render: (key?: string) => (
       <Suspense fallback={<LoadingComponent skeleton />}>
-        <Events />
+        <Events key={key} />
       </Suspense>
     )
   },
@@ -210,7 +215,7 @@ export default inject('screenStore')(
                         )}
                   </div>
                 )}
-              {selectedTab.render()}
+              {selectedTab.render(screenStore!.currLayer?.id)}
             </div>
           )}
           {renderTab()}
