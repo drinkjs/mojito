@@ -1,5 +1,5 @@
 import React from 'react';
-import { Empty, Button, Modal, message, Input, Skeleton } from 'antd';
+import { Empty, Button, Modal, Input, Skeleton } from 'antd';
 import { observer, inject } from 'mobx-react';
 import {
   PlusOutlined,
@@ -12,6 +12,7 @@ import Image from 'components/Image';
 import { ProjectDto, ScreenDto, ScreenStore } from 'types';
 import styles from './screenList.module.scss';
 import noProject from 'resources/images/noProject.png';
+import Message from 'components/Message';
 
 const { useCallback, useState, useEffect } = React;
 const { confirm } = Modal;
@@ -40,7 +41,7 @@ export default inject('screenStore')(
      */
     const handleOk = useCallback(() => {
       if (!screenName) {
-        message.warning('请输入页面名称');
+        Message.warning('请输入页面名称');
         return;
       }
 

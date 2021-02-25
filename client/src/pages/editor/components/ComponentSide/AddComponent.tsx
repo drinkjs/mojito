@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Modal, Form, Input, Cascader, Upload, Button, message } from 'antd';
+import { Modal, Form, Input, Cascader, Upload, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { ModalFuncProps } from 'antd/lib/modal';
 import { RcFile } from 'antd/lib/upload';
@@ -8,6 +8,7 @@ import UploadImg from 'components/UploadImg';
 import { toJS } from 'mobx';
 import { getTreeParent } from 'common/util';
 import { ComponentInfo, ComponentStore } from 'types';
+import Message from 'components/Message';
 
 const layout = {
   labelCol: { span: 4 },
@@ -32,7 +33,7 @@ const UploadComp = (props: any) => {
     ) {
       return true;
     }
-    message.error('只支持上传zip格式文件');
+    Message.error('只支持上传zip格式文件');
     setFileList([]);
     onChange(undefined);
     return false;
@@ -52,7 +53,7 @@ const UploadComp = (props: any) => {
         onChange(response.data);
       } else {
         // 上传失败
-        message.error(response.msg);
+        Message.error(response.msg);
         setFileList([]);
         onChange(undefined);
       }
@@ -98,7 +99,7 @@ export default inject('componentStore')(
         if (value && value.id) {
           componentStore!.updateComponent(submitValue).then(() => {
             componentStore!.getTypeComponent(oldType);
-            message.success('修改成功');
+            Message.success('修改成功');
             // 修改完之后重置
             const globalVal: any = global;
             globalVal[value.libName + value.version] = null;
@@ -111,7 +112,7 @@ export default inject('componentStore')(
           if (componentStore!.currSelectType === submitValue.type) {
             componentStore!.getTypeComponent(submitValue.type);
           }
-          message.success('新增成功');
+          Message.success('新增成功');
           props.onCancel && props.onCancel();
         });
       });

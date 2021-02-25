@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { makeAutoObservable, toJS, runInAction, computed } from 'mobx';
-import { message, Modal } from 'antd';
+import { Modal } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import * as service from 'services/screen';
 import * as layerService from 'services/layer';
@@ -485,7 +485,7 @@ export default class Screen {
         if (reload) {
           this.reload();
         }
-        return rel;
+        return true;
       })
       .catch(() => {
         // 保存失败
@@ -625,7 +625,6 @@ export default class Screen {
         if (this.selectedLayerIds.size === 0) {
           this.selectedLayerIds = new Set(layerIds);
         }
-        message.success({ content: '群组成功', key: '群组成功' });
         return rel;
       })
       .finally(() => {
@@ -655,7 +654,6 @@ export default class Screen {
         if (this.selectedLayerIds.size === 0) {
           this.selectedLayerIds = new Set(layerIds);
         }
-        message.success({ content: '解组成功', key: '解组成功' });
         return rel;
       })
       .finally(() => {

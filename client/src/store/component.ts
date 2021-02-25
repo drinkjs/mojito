@@ -87,8 +87,8 @@ export default class Component {
     this.addLoading = true;
     return service
       .addSystemComponent(params)
-      .then((data) => {
-        return data;
+      .then(() => {
+        return true;
       })
       .finally(() => {
         runInAction(() => {

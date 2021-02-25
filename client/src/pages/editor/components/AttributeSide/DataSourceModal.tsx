@@ -1,21 +1,13 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
 import { ModalFuncProps } from 'antd/lib/modal';
-import {
-  Modal,
-  Form,
-  Input,
-  Button,
-  message,
-  Select,
-  Space,
-  InputNumber
-} from 'antd';
+import { Modal, Form, Input, Button, Select, Space, InputNumber } from 'antd';
 // import Monaco from 'components/Monaco';
 import { request } from 'common/network';
 import { formatJson } from 'common/util';
 import { ScreenStore } from 'types';
 import { lazyLoader } from 'components/Loader';
+import Message from 'components/Message';
 
 const Monaco = lazyLoader(() => import('components/Monaco'));
 interface Props extends ModalFuncProps {
@@ -58,7 +50,7 @@ export default inject('screenStore')(
         });
         return JSON.parse(newParams);
       } catch (e) {
-        message.error('参数解释错误');
+        Message.error('参数解释错误');
         return {};
       }
     };
@@ -70,7 +62,7 @@ export default inject('screenStore')(
           try {
             params = JSON.parse(values.params);
           } catch (e) {
-            message.error('参数解释错误');
+            Message.error('参数解释错误');
             return;
           }
         }
@@ -85,7 +77,7 @@ export default inject('screenStore')(
             }
           })
           .then(() => {
-            message.success('保存成功');
+            Message.success('保存成功');
             props.onCancel && props.onCancel();
           });
       });

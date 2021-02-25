@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Modal, Form, Input, Cascader, message } from 'antd';
+import { Modal, Form, Input, Cascader } from 'antd';
 import { ModalFuncProps } from 'antd/lib/modal';
 import { FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import Image from 'components/Image';
@@ -10,6 +10,7 @@ import { toJS } from 'mobx';
 import { getTreeParent } from 'common/util';
 import { ComponentInfo, ComponentStore } from 'types';
 import styles from './SysComponents.module.scss';
+import Message from 'components/Message';
 
 const layout = {
   labelCol: { span: 4 },
@@ -72,10 +73,10 @@ export default inject('componentStore')(
           ...values,
           type: values.type[values.type.length - 1]
         };
-        componentStore!.addSystemComponent(submitValue).then(() => {
+        componentStore!.addSystemComponent(submitValue).then((rel) => {
           componentStore!.getComponentSystem();
           onCancel();
-          message.success('更新成功');
+          rel && Message.success('更新成功');
         });
       });
     }, [form, currValue]);
@@ -94,7 +95,7 @@ export default inject('componentStore')(
           componentStore!.removeComponent(value.id).then(() => {
             componentStore!.getComponentSystem();
             onCancel();
-            message.success('删除成功');
+            Message.success('删除成功');
           });
         }
       });

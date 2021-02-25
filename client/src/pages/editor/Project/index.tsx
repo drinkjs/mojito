@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Empty, Button, Modal, Input, message, Skeleton } from 'antd';
+import { Empty, Button, Modal, Input, Skeleton } from 'antd';
 import { observer, inject } from 'mobx-react';
 import { toJS } from 'mobx';
 import { PlusOutlined } from '@ant-design/icons';
@@ -9,6 +9,7 @@ import ScreenList from './components/screenList';
 import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
 import noProject from 'resources/images/noProject.png';
+import Message from 'components/Message';
 
 // const { useCallback, useState, useEffect } = React;
 
@@ -44,7 +45,7 @@ export default inject('projectStore')(
     const handleOk = useCallback(
       (e: any) => {
         if (!projectName) {
-          message.warning('请输入项目名称');
+          Message.warning('请输入项目名称');
           return;
         }
         // 编辑项目

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-this-in-sfc */
-import { message, ConfigProvider } from 'antd';
+import { ConfigProvider } from 'antd';
+import Message from 'components/Message';
 import React, { useRef, useEffect, useState } from 'react';
 import { ComponentStyle } from 'types';
 
@@ -60,7 +61,7 @@ export default ({
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
-      message.error({ content: 'Vue没定义', key: 'noVue' });
+      Message.error('Vue没定义');
       return;
     }
 

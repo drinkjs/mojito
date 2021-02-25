@@ -1,13 +1,14 @@
 /* eslint-disable no-eval */
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Select, Button, Tooltip, Switch, message } from 'antd';
+import { Select, Button, Tooltip, Switch } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Monaco from 'components/Monaco';
 import { GlobalEventer } from 'common/eventer';
 import { toJS } from 'mobx';
 import { ScreenStore } from 'types';
 import { eventRequest, LayerEvent } from 'components/Layer';
+import Message from 'components/Message';
 import { buildCode } from 'common/util';
 import styles from './index.module.scss';
 
@@ -122,11 +123,8 @@ export default inject('screenStore')(
               [currEvent]: { code, isSync }
             }
           })
-          .then(() => {
-            message.success({
-              content: '保存成功',
-              key: 'saveEvent'
-            });
+          .then((rel) => {
+            rel && Message.success('保存成功');
           });
       }
     }, [currEvent, isSync]);

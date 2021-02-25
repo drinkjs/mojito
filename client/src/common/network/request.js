@@ -7,12 +7,12 @@
  */
 
 import axios from 'axios';
-import { message } from 'antd';
+import Message from 'components/Message';
 
 const API = '/api';
 
 function showError (content) {
-  message.error({ content, key: "networkError" });
+  Message.error(content);
 }
 
 /**

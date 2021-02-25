@@ -6,7 +6,7 @@ import { useDrop } from 'react-dnd';
 import Moveable from 'react-moveable';
 import { observer, inject } from 'mobx-react';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Tooltip, Switch, message } from 'antd';
+import { Tooltip, Switch } from 'antd';
 import { runInAction, toJS } from 'mobx';
 import {
   ContextMenu,
@@ -32,6 +32,7 @@ import {
 } from 'config';
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
+// import Message from 'components/Message';
 
 let compCount: { [key: string]: number } = {};
 
@@ -445,7 +446,7 @@ export default inject('screenStore')(
      */
     const groupLayer = () => {
       if (currLayerIds.current.size === 0 || screenStore!.isSelectedGroup) {
-        message.success({ content: '群组成功', key: '群组成功' });
+        // Message.success("群组成功");
         return;
       }
       screenStore!.groupLayer(Array.from(currLayerIds.current));
@@ -456,7 +457,7 @@ export default inject('screenStore')(
      */
     const disbandLayer = () => {
       if (currLayerIds.current.size === 0 || !screenStore!.isSelectedGroup) {
-        message.success({ content: '解组成功', key: '解组成功' });
+        // Message.success('解组成功');
         return;
       }
       screenStore!.disbandLayer(Array.from(currLayerIds.current));

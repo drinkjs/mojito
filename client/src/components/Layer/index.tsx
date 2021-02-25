@@ -12,7 +12,6 @@ import React, {
   useMemo
 } from 'react';
 import { observer, inject } from 'mobx-react';
-import { message } from 'antd';
 import { cloneDeep } from 'lodash';
 import ErrorCatch from 'components/ErrorCatch';
 import eventer from 'common/eventer';
@@ -30,9 +29,10 @@ import { loadLib, LoadingComponent } from '../Loader';
 import Render from './Render';
 import styles from './index.module.scss';
 import { DefaultLayerSize } from 'config';
+import Message from 'components/Message';
 
 function showHandlerError (layerName: string, error: any) {
-  message.error(`${layerName}事件处理错误:${error.message}`);
+  Message.error(`${layerName}事件处理错误:${error.message}`);
   console.error(`${layerName}事件处理错误:${error.message}`);
 }
 
@@ -73,7 +73,7 @@ export function parseParams (params: string) {
     });
     return JSON.parse(newParams);
   } catch (e) {
-    message.error('参数解释错误');
+    Message.error('参数解释错误');
     return {};
   }
 }

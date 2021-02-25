@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Upload, message } from 'antd';
+import { Upload } from 'antd';
 import {
   DeleteOutlined,
   LoadingOutlined,
@@ -8,6 +8,7 @@ import {
 import { RcFile } from 'antd/lib/upload';
 import { UploadListType } from 'antd/lib/upload/interface';
 import styles from './index.module.scss';
+import Message from 'components/Message';
 
 interface Props {
   onChange?: (filePath: string | undefined) => void;
@@ -45,7 +46,7 @@ const UploadImg = (props: Props) => {
       ) {
         return true;
       }
-      message.error('只支持上传图片格式文件');
+      Message.error('只支持上传图片格式文件');
       setImageUrl(undefined);
       onChange && onChange(undefined);
       return false;
@@ -65,7 +66,7 @@ const UploadImg = (props: Props) => {
           onChange && onChange(path);
         } else {
           // 上传失败
-          message.error(response.msg);
+          Message.error(response.msg);
           onChange && onChange(undefined);
         }
       } else {
