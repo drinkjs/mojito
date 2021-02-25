@@ -83,7 +83,7 @@ export default inject('componentStore')(
           {componentStore!.typeComponent &&
             componentStore!.typeComponent.map((comp: ComponentInfo) => {
               return (
-                <Col span={24} key={comp.id} style={{ padding: '6px' }}>
+                <Col span={12} key={comp.id} style={{ padding: '6px' }}>
                   <Item
                     value={comp}
                     onEdit={onEditComponent}
@@ -106,7 +106,7 @@ export default inject('componentStore')(
             currType.children &&
             currType.children.map((v) => {
               return (
-                <Col span={12} key={v.id} style={{ padding: '6px' }}>
+                <Col span={24} key={v.id} style={{ padding: '0px 10px' }}>
                   <div
                     className={styles.componentView}
                     onClick={() => {

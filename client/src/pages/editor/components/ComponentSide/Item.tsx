@@ -4,6 +4,7 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 import { Modal } from 'antd';
 import { FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import Image from 'components/Image';
+import Ellipsis from 'components/Ellipsis';
 import { ComponentInfo } from 'types';
 import styles from './index.module.scss';
 
@@ -55,9 +56,13 @@ export default ({ value, onRemove, onEdit }: Props) => {
   return (
     <div className={styles.itemView} ref={drag}>
       <div className={styles.itemImgBox}>
-        <Image src={value.coverImg} height="76px" />
+        <Image src={value.coverImg} height="56px" />
       </div>
-      <div style={{ textAlign: 'center', padding: '3px 0' }}>{value.title}</div>
+      <div style={{ textAlign: 'center', padding: '3px 0', width: '100%' }}>
+        <Ellipsis lines={1} tooltip>
+          {value.title}
+        </Ellipsis>
+      </div>
       {value.origin === 2 && (
         <div className={styles.toolBar}>
           <a onClick={handleEdit}>

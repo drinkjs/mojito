@@ -36,6 +36,8 @@ import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
 
 let compCount: { [key: string]: number } = {};
 
+const shortKeys = ['g', 'b', 'z', 'y', 'h', 'l'];
+
 interface Props {
   screenStore?: ScreenStore;
   componentStore?: ComponentStore;
@@ -411,8 +413,8 @@ export default inject('screenStore')(
      */
     const onKeyDown = (e: KeyboardEvent) => {
       e.stopPropagation();
-      if (e.preventDefault && e.ctrlKey) {
-        // e.preventDefault();
+      if (e.preventDefault && e.ctrlKey && shortKeys.indexOf(e.key) >= 0) {
+        e.preventDefault();
       }
       if (e.key === 'Delete' && screenStore!.currLayer) {
         // 删除图层
@@ -420,7 +422,16 @@ export default inject('screenStore')(
       }
       // esc取消选中
       if (e.key === 'Escape') {
-        return screenStore!.setCurrLayer(undefined);
+        screenStore!.selectedLayerIds = new Set();
+        return;
+      }
+      // 显示/隐藏
+      if (e.ctrlKey && e.key === 'h' && screenStore?.currLayer) {
+        screenStore?.hideLayer(!screenStore!.isLayerHide);
+      }
+      // 锁定/解锁
+      if (e.ctrlKey && e.key === 'l' && screenStore?.currLayer) {
+        screenStore?.lockLayer(!screenStore?.isLayerLock);
       }
 
       if (e.ctrlKey && e.key === 'z') {
@@ -663,29 +674,37 @@ export default inject('screenStore')(
               <IconLink
                 icon="icon-suoding"
                 className={
-                  screenStore!.isLayerLock ? undefined : styles.noLockHide
+                  screenStore?.isLayerLock ? undefined : styles.noLockHide
                 }
                 style={toolStyles}
                 disabled={screenStore!.selectedLayerIds.size === 0}
-                title={screenStore!.isLayerLock ? '解锁组件' : '锁定组件'}
+                title={
+                  screenStore!.isLayerLock
+                    ? '解锁组件(Ctrl+L)'
+                    : '锁定组件(Ctrl+L)'
+                }
                 onClick={() => {
-                  screenStore!.lockLayer(!screenStore!.isLayerLock);
+                  screenStore?.lockLayer(!screenStore!.isLayerLock);
                 }}
               />
               <IconLink
                 icon="icon-xianshi1"
                 className={
-                  screenStore!.isLayerHide ? styles.noLockHide : undefined
+                  screenStore?.isLayerHide ? styles.noLockHide : undefined
                 }
                 style={toolStyles}
                 disabled={screenStore!.selectedLayerIds.size === 0}
                 onClick={() => {
-                  screenStore!.hideLayer(!screenStore!.isLayerHide);
+                  screenStore?.hideLayer(!screenStore!.isLayerHide);
                 }}
-                title={screenStore!.isLayerHide ? '显示组件' : '隐藏组件'}
+                title={
+                  screenStore?.isLayerHide
+                    ? '显示组件(Ctrl+H)'
+                    : '隐藏组件(Ctrl+H)'
+                }
               />
               <IconLink
-                title="群组"
+                title="群组(Ctrl+G)"
                 icon="icon-hebing"
                 onClick={groupLayer}
                 disabled={
@@ -695,24 +714,24 @@ export default inject('screenStore')(
                 style={toolStyles}
               />
               <IconLink
-                title="解组"
+                title="解组(Ctrl+B)"
                 icon="icon-shoudongfenli"
                 onClick={disbandLayer}
                 disabled={
-                  !screenStore!.isSelectedGroup ||
-                  screenStore!.layerGroup.length < 2
+                  !screenStore?.isSelectedGroup ||
+                  screenStore?.layerGroup.length < 2
                 }
                 style={toolStyles}
               />
               <IconLink
-                title="撤销"
+                title="撤销(Ctrl+Z)"
                 icon="icon-zhongzuo1"
                 onClick={undo}
                 disabled={screenStore!.undoData.length === 0}
                 style={toolStyles}
               />
               <IconLink
-                title="重做"
+                title="重做(Ctrl+Y)"
                 icon="icon-zhongzuo"
                 onClick={redo}
                 disabled={screenStore!.redoData.length === 0}
@@ -722,7 +741,7 @@ export default inject('screenStore')(
                 <a
                   rel="noreferrer"
                   target="_blank"
-                  href={`/screen/${screenStore!.screenInfo.id}`}
+                  href={`/screen/${screenStore!.screenInfo.id}?preview=1`}
                   className={styles.preview}
                 >
                   <IconFont type="icon-chakan" />

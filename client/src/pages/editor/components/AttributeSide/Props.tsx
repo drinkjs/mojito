@@ -18,7 +18,8 @@ import {
 } from '@ant-design/icons';
 import { toJS } from 'mobx';
 import UploadImg from 'components/UploadImg';
-import Monaco from 'components/Monaco';
+// import Monaco from 'components/Monaco';
+import JsonEditor from 'components/JsonEditor';
 import { limitChange, formatJson, typeis, parseJson } from 'common/util';
 import { ScreenStore } from 'types';
 import DataSourceModal from './DataSourceModal';
@@ -29,12 +30,8 @@ function isenum (arg: any) {
 }
 
 const typeComp: any = {
-  object: () => (
-    <Monaco style={{ width: '100%', height: '200px' }} language="json" />
-  ),
-  array: () => (
-    <Monaco style={{ width: '100%', height: '200px' }} language="json" />
-  ),
+  object: () => <JsonEditor style={{ width: '100%', height: '200px' }} />,
+  array: () => <JsonEditor style={{ width: '100%', height: '200px' }} />,
   string: () => <Input.TextArea />,
   boolean: () => (
     <Radio.Group>

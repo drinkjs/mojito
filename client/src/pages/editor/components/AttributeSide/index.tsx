@@ -8,7 +8,7 @@ import { LoadingComponent, lazyLoader } from 'components/Loader';
 import { ScreenStore } from 'types';
 import styles from './index.module.scss';
 import Style from './Style';
-// import PropsSet from "./Props";
+import PropsSet from './Props';
 // import Events from "./Events";
 import PageSet from './PageSet';
 import Layers from './Layers';
@@ -17,7 +17,7 @@ import GroupSet from './GroupSet';
 const classNames = require('classnames');
 
 const Events = lazyLoader(() => import('./Events'));
-const PropsSet = lazyLoader(() => import('./Props'));
+// const PropsSet = lazyLoader(() => import('./Props'));
 
 type TabObj = { label: string; key: string; icon: string; render: () => any };
 
@@ -132,6 +132,7 @@ export default inject('screenStore')(
     };
 
     const renderTab = () => {
+      if (!screenStore?.screenInfo) return;
       return (
         <div className={styles.tabBox}>
           {tabs.map((v) => {

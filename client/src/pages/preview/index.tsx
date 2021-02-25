@@ -1,35 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Skeleton } from 'antd';
 import DocumentTitle from 'components/DocumentTitle';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { joinPage, useReconnect } from 'common/stateTool';
 import Layer from 'components/Layer';
 import { toJS } from 'mobx';
-import { ScreenLayout, ScreenStore } from 'types';
+import { ScreenStore } from 'types';
 import { DefaultLayerSize } from 'config';
 
 interface Props {
   screenStore?: ScreenStore;
-  onLayout?: (layout: ScreenLayout) => void;
 }
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 export default inject('screenStore')(
   observer((props: Props) => {
-    const { screenStore, onLayout } = props;
+    const { screenStore } = props;
     const screenInfo = screenStore!.screenInfo;
     const [initFlag, setInitFlag] = useState(false);
-    const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string; preview: string }>();
+    const query = useQuery();
 
     useEffect(() => {
       screenStore!.getDetail(id).then((data) => {
         if (data) {
           setInitFlag(true);
-          if (onLayout) {
-            onLayout(screenInfo!.style);
-          }
         }
       });
+      let timer: any | undefined;
+      if (query.get('preview') === '1') {
+        timer = setInterval(getDetail, 3000);
+      }
+      return () => {
+        clearInterval(timer);
+      };
     }, []);
 
     useEffect(() => {
@@ -44,6 +52,10 @@ export default inject('screenStore')(
       screenInfo && joinPage(screenInfo.project.name);
     });
 
+    const getDetail = useCallback(() => {
+      screenStore!.getDetail(id);
+    }, []);
+
     const { style, layers } = screenInfo || {
       layout: undefined,
       layers: undefined
@@ -51,7 +63,7 @@ export default inject('screenStore')(
 
     return (
       <DocumentTitle title={screenInfo ? screenInfo.name : ''}>
-        <Skeleton loading={screenStore!.getDetailLoading}>
+        <Skeleton loading={screenStore!.getDetailLoading && !initFlag}>
           {style && (
             <div>
               <div
