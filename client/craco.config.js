@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CracoLessPlugin = require('craco-less');
 
 console.log(process.env.REACT_APP_REACT_CDN);
@@ -46,9 +45,6 @@ module.exports = {
     alias: {},
     plugins: {
       add: [
-        new MonacoWebpackPlugin({
-          languages: ['javascript', 'css', 'typescript', 'json']
-        }),
         new webpack.DefinePlugin({
           REACT_APP_LIB_URI: JSON.stringify(process.env.REACT_APP_LIB_URI)
         }),
