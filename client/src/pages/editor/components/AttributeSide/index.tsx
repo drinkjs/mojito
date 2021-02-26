@@ -95,7 +95,7 @@ export default inject('screenStore')(
       }
 
       if (
-        screenStore!.selectedLayerIds.size === 0 &&
+        screenStore!.selectedLayerIds.size < 2 &&
         selectedTab &&
         selectedTab.key === 'group'
       ) {

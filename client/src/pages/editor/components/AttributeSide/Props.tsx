@@ -9,7 +9,8 @@ import {
   Form,
   Tooltip,
   Select,
-  Modal
+  Modal,
+  Collapse
 } from 'antd';
 import {
   ApiOutlined,
@@ -24,6 +25,9 @@ import { ScreenStore } from 'types';
 import DataSourceModal from './DataSourceModal';
 import styles from './index.module.scss';
 
+const { Panel } = Collapse;
+
+// 枚举类型
 function isenum (arg: any) {
   return typeis.isArray(arg) && arg.length > 0;
 }
@@ -145,7 +149,7 @@ export default inject('screenStore')(
             } else if (typeis.isObject(propsType)) {
               submitObj[key] = parseJson(toValue);
             }
-            if (submitObj[key] === undefined) {
+            if (submitObj[key] === undefined || submitObj[key] === '') {
               submitObj[key] = componentProps[key].default;
             }
           });
@@ -209,66 +213,73 @@ export default inject('screenStore')(
             onValuesChange={onPropsChange}
             key={screenStore!.currLayer ? screenStore!.currLayer.id : '1'}
           >
-            {componentProps &&
-              currLayer &&
-              Object.keys(componentProps).map((key) => {
-                const propsValue = componentProps[key];
-                let propsType: string = 'undefined';
+            <Collapse>
+              {componentProps &&
+                currLayer &&
+                Object.keys(componentProps).map((key) => {
+                  const propsValue = componentProps[key];
+                  let propsType: string = 'undefined';
 
-                if (typeis.isString(propsValue.type)) {
-                  const types = Object.keys(typeComp);
-                  const type = propsValue.type.toLocaleLowerCase();
-                  if (types.indexOf(type) >= 0) {
-                    propsType = type;
-                  } else {
-                    propsType = 'string';
+                  if (typeis.isString(propsValue.type)) {
+                    const types = Object.keys(typeComp);
+                    const type = propsValue.type.toLocaleLowerCase();
+                    if (types.indexOf(type) >= 0) {
+                      propsType = type;
+                    } else {
+                      propsType = 'string';
+                    }
+                  } else if (typeis.isArray(propsValue.type)) {
+                    propsType = propsValue.type.length > 0 ? 'enum' : 'array';
+                  } else if (typeis.isObject(propsValue.type)) {
+                    propsType = 'object';
+                  } else if (typeis.isBoolean(propsValue.type)) {
+                    propsType = 'boolean';
                   }
-                } else if (typeis.isArray(propsValue.type)) {
-                  propsType = propsValue.type.length > 0 ? 'enum' : 'array';
-                } else if (typeis.isObject(propsValue.type)) {
-                  propsType = 'object';
-                } else if (typeis.isBoolean(propsValue.type)) {
-                  propsType = 'boolean';
-                }
 
-                const typeComFun = typeComp[propsType];
-                const defValue = toJS(
-                  currLayer.props && currLayer.props[key]
-                    ? currLayer.props[key]
-                    : propsValue.default
-                );
-                return (
-                  <div className={styles.title} key={key}>
-                    <p style={{ paddingBottom: '6px' }}>
-                      {key}
-                      <Tooltip title={propsValue.comment || key}>
-                        <span style={{ color: '#666', marginLeft: '6px' }}>
-                          <ExclamationCircleOutlined />
-                        </span>
-                      </Tooltip>
-                    </p>
-                    <Form.Item
-                      label=""
-                      preserve={false}
-                      name={key}
-                      rules={[{ required: false }]}
-                      initialValue={
-                        propsType === 'object' || propsType === 'array'
-                          ? formatJson(defValue)
-                          : defValue
+                  const typeComFun = typeComp[propsType];
+                  const defValue = toJS(
+                    currLayer.props && currLayer.props[key]
+                      ? currLayer.props[key]
+                      : propsValue.default
+                  );
+                  return (
+                    <Panel
+                      header={
+                        <div>
+                          {key}
+                          <Tooltip title={propsValue.comment || key}>
+                            <span style={{ color: '#666', marginLeft: '6px' }}>
+                              <ExclamationCircleOutlined />
+                            </span>
+                          </Tooltip>
+                        </div>
                       }
+                      key={key}
                     >
-                      {typeComFun
-                        ? (
-                            typeComFun(propsValue.type)
-                          )
-                        : (
-                        <Input.TextArea />
-                          )}
-                    </Form.Item>
-                  </div>
-                );
-              })}
+                      <Form.Item
+                        label=""
+                        style={{ marginBottom: 0 }}
+                        preserve={false}
+                        name={key}
+                        rules={[{ required: false }]}
+                        initialValue={
+                          propsType === 'object' || propsType === 'array'
+                            ? formatJson(defValue)
+                            : defValue
+                        }
+                      >
+                        {typeComFun
+                          ? (
+                              typeComFun(propsValue.type)
+                            )
+                          : (
+                          <Input.TextArea />
+                            )}
+                      </Form.Item>
+                    </Panel>
+                  );
+                })}
+            </Collapse>
           </Form>
         </div>
         <DataSourceModal

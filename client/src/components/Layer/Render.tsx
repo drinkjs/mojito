@@ -12,12 +12,14 @@ interface RenderProps {
   initFlag: boolean;
   isVue: boolean;
   onInitSize: (width: number, height: number) => void;
+  onShow?: () => void;
   children?: any;
   style?: React.CSSProperties;
 }
 
 export default ({
   onInitSize,
+  onShow,
   initFlag,
   props,
   styles,
@@ -33,6 +35,9 @@ export default ({
 
   useEffect(() => {
     if (isVue) setIsInit(true);
+    if (onShow) {
+      onShow();
+    }
   }, []);
 
   useEffect(() => {

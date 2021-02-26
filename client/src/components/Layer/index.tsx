@@ -13,6 +13,7 @@ import React, {
 } from 'react';
 import { observer, inject } from 'mobx-react';
 import { cloneDeep } from 'lodash';
+import anime from 'animejs';
 import ErrorCatch from 'components/ErrorCatch';
 import eventer from 'common/eventer';
 import { request } from 'common/network';
@@ -97,6 +98,7 @@ export function eventRequest (
 export const LayerEvent = {
   onLoad: '__onLayerLoad__',
   onDataSource: '__onLayerData__',
+  onShow: '__onLayerShow__',
   onUnload: '__onLayerUnload__'
 };
 
@@ -327,7 +329,7 @@ const Layer = inject('screenStore')(
             const rel = await callback.call(self, ...args);
             if (rel) {
               // 事件返回数据处理
-              setEventValue(rel);
+              // setEventValue(rel);
             }
           } catch (e) {
             showHandlerError(data.name, e);
@@ -339,21 +341,48 @@ const Layer = inject('screenStore')(
       /**
        * 手动设置事件返回结果，主要用于异步操作
        */
-      const setEventValue = useCallback(
-        (rel: EventValue) => {
-          if (rel) {
-            // eslint-disable-next-line no-shadow
-            const { styles, props } = rel;
-            eventReturn.styles = {
-              ...eventReturn.styles,
-              ...styles
-            };
-            eventReturn.props = {
-              ...eventReturn.props,
-              ...props
-            };
-            setEventReturn({ ...eventReturn });
-          }
+      // const setEventValue = useCallback(
+      //   (rel: EventValue) => {
+      //     if (rel) {
+      //       // eslint-disable-next-line no-shadow
+      //       const { styles, props } = rel;
+      //       eventReturn.styles = {
+      //         ...eventReturn.styles,
+      //         ...styles
+      //       };
+      //       eventReturn.props = {
+      //         ...eventReturn.props,
+      //         ...props
+      //       };
+      //       setEventReturn({ ...eventReturn });
+      //     }
+      //   },
+      //   [eventReturn]
+      // );
+      /**
+       * 事件处理设置props
+       */
+      const setProps = useCallback(
+        (props: any) => {
+          eventReturn.props = {
+            ...eventReturn.props,
+            ...props
+          };
+          setEventReturn({ ...eventReturn });
+        },
+        [eventReturn]
+      );
+
+      /**
+       * 事件处理设置style
+       */
+      const setStyles = useCallback(
+        (styles: any) => {
+          eventReturn.props = {
+            ...eventReturn.props,
+            ...styles
+          };
+          setEventReturn({ ...eventReturn });
         },
         [eventReturn]
       );
@@ -366,7 +395,10 @@ const Layer = inject('screenStore')(
           ...mergeArgs(),
           eventer,
           request: eventRequest,
-          setValue: setEventValue
+          setProps,
+          setStyles,
+          anime,
+          layer: targetRef.current
         };
       };
 
@@ -445,8 +477,15 @@ const Layer = inject('screenStore')(
             });
           }
         },
-        [data]
+        [data, allEventHandlers]
       );
+
+      const onShow = () => {
+        // 组件完全显示
+        if (allEventHandlers[LayerEvent.onShow]) {
+          runEventHandler(allEventHandlers[LayerEvent.onShow]);
+        }
+      };
 
       /**
        * 事件变化时绑定事件
@@ -486,6 +525,7 @@ const Layer = inject('screenStore')(
             {lib && (
               <Render
                 onInitSize={onInitSize}
+                onShow={onShow}
                 isVue={lib.default && lib.default.render}
                 component={lib.default}
                 initFlag={data.initSize}

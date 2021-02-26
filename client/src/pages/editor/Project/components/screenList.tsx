@@ -280,7 +280,7 @@ export default inject('screenStore')(
                 }}
                 description={
                   <span style={{ fontSize: '18px' }}>
-                    {project ? '暂没数据' : '请选择项目'}
+                    {project ? '暂没页面信息' : '请选择项目'}
                   </span>
                 }
               />

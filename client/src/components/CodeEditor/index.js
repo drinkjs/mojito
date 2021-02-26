@@ -15,7 +15,7 @@ import 'ace-builds/src-noconflict/theme-twilight';
 
 const CodeEditor = (props) => {
   // eslint-disable-next-line react/prop-types
-  const { style, value, onChange, mode = 'json' } = props;
+  const { style, value, onChange, mode = 'json', onReady } = props;
   const editRef = useRef();
   const aceEditor = useRef();
   const currCode = useRef();
@@ -26,13 +26,19 @@ const CodeEditor = (props) => {
     editor.setTheme('ace/theme/twilight');
     editor.session.setMode(`ace/mode/${mode}`);
     editor.setFontSize(14);
+    editor.setValue(value || '');
+    currCode.current = value || '';
     editor.on('change', () => {
-      if (onChange) {
-        const value = editor.getValue();
-        currCode.current = value;
-        onChange(value);
+      const val = editor.getValue();
+      if (onChange && currCode.current !== val) {
+        currCode.current = val;
+        onChange(val);
       }
     });
+
+    if (onReady) {
+      onReady(editor);
+    }
 
     return () => {
       aceEditor.current = null;
@@ -42,11 +48,11 @@ const CodeEditor = (props) => {
     };
   }, []);
 
-  useEffect(() => {
-    aceEditor.current &&
-      currCode.current !== value &&
-      aceEditor.current.setValue(value);
-  }, [value]);
+  // useEffect(() => {
+  //   aceEditor.current &&
+  //     currCode.current !== value &&
+  //     aceEditor.current.setValue(value);
+  // }, [value]);
 
   return (
     <div

@@ -6,6 +6,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import CodeEditor from 'components/CodeEditor';
 import { GlobalEventer } from 'common/eventer';
 import { toJS } from 'mobx';
+import anime from 'animejs';
 import { ScreenStore } from 'types';
 import { eventRequest, LayerEvent } from 'components/Layer';
 import Message from 'components/Message';
@@ -38,6 +39,10 @@ const systemEvent = [
     value: LayerEvent.onLoad
   },
   {
+    label: '组件显示',
+    value: LayerEvent.onShow
+  },
+  {
     label: '组件销毁',
     value: LayerEvent.onUnload
   },
@@ -52,6 +57,7 @@ export default inject('screenStore')(
     const { screenStore } = props;
     const currCodeRef = useRef<string>();
     const currLayerId = useRef<string>();
+    const currEditor = useRef<any>();
     const [currEvent, setCurrEvent] = useState<string>();
     const [consoleArgs, setConsoleArgs] = useState<any[]>([]);
     const [debugerRel, setDebugerRel] = useState<any>();
@@ -151,9 +157,13 @@ export default inject('screenStore')(
         screenStore.currLayer.events[value]
       ) {
         setCodeString(screenStore.currLayer.events[value].code || '');
+        currEditor.current.setValue(
+          screenStore.currLayer.events[value].code || ''
+        );
         setIsSync(screenStore!.currLayer.events[value].isSync);
       } else {
         setCodeString(DEFAULT_CODE);
+        currEditor.current.setValue(DEFAULT_CODE);
         setIsSync(false);
       }
 
@@ -182,7 +192,10 @@ export default inject('screenStore')(
         style: toJS(screenStore!.currLayer.style),
         eventer,
         request: eventRequest,
-        setValue: () => {}
+        anime,
+        setProps: () => {},
+        setStyles: () => {},
+        layer: document.getElementById(screenStore!.currLayer.id)
       };
     };
 
@@ -191,7 +204,13 @@ export default inject('screenStore')(
      */
     const printDebug = () => {
       return consoleArgs.map((args) => {
-        const formatArgs = args.map((v: any) => JSON.stringify(v));
+        const formatArgs = args.map((v: any) => {
+          return JSON.stringify(
+            v && v.layer ? { ...v, layer: 'div@layer' } : v,
+            null,
+            1
+          );
+        });
         return <div key="printDebug">{formatArgs.join(',')}</div>;
       });
     };
@@ -203,6 +222,10 @@ export default inject('screenStore')(
     const onCodeChange = useCallback((value: string) => {
       setCodeString(value || '');
     }, []);
+
+    const onEditorReady = (editor: any) => {
+      currEditor.current = editor;
+    };
 
     return (
       <div>
@@ -285,8 +308,9 @@ export default inject('screenStore')(
           <CodeEditor
             style={{ width: '100%', height: '400px' }}
             mode="javascript"
-            value={codeString}
+            // value={codeString}
             onChange={onCodeChange}
+            onReady={onEditorReady}
           />
         </div>
 
