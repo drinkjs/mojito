@@ -73,4 +73,20 @@ export default class Layer {
 
   @prop({ default: 0 })
   reloadKey?: number;
+
+  @prop()
+  anime?: {
+    disable:boolean,
+    params: {
+      translateX?:number,
+      translateY?:number,
+      rotate?:number,
+      scale?:number,
+      opacity?:number,
+      loop?:number,
+      duration?:number,
+      delay?:number,
+      easing?:string,
+    }
+  }
 }

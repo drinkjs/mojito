@@ -49,7 +49,7 @@ export interface ComponentCategory {
 }
 
 export interface LayerEvents {
-  [key: string]: { code: string; isSync: boolean }
+  [key: string]: { code: string; isSync: boolean };
 }
 
 export interface LayerInfo {
@@ -79,6 +79,20 @@ export interface LayerInfo {
   groupLock?: boolean;
   groupHide?: boolean;
   reloadKey?: string | number; // 用于强制刷新组件
+  anime?: {
+    disable: boolean;
+    params: {
+      translateX?: number;
+      translateY?: number;
+      rotate?: number;
+      scale?: number;
+      opacity?: number;
+      loop?: number;
+      duration?: number;
+      delay?: number;
+      easing?: string;
+    };
+  };
 }
 
 export interface ScreenLayout extends CSSProperties {

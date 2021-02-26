@@ -8,6 +8,7 @@ import { LoadingComponent, lazyLoader } from 'components/Loader';
 import { ScreenStore } from 'types';
 import styles from './index.module.scss';
 import Style from './Style';
+import Anime from './Anime';
 // import PropsSet from './Props';
 // import Events from "./Events";
 import PageSet from './PageSet';
@@ -66,6 +67,12 @@ const tabs: TabObj[] = [
     )
   },
   {
+    label: '动画效果',
+    key: 'anime',
+    icon: 'icon-donghua',
+    render: (key?: string) => <Anime key={key} />
+  },
+  {
     label: '群组设置',
     key: 'group',
     icon: 'icon-changyongtubiao_xiangmuzushezhi',
@@ -73,7 +80,7 @@ const tabs: TabObj[] = [
   }
 ];
 
-const compTabKeys = ['style', 'props', 'events'];
+const compTabKeys = ['style', 'props', 'events', 'anime'];
 
 interface Props {
   screenStore?: ScreenStore;
