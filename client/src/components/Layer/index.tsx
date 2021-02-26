@@ -397,7 +397,12 @@ const Layer = inject('screenStore')(
           request: eventRequest,
           setProps,
           setStyles,
-          anime,
+          anime: (animeParams: anime.AnimeParams) => {
+            return anime({
+              ...animeParams,
+              targets: targetRef.current
+            });
+          },
           layer: targetRef.current
         };
       };

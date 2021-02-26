@@ -192,7 +192,12 @@ export default inject('screenStore')(
         style: toJS(screenStore!.currLayer.style),
         eventer,
         request: eventRequest,
-        anime,
+        anime: (animeParams: anime.AnimeParams) => {
+          return anime({
+            ...animeParams,
+            targets: document.getElementById(screenStore!.currLayer!.id)
+          });
+        },
         setProps: () => {},
         setStyles: () => {},
         layer: document.getElementById(screenStore!.currLayer.id)
