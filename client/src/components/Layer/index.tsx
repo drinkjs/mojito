@@ -222,9 +222,9 @@ const Layer = inject('screenStore')(
           }
 
           if (currAnime.current) {
-            targetRef.current && anime.remove(targetRef.current);
             currAnime.current.pause();
             currAnime.current = null;
+            targetRef.current && anime.remove(targetRef.current);
           }
         };
       }, []);
