@@ -559,7 +559,7 @@ const Layer = inject('screenStore')(
           id={data.id}
         >
           <ErrorCatch>
-            {lib && (
+            {!libLoading && lib && (
               <Render
                 onInitSize={onInitSize}
                 onShow={onShow}

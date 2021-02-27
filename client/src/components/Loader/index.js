@@ -69,6 +69,7 @@ export const loadCDN = (cdns, onload) => {
       const script = document.createElement('script');
       script.src = url;
       script.type = 'text/javascript';
+      script.crossOrigin = true;
       script.onload = () => {
         // eslint-disable-next-line no-unused-vars
         loaded++;

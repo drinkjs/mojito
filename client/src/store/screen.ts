@@ -1,18 +1,18 @@
-import { CSSProperties } from 'react';
-import { makeAutoObservable, toJS, runInAction, computed } from 'mobx';
-import { Modal } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
-import * as service from 'services/screen';
-import * as layerService from 'services/layer';
-import { loadCDN } from 'components/Loader';
+import { CSSProperties } from "react";
+import { makeAutoObservable, toJS, runInAction, computed } from "mobx";
+import { Modal } from "antd";
+import { v4 as uuidv4 } from "uuid";
+import * as service from "services/screen";
+import * as layerService from "services/layer";
+import { loadCDN } from "components/Loader";
 import {
   ComponentStyleQuery,
   LayerInfo,
   LayerQuery,
   ScreenDetailDto,
   ScreenDto
-} from 'types';
-import { DefaultPageSize } from 'config';
+} from "types";
+import { DefaultPageSize } from "config";
 
 const MAX_UNDO = 100;
 
@@ -302,12 +302,13 @@ export default class Screen {
           data.layers.sort((a, b) => {
             return b.style.z - a.style.z;
           });
-        runInAction(() => {
-          this.screenInfo = data;
-        });
+        // runInAction(() => {
+        // this.screenInfo = data;
+        // });
         // 加载项目设置的cdn
         loadCDN(data.project.cdn, () => {
           runInAction(() => {
+            this.screenInfo = data;
             this.getDetailLoading = false;
           });
         });
@@ -458,7 +459,7 @@ export default class Screen {
     if (reload) layer.reloadKey = layer.reloadKey === 1 ? 0 : 1;
     keys.forEach((key) => {
       // 事件不做undo保存，因为实际使中用撤销属性和事件用户可能无感知，很容易产生不可预料的问题
-      if (key !== 'events') undoData.args[1][key] = toJS(layer[key]);
+      if (key !== "events") undoData.args[1][key] = toJS(layer[key]);
       layer[key] = dataAny[key];
     });
     this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
@@ -555,7 +556,7 @@ export default class Screen {
       if (currLayer) {
         const currLayerAny: any = currLayer;
         Object.keys(v).forEach((key) => {
-          if (key === 'style' && v.style.z !== currLayer.style.z) isSort = true;
+          if (key === "style" && v.style.z !== currLayer.style.z) isSort = true;
           oldData[key] = toJS(currLayerAny[key]);
           currLayerAny[key] = v[key];
         });
@@ -637,7 +638,7 @@ export default class Screen {
    */
   async disbandLayer (layerIds: string[], isUndo?: boolean) {
     const groups = layerIds.map((id) => {
-      return { id, group: '', groupLock: false, groupHide: false };
+      return { id, group: "", groupLock: false, groupHide: false };
     });
 
     return layerService

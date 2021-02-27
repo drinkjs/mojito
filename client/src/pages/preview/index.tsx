@@ -33,9 +33,9 @@ export default inject('screenStore')(
     }, []);
 
     useEffect(() => {
-      if (initFlag) {
+      if (initFlag && screenInfo) {
         // 状态同步时join
-        screenInfo && joinPage(screenInfo.project.name);
+        joinPage(screenInfo.project.name);
       }
     }, [initFlag, screenInfo]);
 
@@ -51,7 +51,7 @@ export default inject('screenStore')(
 
     return (
       <DocumentTitle title={screenInfo ? screenInfo.name : ''}>
-        <Skeleton loading={screenStore!.getDetailLoading && !initFlag}>
+        <Skeleton loading={screenStore!.getDetailLoading}>
           {style && (
             <div>
               <div
