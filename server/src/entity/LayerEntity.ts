@@ -75,8 +75,5 @@ export default class Layer {
   reloadKey?: number;
 
   @prop()
-  anime?: {
-    disable:boolean,
-    params:any,
-  }
+  anime?: {[key:string]:any}
 }

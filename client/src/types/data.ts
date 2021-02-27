@@ -80,21 +80,19 @@ export interface LayerInfo {
   groupHide?: boolean;
   reloadKey?: string | number; // 用于强制刷新组件
   anime?: {
-    disable: boolean;
-    params: {
-      translateX?: number;
-      translateY?: number;
-      width?: number;
-      height?: number;
-      rotate?: number;
-      scale?: number;
-      opacity?: number;
-      loop?: number;
-      duration?: number;
-      delay?: number;
-      easing?: string;
-      direction?: string;
-    };
+    translateX?: number;
+    translateY?: number;
+    width?: number;
+    height?: number;
+    rotate?: number;
+    scale?: number;
+    opacity?: number;
+    loop?: number;
+    duration?: number;
+    delay?: number;
+    easing?: string;
+    direction?: string;
+    autoplay?: boolean;
   };
 }
 

@@ -319,7 +319,11 @@ export default inject('screenStore')(
           style.x += offsetX;
           style.y += offsetY;
 
-          target.style.transform = `translate(${style.x}px, ${style.y}px)`;
+          const transformObj = transformParser.parse(target.style.transform);
+          transformObj.translateX = frame.style.x;
+          transformObj.translateY = frame.style.y;
+
+          target.style.transform = transformParser.stringify(transformObj);
           target.style.width = `${style.width}px`;
           target.style.height = `${style.height}px`;
         });

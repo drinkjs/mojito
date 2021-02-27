@@ -49,8 +49,5 @@ export class LayerDto {
 
   reloadKey?: number;
 
-  anime?: {
-    disable:boolean,
-    params:any,
-  }
+  anime?: {[key:string]:any}
 }

@@ -3,9 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import anime from 'animejs';
 import { CaretRightOutlined, StepForwardOutlined } from '@ant-design/icons';
-import { InputNumber, Button, Form, Select, Row, Col } from 'antd';
+import { InputNumber, Button, Form, Select, Row, Col, Switch } from 'antd';
 import { ScreenStore } from 'types';
 import Message from 'components/Message';
+import { isEmpty } from 'common/util';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -86,6 +87,7 @@ const animeFields = [
   {
     label: '次数',
     name: 'loop',
+    default: 1,
     render: () => <InputNumber style={{ width: '90%' }} />
   },
   {
@@ -102,9 +104,8 @@ const animeFields = [
   {
     label: '效果',
     name: 'easing',
-    default: 'easeInQuad',
     render: () => (
-      <Select style={{ width: '90%' }}>
+      <Select style={{ width: '90%' }} allowClear>
         {easings.map((v) => (
           <Select.Option key={v} value={v}>
             {v}
@@ -118,7 +119,7 @@ const animeFields = [
     name: 'direction',
     default: 'normal',
     render: () => (
-      <Select style={{ width: '90%' }}>
+      <Select style={{ width: '90%' }} allowClear>
         {['normal', 'reverse', 'alternate'].map((v) => (
           <Select.Option key={v} value={v}>
             {v}
@@ -172,15 +173,11 @@ export default inject('screenStore')(
       if (!screenStore!.currLayer) return;
 
       const values = await form.validateFields();
-      const disable = !!values.disable;
       delete values.disable;
       setSaveing(true);
       screenStore!
         .updateLayer(screenStore!.currLayer.id, {
-          anime: {
-            disable,
-            params: values
-          }
+          anime: values
         })
         .then((rel) => {
           rel && Message.success('保存成功');
@@ -203,20 +200,20 @@ export default inject('screenStore')(
 
       form.validateFields().then((values) => {
         if (
-          values.translateX === undefined &&
-          values.translateY === undefined &&
-          values.scale === undefined &&
-          values.rotate === undefined &&
-          values.opacity === undefined &&
-          values.width === undefined &&
-          values.height === undefined
+          isEmpty(values.translateX) &&
+          isEmpty(values.translateY) &&
+          isEmpty(values.scale) &&
+          isEmpty(values.rotate) &&
+          isEmpty(values.opacity) &&
+          isEmpty(values.width) &&
+          isEmpty(values.height)
         ) {
           return;
         }
 
         const params: any = {};
         Object.keys(values).forEach((key) => {
-          if (values[key] !== undefined) {
+          if (!isEmpty(values[key])) {
             params[key] = values[key];
           }
         });
@@ -241,9 +238,7 @@ export default inject('screenStore')(
     const initialValues: any = {};
     const layerAnime: any = screenStore!.currLayer?.anime;
     animeFields.forEach((v) => {
-      initialValues[v.name] = layerAnime
-        ? layerAnime.params[v.name]
-        : v.default;
+      initialValues[v.name] = layerAnime ? layerAnime[v.name] : v.default;
     });
 
     return (
@@ -278,22 +273,27 @@ export default inject('screenStore')(
                 </Col>
               );
             })}
-            {/* <Col span={12}>
+            <Col span={12}>
               <Form.Item
-                name="disable"
-                label="是否停用"
+                name="autoplay"
+                label="自动播放"
                 valuePropName="checked"
                 labelCol={{ span: 12 }}
                 wrapperCol={{ span: 12 }}
+                initialValue={
+                  layerAnime && !isEmpty(layerAnime.autoplay)
+                    ? layerAnime.autoplay
+                    : true
+                }
               >
                 <Switch />
               </Form.Item>
-            </Col> */}
+            </Col>
           </Row>
         </Form>
         <div style={{ textAlign: 'center' }}>
           <Button style={{ margin: '3px' }} onClick={onReset}>
-            重置
+            重置组件
           </Button>
           <Button
             type="primary"

@@ -51,12 +51,19 @@ export function getTreeParent (tree: any[], id: any) {
 
 export function buildCode (code: string): Function | null {
   if (!code) return null;
-  const result = babel.transform(code, { presets: ['env'], sourceType: "unambiguous" });
+  const result = babel.transform(code, {
+    presets: ['env'],
+    sourceType: 'unambiguous'
+  });
   // eslint-disable-next-line no-unused-vars
   const exports = {}; // fix exports is not defined
   // eslint-disable-next-line no-eval
   const fun: Function = result.code ? eval(result.code) : null;
   return fun;
+}
+
+export function isEmpty (str: any): boolean {
+  return str === undefined || str === null || str === '';
 }
 
 export { typeis };

@@ -24,7 +24,7 @@ import {
   LayerInfo,
   ScreenStore
 } from 'types';
-import { buildCode } from 'common/util';
+import { buildCode, isEmpty } from 'common/util';
 import { loadLib, LoadingComponent } from '../Loader';
 import Render from './Render';
 import styles from './index.module.scss';
@@ -454,7 +454,7 @@ const Layer = inject('screenStore')(
 
             targetRef.current!.style.width = `${setWidth}px`;
             targetRef.current!.style.height = `${setHeight}px`;
-            targetRef.current!.style.transform = `translate(${left}px, ${top}px)`;
+            targetRef.current!.style.transform = `translateX(${data.style.x}px) translateY(${data.style.y}px)`;
 
             data.style.x = left;
             data.style.y = top;
@@ -472,21 +472,35 @@ const Layer = inject('screenStore')(
       );
 
       const onShow = () => {
-        if (!enable && data.anime && data.anime.params && !data.anime.disable) {
-          // 编辑状态不执行动画
-          const keys = Object.keys(data.anime.params);
-          if (keys.length === 0) return;
+        if (!enable && data.anime) {
+          // 非编辑状态执行动画
+          if (
+            isEmpty(data.anime.translateX) &&
+            isEmpty(data.anime.translateY) &&
+            isEmpty(data.anime.scale) &&
+            isEmpty(data.anime.rotate) &&
+            isEmpty(data.anime.opacity) &&
+            isEmpty(data.anime.width) &&
+            isEmpty(data.anime.height)
+          ) {
+            return;
+          }
+          const keys = Object.keys(data.anime);
           // 动画参数
           const params: any = {};
-          const animeParams: any = data.anime.params;
+          const animeParams: any = data.anime;
           keys.forEach((key) => {
-            if (animeParams[key] !== undefined) {
+            if (!isEmpty(animeParams[key])) {
               params[key] = animeParams[key];
             }
           });
           // 重复次数，0为无限
-          if (params.loop !== undefined && params.loop === 0) {
+          if (!isEmpty(params.loop) && params.loop === 0) {
             params.loop = true;
+          }
+
+          if (isEmpty(params.autoplay)) {
+            params.auto = true;
           }
 
           currAnime.current = anime({
