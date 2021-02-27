@@ -154,15 +154,18 @@ export default inject('screenStore')(
     }, []);
 
     const onReset = () => {
-      const initialValues: any = {};
-      const layerAnime: any = screenStore!.currLayer?.anime;
-      animeFields.forEach((v) => {
-        initialValues[v.name] = layerAnime
-          ? layerAnime.params[v.name]
-          : v.default;
-      });
-
-      form.setFieldsValue(initialValues);
+      // const initialValues: any = {};
+      // const layerAnime: any = screenStore!.currLayer?.anime;
+      // animeFields.forEach((v) => {
+      //   initialValues[v.name] = layerAnime
+      //     ? layerAnime.params[v.name]
+      //     : v.default;
+      // });
+      // form.setFieldsValue(initialValues);
+      if (currAnime.current) {
+        currAnime.current.pause();
+        currAnime.current.seek(0);
+      }
     };
 
     const onSave = async () => {
@@ -187,13 +190,14 @@ export default inject('screenStore')(
         });
     };
 
-    const onTest = () => {
+    const onPlay = () => {
       if (!screenStore!.currLayer) return;
 
-      if (playing && currAnime.current) {
+      currAnime.current?.pause();
+      currAnime.current?.seek(0);
+
+      if (playing) {
         setPlaying(false);
-        currAnime.current.pause();
-        currAnime.current.seek(0);
         return;
       }
 
@@ -302,7 +306,7 @@ export default inject('screenStore')(
           <Button
             type="primary"
             style={{ margin: '3px' }}
-            onClick={onTest}
+            onClick={onPlay}
             icon={playing ? <StepForwardOutlined /> : <CaretRightOutlined />}
           >
             {playing ? '停止' : '播放'}

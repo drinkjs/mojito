@@ -848,7 +848,8 @@ export default inject('screenStore')(
                         const transformObj = transformParser.parse(
                           target.style.transform
                         );
-                        transformObj.translate = [frame.style.x, frame.style.y];
+                        transformObj.translateX = frame.style.x;
+                        transformObj.translateY = frame.style.y;
 
                         target.style.transform = transformParser.stringify(
                           transformObj
@@ -890,7 +891,8 @@ export default inject('screenStore')(
                         const transformObj = transformParser.parse(
                           target.style.transform
                         );
-                        transformObj.translate = [frame.style.x, frame.style.y];
+                        transformObj.translateX = frame.style.x;
+                        transformObj.translateY = frame.style.y;
 
                         target.style.transform = transformParser.stringify(
                           transformObj
@@ -918,10 +920,8 @@ export default inject('screenStore')(
                       const transformObj = transformParser.parse(
                         target.style.transform
                       );
-                      transformObj.translate = [
-                        layerFrame.style.x,
-                        layerFrame.style.y
-                      ];
+                      transformObj.translateX = layerFrame.style.x;
+                      transformObj.translateY = layerFrame.style.y;
 
                       target.style.transform = transformParser.stringify(
                         transformObj
@@ -958,10 +958,8 @@ export default inject('screenStore')(
                       const transformObj = transformParser.parse(
                         target.style.transform
                       );
-                      transformObj.translate = [
-                        layerFrame.style.x,
-                        layerFrame.style.y
-                      ];
+                      transformObj.translateX = layerFrame.style.x;
+                      transformObj.translateY = layerFrame.style.y;
 
                       target.style.transform = transformParser.stringify(
                         transformObj

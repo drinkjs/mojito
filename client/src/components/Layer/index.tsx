@@ -526,7 +526,7 @@ const Layer = inject('screenStore')(
           }}
           style={{
             ...data.style,
-            transform: `translate(${data.style.x}px, ${data.style.y}px) ${scale} ${rotate}`,
+            transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
             zIndex: data.style.z,
             display:
               !enable && (data.isHide || data.groupHide) ? 'none' : 'block',
