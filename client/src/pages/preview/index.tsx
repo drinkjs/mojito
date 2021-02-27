@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Skeleton } from 'antd';
 import DocumentTitle from 'components/DocumentTitle';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { joinPage, useReconnect } from 'common/stateTool';
 import Layer from 'components/Layer';
 import { toJS } from 'mobx';
@@ -13,9 +13,9 @@ interface Props {
   screenStore?: ScreenStore;
 }
 
-const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
+// const useQuery = () => {
+//   return new URLSearchParams(useLocation().search);
+// };
 
 export default inject('screenStore')(
   observer((props: Props) => {
@@ -23,7 +23,6 @@ export default inject('screenStore')(
     const screenInfo = screenStore!.screenInfo;
     const [initFlag, setInitFlag] = useState(false);
     const { id } = useParams<{ id: string; preview: string }>();
-    const query = useQuery();
 
     useEffect(() => {
       screenStore!.getDetail(id).then((data) => {
@@ -31,13 +30,6 @@ export default inject('screenStore')(
           setInitFlag(true);
         }
       });
-      let timer: any | undefined;
-      if (query.get('preview') === '1') {
-        timer = setInterval(getDetail, 3000);
-      }
-      return () => {
-        clearInterval(timer);
-      };
     }, []);
 
     useEffect(() => {
@@ -51,10 +43,6 @@ export default inject('screenStore')(
     useReconnect(() => {
       screenInfo && joinPage(screenInfo.project.name);
     });
-
-    const getDetail = useCallback(() => {
-      screenStore!.getDetail(id);
-    }, []);
 
     const { style, layers } = screenInfo || {
       layout: undefined,

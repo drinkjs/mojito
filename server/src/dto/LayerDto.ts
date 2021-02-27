@@ -51,16 +51,6 @@ export class LayerDto {
 
   anime?: {
     disable:boolean,
-    params: {
-      translateX?:number,
-      translateY?:number,
-      rotate?:number,
-      scale?:number,
-      opacity?:number,
-      loop?:number,
-      duration?:number,
-      delay?:number,
-      easing?:string,
-    }
+    params:any,
   }
 }

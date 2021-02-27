@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import React, { useCallback, useState, useEffect } from 'react';
-import { InputNumber, Select, Slider, Row, Col, Popover } from 'antd';
+import { InputNumber, Select, Slider, Row, Col, Popover, Radio } from 'antd';
 import { observer, inject } from 'mobx-react';
 import { ChromePicker } from 'react-color';
 import { ScreenStore } from 'types';
@@ -123,7 +123,7 @@ export const FontItem = (props: {
             <Select
               style={{ width: '100%', marginTop: '6px' }}
               defaultValue="auto"
-              value={value.fontFamily || 'auto'}
+              value={value && value.fontFamily ? value.fontFamily : 'auto'}
               onChange={(val) => {
                 onChange('fontFamily', val);
               }}
@@ -315,6 +315,23 @@ export default inject('screenStore')(
               );
             })}
           </div>
+        </div>
+        <div className={styles.title}>
+          <p>Overflow</p>
+          <Radio.Group
+            value={
+              defaultStyle && defaultStyle.overflow
+                ? defaultStyle.overflow
+                : 'visible'
+            }
+            onChange={(e) => {
+              onStyleChange('overflow', e.target.value);
+            }}
+          >
+            <Radio.Button value="visible">Visible</Radio.Button>
+            <Radio.Button value="hidden">Hidden</Radio.Button>
+            <Radio.Button value="auto">Auto</Radio.Button>
+          </Radio.Group>
         </div>
         <div className={styles.title}>
           <p>颜色</p>

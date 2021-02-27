@@ -84,6 +84,8 @@ export interface LayerInfo {
     params: {
       translateX?: number;
       translateY?: number;
+      width?: number;
+      height?: number;
       rotate?: number;
       scale?: number;
       opacity?: number;
@@ -91,6 +93,7 @@ export interface LayerInfo {
       duration?: number;
       delay?: number;
       easing?: string;
+      direction?: string;
     };
   };
 }

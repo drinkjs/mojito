@@ -1,9 +1,11 @@
 /* eslint-disable react/display-name */
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import anime from 'animejs';
-import { Switch, InputNumber, Button, Form, Select, Row, Col } from 'antd';
+import { CaretRightOutlined, StepForwardOutlined } from '@ant-design/icons';
+import { InputNumber, Button, Form, Select, Row, Col } from 'antd';
 import { ScreenStore } from 'types';
+import Message from 'components/Message';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -47,35 +49,27 @@ const animeFields = [
   {
     label: 'X',
     name: 'translateX',
-    render: () => (
-      <InputNumber
-        formatter={(val) => (val ? `${parseInt(`${val}`, 10)}px` : '')}
-        parser={(val) => (val ? val.replace('px', '') : '')}
-        style={{ width: '90%' }}
-      />
-    )
+    render: () => <InputNumber style={{ width: '90%' }} />
   },
   {
     label: 'Y',
     name: 'translateY',
-    render: () => (
-      <InputNumber
-        formatter={(val) => (val ? `${parseInt(`${val}`, 10)}px` : '')}
-        parser={(val) => (val ? val.replace('px', '') : '')}
-        style={{ width: '90%' }}
-      />
-    )
+    render: () => <InputNumber style={{ width: '90%' }} />
+  },
+  {
+    label: '宽度',
+    name: 'width',
+    render: () => <InputNumber style={{ width: '90%' }} />
+  },
+  {
+    label: '高度',
+    name: 'height',
+    render: () => <InputNumber style={{ width: '90%' }} />
   },
   {
     label: '角度',
     name: 'rotate',
-    render: () => (
-      <InputNumber
-        formatter={(val) => (val ? `${parseInt(`${val}`, 10)}deg` : '')}
-        parser={(val) => (val ? val.replace('deg', '') : '')}
-        style={{ width: '90%' }}
-      />
-    )
+    render: () => <InputNumber style={{ width: '90%' }} />
   },
   {
     label: '缩放',
@@ -97,31 +91,35 @@ const animeFields = [
   {
     label: '持续',
     name: 'duration',
-    render: () => (
-      <InputNumber
-        formatter={(val) => (val ? `${parseInt(`${val}`, 10)}ms` : '')}
-        parser={(val) => (val ? val.replace('ms', '') : '')}
-        style={{ width: '90%' }}
-      />
-    )
+    default: 500,
+    render: () => <InputNumber style={{ width: '90%' }} />
   },
   {
     label: '延时',
     name: 'delay',
-    render: () => (
-      <InputNumber
-        formatter={(val) => (val ? `${parseInt(`${val}`, 10)}ms` : '')}
-        parser={(val) => (val ? val.replace('ms', '') : '')}
-        style={{ width: '90%' }}
-      />
-    )
+    render: () => <InputNumber style={{ width: '90%' }} />
   },
   {
     label: '效果',
     name: 'easing',
+    default: 'easeInQuad',
     render: () => (
       <Select style={{ width: '90%' }}>
         {easings.map((v) => (
+          <Select.Option key={v} value={v}>
+            {v}
+          </Select.Option>
+        ))}
+      </Select>
+    )
+  },
+  {
+    label: '方向',
+    name: 'direction',
+    default: 'normal',
+    render: () => (
+      <Select style={{ width: '90%' }}>
+        {['normal', 'reverse', 'alternate'].map((v) => (
           <Select.Option key={v} value={v}>
             {v}
           </Select.Option>
@@ -135,56 +133,114 @@ export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
     const [form] = Form.useForm();
+    const [playing, setPlaying] = useState(false);
+    const [saveing, setSaveing] = useState(false);
+    const currAnime = useRef<anime.AnimeInstance | undefined | null>();
+    const currElement = useRef<any>(
+      screenStore!.currLayer
+        ? document.getElementById(screenStore!.currLayer!.id)
+        : undefined
+    );
 
-    const onReset = () => {};
+    useEffect(() => {
+      return () => {
+        if (currAnime.current && currElement.current) {
+          currAnime.current.pause();
+          currAnime.current.seek(0);
+          currAnime.current = null;
+          anime.remove(currElement.current);
+        }
+      };
+    }, []);
+
+    const onReset = () => {
+      const initialValues: any = {};
+      const layerAnime: any = screenStore!.currLayer?.anime;
+      animeFields.forEach((v) => {
+        initialValues[v.name] = layerAnime
+          ? layerAnime.params[v.name]
+          : v.default;
+      });
+
+      form.setFieldsValue(initialValues);
+    };
 
     const onSave = async () => {
       if (!screenStore!.currLayer) return;
 
       const values = await form.validateFields();
-      console.log(values);
-      // if (values.translateX === undefined &&
-      //   values.translateY === undefined &&
-      //   values.scale === undefined &&
-      //   values.rotate === undefined &&
-      //   values.opacity === undefined
-      // ) {
-
-      // }
       const disable = !!values.disable;
       delete values.disable;
-      screenStore!.updateLayer(screenStore!.currLayer.id, {
-        anime: {
-          disable,
-          params: values
-        }
-      });
+      setSaveing(true);
+      screenStore!
+        .updateLayer(screenStore!.currLayer.id, {
+          anime: {
+            disable,
+            params: values
+          }
+        })
+        .then((rel) => {
+          rel && Message.success('保存成功');
+        })
+        .finally(() => {
+          setSaveing(false);
+        });
     };
 
     const onTest = () => {
-      form.validateFields().then((values) => {
-        if (!screenStore!.currLayer) return;
+      if (!screenStore!.currLayer) return;
 
+      if (playing && currAnime.current) {
+        setPlaying(false);
+        currAnime.current.pause();
+        currAnime.current.seek(0);
+        return;
+      }
+
+      form.validateFields().then((values) => {
         if (
           values.translateX === undefined &&
           values.translateY === undefined &&
           values.scale === undefined &&
           values.rotate === undefined &&
-          values.opacity === undefined
+          values.opacity === undefined &&
+          values.width === undefined &&
+          values.height === undefined
         ) {
           return;
         }
 
-        console.log('--------------------', values);
+        const params: any = {};
+        Object.keys(values).forEach((key) => {
+          if (values[key] !== undefined) {
+            params[key] = values[key];
+          }
+        });
 
-        const params = {
-          ...values,
-          targets: document.getElementById(screenStore!.currLayer.id)
-        };
+        if (params.loop !== undefined && params.loop === 0) {
+          params.loop = true;
+        }
 
-        anime(params);
+        currAnime.current = anime({
+          ...params,
+          targets: document.getElementById(screenStore!.currLayer!.id),
+          begin: () => {
+            setPlaying(true);
+          },
+          complete: () => {
+            setPlaying(false);
+          }
+        });
       });
     };
+
+    const initialValues: any = {};
+    const layerAnime: any = screenStore!.currLayer?.anime;
+    animeFields.forEach((v) => {
+      initialValues[v.name] = layerAnime
+        ? layerAnime.params[v.name]
+        : v.default;
+    });
 
     return (
       <div
@@ -201,6 +257,7 @@ export default inject('screenStore')(
           key={screenStore!.currLayer ? screenStore!.currLayer.id : '1'}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}
+          initialValues={initialValues}
         >
           <Row>
             {animeFields.map((v) => {
@@ -217,7 +274,7 @@ export default inject('screenStore')(
                 </Col>
               );
             })}
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item
                 name="disable"
                 label="是否停用"
@@ -227,18 +284,28 @@ export default inject('screenStore')(
               >
                 <Switch />
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Button style={{ margin: '6px' }} onClick={onReset}>
+          <Button style={{ margin: '3px' }} onClick={onReset}>
             重置
           </Button>
-          <Button type="primary" style={{ margin: '6px' }} onClick={onSave}>
+          <Button
+            type="primary"
+            style={{ margin: '3px' }}
+            onClick={onSave}
+            loading={saveing}
+          >
             保存
           </Button>
-          <Button style={{ margin: '6px' }} onClick={onTest}>
-            测试
+          <Button
+            type="primary"
+            style={{ margin: '3px' }}
+            onClick={onTest}
+            icon={playing ? <StepForwardOutlined /> : <CaretRightOutlined />}
+          >
+            {playing ? '停止' : '播放'}
           </Button>
         </div>
       </div>

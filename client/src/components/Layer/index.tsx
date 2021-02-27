@@ -139,6 +139,7 @@ const Layer = inject('screenStore')(
       ...restProps
     }: LayerProps) => {
       const targetRef = useRef<HTMLDivElement | null | undefined>();
+      const currAnime = useRef<anime.AnimeInstance | undefined | null>();
       const initSizeFlag = useRef<boolean>(data.initSize);
       const dataSourceTimer = useRef<any>();
       const initFlag = useRef<boolean>(false);
@@ -218,6 +219,12 @@ const Layer = inject('screenStore')(
           // 组件卸载事件回调
           if (allEvnet[LayerEvent.onUnload]) {
             runEventHandler(allEvnet[LayerEvent.onUnload]);
+          }
+
+          if (currAnime.current) {
+            targetRef.current && anime.remove(targetRef.current);
+            currAnime.current.pause();
+            currAnime.current = null;
           }
         };
       }, []);
@@ -486,6 +493,29 @@ const Layer = inject('screenStore')(
       );
 
       const onShow = () => {
+        if (!enable && data.anime && data.anime.params && !data.anime.disable) {
+          // 编辑状态不执行动画
+          const keys = Object.keys(data.anime.params);
+          if (keys.length === 0) return;
+          // 动画参数
+          const params: any = {};
+          const animeParams: any = data.anime.params;
+          keys.forEach((key) => {
+            if (animeParams[key] !== undefined) {
+              params[key] = animeParams[key];
+            }
+          });
+          // 重复次数，0为无限
+          if (params.loop !== undefined && params.loop === 0) {
+            params.loop = true;
+          }
+
+          currAnime.current = anime({
+            ...params,
+            targets: targetRef.current
+          });
+        }
+
         // 组件完全显示
         if (allEventHandlers[LayerEvent.onShow]) {
           runEventHandler(allEventHandlers[LayerEvent.onShow]);
@@ -521,7 +551,7 @@ const Layer = inject('screenStore')(
               screenStore!.currLayer &&
               screenStore!.currLayer.id === data.id
                 ? 'hidden'
-                : 'visible'
+                : data.style.overflow || 'visible'
           }}
           onMouseDown={onClick}
           id={data.id}
