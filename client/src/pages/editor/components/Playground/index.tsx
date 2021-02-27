@@ -14,6 +14,7 @@ import {
   connectMenu,
   ContextMenuTrigger
 } from 'react-contextmenu';
+import * as transformParser from 'transform-parser';
 import IconFont, { IconLink } from 'components/IconFont';
 import Layer from 'components/Layer';
 import Eventer from 'common/eventer';
@@ -843,7 +844,15 @@ export default inject('screenStore')(
                         const frame = groupframes[i];
                         frame.style.x = Math.round(beforeTranslate[0]);
                         frame.style.y = Math.round(beforeTranslate[1]);
-                        target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+
+                        const transformObj = transformParser.parse(
+                          target.style.transform
+                        );
+                        transformObj.translate = [frame.style.x, frame.style.y];
+
+                        target.style.transform = transformParser.stringify(
+                          transformObj
+                        );
                       });
                     }}
                     onDragGroupEnd={({ isDrag }) => {
@@ -878,7 +887,14 @@ export default inject('screenStore')(
                         frame.style.x = Math.round(drag.beforeTranslate[0]);
                         frame.style.y = Math.round(drag.beforeTranslate[1]);
 
-                        target.style.transform = `translate(${drag.beforeTranslate[0]}px, ${drag.beforeTranslate[1]}px)`;
+                        const transformObj = transformParser.parse(
+                          target.style.transform
+                        );
+                        transformObj.translate = [frame.style.x, frame.style.y];
+
+                        target.style.transform = transformParser.stringify(
+                          transformObj
+                        );
                         target.style.width = `${width}px`;
                         target.style.height = `${height}px`;
                       });
@@ -898,7 +914,18 @@ export default inject('screenStore')(
                       if (!layerFrame) return;
                       layerFrame.style.x = Math.round(beforeTranslate[0]);
                       layerFrame.style.y = Math.round(beforeTranslate[1]);
-                      target.style.transform = `translate(${layerFrame.style.x}px, ${layerFrame.style.y}px)`;
+
+                      const transformObj = transformParser.parse(
+                        target.style.transform
+                      );
+                      transformObj.translate = [
+                        layerFrame.style.x,
+                        layerFrame.style.y
+                      ];
+
+                      target.style.transform = transformParser.stringify(
+                        transformObj
+                      );
                     }}
                     onDragEnd={({ lastEvent }) => {
                       currNativeEvent.current = null;
@@ -927,7 +954,18 @@ export default inject('screenStore')(
                       layerFrame.style.height = Math.round(height);
                       target.style.width = `${layerFrame.style.width}px`;
                       target.style.height = `${layerFrame.style.height}px`;
-                      target.style.transform = `translate(${layerFrame.style.x}px, ${layerFrame.style.y}px)`;
+
+                      const transformObj = transformParser.parse(
+                        target.style.transform
+                      );
+                      transformObj.translate = [
+                        layerFrame.style.x,
+                        layerFrame.style.y
+                      ];
+
+                      target.style.transform = transformParser.stringify(
+                        transformObj
+                      );
                     }}
                     onResizeEnd={({ lastEvent }) => {
                       if (lastEvent && layerFrame) {

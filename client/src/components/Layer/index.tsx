@@ -19,7 +19,6 @@ import eventer from 'common/eventer';
 import { request } from 'common/network';
 import { useSync } from 'common/stateTool';
 import {
-  ComponentStyle,
   ComponentStyleQuery,
   LayerEvents,
   LayerInfo,
@@ -35,22 +34,6 @@ import Message from 'components/Message';
 function showHandlerError (layerName: string, error: any) {
   Message.error(`${layerName}事件处理错误:${error.message}`);
   console.error(`${layerName}事件处理错误:${error.message}`);
-}
-
-function parseStyle (style: ComponentStyle) {
-  const pureStye: any = {};
-  const styleObj: any = style;
-  Object.keys(style).forEach((key) => {
-    if (key.indexOf('transform-') >= 0) {
-      const fun = key.split('-')[1];
-      pureStye.transform = pureStye.transform
-        ? `${pureStye.transform} ${fun}(${styleObj[key]})`
-        : `${fun}(${styleObj[key]})`;
-    } else {
-      pureStye[key] = styleObj[key];
-    }
-  });
-  return pureStye;
 }
 /**
  * 解释数源中的参数
@@ -427,14 +410,10 @@ const Layer = inject('screenStore')(
 
         const mergeStyle = cloneDeep({
           ...data.style, // 样式设置
-          top: undefined,
-          left: undefined,
-          zIndex: undefined,
-          transform: undefined,
           ...eventReturn.styles // 事件返回改变样式
         });
 
-        return { props: mergeProps, styles: parseStyle(mergeStyle) };
+        return { props: mergeProps, styles: mergeStyle };
       };
 
       /**
@@ -531,6 +510,13 @@ const Layer = inject('screenStore')(
 
       const mergeParms = mergeArgs();
 
+      // const formatStyles = parseStyle(data.style);
+
+      const scale =
+        data.style.scale !== undefined ? `scale(${data.style.scale})` : '';
+      const rotate =
+        data.style.rotate !== undefined ? `rotate(${data.style.rotate})` : '';
+
       return (
         <div
           {...restProps}
@@ -539,13 +525,15 @@ const Layer = inject('screenStore')(
             targetRef.current = ref;
           }}
           style={{
-            width: data.style.width,
-            height: data.style.height,
-            transform: `translate(${data.style.x}px, ${data.style.y}px)`,
+            ...data.style,
+            transform: `translate(${data.style.x}px, ${data.style.y}px) ${scale} ${rotate}`,
             zIndex: data.style.z,
             display:
               !enable && (data.isHide || data.groupHide) ? 'none' : 'block',
-            opacity: enable && (data.groupHide || data.isHide) ? 0.2 : 1,
+            opacity:
+              enable && (data.groupHide || data.isHide)
+                ? 0.2
+                : data.style.opacity,
             overflow:
               screenStore!.resizeing &&
               screenStore!.currLayer &&
@@ -565,19 +553,20 @@ const Layer = inject('screenStore')(
                 component={lib.default}
                 initFlag={data.initSize}
                 props={mergeParms.props}
-                styles={mergeParms.styles}
+                styles={{
+                  ...mergeParms.styles,
+                  opacity: undefined,
+                  transform: undefined,
+                  overflow: undefined
+                }}
                 events={compEventHandlers}
                 style={{
-                  ...parseStyle(data.style),
                   display: 'flex',
                   width: '100%',
                   height: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  pointerEvents: enable && data.eventLock ? 'none' : undefined,
-                  x: undefined,
-                  y: undefined,
-                  z: undefined
+                  pointerEvents: enable && data.eventLock ? 'none' : undefined
                 }}
               />
             )}

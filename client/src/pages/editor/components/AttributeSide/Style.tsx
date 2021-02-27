@@ -139,7 +139,7 @@ export const FontItem = (props: {
           <div style={subTitle}>
             <div>大小</div>
             <InputNumber
-              value={value.fontSize || 14}
+              value={value && value.fontSize ? value.fontSize : 14}
               style={{ width: '100%', marginTop: '6px' }}
               onChange={(val) => {
                 onChange('fontSize', val);
@@ -153,7 +153,7 @@ export const FontItem = (props: {
             <div>加粗</div>
             <Select
               style={{ width: '100%', marginTop: '6px' }}
-              value={value.fontWeight || 'normal'}
+              value={value && value.fontWeight ? value.fontWeigh : 'normal'}
               onChange={(val) => {
                 onChange('fontWeight', val);
               }}
@@ -173,7 +173,7 @@ export const FontItem = (props: {
             <div>对齐</div>
             <Select
               style={{ width: '100%', marginTop: '6px' }}
-              value={value.textAlign || 'left'}
+              value={value && value.textAlign ? value.textAlign : 'left'}
               onChange={(val) => {
                 onChange('textAlign', val);
               }}
@@ -215,7 +215,9 @@ export const SliderItem = (props: {
           <InputNumber
             min={min}
             max={max}
-            formatter={(val) => `${val}${formatter}`}
+            formatter={(val) =>
+              val === undefined ? '' : `${parseInt(`${val}`)}${formatter}`
+            }
             parser={(val) => (val ? val.replace(formatter, '') : '')}
             style={{ width: '100%' }}
             value={Math.round(value)}
@@ -386,12 +388,12 @@ export default inject('screenStore')(
             label="缩放比例"
             formatter="%"
             value={
-              defaultStyle && defaultStyle['transform-scale'] !== undefined
-                ? defaultStyle['transform-scale'] * 100
+              defaultStyle && defaultStyle.scale !== undefined
+                ? defaultStyle.scale * 100
                 : 100
             }
             onChange={(value) => {
-              onStyleChange('transform-scale', `${(value / 100).toFixed(2)}`);
+              onStyleChange('scale', `${(value / 100).toFixed(2)}`);
             }}
           />
         </div>
@@ -400,14 +402,13 @@ export default inject('screenStore')(
             min={0}
             max={360}
             label="旋转角度"
-            formatter="deg"
             value={
-              defaultStyle && defaultStyle['transform-rotate'] !== undefined
-                ? defaultStyle['transform-rotate'].replace('deg', '')
+              defaultStyle && defaultStyle.rotate !== undefined
+                ? defaultStyle.rotate.replace('deg', '')
                 : 0
             }
             onChange={(value) => {
-              onStyleChange('transform-rotate', `${value}deg`);
+              onStyleChange('rotate', `${value}deg`);
             }}
           />
         </div>

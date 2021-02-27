@@ -1,8 +1,8 @@
 import { CSSProperties } from 'react';
 
 export interface ComponentStyle extends CSSProperties {
-  'transform-scale'?: number;
-  'transform-rotate'?: string;
+  scale?: number;
+  rotate?: string;
   z: number;
   width: number;
   height: number;
