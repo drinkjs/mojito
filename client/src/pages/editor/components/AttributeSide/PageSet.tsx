@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Radio } from 'antd';
+import { useDebounceFn } from 'ahooks';
 import UploadImg from 'components/UploadImg';
 import { ScreenStore } from 'types';
 import { DefaulBackgroundColor, DefaultFontColor } from 'config';
@@ -18,8 +19,6 @@ const sizeItems = [
   }
 ];
 
-let timerId: any;
-
 interface Props {
   screenStore?: ScreenStore;
 }
@@ -27,33 +26,26 @@ interface Props {
 export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
-    const screenStyle: any =
+    const [screenStyle, setScreenStyle] = useState<any>(
       screenStore!.screenInfo && screenStore!.screenInfo.style
         ? screenStore!.screenInfo.style
-        : {};
-    /**
-     * 限流函数
-     * @param callback
-     */
-    const limitChange = (callback: Function, timeout: number = 500) => {
-      if (timerId) {
-        clearTimeout(timerId);
-      }
-      // 限流
-      timerId = setTimeout(callback, timeout);
-    };
+        : {}
+    );
 
-    const onStyleChange = (type: string, value: any) => {
-      // setDefaultStyle({ ...defaultStyle, [type]: value });
-      limitChange(() => {
-        if (screenStore && screenStore.screenInfo) {
-          screenStore.saveStyle({
-            ...screenStore.screenInfo.style,
-            [type]: value
-          });
-        }
-      });
-    };
+    useEffect(() => {
+      return () => {
+        debounceFn.cancel();
+      };
+    }, []);
+
+    const debounceFn = useDebounceFn((type: string, value: any) => {
+      if (screenStore && screenStore.screenInfo) {
+        screenStore.saveStyle({
+          ...screenStore.screenInfo.style,
+          [type]: value
+        });
+      }
+    });
 
     const onUpload = React.useCallback((path: string | undefined) => {
       if (screenStore && screenStore.screenInfo) {
@@ -63,6 +55,14 @@ export default inject('screenStore')(
         });
       }
     }, []);
+
+    const onStyleChange = (type: string, value: any) => {
+      setScreenStyle({
+        ...screenStyle,
+        [type]: value
+      });
+      debounceFn.run(type, value);
+    };
 
     return (
       <section className={styles.styleSetting}>

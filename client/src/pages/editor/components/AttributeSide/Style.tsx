@@ -5,6 +5,7 @@ import { observer, inject } from 'mobx-react';
 import { ChromePicker } from 'react-color';
 import { ScreenStore } from 'types';
 import { toJS } from 'mobx';
+import { useDebounceFn } from 'ahooks';
 import IconFont from 'components/IconFont';
 import styles from './index.module.scss';
 
@@ -253,17 +254,17 @@ const sizeItems = [
   }
 ];
 
-let timerId: any;
-/**
- * 限流函数
- * @param callback
- */
-const limitChange = (callback: Function, timeout: number = 500) => {
-  if (timerId) {
-    clearTimeout(timerId);
-  }
-  timerId = setTimeout(callback, timeout);
-};
+// let timerId: any;
+// /**
+//  * 限流函数
+//  * @param callback
+//  */
+// const limitChange = (callback: Function, timeout: number = 500) => {
+//   if (timerId) {
+//     clearTimeout(timerId);
+//   }
+//   timerId = setTimeout(callback, timeout);
+// };
 
 export default inject('screenStore')(
   observer((props: Props) => {
@@ -273,7 +274,7 @@ export default inject('screenStore')(
 
     useEffect(() => {
       return () => {
-        clearTimeout(timerId);
+        debounceChange.cancel();
       };
     }, []);
 
@@ -281,21 +282,23 @@ export default inject('screenStore')(
       setDefaultStyle(layerStyle ? toJS(layerStyle) : undefined);
     }, [layerStyle]);
 
+    const debounceChange = useDebounceFn((type: string, value: any) => {
+      if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
+        screenStore.updateLayer(
+          screenStore.currLayer.id,
+          {
+            style: { ...screenStore.currLayer.style, [type]: value }
+          },
+          true
+        );
+      }
+    });
+
     const onStyleChange = (type: string, value: any) => {
       setDefaultStyle(
         defaultStyle ? { ...defaultStyle, [type]: value } : undefined
       );
-      limitChange(() => {
-        if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
-          screenStore.updateLayer(
-            screenStore.currLayer.id,
-            {
-              style: { ...screenStore.currLayer.style, [type]: value }
-            },
-            true
-          );
-        }
-      });
+      debounceChange.run(type, value);
     };
 
     return (

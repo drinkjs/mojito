@@ -1,18 +1,6 @@
 import * as babel from '@babel/standalone';
 import * as typeis from './typeis';
 
-/**
- * 限流函数
- * @param callback
- */
-export const limitChange = (callback: Function, delay: number = 500) => {
-  let t: any = null;
-  return (...args: any[]) => {
-    clearTimeout(t);
-    t = setTimeout(callback, delay, ...args);
-  };
-};
-
 export function formatJson (json: any) {
   if (json === undefined || typeof json === 'string') return json;
   try {

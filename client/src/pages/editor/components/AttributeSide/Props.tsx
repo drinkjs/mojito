@@ -17,6 +17,7 @@ import {
   ExclamationCircleOutlined,
   DeleteOutlined
 } from '@ant-design/icons';
+import { useDebounceFn } from 'ahooks';
 import { toJS } from 'mobx';
 import UploadImg from 'components/UploadImg';
 import CodeEditor from 'components/CodeEditor';
@@ -59,19 +60,6 @@ const typeComp: any = {
   ),
   image: () => <UploadImg />
 };
-
-let timerId: any;
-/**
- * 限流函数
- * @param callback
- */
-const limitChange = (callback: Function, timeout: number = 500) => {
-  if (timerId) {
-    clearTimeout(timerId);
-  }
-  timerId = setTimeout(callback, timeout);
-};
-
 interface Props {
   screenStore?: ScreenStore;
 }
@@ -89,7 +77,7 @@ export default inject('screenStore')(
         : null;
 
     useEffect(() => {
-      clearTimeout(timerId);
+      debounceFn.cancel();
     }, []);
     /**
      * 显示数据源弹框
@@ -128,49 +116,46 @@ export default inject('screenStore')(
     /**
      * 保存属性
      */
-    const onPropsChange = useCallback(
-      (changeValues: any, values: any) => {
-        limitChange(() => {
-          const keys = Object.keys(changeValues);
-          const submitObj: any = {};
-          if (!componentProps) {
-            return;
+    const debounceFn = useDebounceFn((changeValues: any, values: any) => {
+      const keys = Object.keys(changeValues);
+      const submitObj: any = {};
+      if (!componentProps) {
+        return;
+      }
+      keys.forEach((key) => {
+        const propsType = componentProps[key].type;
+        const toValue = changeValues[key];
+        submitObj[key] = toValue;
+        if (typeis.isString(propsType)) {
+          if (propsType === 'object' || propsType === 'array') {
+            submitObj[key] = parseJson(toValue);
           }
-          keys.forEach((key) => {
-            const propsType = componentProps[key].type;
-            const toValue = changeValues[key];
-            submitObj[key] = toValue;
-            if (typeis.isString(propsType)) {
-              if (propsType === 'object' || propsType === 'array') {
-                submitObj[key] = parseJson(toValue);
-              }
-            } else if (typeis.isArray(propsType) && !isenum(propsType)) {
-              submitObj[key] = parseJson(toValue);
-            } else if (typeis.isObject(propsType)) {
-              submitObj[key] = parseJson(toValue);
-            }
-            if (submitObj[key] === undefined || submitObj[key] === '') {
-              submitObj[key] = componentProps[key].default;
-            }
-          });
+        } else if (typeis.isArray(propsType) && !isenum(propsType)) {
+          submitObj[key] = parseJson(toValue);
+        } else if (typeis.isObject(propsType)) {
+          submitObj[key] = parseJson(toValue);
+        }
+        if (submitObj[key] === undefined || submitObj[key] === '') {
+          submitObj[key] = componentProps[key].default;
+        }
+      });
 
-          if (
-            Object.keys(submitObj).length > 0 &&
-            screenStore &&
-            screenStore.currLayer &&
-            screenStore.currLayer.id
-          ) {
-            screenStore.updateLayer(screenStore.currLayer.id, {
-              props: {
-                ...screenStore.currLayer.props,
-                ...submitObj
-              }
-            });
+      if (
+        Object.keys(submitObj).length > 0 &&
+        screenStore &&
+        screenStore.currLayer &&
+        screenStore.currLayer.id
+      ) {
+        screenStore.updateLayer(screenStore.currLayer.id, {
+          props: {
+            ...screenStore.currLayer.props,
+            ...submitObj
           }
         });
-      },
-      [componentProps]
-    );
+      }
+    });
+
+    const onPropsChange = debounceFn.run;
 
     return (
       <div style={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
