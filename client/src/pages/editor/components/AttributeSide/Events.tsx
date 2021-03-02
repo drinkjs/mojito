@@ -60,7 +60,6 @@ export default inject('screenStore')(
     const currEditor = useRef<any>();
     const [currEvent, setCurrEvent] = useState<string>();
     const [consoleArgs, setConsoleArgs] = useState<any[]>([]);
-    const [debugerRel, setDebugerRel] = useState<any>();
     const [error, setError] = useState<Error>();
     const [eventTips, setEventTips] = useState<string>();
     const [codeString, setCodeString] = useState<string>('');
@@ -88,7 +87,6 @@ export default inject('screenStore')(
       ) {
         setCurrEvent(undefined);
         setConsoleArgs([]);
-        setDebugerRel(undefined);
         setError(undefined);
         setEventTips('');
         setIsSync(false);
@@ -125,15 +123,13 @@ export default inject('screenStore')(
      */
     const onDebug = useCallback(() => {
       myConsoleArgs = [];
-      setDebugerRel('');
       setError(undefined);
 
       try {
         const code = codeString;
         const fun = buildCode(code);
         if (fun) {
-          const rel = fun.call(createThis());
-          setDebugerRel(rel);
+          fun.call(createThis());
           setConsoleArgs(myConsoleArgs);
         }
       } catch (e) {
@@ -146,7 +142,6 @@ export default inject('screenStore')(
      */
     const onEventChange = useCallback((value) => {
       setCurrEvent(value);
-      setDebugerRel('');
       setError(undefined);
       currCodeRef.current = '';
       if (
@@ -214,7 +209,7 @@ export default inject('screenStore')(
           return JSON.stringify(
             v && v.layer ? { ...v, layer: 'div@layer' } : v,
             null,
-            1
+            2
           );
         });
         return <div key="printDebug">{formatArgs.join(',')}</div>;
@@ -335,7 +330,6 @@ export default inject('screenStore')(
                 size="small"
                 onClick={() => {
                   setConsoleArgs([]);
-                  setDebugerRel('');
                   setError(undefined);
                 }}
                 style={{ marginLeft: '6px' }}
@@ -346,15 +340,12 @@ export default inject('screenStore')(
             <div
               style={{
                 background: '#1e1e1e',
-                height: '100px',
+                height: '150px',
                 overflow: 'auto',
                 padding: '3px'
               }}
             >
               {printDebug()}
-              {debugerRel !== '' && (
-                <div>返回值：{JSON.stringify(debugerRel)}</div>
-              )}
               {error && (
                 <div style={{ color: '#cc0000' }}>
                   Error：{JSON.stringify(error)}
