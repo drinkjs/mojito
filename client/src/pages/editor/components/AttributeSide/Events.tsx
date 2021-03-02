@@ -158,12 +158,13 @@ export default inject('screenStore')(
       ) {
         setCodeString(screenStore.currLayer.events[value].code || '');
         currEditor.current.setValue(
-          screenStore.currLayer.events[value].code || ''
+          screenStore.currLayer.events[value].code || '',
+          1
         );
         setIsSync(screenStore!.currLayer.events[value].isSync);
       } else {
         setCodeString(DEFAULT_CODE);
-        currEditor.current.setValue(DEFAULT_CODE);
+        currEditor.current.setValue(DEFAULT_CODE, 1);
         setIsSync(false);
       }
 

@@ -10,16 +10,16 @@ module.exports = {
       ...devServerConfig,
       proxy: {
         '/api': {
-          target: 'http://47.100.33.34',
+          target: 'http://127.0.0.1:3838',
           secure: true,
-          changeOrigin: true
-          // pathRewrite: { '^/api': '' }
+          changeOrigin: true,
+          pathRewrite: { '^/api': '' }
         },
         '/public': {
-          target: 'http://47.100.33.34'
+          target: 'http://127.0.0.1:3838'
         },
         '/ws': {
-          target: 'ws://http://47.100.33.34',
+          target: 'ws://127.0.0.1:3838',
           ws: true
         }
       }

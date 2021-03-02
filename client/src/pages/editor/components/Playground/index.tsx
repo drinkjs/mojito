@@ -33,11 +33,13 @@ import {
 } from 'config';
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
+import { useDebounceFn } from 'ahooks';
 // import Message from 'components/Message';
 
 let compCount: { [key: string]: number } = {};
 
 const shortKeys = ['g', 'b', 'z', 'y', 'h', 'l'];
+const moveKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
 interface Props {
   screenStore?: ScreenStore;
@@ -208,10 +210,24 @@ export default inject('screenStore')(
       dropTarget(ref);
       document.addEventListener('keydown', onKeyDown);
       return () => {
+        debounceChange.cancel();
         Eventer.remove(CHANGE_GROUP);
         document.removeEventListener('keydown', onKeyDown);
       };
     }, []);
+
+    // 更新样式节流
+    const debounceChange = useDebounceFn((type: string, value: any) => {
+      if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
+        screenStore.updateLayer(
+          screenStore.currLayer.id,
+          {
+            style: { ...screenStore.currLayer.style, [type]: value }
+          },
+          true
+        );
+      }
+    });
 
     /**
      * 页面设置修改
@@ -421,6 +437,55 @@ export default inject('screenStore')(
       if (e.preventDefault && e.ctrlKey && shortKeys.indexOf(e.key) >= 0) {
         e.preventDefault();
       }
+
+      if (
+        e.preventDefault &&
+        screenStore?.currLayer &&
+        moveKeys.indexOf(e.key) >= 0
+      ) {
+        e.preventDefault();
+        const { style } = screenStore.currLayer;
+        let type = '';
+        let value: number = 0;
+        switch (e.key) {
+          case 'ArrowUp':
+            type = 'y';
+            style.y -= 1;
+            value = style.y;
+            break;
+          case 'ArrowDown':
+            type = 'y';
+            style.y += 1;
+            value = style.y;
+            break;
+          case 'ArrowLeft':
+            type = 'x';
+            style.x -= 1;
+            value = style.x;
+            break;
+          case 'ArrowRight':
+            type = 'x';
+            style.x += 1;
+            value = style.x;
+            break;
+        }
+
+        // 当前图层的dom对象
+        const currTarget = document.getElementById(screenStore.currLayer.id);
+        if (type === '' || !currTarget) return;
+
+        const transformObj = transformParser.parse(currTarget.style.transform);
+        // 修改样式
+        transformObj.translateX = style.x;
+        transformObj.translateY = style.y;
+        currTarget.style.transform = transformParser.stringify(transformObj);
+        // 更新moveable
+        moveableRef.current?.updateTarget();
+        // 保存
+        debounceChange.run(type, value);
+        return;
+      }
+
       if (e.key === 'Delete' && screenStore!.currLayer) {
         // 删除图层
         return screenStore!.confirmDeleteLayer(screenStore!.currLayer);
