@@ -391,9 +391,6 @@ const Layer = inject('screenStore')(
             request: eventRequest,
             setProps,
             setStyles,
-            // syncData: (data:any) => {
-            //   senderKey && syncData(data, data.id, senderKey);
-            // },
             anime: (animeParams: anime.AnimeParams) => {
               return anime({
                 ...animeParams,

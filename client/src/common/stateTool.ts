@@ -197,10 +197,6 @@ export function sendEvent (event: string, data?: any) {
   syncHelper.send(event, data);
 }
 
-export function syncData (data: any, syncKey: string, sender: string) {
-  syncHelper.syncData({ state: data, key: syncKey, sender });
-}
-
 /**
  * 自定义事件回调
  * @param event
