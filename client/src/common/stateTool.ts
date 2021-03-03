@@ -67,7 +67,7 @@ class SyncHelper {
 
     //  服务器返回websokcet事件
     this.websocket.on('message', (msg: SyncMessage) => {
-      console.log('websocket msg：', msg);
+      // console.log('websocket msg：', msg);
       const { data, event } = msg;
       switch (event) {
         case 'join':
@@ -197,6 +197,10 @@ export function sendEvent (event: string, data?: any) {
   syncHelper.send(event, data);
 }
 
+export function syncData (data: any, syncKey: string, sender: string) {
+  syncHelper.syncData({ state: data, key: syncKey, sender });
+}
+
 /**
  * 自定义事件回调
  * @param event
@@ -222,7 +226,12 @@ export function removeEvent (event: string) {
 export function useSync<T> (
   initialState: T,
   key?: string
-): [T, (data: Partial<T>) => void, MutableRefObject<HTMLAnchorElement>] {
+): [
+  T,
+  (data: Partial<T>) => void,
+  MutableRefObject<HTMLAnchorElement>,
+  string
+] {
   const ref = useRef<any>();
   const [value, setValue] = useState(initialState);
   const [xpath, setXpath] = useState<string>(key || '');
@@ -266,7 +275,7 @@ export function useSync<T> (
     syncHelper.syncData({ state: data, key: syncKey, sender });
   };
 
-  return [value, setSync, ref];
+  return [value, setSync, ref, sender];
 }
 
 function getXPathForElement (el: Node, root: Node) {

@@ -123,6 +123,9 @@ const Layer = inject('screenStore')(
     }: LayerProps) => {
       const targetRef = useRef<HTMLDivElement | null | undefined>();
       const currAnime = useRef<anime.AnimeInstance | undefined | null>();
+
+      const funThis = useRef<any>(); // 事件处理的this
+
       const initSizeFlag = useRef<boolean>(data.initSize);
       const dataSourceTimer = useRef<any>();
       const initFlag = useRef<boolean>(false);
@@ -316,11 +319,7 @@ const Layer = inject('screenStore')(
         async (callback: Function, ...args: any[]) => {
           try {
             const self = createThis();
-            const rel = await callback.call(self, ...args);
-            if (rel) {
-              // 事件返回数据处理
-              // setEventValue(rel);
-            }
+            callback.call(self, ...args);
           } catch (e) {
             showHandlerError(data.name, e);
           }
@@ -381,20 +380,31 @@ const Layer = inject('screenStore')(
        * 创建事件处理方法this
        */
       const createThis = () => {
-        return {
-          ...mergeArgs(),
-          eventer,
-          request: eventRequest,
-          setProps,
-          setStyles,
-          anime: (animeParams: anime.AnimeParams) => {
-            return anime({
-              ...animeParams,
-              targets: targetRef.current
-            });
-          },
-          layer: targetRef.current
-        };
+        const currArgs = mergeArgs();
+        if (funThis.current) {
+          funThis.current.porps = currArgs.props;
+          funThis.current.styles = currArgs.styles;
+        } else {
+          funThis.current = {
+            ...mergeArgs(),
+            eventer,
+            request: eventRequest,
+            setProps,
+            setStyles,
+            // syncData: (data:any) => {
+            //   senderKey && syncData(data, data.id, senderKey);
+            // },
+            anime: (animeParams: anime.AnimeParams) => {
+              return anime({
+                ...animeParams,
+                targets: targetRef.current
+              });
+            },
+            layer: targetRef.current,
+            layerId: data.id
+          };
+        }
+        return funThis.current;
       };
 
       /**
