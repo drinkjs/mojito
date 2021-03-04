@@ -10,6 +10,7 @@ import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
 import noProject from 'resources/images/noProject.png';
 import Message from 'components/Message';
+import logo from 'resources/images/logo.png';
 
 // const { useCallback, useState, useEffect } = React;
 
@@ -195,7 +196,7 @@ export default inject('projectStore')(
               <>
                 <div className={styles.projectListBox}>
                   <div style={{ textAlign: 'center', margin: '12px 0' }}>
-                    Mojito
+                    <img src={logo} height={100} />
                   </div>
                   <Button
                     type="primary"
