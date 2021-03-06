@@ -133,7 +133,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  :global(.ant-image-img) {
-    width: auto;
-  }
+  height: 56px;
+  overflow: hidden;
 }

@@ -56,7 +56,7 @@ export default ({ value, onRemove, onEdit }: Props) => {
   return (
     <div className={styles.itemView} ref={drag}>
       <div className={styles.itemImgBox}>
-        <Image src={value.coverImg} height="56px" />
+        <Image src={value.coverImg} />
       </div>
       <div style={{ textAlign: 'center', padding: '3px 0', width: '100%' }}>
         <Ellipsis lines={1} tooltip>
