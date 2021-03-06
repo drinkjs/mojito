@@ -90,7 +90,8 @@ export default class ScreenSyncController extends BaseController {
         event: "sync",
         data,
       },
-      pageInfo.page
+      pageInfo.page,
+      target.id,
     );
   }
 
@@ -128,15 +129,14 @@ export default class ScreenSyncController extends BaseController {
    * @param {object} msg 消息对象
    * @param {string} room 房间号
    * @param {object} page 页面信息
-   * @param {string} filterId 客户端id
-   * @param {bool} publish 发布消息，避免消息循环发送
+   * @param {string} filterId 过滤客户端id
    */
-  sendAll (room: string, msg: any, page?: string) {
+  sendAll (room: string, msg: any, page?: string, filterId?:string) {
     // 发送信息到客户端
     const clients = this.getRoomClients(room, page);
-    for (const client of clients) {
-      this.sendMessage(client, msg);
-    }
+    clients.forEach(client => {
+      if (client.id !== filterId) this.sendMessage(client, msg);
+    });
   }
 
   /**
