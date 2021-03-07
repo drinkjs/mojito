@@ -176,9 +176,13 @@ export default inject('screenStore')(
       delete values.disable;
       setSaveing(true);
       screenStore!
-        .updateLayer(screenStore!.currLayer.id, {
-          anime: values
-        })
+        .updateLayer(
+          screenStore!.currLayer.id,
+          {
+            anime: values
+          },
+          { saveNow: true }
+        )
         .then((rel) => {
           rel && Message.success('保存成功');
         })

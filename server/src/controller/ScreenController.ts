@@ -60,6 +60,19 @@ export default class ScreenController extends BaseController {
   }
 
   /**
+   * 更新页面图层信息
+   * @param dto
+   */
+  @Post("/update/layer")
+  async updateLayer (
+    @Body(new Validation({ groups: ["updateLayer"] })) dto: ScreenDto
+  ): PromiseRes<any> {
+    const rel = await this.service.updateScreen(dto);
+    if (rel) return this.success(null);
+    return this.fail("图层更新失败");
+  }
+
+  /**
    * 修改封面
    * @param dto
    */

@@ -139,7 +139,7 @@ const LayerItem = ({
         type="icon-suoding"
         className={styles.icons}
         style={{
-          color: value.isLock ? '#fff' : '#444',
+          color: value.lock ? '#fff' : '#444',
           fontSize: '16px'
         }}
         onClick={() => {
@@ -151,7 +151,7 @@ const LayerItem = ({
         className={styles.icons}
         style={{
           right: '0',
-          color: value.isHide ? '#444' : '#fff',
+          color: value.hide ? '#444' : '#fff',
           fontSize: '16px',
           marginLeft: 6
         }}
@@ -221,9 +221,9 @@ export default inject('screenStore')(
     const onHide = useCallback(
       (layer: LayerInfo) => {
         // eslint-disable-next-line no-param-reassign
-        layer.isHide = !layer.isHide;
+        layer.hide = !layer.hide;
         setScreenLayers([...screenLayers]);
-        screenStore!.updateLayer(layer.id || '', { isHide: layer.isHide });
+        screenStore!.updateLayer(layer.id || '', { hide: layer.hide });
       },
       [screenLayers]
     );
@@ -231,9 +231,9 @@ export default inject('screenStore')(
     const onLock = useCallback(
       (layer: LayerInfo) => {
         // eslint-disable-next-line no-param-reassign
-        layer.isLock = !layer.isLock;
+        layer.lock = !layer.lock;
         setScreenLayers([...screenLayers]);
-        screenStore!.updateLayer(layer.id || '', { isLock: layer.isLock });
+        screenStore!.updateLayer(layer.id || '', { lock: layer.lock });
       },
       [screenLayers]
     );
@@ -312,8 +312,7 @@ export default inject('screenStore')(
         });
         // 更新信息
         screenStore!.batchUpdateLayer(
-          screenLayers.map((v) => ({ id: v.id, style: v.style })),
-          true
+          screenLayers.map((v) => ({ id: v.id, style: v.style }))
         );
       },
       [screenLayers]

@@ -52,12 +52,15 @@ export interface LayerEvents {
   [key: string]: { code: string; isSync: boolean };
 }
 
+/**
+ * 图层信息
+ */
 export interface LayerInfo {
   id: string;
   name: string;
-  screenId: string;
-  componentId?: string; // 新增时必填
-  component?: ComponentInfo; // 详情时返回
+  // screenId: string;
+  // componentId: string; // 新增时必填
+  component: ComponentInfo; // 详情时返回
   initSize: boolean;
   api?: {
     url: string;
@@ -69,16 +72,15 @@ export interface LayerInfo {
   } | null;
   props?: { [key: string]: any };
   events?: LayerEvents;
-  eventLock?: boolean; // 事件锁定，锁定后图层不能交互
+  eventLock?: boolean; // 事件锁定，锁定后图层内组件不能交互
   data?: Object;
   style: ComponentStyle;
-  isHide?: boolean;
-  isLock?: boolean;
-  updateTime?: string | Date;
+  hide?: boolean;
+  lock?: boolean;
+  updateFlag?: string | number; // 组件更新标识，用于优化组件渲染，组件更新后值会变
   group?: string;
   groupLock?: boolean;
   groupHide?: boolean;
-  reloadKey?: string | number; // 用于强制刷新组件
   anime?: {
     translateX?: number;
     translateY?: number;
@@ -94,6 +96,7 @@ export interface LayerInfo {
     direction?: string;
     autoplay?: boolean;
   };
+  reloadKey?: number; // 强制刷新
 }
 
 export interface ScreenLayout extends CSSProperties {

@@ -1,26 +1,19 @@
-import { CSSProperties } from "react";
-import { makeAutoObservable, toJS, runInAction, computed } from "mobx";
-import { Modal } from "antd";
-import { v4 as uuidv4 } from "uuid";
-import * as service from "services/screen";
-import * as layerService from "services/layer";
-import { loadCDN } from "components/Loader";
+import { CSSProperties } from 'react';
+import { makeAutoObservable, toJS, runInAction, computed } from 'mobx';
+import { Modal } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
+import * as service from 'services/screen';
+import { loadCDN } from 'components/Loader';
 import {
   ComponentStyleQuery,
   LayerInfo,
   LayerQuery,
   ScreenDetailDto,
   ScreenDto
-} from "types";
-import { DefaultPageSize } from "config";
+} from 'types';
+import { DefaultPageSize } from 'config';
 
 const MAX_UNDO = 100;
-
-interface UpdateHistory {
-  action: Function;
-  args: any[];
-}
-
 export default class Screen {
   screenList: ScreenDto[] = [];
 
@@ -43,9 +36,9 @@ export default class Screen {
 
   resizeing = false;
 
-  undoData: UpdateHistory[] = [];
+  undoData: ScreenDetailDto[] = [];
 
-  redoData: UpdateHistory[] = [];
+  redoData: ScreenDetailDto[] = [];
 
   constructor () {
     makeAutoObservable(this, {
@@ -123,7 +116,7 @@ export default class Screen {
       return false;
     } else if (layers.length === 1) {
       // 只选中一个图层
-      return layers[0].isLock;
+      return layers[0].lock;
     } else if (layers.length > 1) {
       if (this.isSelectedGroup) {
         // 选中群组
@@ -131,7 +124,7 @@ export default class Screen {
       }
       // 多选
       for (const v of layers) {
-        if (!v.isLock) return false;
+        if (!v.lock) return false;
       }
     }
     return true;
@@ -143,7 +136,7 @@ export default class Screen {
       // 只选中一个图层
       return false;
     } else if (layers.length === 1) {
-      return layers[0].isHide;
+      return layers[0].hide;
     } else if (layers.length > 1) {
       if (this.isSelectedGroup) {
         // 选中群组
@@ -151,7 +144,7 @@ export default class Screen {
       }
       // 多选
       for (const v of layers) {
-        if (!v.isHide) return false;
+        if (!v.hide) return false;
       }
     }
     return true;
@@ -163,18 +156,30 @@ export default class Screen {
     });
   }
 
-  addUndoData (data: UpdateHistory) {
+  /**
+   * undo数据
+   * @param data
+   * @returns
+   */
+  addUndoData (data?: ScreenDetailDto) {
+    if (!data) return;
     runInAction(() => {
-      this.undoData.push(data);
+      this.undoData.push(toJS(data));
       if (this.undoData.length >= MAX_UNDO) {
         this.undoData.shift();
       }
     });
   }
 
-  addRedoData (data: UpdateHistory) {
+  /**
+   * redo数据
+   * @param data
+   * @returns
+   */
+  addRedoData (data?: ScreenDetailDto) {
+    if (!data) return;
     runInAction(() => {
-      this.redoData.push(data);
+      this.redoData.push(toJS(data));
       if (this.redoData.length >= MAX_UNDO) {
         this.redoData.shift();
       }
@@ -189,26 +194,6 @@ export default class Screen {
     this.getListLoading = true;
     service
       .screenList({ projectId })
-      .then((data) => {
-        runInAction(() => {
-          this.screenList = data;
-        });
-      })
-      .finally(() => {
-        runInAction(() => {
-          this.getListLoading = false;
-        });
-      });
-  }
-
-  /**
-   * 项目名称返回页面列表
-   * @param name
-   */
-  async getListByProjectName (name: string) {
-    this.getListLoading = true;
-    service
-      .screenListByProjectName({ name })
       .then((data) => {
         runInAction(() => {
           this.screenList = data;
@@ -283,6 +268,28 @@ export default class Screen {
   }
 
   /**
+   * 保存页面信息
+   */
+  async saveScreen () {
+    if (!this.screenInfo) return;
+    this.saveLoading = true;
+    return service
+      .updateLayer({
+        id: this.screenInfo.id,
+        layers: this.screenInfo.layers,
+        style: this.screenInfo.style
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.saveLoading = false;
+        });
+      })
+      .catch(() => {
+        this.reload();
+      });
+  }
+
+  /**
    * 页面布局详情
    * @param id
    */
@@ -302,9 +309,7 @@ export default class Screen {
           data.layers.sort((a, b) => {
             return b.style.z - a.style.z;
           });
-        // runInAction(() => {
-        // this.screenInfo = data;
-        // });
+
         // 加载项目设置的cdn
         loadCDN(data.project.cdn, () => {
           runInAction(() => {
@@ -325,32 +330,15 @@ export default class Screen {
    * 页面样式
    * @param styles
    */
-  async saveStyle (styles: any, isUndo?: boolean) {
+  async saveStyle (styles: any) {
     if (!this.screenInfo) return;
-    const oldStyle = toJS(this.screenInfo.style);
-    runInAction(() => {
-      if (this.screenInfo) {
-        this.screenInfo.style = { ...styles };
-      }
-    });
-    service
-      .screenUpdate({
-        id: this.screenInfo.id,
-        style: styles,
-        name: this.screenInfo.name
-      })
-      .then(() => {
-        if (isUndo) {
-          this.addRedoData({ args: [oldStyle, false], action: this.saveStyle });
-        } else {
-          this.addUndoData({ args: [oldStyle, true], action: this.saveStyle });
-        }
-      })
-      .catch(() => {
-        this.reload();
-      });
+    this.addUndoData(this.screenInfo);
+    this.screenInfo.style = { ...styles };
   }
 
+  /**
+   * 重新加载页面图层
+   */
   async reload () {
     if (!this.screenInfo) return;
     return service
@@ -382,31 +370,28 @@ export default class Screen {
    * 新增图层
    * @param layer
    */
-  async addLayer (layer: LayerQuery) {
-    return layerService
-      .addlayer({ ...layer, component: undefined })
-      .then((rel) => {
-        // 刷新
-        this.addUndoData({ args: [rel, true], action: this.deleteLayer });
-        this.reload();
-        return rel;
-      });
+  async addLayer (layer: LayerInfo) {
+    if (!this.screenInfo) return;
+    this.addUndoData(this.screenInfo);
+    const layers = this.screenInfo?.layers || [];
+    layers.push({ ...layer, updateFlag: new Date().getTime() });
+    this.screenInfo.layers = toJS(layers);
   }
 
   /**
    * 锁定图层或图层组
-   * @param isLock
+   * @param lock
    */
-  lockLayer (isLock: boolean) {
+  lockLayer (lock: boolean) {
     if (this.selectedLayerIds.size === 1) {
       // 锁定图层
-      this.updateLayer(Array.from(this.selectedLayerIds)[0], { isLock });
+      this.updateLayer(Array.from(this.selectedLayerIds)[0], { lock });
     } else if (this.selectedLayerIds.size > 1) {
       // 锁定图层组
       const isGroup = this.isSelectedGroup;
       this.batchUpdateLayer(
         Array.from(this.selectedLayerIds).map((id) =>
-          isGroup ? { id, groupLock: isLock } : { id, isLock }
+          isGroup ? { id, groupLock: lock } : { id, lock }
         )
       );
     }
@@ -414,18 +399,18 @@ export default class Screen {
 
   /**
    * 隐藏图层或图层组
-   * @param isHide
+   * @param hide
    */
-  hideLayer (isHide: boolean) {
+  hideLayer (hide: boolean) {
     if (this.selectedLayerIds.size === 1) {
       // 隐藏图层
-      this.updateLayer(Array.from(this.selectedLayerIds)[0], { isHide });
+      this.updateLayer(Array.from(this.selectedLayerIds)[0], { hide });
     } else if (this.selectedLayerIds.size > 1) {
       // 隐藏图层组
       const isGroup = this.isSelectedGroup;
       this.batchUpdateLayer(
         Array.from(this.selectedLayerIds).map((id) =>
-          isGroup ? { id, groupHide: isHide } : { id, isHide }
+          isGroup ? { id, groupHide: hide } : { id, hide }
         )
       );
     }
@@ -439,8 +424,7 @@ export default class Screen {
   async updateLayer (
     layerId: string,
     data: LayerQuery,
-    reload?: boolean,
-    isUndo?: boolean
+    opts?: { reload?: boolean; saveNow?: boolean }
   ) {
     const keys = Object.keys(data);
     const dataAny: any = data;
@@ -449,57 +433,29 @@ export default class Screen {
       return;
     }
 
-    const undoData: UpdateHistory = {
-      args: [layerId, {}, reload, !isUndo],
-      action: this.updateLayer
-    };
+    if (!data.initSize) {
+      // 如果initSize为true说明是刚新增的组件初始化大小，这是一个非用户操作不需要保存
+      this.addUndoData(this.screenInfo);
+    }
     // 修改本地数据
-    const layer: any = this.screenInfo.layers[layerIndex];
-    layer.updateTime = new Date();
-    if (reload) layer.reloadKey = layer.reloadKey === 1 ? 0 : 1;
+    const layer: LayerInfo = this.screenInfo.layers[layerIndex];
+    layer.updateFlag = new Date().getTime();
+
     keys.forEach((key) => {
-      // 事件不做undo保存，因为实际使中用撤销属性和事件用户可能无感知，很容易产生不可预料的问题
-      if (key !== "events") undoData.args[1][key] = toJS(layer[key]);
-      layer[key] = dataAny[key];
+      const layerAny: any = layer;
+      layerAny[key] = dataAny[key];
     });
-    this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
-    if (reload) this.selectedLayerIds = toJS(this.selectedLayerIds);
-    this.saveLoading = true;
-    // 保存数据
-    return layerService
-      .updatelayer({
-        id: layerId,
-        name: layer.name,
-        ...data,
-        reloadKey: layer.reloadKey
-      })
-      .then((rel) => {
-        // 保存成功
-        if (!data.initSize) {
-          // 如果有initSize说是新增后的根据组件大小更新的位置
-          if (!isUndo) {
-            this.addUndoData(undoData);
-          } else {
-            this.addRedoData(undoData);
-          }
-        }
-        if (reload) {
-          this.reload();
-        }
-        return true;
-      })
-      .catch(() => {
-        // 保存失败
-        runInAction(() => {
-          this.selectedLayerIds = new Set();
-        });
-        this.reload();
-      })
-      .finally(() => {
-        runInAction(() => {
-          this.saveLoading = false;
-        });
-      });
+
+    if (opts?.reload) {
+      layer.reloadKey = layer.reloadKey === 1 ? 0 : 1;
+    }
+
+    this.screenInfo.layers = [...this.screenInfo.layers];
+    this.selectedLayerIds = toJS(this.selectedLayerIds);
+
+    if (opts?.saveNow) {
+      return this.saveScreen();
+    }
   }
 
   /**
@@ -508,13 +464,9 @@ export default class Screen {
   undo () {
     const undoData = this.undoData.pop();
     if (!undoData) return;
-    const { args, action } = undoData;
-    if (action) {
-      runInAction(() => {
-        this.selectedLayerIds = new Set();
-      });
-      action.call(this, ...args);
-    }
+    this.screenInfo = undoData;
+    this.selectedLayerIds = toJS(this.selectedLayerIds);
+    this.addRedoData(undoData);
   }
 
   /**
@@ -523,45 +475,34 @@ export default class Screen {
   redo () {
     const redoData = this.redoData.pop();
     if (!redoData) return;
-    const { args, action } = redoData;
-    if (action) {
-      runInAction(() => {
-        this.selectedLayerIds = new Set();
-      });
-      action.call(this, ...args);
-    }
+    this.screenInfo = redoData;
+    this.selectedLayerIds = toJS(this.selectedLayerIds);
+    this.addUndoData(redoData);
   }
-
-  sortByLayers () {}
 
   /**
    * 批量更新图层
    * @param data
    * @param reload
    */
-  async batchUpdateLayer (
-    data: LayerQuery[],
-    reload?: boolean,
-    isUndo?: boolean
-  ) {
+  async batchUpdateLayer (data: LayerQuery[], saveNow?: boolean) {
     if (!this.screenInfo || !this.screenInfo.layers) return;
 
+    this.addUndoData(this.screenInfo);
+
     let isSort = false;
-    const undoData = data.map((v: any) => {
-      const oldData: any = {};
-      const currLayer =
-        this.screenInfo &&
-        this.screenInfo.layers &&
-        this.screenInfo.layers.find((layer) => layer.id === v.id);
+    data.forEach((v: any) => {
+      const currLayer = this.screenInfo?.layers?.find(
+        (layer) => layer.id === v.id
+      );
       if (currLayer) {
+        currLayer.updateFlag = new Date().getTime();
         const currLayerAny: any = currLayer;
         Object.keys(v).forEach((key) => {
-          if (key === "style" && v.style.z !== currLayer.style.z) isSort = true;
-          oldData[key] = toJS(currLayerAny[key]);
+          if (key === 'style' && v.style.z !== currLayer.style.z) isSort = true;
           currLayerAny[key] = v[key];
         });
       }
-      return oldData;
     });
 
     if (isSort) {
@@ -571,95 +512,33 @@ export default class Screen {
       });
     }
 
-    this.screenInfo.layers = [...this.screenInfo.layers]; // 为了刷新右侧图层列表
-
-    return layerService
-      .batchUpdateLayer(data)
-      .then((rel) => {
-        if (isUndo) {
-          this.addRedoData({
-            args: [undoData, reload, false],
-            action: this.batchUpdateLayer
-          });
-        } else {
-          this.addUndoData({
-            args: [undoData, reload, true],
-            action: this.batchUpdateLayer
-          });
-        }
-        if (reload) {
-          this.reload();
-        }
-        return rel;
-      })
-      .catch(() => {
-        runInAction(() => {
-          this.selectedLayerIds = new Set();
-        });
-        this.reload();
-      });
+    this.screenInfo.layers = [...this.screenInfo.layers];
+    this.selectedLayerIds = toJS(this.selectedLayerIds);
+    if (saveNow) {
+      this.saveScreen();
+    }
   }
 
   /**
    * 群组图层
    */
-  async groupLayer (layerIds: string[], isUndo?: boolean) {
+  async groupLayer (layerIds: string[]) {
     const group = uuidv4();
     const groups = layerIds.map((id) => {
       return { id, group };
     });
 
-    return layerService
-      .batchUpdateLayer(groups)
-      .then((rel) => {
-        if (isUndo) {
-          this.addRedoData({
-            args: [layerIds, false],
-            action: this.disbandLayer
-          });
-        } else {
-          this.addUndoData({
-            args: [layerIds, true],
-            action: this.disbandLayer
-          });
-        }
-        if (this.selectedLayerIds.size === 0) {
-          this.selectedLayerIds = new Set(layerIds);
-        }
-        return rel;
-      })
-      .finally(() => {
-        this.reload();
-      });
+    return this.batchUpdateLayer(groups);
   }
 
   /**
    * 解除群组
    */
-  async disbandLayer (layerIds: string[], isUndo?: boolean) {
+  async disbandLayer (layerIds: string[]) {
     const groups = layerIds.map((id) => {
-      return { id, group: "", groupLock: false, groupHide: false };
+      return { id, group: '', groupLock: false, groupHide: false };
     });
-
-    return layerService
-      .batchUpdateLayer(groups)
-      .then((rel) => {
-        if (isUndo) {
-          this.addRedoData({
-            args: [layerIds, false],
-            action: this.groupLayer
-          });
-        } else {
-          this.addUndoData({ args: [layerIds, true], action: this.groupLayer });
-        }
-        if (this.selectedLayerIds.size === 0) {
-          this.selectedLayerIds = new Set(layerIds);
-        }
-        return rel;
-      })
-      .finally(() => {
-        this.reload();
-      });
+    return this.batchUpdateLayer(groups);
   }
 
   /**
@@ -680,7 +559,7 @@ export default class Screen {
    */
   reloadLayer () {
     if (this.currLayer) {
-      this.updateLayer(this.currLayer.id, {}, true);
+      this.updateLayer(this.currLayer.id, {}, { reload: true });
     }
   }
 
@@ -703,37 +582,12 @@ export default class Screen {
    * 删除图层
    * @param layerId
    */
-  deleteLayer (layerId: string, isUndo?: boolean) {
-    layerService.deletelayer({ id: layerId }).then(() => {
-      if (isUndo) {
-        this.addRedoData({ action: this.restoreLayer, args: [layerId, false] });
-      } else {
-        this.addUndoData({ action: this.restoreLayer, args: [layerId, true] });
-      }
-      runInAction(() => {
-        this.selectedLayerIds = new Set();
-      });
-      this.reload();
-    });
-  }
-
-  /**
-   * 删除恢复
-   * @param layerId
-   */
-  restoreLayer (layerId: string, isUndo?: boolean) {
-    layerService.restoreLayer({ id: layerId }).then(() => {
-      if (isUndo) {
-        this.addRedoData({ action: this.deleteLayer, args: [layerId, false] });
-      } else {
-        this.addUndoData({ action: this.deleteLayer, args: [layerId, true] });
-      }
-      this.reload();
-    });
-  }
-
-  saveAll () {
-    const layers = toJS(this.screenInfo?.layers);
-    layers && this.batchUpdateLayer(layers, true);
+  deleteLayer (layerId: string) {
+    this.addUndoData(this.screenInfo);
+    if (this.screenInfo?.layers) {
+      this.screenInfo.layers = this.screenInfo.layers.filter(
+        (v) => v.id !== layerId
+      );
+    }
   }
 }

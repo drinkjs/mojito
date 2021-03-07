@@ -289,7 +289,7 @@ export default inject('screenStore')(
           {
             style: { ...screenStore.currLayer.style, [type]: value }
           },
-          true
+          { reload: true }
         );
       }
     });

@@ -328,27 +328,6 @@ const Layer = inject('screenStore')(
       );
 
       /**
-       * 手动设置事件返回结果，主要用于异步操作
-       */
-      // const setEventValue = useCallback(
-      //   (rel: EventValue) => {
-      //     if (rel) {
-      //       // eslint-disable-next-line no-shadow
-      //       const { styles, props } = rel;
-      //       eventReturn.styles = {
-      //         ...eventReturn.styles,
-      //         ...styles
-      //       };
-      //       eventReturn.props = {
-      //         ...eventReturn.props,
-      //         ...props
-      //       };
-      //       setEventReturn({ ...eventReturn });
-      //     }
-      //   },
-      //   [eventReturn]
-      // );
-      /**
        * 事件处理设置props
        */
       const setProps = useCallback(
@@ -451,6 +430,7 @@ const Layer = inject('screenStore')(
           }
 
           initSizeFlag.current = true;
+          // 获取组件大小并更新，组件没有固定大小时默认300x200
           const setWidth = width && height ? width : defaultWidth;
           const setHeight = width && height ? height : defaultHeight;
           if (data && data.style && data.style.x && data.style.y && data.id) {
@@ -550,9 +530,9 @@ const Layer = inject('screenStore')(
             transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
             zIndex: data.style.z,
             display:
-              !enable && (data.isHide || data.groupHide) ? 'none' : 'block',
+              !enable && (data.hide || data.groupHide) ? 'none' : 'block',
             opacity:
-              enable && (data.groupHide || data.isHide)
+              enable && (data.groupHide || data.hide)
                 ? 0.2
                 : data.style.opacity,
             overflow:
@@ -602,6 +582,6 @@ const Layer = inject('screenStore')(
 export default React.memo(
   Layer,
   (prevProps: LayerProps, nextProps: LayerProps) => {
-    return prevProps.data.updateTime === nextProps.data.updateTime;
+    return prevProps.data.updateFlag === nextProps.data.updateFlag;
   }
 );

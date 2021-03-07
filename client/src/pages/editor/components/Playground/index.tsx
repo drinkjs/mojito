@@ -8,6 +8,8 @@ import { observer, inject } from 'mobx-react';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Tooltip, Switch } from 'antd';
 import { runInAction, toJS } from 'mobx';
+import { v4 as uuidv4 } from 'uuid';
+import { useDebounceFn, useInterval } from 'ahooks';
 import {
   ContextMenu,
   MenuItem,
@@ -19,26 +21,20 @@ import IconFont, { IconLink } from 'components/IconFont';
 import Layer from 'components/Layer';
 import Eventer from 'common/eventer';
 import './react-contextmenu.css';
-import {
-  ComponentStore,
-  ComponentStyle,
-  LayerInfo,
-  LayerQuery,
-  ScreenStore
-} from 'types';
+import { ComponentStore, ComponentStyle, LayerInfo, ScreenStore } from 'types';
 import {
   DefaulBackgroundColor,
   DefaultFontColor,
-  DefaultLayerSize
+  DefaultLayerSize,
+  saveTime
 } from 'config';
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
-import { useDebounceFn } from 'ahooks';
 // import Message from 'components/Message';
 
 let compCount: { [key: string]: number } = {};
 
-const shortKeys = ['g', 'b', 'z', 'y', 'h', 'l'];
+const shortKeys = ['g', 'b', 'z', 'y', 'h', 'l', 's'];
 const moveKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
 interface Props {
@@ -136,6 +132,13 @@ export default inject('screenStore')(
     const [groupElement, setGroupElement] = useState<HTMLElement[]>([]); // 图层组dom
 
     /**
+     * 定时保存图层信息
+     */
+    useInterval(() => {
+      screenStore?.saveScreen();
+    }, saveTime);
+
+    /**
      * 接受组件拖入
      */
     const [, dropTarget] = useDrop({
@@ -164,27 +167,13 @@ export default inject('screenStore')(
             ? screenStore!.layers[0].style.z + 1
             : 1;
 
-        // const props: { [key: string]: any } = {};
-
         // 防止出现无限位小数
         x = Math.round(x - DefaultLayerSize.width / 2);
         y = Math.round(y - DefaultLayerSize.height / 2);
-
-        // if (value.props) {
-        //   // 读取组件props的默认值
-        //   Object.keys(value.props).forEach((key) => {
-        //     if (value.props[key].default !== undefined) {
-        //       props[key] = value.props[key].default;
-        //     }
-        //   });
-        // }
-
         // 新图层
         if (screenStore && screenStore.screenInfo) {
-          const newLayer: LayerQuery = {
-            screenId: screenStore.screenInfo.id,
+          const newLayer: LayerInfo = {
             name: `${value.title}${compCount[value.libName]}`,
-            componentId: value.id,
             component: value,
             initSize: false,
             style: {
@@ -193,8 +182,8 @@ export default inject('screenStore')(
               z,
               width: DefaultLayerSize.width,
               height: DefaultLayerSize.height
-            }
-            // props
+            },
+            id: uuidv4()
           };
 
           screenStore.addLayer(newLayer);
@@ -208,11 +197,11 @@ export default inject('screenStore')(
 
     useEffect(() => {
       dropTarget(ref);
-      document.addEventListener('keydown', onKeyDown);
+      window.addEventListener('keydown', onKeyDown);
       return () => {
         debounceChange.cancel();
         Eventer.remove(CHANGE_GROUP);
-        document.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('keydown', onKeyDown);
       };
     }, []);
 
@@ -224,7 +213,7 @@ export default inject('screenStore')(
           {
             style: { ...screenStore.currLayer.style, [type]: value }
           },
-          true
+          { reload: true }
         );
       }
     });
@@ -281,6 +270,7 @@ export default inject('screenStore')(
         screenStore!.setCurrLayer(undefined);
       } else {
         const layerGroups = screenStore!.layerGroup;
+
         setGroupElement(
           layerGroups.map((v) => document.getElementById(v.id) as any)
         );
@@ -303,11 +293,16 @@ export default inject('screenStore')(
           );
         } else {
           // 只选中了一个图层
-          setLayerFrame({
-            layerId: layerGroups[0].id,
-            style: toJS(layerGroups[0].style)
-          });
-          screenStore!.setCurrLayer(layerGroups[0]);
+          if (layerGroups.length === 0) {
+            setLayerFrame(undefined);
+            screenStore!.setCurrLayer(undefined);
+          } else {
+            setLayerFrame({
+              layerId: layerGroups[0].id,
+              style: toJS(layerGroups[0].style)
+            });
+            screenStore!.setCurrLayer(layerGroups[0]);
+          }
         }
       }
     }, [screenStore!.selectedLayerIds]);
@@ -434,15 +429,11 @@ export default inject('screenStore')(
      */
     const onKeyDown = (e: KeyboardEvent) => {
       e.stopPropagation();
-      if (e.preventDefault && e.ctrlKey && shortKeys.indexOf(e.key) >= 0) {
+      if (e.ctrlKey && shortKeys.indexOf(e.key) >= 0) {
         e.preventDefault();
       }
 
-      if (
-        e.preventDefault &&
-        screenStore?.currLayer &&
-        moveKeys.indexOf(e.key) >= 0
-      ) {
+      if (screenStore?.currLayer && moveKeys.indexOf(e.key) >= 0) {
         e.preventDefault();
         const { style } = screenStore.currLayer;
         let type = '';
@@ -495,39 +486,46 @@ export default inject('screenStore')(
         screenStore!.selectedLayerIds = new Set();
         return;
       }
-      // 显示/隐藏
-      if (e.ctrlKey && e.key === 'h' && screenStore?.currLayer) {
-        screenStore?.hideLayer(!screenStore!.isLayerHide);
-      }
-      // 锁定/解锁
-      if (e.ctrlKey && e.key === 'l' && screenStore?.currLayer) {
-        screenStore?.lockLayer(!screenStore?.isLayerLock);
-      }
 
-      if (e.ctrlKey && e.key === 'z') {
-        return undo();
-      }
+      if (e.ctrlKey) {
+        // 显示/隐藏
+        if (e.key === 'h' && screenStore?.currLayer) {
+          screenStore?.hideLayer(!screenStore!.isLayerHide);
+        }
+        // 锁定/解锁
+        if (e.key === 'l' && screenStore?.currLayer) {
+          screenStore?.lockLayer(!screenStore?.isLayerLock);
+        }
 
-      if (e.ctrlKey && e.key === 'y') {
-        return redo();
-      }
-      // 群组
-      if (e.ctrlKey && e.key === 'g' && currLayerIds.current.size > 1) {
-        return groupLayer();
-      }
+        if (e.key === 'z') {
+          return undo();
+        }
 
-      // 解除群组
-      if (e.ctrlKey && e.key === 'b' && currLayerIds.current.size > 1) {
-        return disbandLayer();
+        if (e.key === 'y') {
+          return redo();
+        }
+        // 群组
+        if (e.key === 'g' && currLayerIds.current.size > 1) {
+          return groupLayer();
+        }
+
+        // 解除群组
+        if (e.key === 'b' && currLayerIds.current.size > 1) {
+          return disbandLayer();
+        }
+
+        // 保存
+        if (e.key === 's') {
+          return screenStore?.saveScreen();
+        }
       }
     };
 
     /**
-     * 合并
+     * 群组
      */
     const groupLayer = () => {
       if (currLayerIds.current.size === 0 || screenStore!.isSelectedGroup) {
-        // Message.success("群组成功");
         return;
       }
       screenStore!.groupLayer(Array.from(currLayerIds.current));
@@ -538,7 +536,6 @@ export default inject('screenStore')(
      */
     const disbandLayer = () => {
       if (currLayerIds.current.size === 0 || !screenStore!.isSelectedGroup) {
-        // Message.success('解组成功');
         return;
       }
       screenStore!.disbandLayer(Array.from(currLayerIds.current));
@@ -614,18 +611,23 @@ export default inject('screenStore')(
       e.stopPropagation();
       if (!data || !screenStore || !screenStore.layers) return;
 
-      const screenLayers = screenStore.layers;
-      const layer: LayerInfo = data.layer;
+      const screenLayers = toJS(screenStore.layers);
+      const layer: LayerInfo | undefined = screenLayers.find(
+        (v) => v.id === data.layer.id
+      );
+      if (!layer) return;
 
       switch (data.action) {
         case 'REMOVE':
-          screenStore!.confirmDeleteLayer(data.layer);
+          screenStore.confirmDeleteLayer(data.layer);
           break;
         case 'SET_TOP': {
           const topZ = screenLayers[0].style.z;
           if (screenLayers[0].id !== layer.id) {
             layer.style.z = topZ + 1;
-            screenStore!.batchUpdateLayer([layer], true);
+            screenStore.batchUpdateLayer(
+              screenLayers.map((v) => ({ id: v.id, style: v.style }))
+            );
           }
           break;
         }
@@ -633,7 +635,9 @@ export default inject('screenStore')(
           const bottomZ = screenLayers[screenLayers.length - 1].style.z;
           if (screenLayers[screenLayers.length - 1].id !== layer.id) {
             layer.style.z = bottomZ - 1;
-            screenStore!.batchUpdateLayer([layer], true);
+            screenStore.batchUpdateLayer(
+              screenLayers.map((v) => ({ id: v.id, style: v.style }))
+            );
           }
           break;
         }
@@ -642,11 +646,11 @@ export default inject('screenStore')(
           if (index <= 0) return;
           const upLayer = screenLayers[index - 1];
           const upZ = upLayer.style.z;
-          runInAction(() => {
-            upLayer.style.z = layer.style.z;
-            layer.style.z = upZ;
-          });
-          screenStore!.batchUpdateLayer([upLayer, layer], true);
+          upLayer.style.z = layer.style.z;
+          layer.style.z = upZ;
+          screenStore.batchUpdateLayer(
+            screenLayers.map((v) => ({ id: v.id, style: v.style }))
+          );
           break;
         }
         case 'SET_DOWN': {
@@ -654,17 +658,18 @@ export default inject('screenStore')(
           if (downIndex < 0 || downIndex === screenLayers.length - 1) return;
           const downLayer = screenLayers[downIndex + 1];
           const downZ = downLayer.style.z;
-          runInAction(() => {
-            downLayer.style.z = layer.style.z;
-            layer.style.z = downZ;
-          });
-          screenStore!.batchUpdateLayer([downLayer, layer], true);
+          downLayer.style.z = layer.style.z;
+          layer.style.z = downZ;
+          console.log(screenLayers.map((v) => ({ id: v.id, style: v.style })));
+          screenStore.batchUpdateLayer(
+            screenLayers.map((v) => ({ id: v.id, style: v.style }))
+          );
           break;
         }
-        case 'EDIT':
-          onSelectLayer(layer);
-          break;
-        default:
+        // case "EDIT":
+        //   onSelectLayer(layer);
+        //   break;
+        // default:
       }
     }, []);
 
@@ -884,7 +889,7 @@ export default inject('screenStore')(
                             defaultWidth={DefaultLayerSize.width}
                             defaultHeight={DefaultLayerSize.height}
                             data={layerData}
-                            key={layerData.id + layerData.reloadKey}
+                            key={`${layerData.id}_${layerData.reloadKey}`}
                             onSelected={onSelectLayer}
                             onReady={onLayerInit}
                           />

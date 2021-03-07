@@ -1,5 +1,5 @@
-import { mongoose, prop, Ref } from "@typegoose/typegoose";
-import Component from "./ComponentEntity";
+// import { mongoose, prop, Ref } from "@typegoose/typegoose";
+// import Component from "./ComponentEntity";
 
 export interface LayerStyle {
   x: number;
@@ -19,61 +19,61 @@ export interface LayerApi {
   };
 }
 
-export default class Layer {
-  @prop({ required: true })
-  name!: string;
+// export default class Layer {
+//   @prop({ required: true })
+//   name!: string;
 
-  @prop({ required: true })
-  screenId!: mongoose.Types.ObjectId;
+//   @prop({ required: true })
+//   screenId!: mongoose.Types.ObjectId;
 
-  @prop({ required: true, ref: () => Component })
-  componentId!: Ref<Component>;
+//   @prop({ required: true, ref: () => Component })
+//   componentId!: Ref<Component>;
 
-  @prop({ required: true })
-  initSize: boolean;
+//   @prop({ required: true })
+//   initSize: boolean;
 
-  @prop()
-  props?: { [key: string]: any };
+//   @prop()
+//   props?: { [key: string]: any };
 
-  @prop()
-  events?: { [key: string]: any };
+//   @prop()
+//   events?: { [key: string]: any };
 
-  @prop()
-  eventLock?: boolean;
+//   @prop()
+//   eventLock?: boolean;
 
-  @prop({ required: true })
-  style!: LayerStyle;
+//   @prop({ required: true })
+//   style!: LayerStyle;
 
-  @prop()
-  api?: LayerApi;
+//   @prop()
+//   api?: LayerApi;
 
-  @prop()
-  isHide?: boolean;
+//   @prop()
+//   isHide?: boolean;
 
-  @prop()
-  isLock?: boolean;
+//   @prop()
+//   isLock?: boolean;
 
-  @prop()
-  createTime?: string;
+//   @prop()
+//   createTime?: string;
 
-  @prop()
-  updateTime?: string;
+//   @prop()
+//   updateTime?: string;
 
-  @prop({ required: true, default: 0 })
-  status: 0 | 1;
+//   @prop({ required: true, default: 0 })
+//   status: 0 | 1;
 
-  @prop()
-  group?: string;
+//   @prop()
+//   group?: string;
 
-  @prop()
-  groupLock?: boolean;
+//   @prop()
+//   groupLock?: boolean;
 
-  @prop()
-  groupHide?: boolean;
+//   @prop()
+//   groupHide?: boolean;
 
-  @prop({ default: 0 })
-  reloadKey?: number;
+//   @prop({ default: 0 })
+//   reloadKey?: number;
 
-  @prop()
-  anime?: {[key:string]:any}
-}
+//   @prop()
+//   anime?: {[key:string]:any}
+// }

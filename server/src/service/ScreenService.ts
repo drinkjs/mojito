@@ -6,7 +6,7 @@ import { createStringDate } from "../common/utils";
 import ScreenEntity from "../entity/ScreenEntity";
 import BaseService from "./BaseService";
 import ProjectService from "./ProjectService";
-import LayerService from "./LayerService";
+import ComponentService from "./ComponentService";
 
 @Injectable()
 export default class ScreenService extends BaseService {
@@ -14,7 +14,7 @@ export default class ScreenService extends BaseService {
     // eslint-disable-next-line no-unused-vars
     private readonly projectService: ProjectService,
     // eslint-disable-next-line no-unused-vars
-    private readonly layerService: LayerService
+    private readonly componentService: ComponentService
   ) {
     super();
   }
@@ -72,16 +72,29 @@ export default class ScreenService extends BaseService {
     return rel && rel.map((v) => this.toDtoObject<ScreenDto>(v));
   }
 
+  /**
+   * 页面详细信息
+   * @param id
+   * @returns
+   */
   async findDetailById (id: string) {
     if (!id) return null;
-    const layers = await this.layerService.findAll(id);
+
     const rel = await this.model
       .findOne({ _id: id, status: 1 }, { coverImg: 0, createTime: 0 })
       .populate({ path: "projectId", select: "name cdn" })
       .exec();
     const detail = this.toDtoObject<ScreenDto>(rel);
     if (rel) {
-      detail.layers = layers;
+      if (rel.layers && rel.layers.length > 0) {
+        // 查询图层组件信息
+        const componentIds = rel.layers.map(v => v.component);
+        const components = await this.componentService.findByIds(componentIds);
+        rel.layers.forEach((layer, index) => {
+          const component = components.find(comp => comp.id === layer.component);
+          detail.layers[index].component = component;
+        })
+      }
       const project: any = rel.projectId;
       const { name, cdn, _id } = project;
       detail.project = { name, cdn, id: _id };
@@ -107,6 +120,23 @@ export default class ScreenService extends BaseService {
         name: data.name,
         style: data.style,
         updateTime: createStringDate(),
+      },
+      { omitUndefined: true }
+    );
+    return rel;
+  }
+
+  /**
+   * 更新页面图层信息
+   * @param data
+   * @returns
+   */
+  async updateScreen (data: ScreenDto) {
+    const rel = await this.model.findByIdAndUpdate(
+      data.id,
+      {
+        layers: data.layers ? data.layers.map(v => ({ ...v, component: v.component?.id })) : [],
+        style: data.style,
       },
       { omitUndefined: true }
     );

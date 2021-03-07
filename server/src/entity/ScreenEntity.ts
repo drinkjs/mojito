@@ -1,4 +1,5 @@
 import { mongoose, prop, Ref } from "@typegoose/typegoose";
+import Component from "./ComponentEntity";
 import Project from "./ProjectEntity";
 
 export interface ScreenOptions {
@@ -10,6 +11,41 @@ export interface ScreenOptions {
   backgroundRepeat?: string;
   fontFamily?: string;
   fontSize?: string;
+}
+
+interface LayerStyle {
+  x: number;
+  y: number;
+  z: number;
+  width: number;
+  height: number;
+  [key: string]: any;
+}
+interface LayerApi {
+  url: string;
+  method: string;
+  interval?: number;
+  params?: {
+    [key: string]: any;
+  };
+}
+export interface LayerInfo {
+  name: string;
+  initSize: boolean;
+  style: LayerStyle;
+  component: string; // 只保存组件id
+  updateFlag?: string | number;
+  props?: { [key: string]: any };
+  events?: { [key: string]: any };
+  eventLock?: boolean;
+  api?: LayerApi;
+  hide?: boolean;
+  lock?: boolean;
+  group?: string;
+  groupLock?: boolean;
+  groupHide?: boolean;
+  reloadKey?: number;
+  anime?: { [key: string]: any };
 }
 
 export default class Screen {
@@ -36,4 +72,7 @@ export default class Screen {
 
   @prop()
   coverImg?: string;
+
+  @prop()
+  layers?: LayerInfo[];
 }

@@ -22,7 +22,7 @@ export class LayerDto {
 
   initSize: boolean;
 
-  component?: ComponentDto; // 图层的组件显示，通过componentId查询返回，新增时不需要
+  component: ComponentDto; // 图层的组件
 
   props?: { [key: string]: any };
 

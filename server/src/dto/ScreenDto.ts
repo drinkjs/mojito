@@ -9,8 +9,8 @@ export class ScreenDto {
   @IsNotEmpty({ message: "请输入项目id", groups: ["add"] })
   projectId: string;
 
-  @IsObjectId({ message: "非法id", groups: ["update", "coverImg"] })
-  @IsNotEmpty({ message: "请输入页面id", groups: ["update", "coverImg"] })
+  @IsObjectId({ message: "非法id", groups: ["update", "coverImg", "updateLayer"] })
+  @IsNotEmpty({ message: "请输入页面id", groups: ["update", "coverImg", "updateLayer"] })
   id: string;
 
   @IsNotEmpty({ message: "请输入页面名称", groups: ["add", "update"] })

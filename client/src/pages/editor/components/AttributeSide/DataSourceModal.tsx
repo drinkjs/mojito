@@ -65,14 +65,18 @@ export default inject('screenStore')(
         }
         if (!screenStore!.currLayer || !screenStore!.currLayer.id) return;
         screenStore!
-          .updateLayer(screenStore!.currLayer.id, {
-            api: {
-              url: values.url,
-              method: values.method,
-              interval: values.interval,
-              params
-            }
-          })
+          .updateLayer(
+            screenStore!.currLayer.id,
+            {
+              api: {
+                url: values.url,
+                method: values.method,
+                interval: values.interval,
+                params
+              }
+            },
+            { saveNow: true }
+          )
           .then(() => {
             Message.success('保存成功');
             props.onCancel && props.onCancel();

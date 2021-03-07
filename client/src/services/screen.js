@@ -9,6 +9,8 @@ export const screenListByProjectName = (params) =>
 
 export const screenUpdate = (params) => post('/screen/update', params);
 
+export const updateLayer = (params) => post('/screen/update/layer', params);
+
 export const screenDelete = (params) => get('/screen/delete', params);
 
 export const screenDetail = (params) => get('/screen/detail', params);

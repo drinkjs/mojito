@@ -1,7 +1,7 @@
 /* eslint-disable react/no-this-in-sfc */
 import { ConfigProvider } from 'antd';
 import Message from 'components/Message';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { ComponentStyle } from 'types';
 
 interface RenderProps {
@@ -33,7 +33,7 @@ export default ({
   const vueObj = useRef<any>(); // vue 组件对象
   const [isInit, setIsInit] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isVue) setIsInit(true);
     if (onShow) {
       onShow();
