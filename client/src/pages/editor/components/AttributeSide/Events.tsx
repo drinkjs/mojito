@@ -64,6 +64,7 @@ export default inject('screenStore')(
     const [eventTips, setEventTips] = useState<string>();
     const [codeString, setCodeString] = useState<string>('');
     const [isSync, setIsSync] = useState(false);
+    const [saveing, setSaveing] = useState(false);
 
     useEffect(() => {
       // 用于捕获编辑器内的console信息用于调式
@@ -105,15 +106,23 @@ export default inject('screenStore')(
         screenStore.currLayer.id &&
         currEvent
       ) {
-        screenStore!
-          .updateLayer(screenStore!.currLayer.id, {
-            events: {
-              ...screenStore!.currLayer.events,
-              [currEvent]: { code: codeString, isSync }
-            }
-          })
+        setSaveing(true);
+        screenStore
+          .updateLayer(
+            screenStore.currLayer.id,
+            {
+              events: {
+                ...screenStore.currLayer.events,
+                [currEvent]: { code: codeString, isSync }
+              }
+            },
+            { reload: true, saveNow: true }
+          )
           .then((rel) => {
             rel && Message.success('保存成功');
+          })
+          .finally(() => {
+            setSaveing(false);
           });
       }
     }, [currEvent, isSync, codeString]);
@@ -299,7 +308,7 @@ export default inject('screenStore')(
                   size="small"
                   onClick={onSave}
                   style={{ marginLeft: '6px', minWidth: '32px' }}
-                  loading={screenStore!.saveLoading}
+                  loading={saveing}
                 >
                   保存
                 </Button>

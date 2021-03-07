@@ -181,7 +181,7 @@ export default inject('screenStore')(
           {
             anime: values
           },
-          { saveNow: true }
+          { saveNow: true, reload: true }
         )
         .then((rel) => {
           rel && Message.success('保存成功');

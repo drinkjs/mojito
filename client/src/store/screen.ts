@@ -271,13 +271,16 @@ export default class Screen {
    * 保存页面信息
    */
   async saveScreen () {
-    if (!this.screenInfo) return;
+    if (!this.screenInfo || this.saveLoading) return;
     this.saveLoading = true;
     return service
       .updateLayer({
         id: this.screenInfo.id,
         layers: this.screenInfo.layers,
         style: this.screenInfo.style
+      })
+      .then(() => {
+        return true;
       })
       .finally(() => {
         runInAction(() => {
