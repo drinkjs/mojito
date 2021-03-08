@@ -570,9 +570,9 @@ export default inject('screenStore')(
         layerData: LayerInfo,
         event?: React.MouseEvent<HTMLDivElement, MouseEvent>
       ) => {
-        currNativeEvent.current = event ? event.nativeEvent : null;
-
         if (screenStore!.selectedLayerIds.has(layerData.id)) return;
+
+        currNativeEvent.current = event ? event.nativeEvent : null;
 
         const ids = toJS(screenStore!.selectedLayerIds);
         if (!event || !event.ctrlKey) {
