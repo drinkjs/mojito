@@ -377,7 +377,7 @@ export default class Screen {
     if (!this.screenInfo) return;
     this.addUndoData(this.screenInfo);
     const layers = this.screenInfo?.layers || [];
-    layers.push({ ...layer, updateFlag: new Date().getTime() });
+    layers.unshift({ ...layer, updateFlag: new Date().getTime() });
     this.screenInfo.layers = toJS(layers);
   }
 
