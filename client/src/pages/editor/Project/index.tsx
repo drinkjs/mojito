@@ -10,7 +10,8 @@ import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
 import noProject from 'resources/images/noProject.png';
 import Message from 'components/Message';
-import logo from 'resources/images/logo.png';
+import logo from 'resources/images/logo.svg';
+// import logo100 from 'resources/images/logo-100.svg';
 
 // const { useCallback, useState, useEffect } = React;
 
@@ -162,8 +163,6 @@ export default inject('projectStore')(
       },
       [editProject]
     );
-
-    // return <div>xxxxxxxxxxxxx</div>
 
     return (
       <div style={{ display: 'flex', height: '100%' }}>

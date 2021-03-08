@@ -5,7 +5,11 @@ import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import Moveable from 'react-moveable';
 import { observer, inject } from 'mobx-react';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  MinusOutlined,
+  PlusOutlined,
+  LoadingOutlined
+} from '@ant-design/icons';
 import { Tooltip, Switch } from 'antd';
 import { runInAction, toJS } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,6 +34,7 @@ import {
 } from 'config';
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
+import Message from 'components/Message';
 // import Message from 'components/Message';
 
 let compCount: { [key: string]: number } = {};
@@ -117,6 +122,7 @@ export default inject('screenStore')(
     const moveableRef = useRef<Moveable>();
     const currNativeEvent = useRef<any>();
     const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
+    const [saveing, setSaveing] = useState(false);
 
     const pageLayout = screenStore!.screenInfo
       ? screenStore!.screenInfo.style
@@ -516,9 +522,24 @@ export default inject('screenStore')(
 
         // 保存
         if (e.key === 's') {
-          return screenStore?.saveScreen();
+          return saveScreen();
         }
       }
+    };
+
+    /**
+     * 保存
+     */
+    const saveScreen = () => {
+      setSaveing(true);
+      screenStore
+        ?.saveScreen()
+        .then((rel) => {
+          if (rel) Message.success('保存成功');
+        })
+        .finally(() => {
+          setSaveing(false);
+        });
     };
 
     /**
@@ -737,6 +758,19 @@ export default inject('screenStore')(
                   disabled={!screenStore!.currLayer}
                 />
               </span>
+
+              {saveing ? (
+                <LoadingOutlined style={toolStyles} />
+              ) : (
+                <IconLink
+                  icon="icon-baocun"
+                  style={toolStyles}
+                  onClick={() => {
+                    saveScreen();
+                  }}
+                  title="保存(Ctrl+S)"
+                />
+              )}
               <IconLink
                 icon="icon-shuaxin1"
                 style={toolStyles}

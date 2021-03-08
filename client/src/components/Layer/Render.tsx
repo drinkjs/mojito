@@ -53,8 +53,8 @@ export default ({
   const createReact = () => {
     return React.createElement(component, {
       ...props,
-      styles,
-      ...events
+      ...events,
+      styles: { ...styles, x: undefined, y: undefined }
     });
   };
 
@@ -75,7 +75,11 @@ export default ({
       Object.keys(props).forEach((key) => {
         Vue.set(vueObj.current, key, props[key]);
       });
-      Vue.set(vueObj.current, 'styles', styles);
+      Vue.set(vueObj.current, 'styles', {
+        ...styles,
+        x: undefined,
+        y: undefined
+      });
       return;
     }
 
@@ -83,7 +87,7 @@ export default ({
       el: vueRef.current,
       data: {
         ...props,
-        styles
+        styles: { ...styles, x: undefined, y: undefined }
       },
       mounted () {
         this.$nextTick(() => {
