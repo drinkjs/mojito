@@ -11,9 +11,6 @@ import styles from './index.module.scss';
 import noProject from 'resources/images/noProject.png';
 import Message from 'components/Message';
 import logo from 'resources/images/logo.svg';
-// import logo100 from 'resources/images/logo-100.svg';
-
-// const { useCallback, useState, useEffect } = React;
 
 interface Props {
   projectStore: ProjectStore;

@@ -4,7 +4,6 @@ import { InputNumber, Select, Slider, Row, Col, Popover, Radio } from 'antd';
 import { observer, inject } from 'mobx-react';
 import { ChromePicker } from 'react-color';
 import { ScreenStore } from 'types';
-import { toJS } from 'mobx';
 import { useDebounceFn } from 'ahooks';
 import IconFont from 'components/IconFont';
 import styles from './index.module.scss';
@@ -254,18 +253,6 @@ const sizeItems = [
   }
 ];
 
-// let timerId: any;
-// /**
-//  * 限流函数
-//  * @param callback
-//  */
-// const limitChange = (callback: Function, timeout: number = 500) => {
-//   if (timerId) {
-//     clearTimeout(timerId);
-//   }
-//   timerId = setTimeout(callback, timeout);
-// };
-
 export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
@@ -279,26 +266,57 @@ export default inject('screenStore')(
     }, []);
 
     useEffect(() => {
-      setDefaultStyle(layerStyle ? toJS(layerStyle) : undefined);
+      // setDefaultStyle(layerStyle ? toJS(layerStyle) : undefined);
     }, [layerStyle]);
 
-    const debounceChange = useDebounceFn((type: string, value: any) => {
-      if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
-        screenStore.updateLayer(
-          screenStore.currLayer.id,
-          {
-            style: { ...screenStore.currLayer.style, [type]: value }
-          },
-          { reload: true }
-        );
-      }
+    const debounceChange = useDebounceFn((type: string, value: any) => {}, {
+      wait: 500
     });
 
     const onStyleChange = (type: string, value: any) => {
       setDefaultStyle(
         defaultStyle ? { ...defaultStyle, [type]: value } : undefined
       );
-      debounceChange.run(type, value);
+      // debounceChange.run(type, value);
+
+      if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
+        const newStyle = { ...screenStore.currLayer.style, [type]: value };
+        // screenStore.updateLayer(
+        //   screenStore.currLayer.id,
+        //   {
+        //     style: { ...screenStore.currLayer.style, [type]: value },
+        //   }
+        //   // { reload: true }
+        // );
+
+        if (type === 'width' || type === 'height') {
+          screenStore.moveable?.getManager().request(
+            'resizable',
+            {
+              offsetWidth: newStyle.width,
+              offsetHeight: newStyle.height
+            },
+            true
+          );
+        } else if (type === 'x' || type === 'y') {
+          screenStore.moveable?.getManager().request(
+            'draggable',
+            {
+              x: newStyle.x,
+              y: newStyle.y
+            },
+            true
+          );
+        } else {
+          screenStore.updateLayer(
+            screenStore.currLayer.id,
+            {
+              style: newStyle
+            },
+            { reload: true }
+          );
+        }
+      }
     };
 
     return (

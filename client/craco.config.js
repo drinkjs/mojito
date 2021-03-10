@@ -10,17 +10,18 @@ module.exports = {
       ...devServerConfig,
       proxy: {
         '/api': {
-          target: 'http://47.100.33.34',
-          secure: true,
+          target: 'http://mojito.drinkjs.com',
           changeOrigin: true
           // pathRewrite: { '^/api': '' }
         },
         '/public': {
-          target: 'http://47.100.33.34'
+          target: 'http://mojito.drinkjs.com',
+          changeOrigin: true
         },
         '/ws': {
-          target: 'ws://47.100.33.34',
-          ws: true
+          target: 'ws://mojito.drinkjs.com',
+          ws: true,
+          changeOrigin: true
         }
       }
     };

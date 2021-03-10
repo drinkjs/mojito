@@ -116,7 +116,7 @@ const ConnectedMenu = connectMenu(MENU_TYPE)(LayerContextMenu);
 
 export default inject('screenStore')(
   observer(({ screenStore }: Props) => {
-    const ref = useRef<HTMLDivElement>();
+    const rootRef = useRef<HTMLDivElement>();
     const areaRef = useRef<HTMLDivElement>();
     const zoomRef = useRef<HTMLDivElement>();
     const moveableRef = useRef<Moveable>();
@@ -156,8 +156,8 @@ export default inject('screenStore')(
 
         // 计算放下的位置
         const offset = monitor.getClientOffset();
-        if (offset && ref.current) {
-          const dropTargetXy = ref.current.getBoundingClientRect();
+        if (offset && rootRef.current) {
+          const dropTargetXy = rootRef.current.getBoundingClientRect();
           x = (offset.x - dropTargetXy.left) / scale;
           y = (offset.y - dropTargetXy.top) / scale;
         }
@@ -202,7 +202,8 @@ export default inject('screenStore')(
     });
 
     useEffect(() => {
-      dropTarget(ref);
+      screenStore!.moveable = moveableRef.current;
+      dropTarget(rootRef);
       window.addEventListener('keydown', onKeyDown);
       return () => {
         debounceChange.cancel();
@@ -238,9 +239,9 @@ export default inject('screenStore')(
       onResize();
     }, [screenStore!.currLayer]);
 
-    useEffect(() => {
-      moveableRef.current?.updateTarget();
-    }, [groupElement]);
+    // useEffect(() => {
+    //   moveableRef.current?.updateTarget();
+    // }, [groupElement]);
 
     /**
      * 拖动开始
@@ -255,14 +256,14 @@ export default inject('screenStore')(
         currNativeEvent.current = null;
       }
 
-      if (groupElement.length > 1) {
-        // 右侧边栏改变群组位置
-        Eventer.on(CHANGE_GROUP, onChangeGroup);
-      }
-      return () => {
-        Eventer.remove(CHANGE_GROUP);
-      };
-    }, [groupElement, groupframes, currNativeEvent]);
+      // if (groupElement.length > 1) {
+      //   // 右侧边栏改变群组位置
+      //   Eventer.on(CHANGE_GROUP, onChangeGroup);
+      // }
+      // return () => {
+      //   Eventer.remove(CHANGE_GROUP);
+      // };
+    }, [groupElement]);
 
     /**
      * 选中的图层
@@ -316,38 +317,38 @@ export default inject('screenStore')(
     /**
      * 通过右边栏修改组大小
      */
-    const onChangeGroup = useCallback(
-      ({
-        // x,
-        // y,
-        // width,
-        // height,
-        offsetX,
-        offsetY,
-        offsetWidth,
-        offsetHeight
-      }) => {
-        groupframes.forEach((frame, index) => {
-          const { style } = frame;
-          if (!style || !style.width || !style.height) return;
-          const target = groupElement[index];
-          style.width = Math.round(style.width * offsetWidth);
-          style.height = Math.round(style.height * offsetHeight);
-          style.x += offsetX;
-          style.y += offsetY;
+    // const onChangeGroup = useCallback(
+    //   ({
+    //     // x,
+    //     // y,
+    //     // width,
+    //     // height,
+    //     offsetX,
+    //     offsetY,
+    //     offsetWidth,
+    //     offsetHeight
+    //   }) => {
+    //     groupframes.forEach((frame, index) => {
+    //       const { style } = frame;
+    //       if (!style || !style.width || !style.height) return;
+    //       const target = groupElement[index];
+    //       style.width = Math.round(style.width * offsetWidth);
+    //       style.height = Math.round(style.height * offsetHeight);
+    //       style.x += offsetX;
+    //       style.y += offsetY;
 
-          const transformObj = transformParser.parse(target.style.transform);
-          transformObj.translateX = frame.style.x;
-          transformObj.translateY = frame.style.y;
+    //       const transformObj = transformParser.parse(target.style.transform);
+    //       transformObj.translateX = frame.style.x;
+    //       transformObj.translateY = frame.style.y;
 
-          target.style.transform = transformParser.stringify(transformObj);
-          target.style.width = `${style.width}px`;
-          target.style.height = `${style.height}px`;
-        });
-        saveGroup();
-      },
-      [groupframes, groupElement]
-    );
+    //       target.style.transform = transformParser.stringify(transformObj);
+    //       target.style.width = `${style.width}px`;
+    //       target.style.height = `${style.height}px`;
+    //     });
+    //     saveGroup();
+    //   },
+    //   [groupframes, groupElement]
+    // );
 
     /**
      * 保存组信息
@@ -386,12 +387,13 @@ export default inject('screenStore')(
       }
 
       scaleInt = parseFloat((scaleInt / 10).toFixed(2));
-      if (ref.current && zoomRef.current && pageLayout) {
-        ref.current.style.transform = `scale(${scaleInt})`;
-        ref.current.style.transformOrigin = '0 0 0';
+      if (rootRef.current && zoomRef.current && pageLayout) {
+        rootRef.current.style.transform = `scale(${scaleInt})`;
+        rootRef.current.style.transformOrigin = '0 0 0';
         zoomRef.current.style.width = `${pageLayout.width * scaleInt}px`;
         zoomRef.current.style.height = `${pageLayout.height * scaleInt}px`;
         setScale(scaleInt);
+        moveableRef.current?.updateRect();
       }
     };
 
@@ -411,14 +413,15 @@ export default inject('screenStore')(
         width: pageLayout.width,
         height: pageLayout.height
       });
-      if (areaRef.current && ref.current && zoomRef.current) {
+      if (areaRef.current && rootRef.current && zoomRef.current) {
         const { width } = areaRef.current.getBoundingClientRect();
         const zoom = parseFloat((width / pageLayout.width).toFixed(2));
-        ref.current.style.transform = `scale(${zoom})`;
-        ref.current.style.transformOrigin = '0 0 0';
+        rootRef.current.style.transform = `scale(${zoom})`;
+        rootRef.current.style.transformOrigin = '0 0 0';
         zoomRef.current.style.width = `${pageLayout.width * zoom}px`;
         zoomRef.current.style.height = `${pageLayout.height * zoom}px`;
         setScale(zoom);
+        moveableRef.current?.updateRect();
       }
     };
 
@@ -863,12 +866,12 @@ export default inject('screenStore')(
           <div
             className={styles.area}
             ref={(ref) => {
-              areaRef.current = ref || undefined;
+              areaRef.current = ref!;
             }}
           >
             <div
               ref={(ref) => {
-                zoomRef.current = ref || undefined;
+                zoomRef.current = ref!;
               }}
               style={{ margin: 'auto' }}
             >
@@ -890,8 +893,8 @@ export default inject('screenStore')(
                     position: 'relative',
                     boxShadow: '3px 3px 15px rgb(0 0 0 / 15%)'
                   }}
-                  ref={(r) => {
-                    ref.current = r || undefined;
+                  ref={(ref) => {
+                    rootRef.current = ref!;
                   }}
                 >
                   {screenLayers &&
@@ -931,11 +934,13 @@ export default inject('screenStore')(
                       );
                     })}
                   <Moveable
+                    rootContainer={document.body}
                     snappable
+                    throttleDrag={0}
                     verticalGuidelines={verLines}
                     horizontalGuidelines={horLines}
                     ref={(ref) => {
-                      moveableRef.current = ref || undefined;
+                      moveableRef.current = ref!;
                     }}
                     target={groupElement}
                     draggable={!screenStore!.isLayerLock}
@@ -1017,11 +1022,16 @@ export default inject('screenStore')(
                       if (!isDrag) return;
                       saveGroup();
                     }}
-                    onDragStart={({ set }) => {
+                    onDragStart={(e) => {
+                      const { set } = e;
+                      // console.log('-------------------------------------------onDragStart', layerFrame!.style.x)
                       set([layerFrame!.style.x, layerFrame!.style.y]);
                     }}
-                    onDrag={({ target, beforeTranslate }) => {
+                    onDrag={(e) => {
+                      console.log(e);
+                      const { target, beforeTranslate } = e;
                       if (!layerFrame) return;
+
                       layerFrame.style.x = Math.round(beforeTranslate[0]);
                       layerFrame.style.y = Math.round(beforeTranslate[1]);
 
@@ -1038,12 +1048,12 @@ export default inject('screenStore')(
                     onDragEnd={({ lastEvent }) => {
                       currNativeEvent.current = null;
                       if (lastEvent && layerFrame) {
-                        screenStore!.updateLayer(layerFrame.layerId, {
-                          style: {
-                            ...screenStore!.currLayer!.style,
-                            ...layerFrame.style
-                          }
-                        });
+                        // screenStore!.updateLayer(layerFrame.layerId, {
+                        //   style: {
+                        //     ...screenStore!.currLayer!.style,
+                        //     ...layerFrame.style
+                        //   }
+                        // });
                       }
                     }}
                     onResizeStart={({ setOrigin, dragStart }) => {
