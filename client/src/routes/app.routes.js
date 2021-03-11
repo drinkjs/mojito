@@ -28,6 +28,11 @@ const routes = [
     path: '/screen/:id',
     exact: true,
     component: 'preview'
+  },
+  {
+    path: '/test',
+    exact: true,
+    component: 'test'
   }
 ];
 
