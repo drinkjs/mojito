@@ -35,7 +35,6 @@ import {
 import styles from './index.module.scss';
 import { CHANGE_GROUP } from '../AttributeSide/GroupSet';
 import Message from 'components/Message';
-// import Message from 'components/Message';
 
 let compCount: { [key: string]: number } = {};
 
@@ -903,21 +902,21 @@ export default inject('screenStore')(
                 disabled={screenStore!.selectedLayerIds.size < 1}
               />
               <IconLink
-                icon="icon-dingduanduiqi--copy"
-                style={toolStyles}
-                onClick={() => {
-                  alignHandler('bottom');
-                }}
-                title="底部对齐"
-                disabled={screenStore!.selectedLayerIds.size < 1}
-              />
-              <IconLink
                 icon="icon-youduiqi-"
                 style={toolStyles}
                 onClick={() => {
                   alignHandler('right');
                 }}
                 title="右对齐"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
+              <IconLink
+                icon="icon-dingduanduiqi--copy"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('bottom');
+                }}
+                title="底部对齐"
                 disabled={screenStore!.selectedLayerIds.size < 1}
               />
               <IconLink

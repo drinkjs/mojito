@@ -46,7 +46,11 @@ export default inject('componentStore')(
 
     const onClose = useCallback(
       (/* e: React.MouseEvent<any> */) => {
-        setCurrCategory(currCategory.slice(0, -1));
+        const cates = currCategory.slice(0, -1);
+        setCurrCategory(cates);
+        if (cates.length === 0) {
+          setCurrRoot(undefined);
+        }
       },
       [currCategory]
     );
