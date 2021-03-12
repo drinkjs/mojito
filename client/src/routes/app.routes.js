@@ -6,9 +6,6 @@
  * @Description: file content
  */
 
-// eslint-disable-next-line no-unused-vars
-import { lazyLoader } from 'components/Loader';
-
 const routes = [
   {
     path: '/',
