@@ -41,6 +41,7 @@ let compCount: { [key: string]: number } = {};
 
 const shortKeys = ['g', 'b', 'z', 'y', 'h', 'l', 's'];
 const moveKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+type AlignType = 'left' | 'right' | 'top' | 'bottom' | 'v-center' | 'h-center';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -54,6 +55,22 @@ interface FrameInfo {
 
 const toolStyles = {
   margin: '0 6px'
+};
+
+const formatTransform = (
+  transform: CSSStyleDeclaration['transform'],
+  x?: number,
+  y?: number
+) => {
+  const transformObj = transformParser.parse(transform);
+  if (x !== undefined) {
+    transformObj.translateX = x;
+  }
+  if (y !== undefined) {
+    transformObj.translateY = y;
+  }
+
+  return transformParser.stringify(transformObj);
 };
 
 // 右键菜单
@@ -278,9 +295,7 @@ export default inject('screenStore')(
       } else {
         const layerGroups = screenStore!.layerGroup;
 
-        setGroupElement(
-          layerGroups.map((v) => document.getElementById(v.id) as any)
-        );
+        setGroupElement(layerGroups.map((v) => document.getElementById(v.id)!));
         setGroupFrames([]);
 
         if (currLayerIds.current.size > 1) {
@@ -474,11 +489,11 @@ export default inject('screenStore')(
         const currTarget = document.getElementById(screenStore.currLayer.id);
         if (type === '' || !currTarget) return;
 
-        const transformObj = transformParser.parse(currTarget.style.transform);
-        // 修改样式
-        transformObj.translateX = style.x;
-        transformObj.translateY = style.y;
-        currTarget.style.transform = transformParser.stringify(transformObj);
+        currTarget.style.transform = formatTransform(
+          currTarget.style.transform,
+          style.x,
+          style.y
+        );
         // 更新moveable
         moveableRef.current?.updateTarget();
         // 保存
@@ -697,6 +712,101 @@ export default inject('screenStore')(
       }
     }, []);
 
+    /**
+     * 对齐处理
+     * @param type
+     * @returns
+     */
+    const alignHandler = (type: AlignType) => {
+      const size = screenStore!.selectedLayerIds.size;
+      if (size < 1) return;
+
+      let aligns: { x?: number | undefined; y?: number | undefined }[] = [];
+      const layers = screenStore!.layerGroup;
+      const rect = moveableRef.current?.getRect()!;
+
+      switch (type) {
+        case 'left':
+          if (size === 1) {
+            aligns.push({ x: 0 });
+          } else {
+            aligns = layers.map(() => ({ x: rect.left }));
+          }
+          break;
+        case 'right':
+          if (size === 1) {
+            aligns.push({
+              x:
+                screenStore!.screenInfo!.style.width -
+                screenStore!.currLayer!.style.width
+            });
+          } else {
+            const infos = moveableRef.current?.getRect()!;
+            aligns = layers.map((v) => ({
+              x: infos.width + infos.left - v.style.width
+            }));
+          }
+          break;
+        case 'top':
+          if (size === 1) {
+            aligns.push({ y: 0 });
+          } else {
+            aligns = layers.map(() => ({ y: rect.top }));
+          }
+          break;
+        case 'bottom':
+          if (size === 1) {
+            aligns.push({
+              y:
+                screenStore!.screenInfo!.style.height -
+                screenStore!.currLayer!.style.height
+            });
+          } else {
+            aligns = layers.map((v) => ({
+              y: rect.height + rect.top - v.style.height
+            }));
+          }
+          break;
+        case 'h-center':
+          if (size === 1) {
+            aligns.push({
+              y:
+                (screenStore!.screenInfo!.style.height -
+                  screenStore!.currLayer!.style.height) /
+                2
+            });
+          } else {
+            aligns = layers.map((v) => ({
+              y: rect.height / 2 + rect.top - v.style.height / 2
+            }));
+          }
+          break;
+        case 'v-center':
+          if (size === 1) {
+            aligns.push({
+              x:
+                (screenStore!.screenInfo!.style.width -
+                  screenStore!.currLayer!.style.width) /
+                2
+            });
+          } else {
+            aligns = layers.map((v) => ({
+              x: rect.width / 2 + rect.left - v.style.width / 2
+            }));
+          }
+          break;
+      }
+
+      groupElement.forEach((v, index) => {
+        v.style.transform = formatTransform(
+          v.style.transform,
+          aligns[index].x,
+          aligns[index].y
+        );
+      });
+      moveableRef.current?.updateRect();
+    };
+
     const screenLayers = screenStore!.layers;
     // 计算辅助线
     const verLines = [0];
@@ -774,6 +884,60 @@ export default inject('screenStore')(
                   title="保存(Ctrl+S)"
                 />
               )}
+              <IconLink
+                icon="icon-zuoduiqi-"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('left');
+                }}
+                title="左对齐"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
+              <IconLink
+                icon="icon-dingduanduiqi-"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('top');
+                }}
+                title="顶部对齐"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
+              <IconLink
+                icon="icon-dingduanduiqi--copy"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('bottom');
+                }}
+                title="底部对齐"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
+              <IconLink
+                icon="icon-youduiqi-"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('right');
+                }}
+                title="右对齐"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
+              <IconLink
+                icon="icon-align-level"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('v-center');
+                }}
+                title="水平居中"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
+              <IconLink
+                icon="icon-align-vertical"
+                style={toolStyles}
+                onClick={() => {
+                  alignHandler('h-center');
+                }}
+                title="垂直居中"
+                disabled={screenStore!.selectedLayerIds.size < 1}
+              />
               <IconLink
                 icon="icon-shuaxin1"
                 style={toolStyles}
@@ -958,14 +1122,10 @@ export default inject('screenStore')(
                         frame.style.x = Math.round(beforeTranslate[0]);
                         frame.style.y = Math.round(beforeTranslate[1]);
 
-                        const transformObj = transformParser.parse(
-                          target.style.transform
-                        );
-                        transformObj.translateX = frame.style.x;
-                        transformObj.translateY = frame.style.y;
-
-                        target.style.transform = transformParser.stringify(
-                          transformObj
+                        target.style.transform = formatTransform(
+                          target.style.transform,
+                          frame.style.x,
+                          frame.style.y
                         );
                       });
                     }}
@@ -1001,14 +1161,10 @@ export default inject('screenStore')(
                         frame.style.x = Math.round(drag.beforeTranslate[0]);
                         frame.style.y = Math.round(drag.beforeTranslate[1]);
 
-                        const transformObj = transformParser.parse(
-                          target.style.transform
-                        );
-                        transformObj.translateX = frame.style.x;
-                        transformObj.translateY = frame.style.y;
-
-                        target.style.transform = transformParser.stringify(
-                          transformObj
+                        target.style.transform = formatTransform(
+                          target.style.transform,
+                          frame.style.x,
+                          frame.style.y
                         );
                         target.style.width = `${width}px`;
                         target.style.height = `${height}px`;
@@ -1035,14 +1191,10 @@ export default inject('screenStore')(
                       layerFrame.style.x = Math.round(beforeTranslate[0]);
                       layerFrame.style.y = Math.round(beforeTranslate[1]);
 
-                      const transformObj = transformParser.parse(
-                        target.style.transform
-                      );
-                      transformObj.translateX = layerFrame.style.x;
-                      transformObj.translateY = layerFrame.style.y;
-
-                      target.style.transform = transformParser.stringify(
-                        transformObj
+                      target.style.transform = formatTransform(
+                        target.style.transform,
+                        layerFrame.style.x,
+                        layerFrame.style.y
                       );
                     }}
                     onDragEnd={({ lastEvent }) => {
@@ -1073,14 +1225,10 @@ export default inject('screenStore')(
                       target.style.width = `${layerFrame.style.width}px`;
                       target.style.height = `${layerFrame.style.height}px`;
 
-                      const transformObj = transformParser.parse(
-                        target.style.transform
-                      );
-                      transformObj.translateX = layerFrame.style.x;
-                      transformObj.translateY = layerFrame.style.y;
-
-                      target.style.transform = transformParser.stringify(
-                        transformObj
+                      target.style.transform = formatTransform(
+                        target.style.transform,
+                        layerFrame.style.x,
+                        layerFrame.style.y
                       );
                     }}
                     onResizeEnd={({ lastEvent }) => {
