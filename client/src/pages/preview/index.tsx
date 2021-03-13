@@ -68,7 +68,8 @@ export default inject('screenStore')(
                   backgroundRepeat: style.backgroundRepeat,
                   color: style.color,
                   position: 'relative',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  zIndex: 1
                 }}
               >
                 {layers &&

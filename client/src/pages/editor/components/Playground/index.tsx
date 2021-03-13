@@ -1075,7 +1075,8 @@ export default inject('screenStore')(
                         : undefined,
                     backgroundRepeat: pageLayout.backgroundRepeat,
                     position: 'relative',
-                    boxShadow: '3px 3px 15px rgb(0 0 0 / 15%)'
+                    boxShadow: '3px 3px 15px rgb(0 0 0 / 15%)',
+                    zIndex: 1
                   }}
                   ref={(ref) => {
                     rootRef.current = ref!;
