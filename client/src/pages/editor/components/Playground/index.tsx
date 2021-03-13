@@ -598,6 +598,9 @@ export default inject('screenStore')(
         layerData: LayerInfo,
         event?: React.MouseEvent<HTMLDivElement, MouseEvent>
       ) => {
+        // 为了让右侧输入框失去焦点，如果不焦点input的value无法更新图层的值
+        document.querySelectorAll('input').forEach((v) => v.blur());
+
         if (screenStore!.selectedLayerIds.has(layerData.id)) return;
 
         currNativeEvent.current = event ? event.nativeEvent : null;
