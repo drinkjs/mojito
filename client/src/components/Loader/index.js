@@ -37,9 +37,7 @@ export const loadLib = ({ libName, version }, onload) => {
 
   const script = document.createElement('script');
   script.src = bundleUrl;
-  script.type = 'text/javascript';
-  script.async = true;
-  script.defer = true;
+  script.crossorigin = 'anonymous';
   script.onload = () => {
     loadingLib[exportName] = false;
     onload(global[exportName]);
@@ -47,29 +45,93 @@ export const loadLib = ({ libName, version }, onload) => {
   document.body.appendChild(script);
 };
 
+export const getLibScriptTag = (libName, version) => {
+  const exportName = libName + version;
+  const nodeList = document.body.querySelectorAll('script');
+  for (let i = 0; i < nodeList.length; ++i) {
+    const item = nodeList[i];
+    if (item.src.indexOf(exportName) !== -1) {
+      return item;
+    }
+  }
+};
+
+export const unloadLibScriptTag = (libName, version) => {
+  const tag = getLibScriptTag(libName, version);
+  if (tag) {
+    document.body.removeChild(tag);
+  }
+  return tag;
+};
+
+export const reloadLib = (libName, version, onLoad) => {
+  const tag = unloadLibScriptTag(libName, version);
+  if (tag) {
+    global[libName + version] = null;
+    loadLib({ libName, version }, onLoad);
+  }
+};
+
+// export const getScriptBySrc = (src) => {
+//   const nodeList = document.body.querySelectorAll("script");
+//   for (let i = 0; i < nodeList.length; ++i) {
+//     const item = nodeList[i];
+//     if (item.src === src) {
+//       return item;
+//     }
+//   }
+// }
+
 export const loadCDN = (cdns, onload) => {
   let loaded = 0;
   if (!cdns || cdns.length === 0) {
     onload();
     return;
   }
+  const nodeList = document.body.querySelectorAll('script');
+  const getScriptByUrl = (url) => {
+    for (let i = 0; i < nodeList.length; ++i) {
+      const item = nodeList[i];
+      if (item.src === url) {
+        return item;
+      }
+    }
+  };
+  const head = document.getElementsByTagName('head')[0];
+  const linkList = head.querySelectorAll('link');
+  const getLinkByUrl = (url) => {
+    for (let i = 0; i < linkList.length; ++i) {
+      const item = linkList[i];
+      if (item.href === url) {
+        return item;
+      }
+    }
+  };
+
   cdns.forEach((url) => {
     if (url.substring(url.length - 4) === '.css') {
-      const headID = document.getElementsByTagName('head')[0];
-      const link = document.createElement('link');
-      link.type = 'text/css';
-      link.rel = 'stylesheet';
-      headID.appendChild(link);
-      link.href = url;
+      if (!getLinkByUrl(url)) {
+        const link = document.createElement('link');
+        link.type = 'text/css';
+        link.rel = 'stylesheet';
+        head.appendChild(link);
+        link.href = url;
+      }
       loaded++;
       if (loaded >= cdns.length) {
         onload();
       }
     } else {
+      if (getScriptByUrl(url)) {
+        loaded++;
+        if (loaded >= cdns.length) {
+          onload();
+        }
+        return;
+      }
       const script = document.createElement('script');
       script.src = url;
-      script.type = 'text/javascript';
-      script.crossOrigin = true;
+      script.crossorigin = 'anonymous';
       script.onload = () => {
         // eslint-disable-next-line no-unused-vars
         loaded++;

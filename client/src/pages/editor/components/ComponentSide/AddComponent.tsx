@@ -7,8 +7,9 @@ import { RcFile } from 'antd/lib/upload';
 import UploadImg from 'components/UploadImg';
 import { toJS } from 'mobx';
 import { getTreeParent } from 'common/util';
-import { ComponentInfo, ComponentStore } from 'types';
+import { ComponentInfo, ComponentStore, ScreenStore } from 'types';
 import Message from 'components/Message';
+import { reloadLib } from 'components/Loader';
 
 const layout = {
   labelCol: { span: 4 },
@@ -18,6 +19,7 @@ const layout = {
 interface Props extends ModalFuncProps {
   value?: ComponentInfo;
   componentStore?: ComponentStore;
+  screenStore?: ScreenStore;
 }
 
 const UploadComp = (props: any) => {
@@ -80,7 +82,7 @@ const UploadComp = (props: any) => {
 
 export default inject('componentStore')(
   observer((props: Props) => {
-    const { componentStore, value, ...restProps } = props;
+    const { componentStore, screenStore, value, ...restProps } = props;
     const oldType = value ? value.type : undefined;
     // const [origin, setOrigin] = useState(2);
     const [form] = Form.useForm();
@@ -100,9 +102,12 @@ export default inject('componentStore')(
           componentStore!.updateComponent(submitValue).then(() => {
             componentStore!.getTypeComponent(oldType);
             Message.success('修改成功');
-            // 修改完之后重置
+            // 修改完之后重新加载
             const globalVal: any = global;
-            globalVal[value.libName + value.version] = null;
+            globalVal[value.libName + value.version] &&
+              reloadLib(value.libName, value.version, () => {
+                screenStore?.reload();
+              });
             props.onCancel && props.onCancel();
           });
           return;
