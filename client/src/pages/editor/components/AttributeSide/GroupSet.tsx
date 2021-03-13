@@ -6,14 +6,12 @@ import { toJS } from 'mobx';
 import Eventer from 'common/eventer';
 import styles from './index.module.scss';
 import { SizeItem } from './Style';
+import { GROUP_STYLE_CHANGE } from 'config/events';
+import { useDebounceFn } from 'ahooks';
 
 interface Props {
   screenStore?: ScreenStore;
 }
-
-export const CHANGE_GROUP = Symbol('CHANGE_GROUP');
-
-let timerId: any;
 
 const sizeItems = [
   {
@@ -33,50 +31,40 @@ const sizeItems = [
     key: 'height'
   }
 ];
-/**
- * 限流函数
- * @param callback
- */
-const limitChange = (callback: Function, timeout: number = 500) => {
-  if (timerId) {
-    clearTimeout(timerId);
-  }
-  timerId = setTimeout(callback, timeout);
-};
 
 export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
-    const { layerGroupRect } = screenStore || {};
-    const [defaultStyle, setDefaultStyle] = useState<any>(layerGroupRect);
+    const [defaultStyle, setDefaultStyle] = useState<any>(
+      screenStore?.moveableRect
+    );
 
     useEffect(() => {
       return () => {
-        clearTimeout(timerId);
+        debounceChange.cancel();
       };
     }, []);
 
     useEffect(() => {
-      setDefaultStyle(toJS(layerGroupRect));
-    }, [layerGroupRect]);
+      setDefaultStyle(toJS(screenStore?.moveableRect));
+    }, [screenStore?.moveableRect]);
 
     const onStyleChange = (type: string, value: any) => {
       if (isNaN(value)) return;
+      console.log('-----------------------------------------onStyleChange');
       const newStyle: any = { ...defaultStyle, [type]: value };
       setDefaultStyle(newStyle);
-      limitChange(() => {
-        const { x, y, width, height } = newStyle;
-        if (layerGroupRect) {
-          Eventer.emit(CHANGE_GROUP, {
-            ...newStyle,
-            offsetX: x - layerGroupRect.x,
-            offsetY: y - layerGroupRect.y,
-            offsetWidth: width / layerGroupRect.width,
-            offsetHeight: height / layerGroupRect.height
-          });
-        }
-      });
+      debounceChange.run(newStyle);
     };
+
+    const debounceChange = useDebounceFn(
+      (style: any) => {
+        Eventer.emit(GROUP_STYLE_CHANGE, style);
+      },
+      {
+        wait: 500
+      }
+    );
 
     return (
       <section className={styles.styleSetting}>
@@ -92,6 +80,9 @@ export default inject('screenStore')(
                     onStyleChange(v.key, value);
                   }}
                   value={defaultStyle && defaultStyle[v.key]}
+                  inputNumberProps={{
+                    disabled: v.key === 'width' || v.key === 'height'
+                  }}
                 />
               );
             })}

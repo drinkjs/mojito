@@ -1,12 +1,24 @@
 /* eslint-disable react/require-default-props */
 import React, { useCallback, useState, useEffect } from 'react';
-import { InputNumber, Select, Slider, Row, Col, Popover, Radio } from 'antd';
+import {
+  InputNumber,
+  Select,
+  Slider,
+  Row,
+  Col,
+  Popover,
+  Radio,
+  InputNumberProps
+} from 'antd';
 import { observer, inject } from 'mobx-react';
 import { ChromePicker } from 'react-color';
 import { ScreenStore } from 'types';
 import { useDebounceFn } from 'ahooks';
 import IconFont from 'components/IconFont';
+import Eventer from 'common/eventer';
 import styles from './index.module.scss';
+import { LAYER_STYLE_CHANGE } from 'config/events';
+import { toJS } from 'mobx';
 
 const { Option } = Select;
 
@@ -14,13 +26,15 @@ export const SizeItem = (props: {
   label: string;
   value: number;
   onChange: (value: number | string | undefined | null) => void;
+  inputNumberProps?: InputNumberProps;
 }) => {
-  const { label, onChange, value } = props;
+  const { label, onChange, value, inputNumberProps } = props;
   return (
     <article className={styles.itemBox}>
       <label htmlFor={label}>{label}</label>
       <span>
         <InputNumber
+          {...inputNumberProps}
           style={{ width: '80px', marginLeft: '6px' }}
           onChange={onChange}
           value={value}
@@ -266,57 +280,23 @@ export default inject('screenStore')(
     }, []);
 
     useEffect(() => {
-      // setDefaultStyle(layerStyle ? toJS(layerStyle) : undefined);
+      setDefaultStyle(layerStyle ? toJS(layerStyle) : undefined);
     }, [layerStyle]);
 
-    const debounceChange = useDebounceFn((type: string, value: any) => {}, {
-      wait: 500
-    });
+    const debounceChange = useDebounceFn(
+      (type: string, value: any) => {
+        Eventer.emit(LAYER_STYLE_CHANGE, type, value);
+      },
+      {
+        wait: 500
+      }
+    );
 
     const onStyleChange = (type: string, value: any) => {
       setDefaultStyle(
         defaultStyle ? { ...defaultStyle, [type]: value } : undefined
       );
-      // debounceChange.run(type, value);
-
-      if (screenStore && screenStore.currLayer && screenStore.currLayer.id) {
-        const newStyle = { ...screenStore.currLayer.style, [type]: value };
-        // screenStore.updateLayer(
-        //   screenStore.currLayer.id,
-        //   {
-        //     style: { ...screenStore.currLayer.style, [type]: value },
-        //   }
-        //   // { reload: true }
-        // );
-
-        if (type === 'width' || type === 'height') {
-          screenStore.moveable?.getManager().request(
-            'resizable',
-            {
-              offsetWidth: newStyle.width,
-              offsetHeight: newStyle.height
-            },
-            true
-          );
-        } else if (type === 'x' || type === 'y') {
-          screenStore.moveable?.getManager().request(
-            'draggable',
-            {
-              x: newStyle.x,
-              y: newStyle.y
-            },
-            true
-          );
-        } else {
-          screenStore.updateLayer(
-            screenStore.currLayer.id,
-            {
-              style: newStyle
-            },
-            { reload: true }
-          );
-        }
-      }
+      debounceChange.run(type, value);
     };
 
     return (

@@ -20,6 +20,10 @@ export default class Screen {
 
   screenList: ScreenDto[] = [];
 
+  moveableRect:
+    | { x: number; y: number; width: number; height: number }
+    | undefined;
+
   // 页面明细信息
   screenInfo?: ScreenDetailDto;
 
@@ -47,7 +51,6 @@ export default class Screen {
     makeAutoObservable(this, {
       layers: computed,
       layerStyle: computed,
-      layerGroupRect: computed,
       layerGroup: computed,
       isSelectedGroup: computed,
       isLayerLock: computed,
@@ -81,37 +84,6 @@ export default class Screen {
       groupSet.add(v.group || `${index}`);
     });
     return groupSet.size === 1;
-  }
-
-  get layerGroupRect () {
-    if (this.layerGroup.length === 0) {
-      return { x: 0, y: 0, width: 0, height: 0 };
-    }
-    let maxX = -Number.MAX_VALUE;
-    let maxY = -Number.MAX_VALUE;
-    let minX = Number.MAX_VALUE;
-    let minY = Number.MAX_VALUE;
-    this.layerGroup.forEach((layer) => {
-      if (
-        layer &&
-        layer.style &&
-        layer.style.x &&
-        layer.style.y &&
-        layer.style.width &&
-        layer.style.height
-      ) {
-        minX = Math.min(layer.style.x, minX);
-        minY = Math.min(layer.style.y, minY);
-        maxX = Math.max(layer.style.x + layer.style.width, maxX);
-        maxY = Math.max(layer.style.y + layer.style.height, maxY);
-      }
-    });
-    return {
-      x: minX,
-      y: minY,
-      width: maxX - minX,
-      height: maxY - minY
-    };
   }
 
   get isLayerLock () {
@@ -471,9 +443,9 @@ export default class Screen {
   undo () {
     const undoData = this.undoData.pop();
     if (!undoData) return;
+    this.addRedoData(this.screenInfo);
     this.screenInfo = undoData;
     this.selectedLayerIds = toJS(this.selectedLayerIds);
-    this.addRedoData(undoData);
   }
 
   /**
@@ -482,9 +454,9 @@ export default class Screen {
   redo () {
     const redoData = this.redoData.pop();
     if (!redoData) return;
+    this.addUndoData(this.screenInfo);
     this.screenInfo = redoData;
     this.selectedLayerIds = toJS(this.selectedLayerIds);
-    this.addUndoData(redoData);
   }
 
   /**
