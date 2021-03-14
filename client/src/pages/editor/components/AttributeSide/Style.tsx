@@ -232,7 +232,7 @@ export const SliderItem = (props: {
             formatter={(val) =>
               val === undefined ? '' : `${parseInt(`${val}`)}${formatter}`
             }
-            parser={(val) => (val ? val.replace(formatter, '') : '')}
+            parser={(val) => (val ? parseInt(val.replace(formatter, '')) : 0)}
             style={{ width: '100%' }}
             value={Math.round(value)}
             onChange={onChange}

@@ -12,7 +12,6 @@ import React, {
   useMemo
 } from 'react';
 import { observer, inject } from 'mobx-react';
-import { cloneDeep } from 'lodash';
 import anime from 'animejs';
 import ErrorCatch from 'components/ErrorCatch';
 import eventer from 'common/eventer';
@@ -30,6 +29,7 @@ import Render from './Render';
 import styles from './index.module.scss';
 import { DefaultLayerSize } from 'config';
 import Message from 'components/Message';
+import { toJS } from 'mobx';
 
 function showHandlerError (layerName: string, error: any) {
   Message.error(`${layerName}事件处理错误:${error.message}`);
@@ -387,14 +387,14 @@ const Layer = inject('screenStore')(
        * 合并props和style后的值
        */
       const mergeArgs = () => {
-        const mergeProps = cloneDeep({
+        const mergeProps = toJS({
           ...defaultProps,
           ...data.props, // 组件属性配置
           ...dataSource, // 数据源返回
           ...eventReturn.props // 事件处理返回
         });
 
-        const mergeStyle = cloneDeep({
+        const mergeStyle = toJS({
           ...data.style, // 样式设置
           ...eventReturn.styles // 事件返回改变样式
         });
