@@ -223,7 +223,6 @@ export default inject('screenStore')(
     });
 
     useEffect(() => {
-      screenStore!.moveable = moveableRef.current;
       dropTarget(rootRef);
 
       return () => {

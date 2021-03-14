@@ -2,7 +2,6 @@ import { CSSProperties } from 'react';
 import { makeAutoObservable, toJS, runInAction, computed } from 'mobx';
 import { Modal } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
-import Moveable from 'react-moveable';
 import * as service from 'services/screen';
 import { loadCDN } from 'components/Loader';
 import {
@@ -16,8 +15,6 @@ import { DefaultPageSize } from 'config';
 
 const MAX_UNDO = 100;
 export default class Screen {
-  moveable: Moveable | undefined;
-
   screenList: ScreenDto[] = [];
 
   moveableRect:
@@ -54,8 +51,7 @@ export default class Screen {
       layerGroup: computed,
       isSelectedGroup: computed,
       isLayerLock: computed,
-      isLayerHide: computed,
-      moveable: false
+      isLayerHide: computed
     });
   }
 
