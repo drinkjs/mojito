@@ -51,7 +51,6 @@ export default inject('screenStore')(
 
     const onStyleChange = (type: string, value: any) => {
       if (isNaN(value)) return;
-      console.log('-----------------------------------------onStyleChange');
       const newStyle: any = { ...defaultStyle, [type]: value };
       setDefaultStyle(newStyle);
       debounceChange.run(newStyle);
@@ -80,9 +79,6 @@ export default inject('screenStore')(
                     onStyleChange(v.key, value);
                   }}
                   value={defaultStyle && defaultStyle[v.key]}
-                  inputNumberProps={{
-                    disabled: v.key === 'width' || v.key === 'height'
-                  }}
                 />
               );
             })}

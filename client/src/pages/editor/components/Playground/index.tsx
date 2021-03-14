@@ -243,10 +243,10 @@ export default inject('screenStore')(
     const debounceRect = useDebounceFn(() => {
       const rect = moveableRef.current!.getRect();
       screenStore!.moveableRect = {
-        x: rect.left,
-        y: rect.top,
-        width: rect.width,
-        height: rect.height
+        x: Math.round(rect.left),
+        y: Math.round(rect.top),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height)
       };
     });
 
@@ -359,21 +359,43 @@ export default inject('screenStore')(
      */
     const onGroupStyle = useCallback(
       ({ x, y, width, height }) => {
-        const rect = moveableRef.current!.getRect();
-        const offsetX = x - rect.left;
-        const offsetY = y - rect.top;
+        const rect = screenStore!.moveableRect!;
+        const offsetX = x - rect.x;
+        const offsetY = y - rect.y;
+        const ratioWidth = Math.max(1, width) / rect.width;
+        const ratioHeight = Math.max(1, height) / rect.height;
 
         groupframes.forEach((frame, index) => {
           const { style } = frame;
-          if (!style || !style.width || !style.height) return;
+          if (
+            !style ||
+            style.width === undefined ||
+            style.height === undefined
+          ) {
+            return;
+          }
           const target = groupElement[index];
-          style.x += offsetX;
-          style.y += offsetY;
-          const transformObj = transformParser.parse(target.style.transform);
-          transformObj.translateX = frame.style.x;
-          transformObj.translateY = frame.style.y;
-          target.style.transform = transformParser.stringify(transformObj);
+          const localX = style.x - rect.x;
+          const localY = style.y - rect.y;
+          if (ratioWidth !== 1) {
+            style.x = Math.round(ratioWidth * localX + rect.x);
+            style.width = Math.round(ratioWidth * style.width);
+          } else if (ratioHeight !== 1) {
+            style.y = Math.round(ratioHeight * localY + rect.y);
+            style.height = Math.round(ratioHeight * style.height);
+          } else {
+            style.x += offsetX;
+            style.y += offsetY;
+          }
+          target.style.transform = formatTransform(
+            target.style.transform,
+            style.x,
+            style.y
+          );
+          target.style.width = `${style.width}px`;
+          target.style.height = `${style.height}px`;
         });
+        updateRect();
         saveGroup();
       },
       [groupframes, groupElement]
@@ -400,7 +422,6 @@ export default inject('screenStore')(
     const updateRect = () => {
       if (moveableRef.current) {
         moveableRef.current.updateRect();
-        moveableRef.current.updateTarget();
         debounceRect.run();
       }
     };
@@ -495,7 +516,6 @@ export default inject('screenStore')(
           groupframes.forEach((v, index) => {
             v.style.x += valueX;
             v.style.y += valueY;
-            console.log(v.style.x);
             groupElement[index].style.transform = formatTransform(
               groupElement[index].style.transform,
               v.style.x,
@@ -1132,6 +1152,9 @@ export default inject('screenStore')(
                     resizable={!screenStore!.isLayerLock}
                     onDragGroupStart={({ events }) => {
                       screenStore!.setResizeing(true);
+                      document
+                        .querySelectorAll('input')
+                        .forEach((v) => v.blur());
                       events.forEach((ev, i) => {
                         const frame = groupframes[i];
                         ev.set([frame.style.x, frame.style.y]);
@@ -1157,6 +1180,9 @@ export default inject('screenStore')(
                       saveGroup();
                     }}
                     onResizeGroupStart={({ events }) => {
+                      document
+                        .querySelectorAll('input')
+                        .forEach((v) => v.blur());
                       screenStore!.setResizeing(true);
                       events.forEach((ev, i) => {
                         const frame = groupframes[i];

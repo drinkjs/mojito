@@ -3,7 +3,7 @@
   "version": "v1.0.0",
   "author": "drinkjs.com",
   "dependencies": {
-    "@babel/standalone": "^7.12.15",
+    "@babel/standalone": "7.12.15",
     "@craco/craco": "^6.1.1",
     "@json-editor/json-editor": "^2.5.2",
     "@testing-library/jest-dom": "^5.11.4",
@@ -20,7 +20,7 @@
     "ace-builds": "^1.4.12",
     "ahooks": "^2.9.6",
     "animejs": "^3.2.1",
-    "antd": "^4.12.2",
+    "antd": "4.12.2",
     "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "craco-less": "^1.17.1",
