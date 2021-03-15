@@ -1,5 +1,5 @@
 ## ⚙️ 安装
-Mojito采用前后端分享的方式开发，前端React+Antd, 后端Node+fastify+MongoDB，开始前请确保你已安装Node.js >= 10.16.0 和MongoDB >= 4.2.12
+Mojito采用前后端分离的方式开发，前端React+Antd, 后端Node+fastify+MongoDB，开始前请确保你已安装Node.js >= 10.16.0 和MongoDB >= 4.2.12
 ```bash
 git clone https://github.com/drinkjscom/mojito.git
 ```

@@ -8,7 +8,7 @@ import ProjectItemList from './components/projectItemList';
 import ScreenList from './components/screenList';
 import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
-import noProject from 'resources/images/noProject.png';
+import noProject from 'resources/images/illus-webdesign-2.png';
 import Message from 'components/Message';
 import logo from 'resources/images/logo.svg';
 

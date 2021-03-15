@@ -8,17 +8,17 @@
 ## ✨ 特性
 
 - 点选、拖拽、缩放的可视化操作
-- 群组/解散、撤销/重做、图层显示/隐藏、锁定、对齐和排序
+- 群组/解散、撤销/重做、图层显示/隐藏、锁定/解锁、对齐和排序
 - 支持使用React/Vue开发上传自定义组件
 - 支持通过HTTP数据源接入，轮询
-- 组件样式配置
-- 组件动画配置
+- 组件可视化样式配置
+- 组件可视化动画配置
 - 事件系统可以进行组件间通讯，页面下钻，数据源解释等各种复杂业务场景
-- 事件同步解决跨终端同步交互
+- 事件同步实现跨终端大屏联动交互
 - 100%开源，支持私有化部署
 
 ## ⚙️ 安装
-Mojito采用前后端分享的方式开发，前端React+Antd, 后端Node+fastify+MongoDB，开始前请确保你已安装Node.js >= 10.16.0 和MongoDB >= 4.2.12
+Mojito采用前后端分离的方式开发，前端React+Antd, 后端Node+fastify+MongoDB，开始前请确保你已安装Node.js >= 10.16.0 和MongoDB >= 4.2.12
 ```bash
 git clone https://github.com/drinkjscom/mojito.git
 ```
@@ -36,3 +36,7 @@ cd client
 npm install --registry=https://registry.npm.taobao.org
 npm start
 ```
+
+### 文档
+
+### 演示
