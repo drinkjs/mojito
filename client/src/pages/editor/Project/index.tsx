@@ -184,7 +184,7 @@ export default inject('projectStore')(
                 }
               >
                 <Button type="primary" onClick={onAddProject}>
-                  新建项目
+                  创建项目
                 </Button>
               </Empty>
             )}

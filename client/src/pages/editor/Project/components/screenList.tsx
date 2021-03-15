@@ -11,7 +11,7 @@ import UploadImg from 'components/UploadImg';
 import Image from 'components/Image';
 import { ProjectDto, ScreenDto, ScreenStore } from 'types';
 import styles from './screenList.module.scss';
-import noProject from 'resources/images/noProject.png';
+import noData from 'resources/images/noData.png';
 import Message from 'components/Message';
 
 const { useCallback, useState, useEffect } = React;
@@ -171,7 +171,7 @@ export default inject('screenStore')(
             onClick={onAdd}
             disabled={!(project && project.id)}
           >
-            创建页面
+            新建页面
           </Button>
         </header>
         <Skeleton loading={screenStore!.getListLoading}>
@@ -272,18 +272,21 @@ export default inject('screenStore')(
               })}
             {screenStore!.screenList.length === 0 && (
               <Empty
-                image={noProject}
+                image={noData}
                 style={{ margin: 'auto' }}
                 imageStyle={{
-                  height: 289,
-                  width: 381
+                  height: 289
                 }}
                 description={
                   <span style={{ fontSize: '18px' }}>
                     {project ? '暂没页面信息' : '请选择项目'}
                   </span>
                 }
-              />
+              >
+                <Button type="primary" onClick={onAdd}>
+                  新建页面
+                </Button>
+              </Empty>
             )}
           </div>
         </Skeleton>
