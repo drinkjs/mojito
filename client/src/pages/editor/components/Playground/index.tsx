@@ -1029,7 +1029,7 @@ export default inject('screenStore')(
                 style={toolStyles}
               />
               <IconLink
-                title="解组(Ctrl+B)"
+                title="解散(Ctrl+B)"
                 icon="icon-shoudongfenli"
                 onClick={disbandLayer}
                 disabled={
