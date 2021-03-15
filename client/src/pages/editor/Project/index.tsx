@@ -8,7 +8,7 @@ import ProjectItemList from './components/projectItemList';
 import ScreenList from './components/screenList';
 import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
-import noProject from 'resources/images/illus-webdesign-2.png';
+import noData from 'resources/images/noData.png';
 import Message from 'components/Message';
 import logo from 'resources/images/logo.svg';
 
@@ -173,11 +173,11 @@ export default inject('projectStore')(
           <>
             {projectList.length === 0 && (
               <Empty
-                image={noProject}
+                image={noData}
                 style={{ margin: 'auto' }}
                 imageStyle={{
-                  height: 289,
-                  width: 381
+                  height: 289
+                  // width: 381
                 }}
                 description={
                   <span style={{ fontSize: '18px' }}>暂没项目信息</span>
