@@ -3,9 +3,9 @@
     <img height="200" src="http://localhost:3000/logo-black.svg">
   </a>
 </p>
-<p align="center">Mojito数据可视化是使用可视化应用的方式来分析并展示复杂数据的产品</p>
+<p align="center">Mojito数据可视化是使用可视化应用的方式来分析并展示庞杂数据的产品</p>
 
-# ✨ 特性
+## ✨ 特性
 
 - 点选、拖拽、缩放的可视化操作
 - 群组/解散、撤销/重做、图层显示/隐藏、锁定、对齐和排序

@@ -17,7 +17,7 @@
     "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@typegoose/typegoose": "^7.4.5",
+    "@typegoose/typegoose": "^7.6.0",
     "@types/busboy": "^0.2.3",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
@@ -26,9 +26,9 @@
     "dayjs": "^1.9.8",
     "dotenv": "^8.2.0",
     "eslint-plugin-html": "^6.1.1",
-    "fastify": "^3.9.2",
-    "fastify-multipart": "^3.3.1",
-    "fastify-static": "^3.3.0",
+    "fastify": "^3.14.0",
+    "fastify-multipart": "^4.0.2",
+    "fastify-static": "^4.0.1",
     "is-type-of": "^1.2.1",
     "mongoose": "5.10.18",
     "mysql": "^2.18.1",

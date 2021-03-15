@@ -3,9 +3,9 @@
     <img height="200" src="/client/public/logo-black.svg">
   </a>
 </p>
-<p align="center">Mojito数据可视化是使用可视化应用的方式来分析并展示复杂数据的产品</p>
+<p align="center">Mojito数据可视化是使用可视化应用的方式来分析并展示庞杂数据的产品</p>
 
-# ✨ 特性
+## ✨ 特性
 
 - 点选、拖拽、缩放的可视化操作
 - 群组/解散、撤销/重做、图层显示/隐藏、锁定、对齐和排序
@@ -16,3 +16,23 @@
 - 事件系统可以进行组件间通讯，页面下钻，数据源解释等各种复杂业务场景
 - 事件同步解决跨终端同步交互
 - 100%开源，支持私有化部署
+
+## ⚙️ 安装
+Mojito采用前后端分享的方式开发，前端React+Antd, 后端Node+fastify+MongoDB，开始前请确保你已安装Node.js >= 10.16.0 和MongoDB >= 4.2.12
+```bash
+git clone https://github.com/drinkjscom/mojito.git
+```
+### 后端
+打开server/config/index.ts修改MongoDB相关连接信息
+```bash
+cd server
+npm install --registry=https://registry.npm.taobao.org
+npm run dev
+```
+
+### 前端
+```bash
+cd client
+npm install --registry=https://registry.npm.taobao.org
+npm start
+```
