@@ -1,6 +1,6 @@
 <p align="center">
   <a href="http://mojito.drinkjs.com">
-    <img height="200" src="http://localhost:3000/logo-black.svg">
+    <img height="200" src="http://mojito.drinkjs.com/logo-black.svg">
   </a>
 </p>
 <p align="center">Mojito数据可视化编辑器是使用可视化交互的方式来分析并展示庞杂数据的产品</p>
