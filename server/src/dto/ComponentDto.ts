@@ -32,4 +32,6 @@ export class ComponentDto {
   props?: ComponentProps;
 
   events?: ComponentEvents;
+
+  developLib: string;
 }

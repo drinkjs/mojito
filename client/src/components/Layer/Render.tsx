@@ -2,7 +2,7 @@
 import { ConfigProvider } from 'antd';
 import Message from 'components/Message';
 import React, { useRef, useEffect, useState } from 'react';
-import { ComponentStyle } from 'types';
+import { ComponentDevelopLib, ComponentStyle } from 'types';
 
 interface RenderProps {
   props: any;
@@ -10,7 +10,7 @@ interface RenderProps {
   events: any;
   component: any;
   initFlag: boolean;
-  isVue: boolean;
+  developLib: ComponentDevelopLib
   onInitSize: (width: number, height: number) => void;
   onShow?: () => void;
   children?: any;
@@ -25,26 +25,24 @@ export default ({
   styles,
   events,
   component,
-  isVue,
+  developLib,
   style
 }: RenderProps) => {
   const ref = useRef<HTMLDivElement | null>();
   const vueRef = useRef<HTMLDivElement | null>();
   const vueObj = useRef<any>(); // vue 组件对象
   const [isInit, setIsInit] = useState(false);
+  const isVue = (developLib === "Vue3" || developLib === "Vue2")
 
   useEffect(() => {
-    if (isVue) setIsInit(true);
+    setIsInit(true);
     if (onShow) {
       onShow();
     }
-  }, []);
-
-  useEffect(() => {
-    if (!isVue && onInitSize && !initFlag) {
+    if (developLib === "React" && onInitSize) {
       onInitSize(ref!.current!.offsetWidth, ref!.current!.offsetHeight);
     }
-  }, [initFlag]);
+  }, []);
 
   /**
    * 生成react 组件
@@ -67,6 +65,11 @@ export default ({
     const { Vue } = globalAny;
     if (!Vue) {
       Message.error('Vue没定义');
+      return;
+    }
+
+    if (developLib === "Vue3") {
+      createVue3();
       return;
     }
 
@@ -106,6 +109,10 @@ export default ({
       }
     });
   };
+
+  const createVue3 = () => {
+
+  }
 
   return (
     <div

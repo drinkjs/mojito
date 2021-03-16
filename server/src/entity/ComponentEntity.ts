@@ -47,4 +47,7 @@ export default class Component {
 
   @prop()
   version: string;
+
+  @prop()
+  developLib: string; // 组件开发的底层库现阶段支持react16+, vue2, vue3
 }

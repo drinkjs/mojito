@@ -3,7 +3,7 @@ import { Empty, Button, Modal, Input, Skeleton } from 'antd';
 import { observer, inject } from 'mobx-react';
 import {
   PlusOutlined,
-  CodepenCircleOutlined,
+  PictureOutlined,
   LoadingOutlined
 } from '@ant-design/icons';
 import IconFont from 'components/IconFont';
@@ -245,7 +245,7 @@ export default inject('screenStore')(
                             <Image src={v.coverImg} />
                                   )
                                 : (
-                            <CodepenCircleOutlined />
+                            <PictureOutlined />
                                   )
                             )
                           : (

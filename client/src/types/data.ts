@@ -24,6 +24,8 @@ export interface ComponentEvents {
   };
 }
 
+export type ComponentDevelopLib = "React"|"Vue2"|"Vue3"
+
 export interface ComponentInfo {
   id?: string;
   title: string;
@@ -39,6 +41,7 @@ export interface ComponentInfo {
   props?: ComponentProps;
   events?: ComponentEvents;
   version: string;
+  developLib:ComponentDevelopLib
 }
 
 export interface ComponentCategory {

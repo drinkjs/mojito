@@ -550,7 +550,7 @@ const Layer = inject('screenStore')(
               <Render
                 onInitSize={onInitSize}
                 onShow={onShow}
-                isVue={lib.default && lib.default.render}
+                developLib={data.component.developLib}
                 component={lib.default}
                 initFlag={data.initSize}
                 props={mergeParms.props}

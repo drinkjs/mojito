@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Modal, Form, Input, Cascader, Upload, Button } from 'antd';
+import { Modal, Form, Input, Cascader, Upload, Button, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { ModalFuncProps } from 'antd/lib/modal';
 import { RcFile } from 'antd/lib/upload';
@@ -169,6 +169,24 @@ export default inject('componentStore')(
             initialValue={value && value.libName ? value.libName : undefined}
           >
             <Input disabled />
+          </Form.Item>
+          <Form.Item
+            label="开发库"
+            name="developLib"
+            rules={[{ required: true, message: '此项不能为空' }]}
+            initialValue={value && value.developLib ? value.developLib : undefined}
+          >
+            <Select placeholder="请选择开发库" getPopupContainer={(target) =>
+              document.getElementById('addModalForm') || target
+              }>
+              {
+                ["Vue2", "Vue3", "React"].map(v => {
+                  return (
+                    <Select.Option key={v} value={v}>{v}</Select.Option>
+                  )
+                })
+              }
+            </Select>
           </Form.Item>
           <Form.Item
             label="组件名称"
