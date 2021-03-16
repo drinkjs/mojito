@@ -30,7 +30,7 @@ export default ({
 }: RenderProps) => {
   const ref = useRef<HTMLDivElement | null>();
   const vueRef = useRef<HTMLDivElement | null>();
-  const vueObj = useRef<any>(); // vue 组件对象
+  const vueApp = useRef<any>(); // vue 组件对象
   const [isInit, setIsInit] = useState(false);
   const isVue = (developLib === "Vue3" || developLib === "Vue2")
 
@@ -39,8 +39,14 @@ export default ({
     if (onShow) {
       onShow();
     }
+    // 返回react组件的内部长宽
     if (developLib === "React" && onInitSize) {
       onInitSize(ref!.current!.offsetWidth, ref!.current!.offsetHeight);
+    }
+    return () => {
+      if (vueApp.current) {
+        developLib === "Vue2" ? vueApp.current.$destroy() : vueApp.current.unmount(vueRef.current)
+      }
     }
   }, []);
 
@@ -69,16 +75,15 @@ export default ({
     }
 
     if (developLib === "Vue3") {
-      createVue3();
-      return;
+      return createVue3(Vue);
     }
 
-    if (vueObj.current) {
+    if (vueApp.current) {
       // 更新props
       Object.keys(props).forEach((key) => {
-        Vue.set(vueObj.current, key, props[key]);
+        Vue.set(vueApp.current, key, props[key]);
       });
-      Vue.set(vueObj.current, 'styles', {
+      Vue.set(vueApp.current, 'styles', {
         ...styles,
         x: undefined,
         y: undefined
@@ -86,14 +91,18 @@ export default ({
       return;
     }
 
-    vueObj.current = new Vue({
+    vueApp.current = new Vue({
       el: vueRef.current,
       data: {
         ...props,
         styles: { ...styles, x: undefined, y: undefined }
       },
+      destroyed () {
+        vueApp.current = null;
+      },
       mounted () {
         this.$nextTick(() => {
+          // 返回vue组件的内部长宽
           onInitSize(this.$el.offsetWidth, this.$el.offsetHeight);
         });
       },
@@ -110,8 +119,38 @@ export default ({
     });
   };
 
-  const createVue3 = () => {
+  /**
+   * 生成vue3组件
+   * @param Vue
+   */
+  const createVue3 = (Vue:any) => {
+    if (vueApp.current) {
+      return;
+    }
 
+    const { createApp, h } = Vue;
+    console.log('----------------', component);
+    vueApp.current = createApp({
+      // data: {
+      //   ...props,
+      //   styles: { ...styles, x: undefined, y: undefined }
+      // },
+      unmounted () {
+        vueApp.current = null;
+      },
+      mounted () {
+        this.$nextTick(() => {
+          // 返回vue组件的内部长宽
+          onInitSize(this.$el.offsetWidth, this.$el.offsetHeight);
+        });
+      },
+      render () {
+        return h(vueApp.current.component(component.name, component))
+      }
+    });
+    // console.log('----------------------------', component);
+    // vueApp.current.component(component.name, component);
+    vueApp.current.mount(vueRef.current);
   }
 
   return (
