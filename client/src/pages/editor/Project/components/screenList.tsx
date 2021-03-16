@@ -245,7 +245,7 @@ export default inject('screenStore')(
                             <Image src={v.coverImg} />
                                   )
                                 : (
-                            <PictureOutlined />
+                            <PictureOutlined style={{ color: '#666' }} />
                                   )
                             )
                           : (
