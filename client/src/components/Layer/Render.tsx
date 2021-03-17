@@ -1,8 +1,8 @@
 /* eslint-disable react/no-this-in-sfc */
-import { ConfigProvider } from 'antd';
-import Message from 'components/Message';
-import React, { useRef, useEffect, useState } from 'react';
-import { ComponentDevelopLib, ComponentStyle } from 'types';
+import { ConfigProvider } from "antd";
+import Message from "components/Message";
+import React, { useRef, useEffect, useState } from "react";
+import { ComponentDevelopLib, ComponentStyle } from "types";
 
 interface RenderProps {
   props: any;
@@ -10,7 +10,7 @@ interface RenderProps {
   events: any;
   component: any;
   initFlag: boolean;
-  developLib: ComponentDevelopLib
+  developLib: ComponentDevelopLib;
   onInitSize: (width: number, height: number) => void;
   onShow?: () => void;
   children?: any;
@@ -31,8 +31,9 @@ export default ({
   const ref = useRef<HTMLDivElement | null>();
   const vueRef = useRef<HTMLDivElement | null>();
   const vueApp = useRef<any>(); // vue 组件对象
+  const vueVM = useRef<any>(); // vue 实例
   const [isInit, setIsInit] = useState(false);
-  const isVue = (developLib === "Vue3" || developLib === "Vue2")
+  const isVue = developLib === "Vue3" || developLib === "Vue2";
 
   useEffect(() => {
     setIsInit(true);
@@ -45,9 +46,11 @@ export default ({
     }
     return () => {
       if (vueApp.current) {
-        developLib === "Vue2" ? vueApp.current.$destroy() : vueApp.current.unmount(vueRef.current)
+        developLib === "Vue2"
+          ? vueApp.current.$destroy()
+          : vueApp.current.unmount(vueRef.current);
       }
-    }
+    };
   }, []);
 
   /**
@@ -70,7 +73,7 @@ export default ({
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
-      Message.error('Vue没定义');
+      Message.error("Vue没定义");
       return;
     }
 
@@ -83,10 +86,8 @@ export default ({
       Object.keys(props).forEach((key) => {
         Vue.set(vueApp.current, key, props[key]);
       });
-      Vue.set(vueApp.current, 'styles', {
-        ...styles,
-        x: undefined,
-        y: undefined
+      Vue.set(vueApp.current, "styles", {
+        ...styles
       });
       return;
     }
@@ -95,10 +96,7 @@ export default ({
       el: vueRef.current,
       data: {
         ...props,
-        styles: { ...styles, x: undefined, y: undefined }
-      },
-      destroyed () {
-        vueApp.current = null;
+        styles
       },
       mounted () {
         this.$nextTick(() => {
@@ -109,7 +107,7 @@ export default ({
       render (createElement: any) {
         return createElement(component, {
           props: {
-            ...this
+            ...this.$data
           },
           on: {
             ...events
@@ -123,35 +121,37 @@ export default ({
    * 生成vue3组件
    * @param Vue
    */
-  const createVue3 = (Vue:any) => {
-    if (vueApp.current) {
+  const createVue3 = (Vue: any) => {
+    if (vueApp.current && vueVM.current) {
+      // 更新props
+      Object.keys(props).forEach((key) => {
+        vueVM.current.$data[key] = props[key];
+      });
+      vueVM.current.$data.styles = styles;
       return;
     }
 
     const { createApp, h } = Vue;
-    console.log('----------------', component);
+
     vueApp.current = createApp({
-      // data: {
-      //   ...props,
-      //   styles: { ...styles, x: undefined, y: undefined }
-      // },
-      unmounted () {
-        vueApp.current = null;
+      data () {
+        return {
+          ...props,
+          styles
+        }
       },
       mounted () {
         this.$nextTick(() => {
           // 返回vue组件的内部长宽
           onInitSize(this.$el.offsetWidth, this.$el.offsetHeight);
-        });
+        })
       },
       render () {
-        return h(vueApp.current.component(component.name, component))
+        return h(component, { ...this.$data, ...events })
       }
     });
-    // console.log('----------------------------', component);
-    // vueApp.current.component(component.name, component);
-    vueApp.current.mount(vueRef.current);
-  }
+    vueVM.current = vueApp.current.mount(vueRef.current);
+  };
 
   return (
     <div
