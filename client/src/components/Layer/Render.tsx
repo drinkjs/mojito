@@ -41,7 +41,7 @@ export default ({
       onShow();
     }
     // 返回react组件的内部长宽
-    if (developLib === "React" && onInitSize) {
+    if (developLib === "React") {
       onInitSize(ref!.current!.offsetWidth, ref!.current!.offsetHeight);
     }
     return () => {
