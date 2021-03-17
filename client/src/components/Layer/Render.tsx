@@ -70,6 +70,7 @@ export default ({
    */
   const createVue = () => {
     if (!isInit) return;
+
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
@@ -138,16 +139,16 @@ export default ({
         return {
           ...props,
           styles
-        }
+        };
       },
       mounted () {
         this.$nextTick(() => {
           // 返回vue组件的内部长宽
           onInitSize(this.$el.offsetWidth, this.$el.offsetHeight);
-        })
+        });
       },
       render () {
-        return h(component, { ...this.$data, ...events })
+        return h(component, { ...this.$data, ...events });
       }
     });
     vueVM.current = vueApp.current.mount(vueRef.current);
@@ -160,16 +161,16 @@ export default ({
       }}
       style={style}
     >
-      {isVue && (
-        <div
-          ref={(r) => {
-            vueRef.current = r;
-          }}
-        />
-      )}
       {isVue
         ? (
-            createVue()
+        <>
+          <div
+            ref={(r) => {
+              vueRef.current = r;
+            }}
+          />
+          {createVue()}
+        </>
           )
         : (
         <ConfigProvider prefixCls="ant" iconPrefixCls="anticon">
