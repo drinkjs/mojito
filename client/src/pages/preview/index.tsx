@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Skeleton } from 'antd';
 import DocumentTitle from 'components/DocumentTitle';
@@ -22,14 +22,14 @@ export default inject('screenStore')(
   observer((props: Props) => {
     const { screenStore } = props;
     const screenInfo = screenStore!.screenInfo;
-    const [isPreview] = useState(useQuery().get('preview') === '1');
+    const isPreview = useQuery().get('preview') === '1';
     const { id } = useParams<{ id: string }>();
 
     useEffect(() => {
       screenStore!.getDetail(id).then((data) => {
         data && joinPage(data.project.name);
       });
-    }, []);
+    }, [id]);
 
     useInterval(
       () => {
@@ -40,7 +40,7 @@ export default inject('screenStore')(
 
     // 断线重连
     useReconnect(() => {
-      screenInfo && joinPage(screenInfo.project.name);
+      screenStore!.screenInfo && joinPage(screenStore!.screenInfo.project.name);
     });
 
     const { style, layers } = screenInfo || {

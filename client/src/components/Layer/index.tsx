@@ -145,7 +145,7 @@ const Layer = inject('screenStore')(
       // 事件同步处理
       const [eventySync, setEventSync] = enable
         ? []
-        : useSync<EventSync>({ event: '', args: [] }, data.id);
+        : useSync<EventSync>({ event: '', args: [] }, `${screenStore!.screenInfo!.id}_${data.id}`); // screenId+layerId组件唯一的同步key
 
       const history = useHistory();
 
@@ -373,6 +373,7 @@ const Layer = inject('screenStore')(
             setProps,
             setStyles,
             router: history,
+            currAnime,
             anime: (animeParams: anime.AnimeParams) => {
               return anime({
                 ...animeParams,

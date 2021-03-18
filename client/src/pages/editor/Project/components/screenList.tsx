@@ -205,18 +205,17 @@ export default inject('screenStore')(
                             <IconFont type="icon-ico_uploadpic" />
                           </a>
                         </UploadImg>
-                        <Link
-                          // title="预览"
-                          // rel="noreferrer"
-                          // target="_blank"
-                          // href={`/screen/${v.id}?preview=1`}
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          // }}
-                          to={`/screen/${v.id}?preview=1`}
+                        <a
+                          title="预览"
+                          rel="noreferrer"
+                          target="_blank"
+                          href={`/screen/${v.id}?preview=1`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
                         >
                           <IconFont type="icon-chakan" />
-                        </Link>
+                        </a>
                         <a
                           title="编辑"
                           onClick={(e) => {
