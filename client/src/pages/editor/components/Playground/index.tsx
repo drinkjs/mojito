@@ -768,9 +768,8 @@ export default inject('screenStore')(
                 screenStore!.currLayer!.style.width
             });
           } else {
-            const infos = moveableRef.current?.getRect()!;
             aligns = groupframes.map((v) => ({
-              x: infos.width + infos.left - v.style.width
+              x: rect.width + rect.left - v.style.width
             }));
           }
           break;

@@ -13,6 +13,7 @@ import { ProjectDto, ScreenDto, ScreenStore } from 'types';
 import styles from './screenList.module.scss';
 import noData from 'resources/images/noData.png';
 import Message from 'components/Message';
+import { Link } from 'react-router-dom';
 
 const { useCallback, useState, useEffect } = React;
 const { confirm } = Modal;
@@ -204,17 +205,18 @@ export default inject('screenStore')(
                             <IconFont type="icon-ico_uploadpic" />
                           </a>
                         </UploadImg>
-                        <a
-                          title="预览"
-                          rel="noreferrer"
-                          target="_blank"
-                          href={`/screen/${v.id}?preview=1`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
+                        <Link
+                          // title="预览"
+                          // rel="noreferrer"
+                          // target="_blank"
+                          // href={`/screen/${v.id}?preview=1`}
+                          // onClick={(e) => {
+                          //   e.stopPropagation();
+                          // }}
+                          to={`/screen/${v.id}?preview=1`}
                         >
                           <IconFont type="icon-chakan" />
-                        </a>
+                        </Link>
                         <a
                           title="编辑"
                           onClick={(e) => {

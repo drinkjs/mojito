@@ -12,6 +12,7 @@ import { eventRequest, LayerEvent } from 'components/Layer';
 import Message from 'components/Message';
 import { buildCode } from 'common/util';
 import styles from './index.module.scss';
+import { useHistory } from 'react-router-dom';
 
 const eventer = new GlobalEventer();
 eventer.setMaxListeners(1024);
@@ -65,6 +66,8 @@ export default inject('screenStore')(
     const [codeString, setCodeString] = useState<string>('');
     const [isSync, setIsSync] = useState(false);
     const [saveing, setSaveing] = useState(false);
+
+    const history = useHistory();
 
     useEffect(() => {
       // 用于捕获编辑器内的console信息用于调式
@@ -196,6 +199,7 @@ export default inject('screenStore')(
         props: toJS(screenStore!.currLayer.props),
         style: toJS(screenStore!.currLayer.style),
         eventer,
+        router: history,
         request: eventRequest,
         anime: (animeParams: anime.AnimeParams) => {
           return anime({

@@ -11,9 +11,9 @@ import React, {
   useCallback,
   useMemo
 } from 'react';
+import { useHistory } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import anime from 'animejs';
-import ErrorCatch from 'components/ErrorCatch';
 import eventer from 'common/eventer';
 import { request } from 'common/network';
 import { useSync } from 'common/stateTool';
@@ -146,6 +146,8 @@ const Layer = inject('screenStore')(
       const [eventySync, setEventSync] = enable
         ? []
         : useSync<EventSync>({ event: '', args: [] }, data.id);
+
+      const history = useHistory();
 
       // 组件默认数据
       const defaultProps: any = {};
@@ -370,6 +372,7 @@ const Layer = inject('screenStore')(
             request: eventRequest,
             setProps,
             setStyles,
+            router: history,
             anime: (animeParams: anime.AnimeParams) => {
               return anime({
                 ...animeParams,
@@ -545,34 +548,31 @@ const Layer = inject('screenStore')(
           onMouseDown={onClick}
           id={data.id}
         >
-          <ErrorCatch>
-            {!libLoading && lib && (
-              <Render
-                onInitSize={onInitSize}
-                onShow={onShow}
-                developLib={data.component.developLib}
-                component={lib.default}
-                initFlag={data.initSize}
-                props={mergeParms.props}
-                styles={{
-                  ...mergeParms.styles,
-                  opacity: undefined,
-                  transform: undefined,
-                  overflow: undefined
-                }}
-                events={compEventHandlers}
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  height: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  pointerEvents: enable && data.eventLock ? 'none' : undefined
-                }}
-              />
-            )}
-            {libLoading && <LoadingComponent />}
-          </ErrorCatch>
+          {!libLoading && lib && (
+            <Render
+              onInitSize={onInitSize}
+              onShow={onShow}
+              developLib={data.component.developLib}
+              component={lib.default}
+              props={mergeParms.props}
+              styles={{
+                ...mergeParms.styles,
+                opacity: undefined,
+                transform: undefined,
+                overflow: undefined
+              }}
+              events={compEventHandlers}
+              style={{
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                pointerEvents: enable && data.eventLock ? 'none' : undefined
+              }}
+            />
+          )}
+          {libLoading && <LoadingComponent />}
         </div>
       );
     }

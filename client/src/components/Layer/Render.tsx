@@ -1,15 +1,15 @@
 /* eslint-disable react/no-this-in-sfc */
-import { ConfigProvider } from "antd";
-import Message from "components/Message";
-import React, { useRef, useEffect, useState } from "react";
-import { ComponentDevelopLib, ComponentStyle } from "types";
+import { ConfigProvider } from 'antd';
+import Message from 'components/Message';
+import React, { useRef, useEffect, useState } from 'react';
+import ErrorCatch from 'components/ErrorCatch';
+import { ComponentDevelopLib, ComponentStyle } from 'types';
 
 interface RenderProps {
   props: any;
   styles: ComponentStyle;
   events: any;
   component: any;
-  initFlag: boolean;
   developLib: ComponentDevelopLib;
   onInitSize: (width: number, height: number) => void;
   onShow?: () => void;
@@ -20,7 +20,6 @@ interface RenderProps {
 export default ({
   onInitSize,
   onShow,
-  initFlag,
   props,
   styles,
   events,
@@ -33,7 +32,7 @@ export default ({
   const vueApp = useRef<any>(); // vue 组件对象
   const vueVM = useRef<any>(); // vue 实例
   const [isInit, setIsInit] = useState(false);
-  const isVue = developLib === "Vue3" || developLib === "Vue2";
+  const isVue = developLib === 'Vue3' || developLib === 'Vue2';
 
   useEffect(() => {
     setIsInit(true);
@@ -41,12 +40,12 @@ export default ({
       onShow();
     }
     // 返回react组件的内部长宽
-    if (developLib === "React") {
+    if (developLib === 'React') {
       onInitSize(ref!.current!.offsetWidth, ref!.current!.offsetHeight);
     }
     return () => {
       if (vueApp.current) {
-        developLib === "Vue2"
+        developLib === 'Vue2'
           ? vueApp.current.$destroy()
           : vueApp.current.unmount(vueRef.current);
       }
@@ -61,7 +60,7 @@ export default ({
     return React.createElement(component, {
       ...props,
       ...events,
-      styles: { ...styles, x: undefined, y: undefined }
+      styles
     });
   };
 
@@ -74,11 +73,11 @@ export default ({
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
-      Message.error("Vue没定义");
+      Message.error('Vue没定义，请检查项目CDN配置');
       return;
     }
 
-    if (developLib === "Vue3") {
+    if (developLib === 'Vue3') {
       return createVue3(Vue);
     }
 
@@ -87,9 +86,7 @@ export default ({
       Object.keys(props).forEach((key) => {
         Vue.set(vueApp.current, key, props[key]);
       });
-      Vue.set(vueApp.current, "styles", {
-        ...styles
-      });
+      Vue.set(vueApp.current, 'styles', styles);
       return;
     }
 
@@ -105,8 +102,8 @@ export default ({
           onInitSize(this.$el.offsetWidth, this.$el.offsetHeight);
         });
       },
-      render (createElement: any) {
-        return createElement(component, {
+      render (h: any) {
+        return h(component, {
           props: {
             ...this.$data
           },
@@ -161,22 +158,24 @@ export default ({
       }}
       style={style}
     >
-      {isVue
-        ? (
-        <>
-          <div
-            ref={(r) => {
-              vueRef.current = r;
-            }}
-          />
-          {createVue()}
-        </>
-          )
-        : (
-        <ConfigProvider prefixCls="ant" iconPrefixCls="anticon">
-          {createReact()}
-        </ConfigProvider>
-          )}
+      <ErrorCatch>
+        {isVue
+          ? (
+          <>
+            <div
+              ref={(r) => {
+                vueRef.current = r;
+              }}
+            />
+            {createVue()}
+          </>
+            )
+          : (
+          <ConfigProvider prefixCls="ant" iconPrefixCls="anticon">
+            {createReact()}
+          </ConfigProvider>
+            )}
+      </ErrorCatch>
     </div>
   );
 };
