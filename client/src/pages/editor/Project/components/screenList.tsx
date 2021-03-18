@@ -13,7 +13,6 @@ import { ProjectDto, ScreenDto, ScreenStore } from 'types';
 import styles from './screenList.module.scss';
 import noData from 'resources/images/noData.png';
 import Message from 'components/Message';
-import { Link } from 'react-router-dom';
 
 const { useCallback, useState, useEffect } = React;
 const { confirm } = Modal;
