@@ -72,18 +72,23 @@ export const reloadLib = (libName, version, onLoad) => {
   }
 };
 
-// export const getScriptBySrc = (src) => {
-//   const nodeList = document.body.querySelectorAll("script");
-//   for (let i = 0; i < nodeList.length; ++i) {
-//     const item = nodeList[i];
-//     if (item.src === src) {
-//       return item;
-//     }
-//   }
-// }
+export const getScriptBySrc = (src) => {
+  const nodeList = document.body.querySelectorAll('script');
+  for (let i = 0; i < nodeList.length; ++i) {
+    const item = nodeList[i];
+    if (item.src === src) {
+      return item;
+    }
+  }
+};
 
+/**
+ * 加载项目CDN
+ * @param {*} cdns
+ * @param {*} onload
+ * @returns
+ */
 export const loadCDN = (cdns, onload) => {
-  let loaded = 0;
   if (!cdns || cdns.length === 0) {
     onload();
     return;
@@ -108,40 +113,47 @@ export const loadCDN = (cdns, onload) => {
     }
   };
 
-  cdns.forEach((url) => {
+  const promises = cdns.map((url) => {
     if (url.substring(url.length - 4) === '.css') {
-      if (!getLinkByUrl(url)) {
-        const link = document.createElement('link');
-        link.type = 'text/css';
-        link.rel = 'stylesheet';
-        head.appendChild(link);
-        link.href = url;
-      }
-      loaded++;
-      if (loaded >= cdns.length) {
-        onload();
-      }
+      return new Promise((resolve, reject) => {
+        if (!getLinkByUrl(url)) {
+          const link = document.createElement('link');
+          link.type = 'text/css';
+          link.rel = 'stylesheet';
+          head.appendChild(link);
+          link.href = url;
+          link.onload = () => {
+            resolve('ok');
+          };
+        } else {
+          resolve('ok');
+        }
+      });
     } else {
       if (getScriptByUrl(url)) {
-        loaded++;
-        if (loaded >= cdns.length) {
-          onload();
-        }
-        return;
+        return new Promise((resolve, reject) => {
+          resolve('ok');
+        });
       }
-      const script = document.createElement('script');
-      script.src = url;
-      script.crossorigin = 'anonymous';
-      script.onload = () => {
-        // eslint-disable-next-line no-unused-vars
-        loaded++;
-        if (loaded >= cdns.length) {
-          onload();
-        }
-      };
-      document.body.appendChild(script);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.crossorigin = 'anonymous';
+        script.onload = () => {
+          resolve('ok');
+        };
+        document.body.appendChild(script);
+      });
     }
   });
+
+  Promise.all(promises)
+    .then((result) => {
+      onload();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 export const LoadingComponent = (props) => {
