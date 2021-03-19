@@ -40,8 +40,15 @@ npm install --registry=https://registry.npm.taobao.org
 npm start
 ```
 
+## 📦 组件开发
+* [**mojito-compack**](https://github.com/drinkjscom/mojito-compack): 使用React 自定义Mojito组件.
 
-### 文档
+* [**mojito-compack-vue**](https://github.com/drinkjscom/mojito-compack-vue): 使用Vue2自定义Mojito组件.
+
+* [**mojito-compack-vue3**](https://github.com/drinkjscom/mojito-compack-vue3): 使用Vue3自定义Mojito组件.
+
+## 📄文档
 [http://mojito.drinkjs.com/docs](http://mojito.drinkjs.com/docs)
-### 演示
+
+## 🚀 演示
 [http://mojito.drinkjs.com](http://mojito.drinkjs.com)
