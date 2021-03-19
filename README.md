@@ -47,7 +47,7 @@ npm start
 
 * [**mojito-compack-vue3**](https://github.com/drinkjscom/mojito-compack-vue3): 使用Vue3自定义Mojito组件.
 
-## 📄文档
+## 📄 文档
 [http://mojito.drinkjs.com/docs](http://mojito.drinkjs.com/docs)
 
 ## 🚀 演示
