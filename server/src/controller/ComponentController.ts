@@ -53,7 +53,8 @@ export default class ComponentController extends BaseController {
   /**
    * 解压zip
    * @param zipFile
-   * @param dest
+   * @param dest 组件存放路径
+   * @param libId 组件id
    */
   unzip (zipFile: any, dest: string, libId?: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -65,16 +66,16 @@ export default class ComponentController extends BaseController {
           .uncompress(zipFile, directory)
           .then(() => {
             // 读取描述文件
-            const decFile = `${directory}${path.sep}declare.json`;
+            const decFile = `${directory}/declare.json`;
             fs.open(decFile, "r", async (openErr, fd) => {
               if (openErr) {
                 rmdir(directory);
                 reject(new Error(`读取declare.json失败:${openErr.code}`));
+                return;
               }
               // 读取描述文件内容
               const descText = fs.readFileSync(fd, { encoding: "utf8" });
               fs.closeSync(fd);
-
               try {
                 const descJson = JSON.parse(descText);
                 if (!descJson.name || !descJson.version) {
@@ -82,6 +83,7 @@ export default class ComponentController extends BaseController {
                   reject(
                     new Error("解释declare.json失败，请写上name和version")
                   );
+                  return;
                 }
 
                 if (!libId) {
@@ -102,19 +104,17 @@ export default class ComponentController extends BaseController {
                     return;
                   }
                 }
-                // 创建存放组件的目录
-                const savePath = `${dest}${path.sep}${descJson.name}${descJson.version}`;
-                fs.mkdirSync(savePath, { recursive: true });
-                // 复制文件
-                ncp(directory, savePath, (ncperr: any) => {
-                  rmdir(directory);
-                  if (ncperr) {
+                // 创建存放组件的临时目录
+                const savePath = `${dest}/_${descJson.name}${descJson.version}`;
+                this.ncpAndRm(directory, savePath).then((rel) => {
+                  if (rel) {
+                    // 保存成功
+                    resolve({
+                      ...descJson,
+                    });
+                  } else {
                     reject(new Error(`${descJson.name}保存失败`));
                   }
-                  // 保存成功
-                  resolve({
-                    ...descJson,
-                  });
                 });
               } catch (e) {
                 console.log(e);
@@ -127,6 +127,22 @@ export default class ComponentController extends BaseController {
             rmdir(directory);
             reject(new Error("解压失败"));
           });
+      });
+    });
+  }
+
+  async ncpAndRm (fromPath: string, savePath: string) {
+    return new Promise((resolve, reject) => {
+      fs.mkdirSync(savePath, { recursive: true });
+      // 复制文件
+      ncp(fromPath, savePath, (ncperr: any) => {
+        if (ncperr) {
+          resolve(false);
+          return;
+        }
+        rmdir(fromPath);
+        // 保存成功
+        resolve(true);
       });
     });
   }
@@ -178,7 +194,10 @@ export default class ComponentController extends BaseController {
     @Body(new Validation({ groups: ["add"] })) dto: ComponentDto
   ): PromiseRes<any> {
     const rel = await this.service.add({ ...dto, origin: 2 });
-    if (rel) return this.success(rel);
+    const dest = this.libSavePath;
+    const savePath = `${dest}/${dto.name}${dto.version}`;
+    const directory = `${dest}/_${dto.name}${dto.version}`;
+    if (rel && (await this.ncpAndRm(directory, savePath))) { return this.success(rel); }
 
     return this.fail("添加失败");
   }
@@ -192,7 +211,11 @@ export default class ComponentController extends BaseController {
     @Body(new Validation({ groups: ["update"] })) dto: ComponentDto
   ): PromiseRes<any> {
     const rel = await this.service.update({ ...dto, origin: 2 });
-    if (rel) return this.success(null);
+    // 复制文件
+    const dest = this.libSavePath;
+    const savePath = `${dest}/${dto.name}${dto.version}`;
+    const directory = `${dest}/_${dto.name}${dto.version}`;
+    if (rel && (await this.ncpAndRm(directory, savePath))) { return this.success(rel); }
 
     return this.fail("更新失败");
   }
@@ -205,7 +228,7 @@ export default class ComponentController extends BaseController {
     const rel = await this.service.delete(id);
     if (rel) {
       // 删除组件目录
-      const savePath = `${this.libSavePath}${path.sep}${rel.name}${rel.version}`;
+      const savePath = `${this.libSavePath}/${rel.name}${rel.version}`;
       rmdir(savePath);
     } else {
       return this.fail("删除失败");
