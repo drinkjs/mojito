@@ -283,14 +283,13 @@ export default class Screen {
         data.layers?.sort((a, b) => {
           return b.style.z - a.style.z;
         });
-
         // 所有组件依赖库
         const dependencies:Set<string> = new Set()
         data.layers?.forEach(layer => {
           layer.component.dependencies?.forEach(v => {
             dependencies.add(v)
           })
-        })
+        });
         // 加载组件依赖库
         loadCDN(Array.from(dependencies), () => {
           runInAction(() => {
