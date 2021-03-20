@@ -7,8 +7,8 @@ export class ComponentDto {
   @IsObjectId({ message: "非法id", groups: ["update"] })
   id: string;
 
-  @IsNotEmpty({ message: "libName不能为空", groups: ["add", "update"] })
-  libName: string;
+  @IsNotEmpty({ message: "name不能为空", groups: ["add", "update"] })
+  name: string;
 
   @IsNotEmpty({ message: "title不能为空", groups: ["add", "update"] })
   title: string;
@@ -34,4 +34,6 @@ export class ComponentDto {
   events?: ComponentEvents;
 
   developLib: string;
+
+  dependencies?: string[];
 }

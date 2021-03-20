@@ -4,13 +4,16 @@
 
 - 入门
 
-  - [安装](quickstart.md)
-  - [新建项目](new-project.md)
+  - [安装启动](quickstart.md)
+  - [创建项目](new-project.md)
+  - [项目管理](manage-project.md)
   - [新建页面](new-page.md)
-  - [工具栏](new-page.md)
-  - [图层列表](cover.md)
-  - [页面设置](cover.md)
-  - [样式设置](cover.md)
+  - [页面管理](manage-page.md)
+  - [页面编辑器](editor.md)
+    - [工具栏](cover.md)
+    - [组件管理](cover.md)
+    - [页面设置](cover.md)
+    - [组件设置](cover.md)
 
 - 进阶
 

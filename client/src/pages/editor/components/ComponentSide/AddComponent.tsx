@@ -104,8 +104,8 @@ export default inject('componentStore')(
             Message.success('修改成功');
             // 修改完之后重新加载
             const globalVal: any = global;
-            globalVal[value.libName + value.version] &&
-              reloadLib(value.libName, value.version, () => {
+            globalVal[value.name + value.version] &&
+              reloadLib(value.name, value.version, () => {
                 screenStore?.reload();
               });
             props.onCancel && props.onCancel();
@@ -126,16 +126,16 @@ export default inject('componentStore')(
     const onUploadComp = useCallback(
       (uploadValue: any) => {
         form.setFieldsValue({
-          libName: uploadValue
-            ? uploadValue.libName
+          name: uploadValue
+            ? uploadValue.name
             : value
-              ? value.libName
+              ? value.name
               : undefined,
           title: value
             ? value.title
             : uploadValue
               ? uploadValue.title ||
-              `${uploadValue.libName} ${uploadValue.version}`
+              `${uploadValue.name} ${uploadValue.version}`
               : undefined
         });
       },
@@ -164,9 +164,9 @@ export default inject('componentStore')(
           </Form.Item>
           <Form.Item
             label="导出名称"
-            name="libName"
+            name="name"
             rules={[{ required: true, message: '此项不能为空' }]}
-            initialValue={value && value.libName ? value.libName : undefined}
+            initialValue={value && value.name ? value.name : undefined}
           >
             <Input disabled />
           </Form.Item>

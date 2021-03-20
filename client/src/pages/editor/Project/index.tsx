@@ -8,7 +8,6 @@ import ProjectItemList from './components/projectItemList';
 import ScreenList from './components/screenList';
 import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
-import noData from 'resources/images/noData.png';
 import Message from 'components/Message';
 import logo from 'resources/images/logo.svg';
 
@@ -173,7 +172,7 @@ export default inject('projectStore')(
           <>
             {projectList.length === 0 && (
               <Empty
-                image={noData}
+                image={logo}
                 style={{ margin: 'auto' }}
                 imageStyle={{
                   height: 289
@@ -183,7 +182,7 @@ export default inject('projectStore')(
                   <span style={{ fontSize: '18px' }}>暂没项目信息</span>
                 }
               >
-                <Button type="primary" onClick={onAddProject}>
+                <Button icon={<PlusOutlined />} type="primary" onClick={onAddProject}>
                   创建项目
                 </Button>
               </Empty>

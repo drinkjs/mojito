@@ -77,39 +77,39 @@ export default class ComponentController extends BaseController {
 
               try {
                 const descJson = JSON.parse(descText);
-                if (!descJson.libName || !descJson.version) {
+                if (!descJson.name || !descJson.version) {
                   rmdir(directory);
                   reject(
-                    new Error("解释declare.json失败，请写上libName和version")
+                    new Error("解释declare.json失败，请写上name和version")
                   );
                 }
 
                 if (!libId) {
                   // 新增
                   const rel = await this.service.findByName(
-                    descJson.libName,
+                    descJson.name,
                     descJson.version
                   );
                   if (rel) {
-                    reject(new Error(`${descJson.libName}已经存在`));
+                    reject(new Error(`${descJson.name}已经存在`));
                     return;
                   }
                 } else {
                   // 修改
                   const rel = await this.service.findById(libId);
-                  if (!rel || rel.libName !== descJson.libName) {
+                  if (!rel || rel.name !== descJson.name) {
                     reject(new Error("上传的组件与原组件不一致"));
                     return;
                   }
                 }
                 // 创建存放组件的目录
-                const savePath = `${dest}${path.sep}${descJson.libName}${descJson.version}`;
+                const savePath = `${dest}${path.sep}${descJson.name}${descJson.version}`;
                 fs.mkdirSync(savePath, { recursive: true });
                 // 复制文件
                 ncp(directory, savePath, (ncperr: any) => {
                   rmdir(directory);
                   if (ncperr) {
-                    reject(new Error(`${descJson.libName}保存失败`));
+                    reject(new Error(`${descJson.name}保存失败`));
                   }
                   // 保存成功
                   resolve({
@@ -119,7 +119,7 @@ export default class ComponentController extends BaseController {
               } catch (e) {
                 console.log(e);
                 rmdir(directory);
-                reject(new Error("解释declare.json失败"));
+                reject(new Error("解释package.json失败"));
               }
             });
           })
@@ -205,7 +205,7 @@ export default class ComponentController extends BaseController {
     const rel = await this.service.delete(id);
     if (rel) {
       // 删除组件目录
-      const savePath = `${this.libSavePath}${path.sep}${rel.libName}${rel.version}`;
+      const savePath = `${this.libSavePath}${path.sep}${rel.name}${rel.version}`;
       rmdir(savePath);
     } else {
       return this.fail("删除失败");

@@ -280,13 +280,19 @@ export default class Screen {
     return service
       .screenDetail({ id })
       .then((data: ScreenDetailDto) => {
-        data.layers &&
-          data.layers.sort((a, b) => {
-            return b.style.z - a.style.z;
-          });
+        data.layers?.sort((a, b) => {
+          return b.style.z - a.style.z;
+        });
 
-        // 加载项目设置的cdn
-        loadCDN(data.project.cdn, () => {
+        // 所有组件依赖库
+        const dependencies:Set<string> = new Set()
+        data.layers?.forEach(layer => {
+          layer.component.dependencies?.forEach(v => {
+            dependencies.add(v)
+          })
+        })
+        // 加载组件依赖库
+        loadCDN(Array.from(dependencies), () => {
           runInAction(() => {
             this.screenInfo = data;
             this.getDetailLoading = false;
@@ -347,10 +353,13 @@ export default class Screen {
    */
   async addLayer (layer: LayerInfo) {
     if (!this.screenInfo) return;
-    this.addUndoData(this.screenInfo);
-    const layers = this.screenInfo?.layers || [];
-    layers.unshift({ ...layer, updateFlag: new Date().getTime() });
-    this.screenInfo.layers = toJS(layers);
+    // 加载组件依赖库
+    loadCDN(layer.component.dependencies, () => {
+      this.addUndoData(this.screenInfo);
+      const layers = this.screenInfo?.layers || [];
+      layers.unshift({ ...layer, updateFlag: new Date().getTime() });
+      this.screenInfo!.layers = toJS(layers);
+    });
   }
 
   /**

@@ -29,7 +29,7 @@ export type ComponentDevelopLib = "React"|"Vue2"|"Vue3"
 export interface ComponentInfo {
   id?: string;
   title: string;
-  libName: string;
+  name: string;
   coverImg?: string;
   coverUrl?: string;
   type: number;
@@ -42,6 +42,7 @@ export interface ComponentInfo {
   events?: ComponentEvents;
   version: string;
   developLib:ComponentDevelopLib
+  dependencies?:string[]
 }
 
 export interface ComponentCategory {

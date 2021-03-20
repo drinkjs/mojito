@@ -18,7 +18,7 @@ interface Props {
 }
 
 const projectItemList = (props: Props) => {
-  const { value, onSelect, selected, onEdit, onRemove, onCdn } = props;
+  const { value, onSelect, selected, onEdit, onRemove /* ,onCdn */ } = props;
 
   const handleEdit = (e: React.MouseEvent<any>, data: ProjectDto) => {
     e.stopPropagation();
@@ -37,10 +37,10 @@ const projectItemList = (props: Props) => {
     });
   };
 
-  const handleCdn = (e: React.MouseEvent<any>, data: ProjectDto) => {
-    e.stopPropagation();
-    onCdn(data);
-  };
+  // const handleCdn = (e: React.MouseEvent<any>, data: ProjectDto) => {
+  //   e.stopPropagation();
+  //   onCdn(data);
+  // };
 
   return (
     <aside className={styles.myProjectBox}>
@@ -60,13 +60,13 @@ const projectItemList = (props: Props) => {
               <div style={{ color: '#eee', fontSize: '18px' }}>{v.name}</div>
               <div style={{ marginTop: '12px' }}>{v.createTime}</div>
               <div className={styles.toolBar}>
-                <a
+                {/* <a
                   onClick={(e) => {
                     handleCdn(e, v);
                   }}
                 >
                   <IconFont type="icon-cdn" style={{ fontSize: '16px' }} />
-                </a>
+                </a> */}
                 <a
                   onClick={(e) => {
                     handleEdit(e, v);

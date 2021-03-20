@@ -16,7 +16,7 @@ export interface ComponentEvents {
 
 export default class Component {
   @prop({ required: true })
-  libName!: string;
+  name!: string;
 
   @prop()
   title: string;
@@ -50,4 +50,7 @@ export default class Component {
 
   @prop()
   developLib: string; // 组件开发的底层库，现阶段支持React, Vue2, Vue3
+
+  @prop()
+  dependencies?: string[]; // 组件依赖库的CDN地址 如：https://lib.baomitu.com/vue/3.0.7/vue.global.js
 }

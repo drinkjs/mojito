@@ -183,10 +183,10 @@ export default inject('screenStore')(
           y = (offset.y - dropTargetXy.top) / scale;
         }
 
-        if (!compCount[value.libName]) {
-          compCount[value.libName] = 1;
+        if (!compCount[value.name]) {
+          compCount[value.name] = 1;
         } else {
-          compCount[value.libName] += 1;
+          compCount[value.name] += 1;
         }
 
         const z =
@@ -200,7 +200,7 @@ export default inject('screenStore')(
         // 新图层
         if (screenStore && screenStore.screenInfo) {
           const newLayer: LayerInfo = {
-            name: `${value.title}${compCount[value.libName]}`,
+            name: `${value.title}${compCount[value.name]}`,
             component: value,
             initSize: false,
             style: {
@@ -1104,10 +1104,10 @@ export default inject('screenStore')(
                     screenLayers.map((v) => {
                       if (!v.component) return null;
 
-                      if (!compCount[v.component.libName]) {
-                        compCount[v.component.libName] = 1;
+                      if (!compCount[v.component.name]) {
+                        compCount[v.component.name] = 1;
                       } else {
-                        compCount[v.component.libName] += 1;
+                        compCount[v.component.name] += 1;
                       }
                       const layerData = toJS(v);
                       return (

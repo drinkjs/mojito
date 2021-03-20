@@ -5,7 +5,6 @@ import { ModalFuncProps } from 'antd/lib/modal';
 import { FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import Image from 'components/Image';
 import UploadImg from 'components/UploadImg';
-// import {getByLibname} from "services/component"
 import { toJS } from 'mobx';
 import { getTreeParent } from 'common/util';
 import { ComponentInfo, ComponentStore } from 'types';

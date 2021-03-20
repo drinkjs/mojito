@@ -15,13 +15,13 @@ export const lazyLoader = (component) => {
   return React.lazy(() => component());
 };
 
-export const loadLib = ({ libName, version }, onload) => {
-  const exportName = libName + version;
+export const loadLib = ({ name, version }, onload) => {
+  const exportName = name + version;
   // 已经有其他图层在加载，避免重复加载
   if (loadingLib[exportName]) {
     // 检测加载完成没有
     setTimeout(() => {
-      loadLib({ libName, version }, onload);
+      loadLib({ name, version }, onload);
     }, 200);
     return;
   }
@@ -45,8 +45,8 @@ export const loadLib = ({ libName, version }, onload) => {
   document.body.appendChild(script);
 };
 
-export const getLibScriptTag = (libName, version) => {
-  const exportName = libName + version;
+export const getLibScriptTag = (name, version) => {
+  const exportName = name + version;
   const nodeList = document.body.querySelectorAll('script');
   for (let i = 0; i < nodeList.length; ++i) {
     const item = nodeList[i];
@@ -56,19 +56,19 @@ export const getLibScriptTag = (libName, version) => {
   }
 };
 
-export const unloadLibScriptTag = (libName, version) => {
-  const tag = getLibScriptTag(libName, version);
+export const unloadLibScriptTag = (name, version) => {
+  const tag = getLibScriptTag(name, version);
   if (tag) {
     document.body.removeChild(tag);
   }
   return tag;
 };
 
-export const reloadLib = (libName, version, onLoad) => {
-  const tag = unloadLibScriptTag(libName, version);
+export const reloadLib = (name, version, onLoad) => {
+  const tag = unloadLibScriptTag(name, version);
   if (tag) {
-    global[libName + version] = null;
-    loadLib({ libName, version }, onLoad);
+    global[name + version] = null;
+    loadLib({ name, version }, onLoad);
   }
 };
 
@@ -93,8 +93,7 @@ export const loadCDN = (cdns, onload) => {
     onload();
     return;
   }
-  const nodeList = document.body.querySelectorAll('script');
-  const getScriptByUrl = (url) => {
+  const getScriptByUrl = (nodeList, url) => {
     for (let i = 0; i < nodeList.length; ++i) {
       const item = nodeList[i];
       if (item.src === url) {
@@ -102,9 +101,8 @@ export const loadCDN = (cdns, onload) => {
       }
     }
   };
-  const head = document.getElementsByTagName('head')[0];
-  const linkList = head.querySelectorAll('link');
-  const getLinkByUrl = (url) => {
+
+  const getLinkByUrl = (linkList, url) => {
     for (let i = 0; i < linkList.length; ++i) {
       const item = linkList[i];
       if (item.href === url) {
@@ -115,8 +113,10 @@ export const loadCDN = (cdns, onload) => {
 
   const promises = cdns.map((url) => {
     if (url.substring(url.length - 4) === '.css') {
+      const head = document.getElementsByTagName('head')[0];
+      const linkList = head.querySelectorAll('link');
       return new Promise((resolve, reject) => {
-        if (!getLinkByUrl(url)) {
+        if (!getLinkByUrl(linkList, url)) {
           const link = document.createElement('link');
           link.type = 'text/css';
           link.rel = 'stylesheet';
@@ -130,7 +130,8 @@ export const loadCDN = (cdns, onload) => {
         }
       });
     } else {
-      if (getScriptByUrl(url)) {
+      const nodeList = document.body.querySelectorAll('script');
+      if (getScriptByUrl(nodeList, url)) {
         return new Promise((resolve, reject) => {
           resolve('ok');
         });

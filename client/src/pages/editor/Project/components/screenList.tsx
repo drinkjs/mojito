@@ -161,7 +161,7 @@ export default inject('screenStore')(
         <header className={styles.header}>
           <div>
             <span style={{ marginLeft: '6px' }}>
-              {project ? project.name : ''}项目页面列表
+              【{project ? project.name : ''}】
             </span>
           </div>
           <Button
@@ -283,9 +283,9 @@ export default inject('screenStore')(
                   </span>
                 }
               >
-                <Button type="primary" onClick={onAdd}>
+                {/* <Button type="primary" onClick={onAdd}>
                   新建页面
-                </Button>
+                </Button> */}
               </Empty>
             )}
           </div>

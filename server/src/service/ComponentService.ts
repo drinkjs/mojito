@@ -33,8 +33,8 @@ export default class ComponentService extends BaseService {
     return rel.map((v) => this.toDtoObject<ComponentDto>(v));
   }
 
-  async findByName (libName: string, version: string) {
-    const rel = await this.model.findOne({ libName, version }).exec();
+  async findByName (name: string, version: string) {
+    const rel = await this.model.findOne({ name, version }).exec();
     return this.toDtoObject<ComponentDto>(rel);
   }
 
