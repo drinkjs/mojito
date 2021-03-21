@@ -6,7 +6,7 @@ import UploadImg from 'components/UploadImg';
 import { ScreenStore } from 'types';
 import { DefaulBackgroundColor, DefaultFontColor } from 'config';
 import styles from './index.module.scss';
-import { SizeItem, ColorItem, FontItem } from './Style';
+import { SizeItem, ColorItem } from './Style';
 
 const sizeItems = [
   {
@@ -104,7 +104,7 @@ export default inject('screenStore')(
             />
           </div>
         </div>
-        <div className={styles.title}>
+        {/* <div className={styles.title}>
           <p>文字</p>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             <FontItem
@@ -113,7 +113,7 @@ export default inject('screenStore')(
               onChange={onStyleChange}
             />
           </div>
-        </div>
+        </div> */}
         {screenStore!.screenInfo && (
           <div className={styles.title}>
             <p>背景图</p>

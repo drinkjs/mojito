@@ -11,15 +11,18 @@ module.exports = {
       proxy: {
         '/api': {
           target: 'http://mojito.drinkjs.com',
+          // target: 'http://127.0.0.1:3838',
           changeOrigin: true
           // pathRewrite: { '^/api': '' }
         },
         '/public': {
           target: 'http://mojito.drinkjs.com',
+          // target: 'http://127.0.0.1:3838',
           changeOrigin: true
         },
         '/ws': {
           target: 'ws://mojito.drinkjs.com',
+          // target: 'ws://127.0.0.1:3838',
           ws: true,
           changeOrigin: true
         }

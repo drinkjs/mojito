@@ -9,11 +9,13 @@
   - [项目管理](manage-project.md)
   - [新建页面](new-page.md)
   - [页面管理](manage-page.md)
-  - [页面编辑器](editor.md)
-    - [工具栏](cover.md)
-    - [组件管理](cover.md)
-    - [页面设置](cover.md)
-    - [组件设置](cover.md)
+  - [页面编辑器](/editor/editor.md)
+    - [页面设置](/editor/page-set.md)
+    - [图层](/editor/layers.md)
+    - [样式设置](cover.md)
+    - [组件属性](cover.md)
+    - [交互事件](cover.md)
+    - [动画效果](cover.md)
 
 - 进阶
 

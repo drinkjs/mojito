@@ -29,16 +29,16 @@ type TabObj = {
 
 const tabs: TabObj[] = [
   {
-    label: '图层',
-    key: 'layers',
-    icon: 'icon-tuceng',
-    render: () => <Layers />
-  },
-  {
     label: '页面设置',
     key: 'pageSet',
     icon: 'icon-weixuanzhong',
     render: () => <PageSet />
+  },
+  {
+    label: '图层',
+    key: 'layers',
+    icon: 'icon-tuceng',
+    render: () => <Layers />
   },
   {
     label: '组件样式',

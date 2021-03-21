@@ -24,6 +24,7 @@ function showError (content) {
 function request (originUrl, method = 'get', params = {}, options = {}) {
   const reg = /^(http|https):\/\/.+/;
   const { prefix, checkCode = true, ...opts } = options;
+
   return new Promise((resolve, reject) => {
     const lowerMethod = method.toLocaleLowerCase();
     axios({

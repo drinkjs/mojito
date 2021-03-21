@@ -15,11 +15,7 @@ const { ncp } = require("ncp");
 const rimraf = require("rimraf");
 
 function rmdir (dir: string) {
-  rimraf(dir, {}, (rel: any) => {
-    if (rel) {
-      // reject(new Error("清理失败"))
-    }
-  });
+  return rimraf.sync(dir);
 }
 
 @Controller("/component")
@@ -133,6 +129,7 @@ export default class ComponentController extends BaseController {
 
   async ncpAndRm (fromPath: string, savePath: string) {
     return new Promise((resolve, reject) => {
+      rmdir(savePath);
       fs.mkdirSync(savePath, { recursive: true });
       // 复制文件
       ncp(fromPath, savePath, (ncperr: any) => {
@@ -140,8 +137,8 @@ export default class ComponentController extends BaseController {
           resolve(false);
           return;
         }
-        rmdir(fromPath);
         // 保存成功
+        rmdir(fromPath);
         resolve(true);
       });
     });

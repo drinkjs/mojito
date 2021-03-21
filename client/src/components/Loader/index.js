@@ -50,7 +50,7 @@ export const getLibScriptTag = (name, version) => {
   const nodeList = document.body.querySelectorAll('script');
   for (let i = 0; i < nodeList.length; ++i) {
     const item = nodeList[i];
-    if (item.src.indexOf(exportName) !== -1) {
+    if (item.src.indexOf(`${exportName}/bundle.js`) !== -1) {
       return item;
     }
   }
@@ -61,15 +61,12 @@ export const unloadLibScriptTag = (name, version) => {
   if (tag) {
     document.body.removeChild(tag);
   }
-  return tag;
 };
 
 export const reloadLib = (name, version, onLoad) => {
-  const tag = unloadLibScriptTag(name, version);
-  if (tag) {
-    global[name + version] = null;
-    loadLib({ name, version }, onLoad);
-  }
+  unloadLibScriptTag(name, version);
+  global[name + version] = null;
+  loadLib({ name, version }, onLoad);
 };
 
 export const getScriptBySrc = (src) => {
