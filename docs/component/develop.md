@@ -14,7 +14,7 @@ Mojito的组件开发主要分为三步
 
 * [**mojito-compack-vue3**](https://github.com/drinkjscom/mojito-compack-vue3)：基于Vue3的开发骨架
 
-骨架是使用Storybook构建的，可以在开发过程中很方便的调试的组件
+骨架是使用Storybook构建的，在开发过程中可以很方便的调试组件
 
 ![storybook](../assets/storybook.jpg)
 
