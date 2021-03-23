@@ -6,8 +6,8 @@
 - 设置画布字体颜色
 - 设置背景图
 
-![页面设置](../assets/page-set.jpg)
+![页面设置](/assets/page-set.jpg)
 
 - 案例：设置背景图
 
-![页面设置](../assets/page-bg.jpg)
+![页面设置](/assets/page-bg.jpg)

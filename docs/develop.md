@@ -3,7 +3,7 @@
 Mojito的组件开发主要分为三步
 
 1. 使用React / Vue2 / Vu3作为基础框架开发的组件 
-2. 编写描述文件declare.json，编写规范请参考[declare.json](/component/declare.md)
+2. 编写描述文件declare.json，编写规范请参考[declare.json](/declare.md)
 3. 使用UMD的方式打包组件，将打包好的组件连同declare.json压缩成zip上传到平台
 
 为方便开发，这里提供三个开发骨架供大家参考
@@ -16,7 +16,7 @@ Mojito的组件开发主要分为三步
 
 骨架是使用Storybook构建的，在开发过程中可以很方便的调试组件
 
-![storybook](../assets/storybook.jpg)
+![storybook](/assets/storybook.jpg)
 
 ### 安装依赖
 ```bash

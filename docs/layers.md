@@ -9,8 +9,8 @@
 - 通过上下拖动的方式改变图层的排序
 - 双击图层名称可以修改图层的名称
 
-![页面设置](../assets/layers.jpg)
+![页面设置](/assets/layers.jpg)
 
 - 案例
 
-![页面设置](../assets/layers2.jpg)
+![页面设置](/assets/layers2.jpg)
