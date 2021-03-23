@@ -264,9 +264,10 @@ export default inject('screenStore')(
               screenStore.currLayer.component.events &&
               Object.keys(screenStore!.currLayer.component.events).map(
                 (key) => {
+                  const events: any = screenStore!.currLayer!.component.events;
                   return (
                     <Option value={key} key={key}>
-                      {key}
+                      {events[key].name || key}
                     </Option>
                   );
                 }

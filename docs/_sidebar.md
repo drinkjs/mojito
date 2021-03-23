@@ -18,9 +18,10 @@
     - [动画效果](cover.md)
 
 - 进阶
-
-  - [动画配置](configuration.md)
-  - [事件处理](configuration.md)
-  - [组件开发](themes.md)
+  - [事件进阶](configuration.md)
+  - 组件开发
+    - [开发指南](/component/develop.md)
+    - [declare.json](/component/declare.md)
+    - [常见问题](/component/issue.md)
 
 - 部署

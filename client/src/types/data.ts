@@ -13,6 +13,7 @@ export interface ComponentStyle extends CSSProperties {
 export interface ComponentProps {
   [propsName: string]: {
     type?: any;
+    name?: string;
     comment?: string;
     default?: any;
   };
@@ -20,11 +21,12 @@ export interface ComponentProps {
 
 export interface ComponentEvents {
   [eventName: string]: {
+    name?: string;
     comment?: string;
   };
 }
 
-export type ComponentDevelopLib = "React"|"Vue2"|"Vue3"
+export type ComponentDevelopLib = 'React' | 'Vue2' | 'Vue3';
 
 export interface ComponentInfo {
   id?: string;
@@ -41,8 +43,8 @@ export interface ComponentInfo {
   props?: ComponentProps;
   events?: ComponentEvents;
   version: string;
-  developLib:ComponentDevelopLib
-  dependencies?:string[]
+  developLib: ComponentDevelopLib;
+  dependencies?: string[];
 }
 
 export interface ComponentCategory {
