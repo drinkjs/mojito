@@ -129,6 +129,10 @@ export default class ComponentController extends BaseController {
 
   async ncpAndRm (fromPath: string, savePath: string) {
     return new Promise((resolve, reject) => {
+      if (!fs.existsSync(fromPath)) {
+        resolve(true);
+        return;
+      }
       rmdir(savePath);
       fs.mkdirSync(savePath, { recursive: true });
       // 复制文件
@@ -194,6 +198,10 @@ export default class ComponentController extends BaseController {
     const dest = this.libSavePath;
     const savePath = `${dest}/${dto.name}${dto.version}`;
     const directory = `${dest}/_${dto.name}${dto.version}`;
+    if (!fs.existsSync(directory)) {
+      return this.fail(`组件${dto.name}${dto.version}不存在`);
+    }
+
     if (rel && (await this.ncpAndRm(directory, savePath))) { return this.success(rel); }
 
     return this.fail("添加失败");

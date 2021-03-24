@@ -274,7 +274,7 @@ export default class Screen {
       // 清空上一个页面数据
       this.undoData = [];
       this.redoData = [];
-      this.screenList = [];
+      this.screenInfo = undefined;
       this.selectedLayerIds = new Set();
     });
     return service
@@ -299,7 +299,8 @@ export default class Screen {
         });
         return data;
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         runInAction(() => {
           this.getDetailLoading = false;
         });
