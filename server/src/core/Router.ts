@@ -84,16 +84,17 @@ export default class Router {
           self[routeName],
           Reflect.getMetadata(PARAM_METADATA, instance, routeName)
         );
-
         // 绑定路由
         this.server.route({
           method: type.toUpperCase(),
           url: urlPath,
+          // onRequest: this.server.csrfProtection,
           handler,
         });
         console.info(`Add {${urlPath}, ${type.toUpperCase()}} route`.blue);
       });
     });
+
     if (this.wss) {
       this.wss.listen({ server: server.server });
     }

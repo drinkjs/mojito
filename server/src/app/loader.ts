@@ -6,9 +6,9 @@ import Ormer from "../common/Ormer";
 import GlobalExceptionFilter from "../filter/GlobalExceptionFilter";
 import plugin from "../plugin";
 
-export default function loader (fastify: FastifyInstance) {
+export default async function loader (fastify: FastifyInstance) {
   const configData = config as any;
-  plugin(fastify);
+  await plugin(fastify);
   const router = Router.getInstance(fastify, configData.websocket);
   router.useExceptionFilter(new GlobalExceptionFilter());
 

@@ -13,7 +13,7 @@ export const server: FastifyInstance = Fastify({ logger: config.logger });
 
 export async function launch () {
   try {
-    loader(server);
+    await loader(server);
     await server.listen(config.port);
     console.info(`server listening on ${config.port}`);
   } catch (err) {

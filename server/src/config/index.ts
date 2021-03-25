@@ -7,6 +7,7 @@ console.info(staticPath.bgBlue);
 
 export default {
   port: 3838,
+  sessionSecret: "a secret with minimum length of 32 characters", // 一个32位的随机字符串，务必修改
   websocket: true, // 是否启用websocket
   cluster: false, // 是否启用多进程，启用后websocket消息需要通过发布/订阅的方式处理
   logger: {

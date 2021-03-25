@@ -7,6 +7,7 @@
  */
 
 import axios from 'axios';
+// import Cookies from "js-cookie";
 import Message from 'components/Message';
 
 const API = '/api';
@@ -24,6 +25,7 @@ function showError (content) {
 function request (originUrl, method = 'get', params = {}, options = {}) {
   const reg = /^(http|https):\/\/.+/;
   const { prefix, checkCode = true, ...opts } = options;
+  // const csrfToken = Cookies.get("_csrf");
 
   return new Promise((resolve, reject) => {
     const lowerMethod = method.toLocaleLowerCase();
@@ -37,6 +39,7 @@ function request (originUrl, method = 'get', params = {}, options = {}) {
       ...opts,
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
+        // 'x-csrf-token': csrfToken,
         ...opts.headers
       }
     })

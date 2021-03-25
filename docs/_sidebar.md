@@ -9,7 +9,8 @@
   - [项目管理](manage-project.md)
   - [新建页面](new-page.md)
   - [页面管理](manage-page.md)
-  - [页面编辑器](editor.md)
+  - 页面编辑器
+    - [概述](editor.md)
     - [页面设置](page-set.md)
     - [图层](layers.md)
     - [样式设置](cover.md)
