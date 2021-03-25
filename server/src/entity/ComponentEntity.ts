@@ -1,4 +1,4 @@
-import { mongoose, prop } from "@typegoose/typegoose";
+import { modelOptions, mongoose, prop, Severity } from "@typegoose/typegoose";
 
 export interface ComponentProps {
   [propsName: string]: {
@@ -14,6 +14,7 @@ export interface ComponentEvents {
   };
 }
 
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export default class Component {
   @prop({ required: true })
   name!: string;

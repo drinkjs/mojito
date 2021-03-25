@@ -118,7 +118,7 @@ export default class Router {
         const rel = await func(...args);
         res.send(rel);
       } catch (e) {
-        console.log(e);
+        req.log.error(e);
         if (this.exceptionFilter) {
           this.exceptionFilter.catch(e, ctx);
         } else {

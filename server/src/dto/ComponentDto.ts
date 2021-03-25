@@ -19,6 +19,9 @@ export class ComponentDto {
   @IsNotEmpty({ message: "version不能为空", groups: ["add", "update"] })
   version: string;
 
+  @IsNotEmpty({ message: "sid不能为空", groups: ["add"] })
+  sid: string;
+
   coverImg?: string;
 
   createTime?: string;

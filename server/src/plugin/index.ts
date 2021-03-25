@@ -1,6 +1,8 @@
 import { FastifyInstance } from "fastify";
 import fastifyMultipart from "fastify-multipart";
 import fastifyStatic from "fastify-static";
+import fastifyCookie from "fastify-cookie";
+import fastifyCsrf from "fastify-csrf";
 import config from "../config";
 
 export default function plugin (server: FastifyInstance) {
@@ -11,4 +13,8 @@ export default function plugin (server: FastifyInstance) {
     root: config.staticPath,
     prefix: config.staticPrefix,
   });
+
+  server.register(fastifyCookie);
+  server.register(fastifyCsrf, { cookieOpts: { signed: false } });
+  // server.addHook('onRequest', server.csrfProtection)
 }

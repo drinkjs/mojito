@@ -1,8 +1,7 @@
 import * as Events from "events";
 import * as Ws from "ws";
+import { v4 as uuidv4 } from "uuid";
 import { WSS_METADATA } from "./decorator";
-
-const uuidv1 = require("uuid/v1");
 
 export interface WsClient {
   id: string;
@@ -34,9 +33,9 @@ export default class WebsocketEmitter extends Events.EventEmitter {
     this.server.on("connection", (client, req) => {
       const wsClient: WsClient = {
         isAlive: true,
-        id: uuidv1(),
+        id: uuidv4(),
         ip: req.socket.remoteAddress || "",
-        room: req.headers.origin || uuidv1(),
+        room: req.headers.origin || uuidv4(),
         socket: client,
       };
       this.clients.push(wsClient);

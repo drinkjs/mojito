@@ -1,5 +1,11 @@
-import { mongoose, prop, Ref } from "@typegoose/typegoose";
-import Component from "./ComponentEntity";
+import {
+  Ref,
+  modelOptions,
+  mongoose,
+  prop,
+  Severity,
+} from "@typegoose/typegoose";
+// import Component from "./ComponentEntity";
 import Project from "./ProjectEntity";
 
 export interface ScreenOptions {
@@ -48,6 +54,7 @@ export interface LayerInfo {
   anime?: { [key: string]: any };
 }
 
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export default class Screen {
   @prop({ required: true, ref: () => Project })
   projectId!: Ref<Project>;

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { v4 as uuidv4 } from "uuid";
 import * as compressing from "compressing";
 import { Body, Controller, Get, Post, Query, Validation } from "../core";
 import { ComponentDto, ComponentTypeDto } from "../dto";
@@ -101,12 +102,14 @@ export default class ComponentController extends BaseController {
                   }
                 }
                 // 创建存放组件的临时目录
-                const savePath = `${dest}/_${descJson.name}${descJson.version}`;
+                const sid = uuidv4();
+                const savePath = `${dest}/${sid}`;
                 this.ncpAndRm(directory, savePath).then((rel) => {
                   if (rel) {
                     // 保存成功
                     resolve({
                       ...descJson,
+                      sid,
                     });
                   } else {
                     reject(new Error(`${descJson.name}保存失败`));
@@ -127,10 +130,10 @@ export default class ComponentController extends BaseController {
     });
   }
 
-  async ncpAndRm (fromPath: string, savePath: string) {
+  async ncpAndRm (fromPath: string, savePath: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (!fs.existsSync(fromPath)) {
-        resolve(true);
+        resolve(false);
         return;
       }
       rmdir(savePath);
@@ -197,12 +200,14 @@ export default class ComponentController extends BaseController {
     const rel = await this.service.add({ ...dto, origin: 2 });
     const dest = this.libSavePath;
     const savePath = `${dest}/${dto.name}${dto.version}`;
-    const directory = `${dest}/_${dto.name}${dto.version}`;
+    const directory = `${dest}/${dto.sid}`;
     if (!fs.existsSync(directory)) {
       return this.fail(`组件${dto.name}${dto.version}不存在`);
     }
 
-    if (rel && (await this.ncpAndRm(directory, savePath))) { return this.success(rel); }
+    if (rel && (await this.ncpAndRm(directory, savePath))) {
+      return this.success(rel);
+    }
 
     return this.fail("添加失败");
   }
@@ -219,8 +224,15 @@ export default class ComponentController extends BaseController {
     // 复制文件
     const dest = this.libSavePath;
     const savePath = `${dest}/${dto.name}${dto.version}`;
-    const directory = `${dest}/_${dto.name}${dto.version}`;
-    if (rel && (await this.ncpAndRm(directory, savePath))) { return this.success(rel); }
+    const directory = `${dest}/${dto.sid}`;
+    let cpRel = true;
+    if (dto.sid) {
+      cpRel = await this.ncpAndRm(directory, savePath);
+    }
+
+    if (rel && cpRel) {
+      return this.success(rel);
+    }
 
     return this.fail("更新失败");
   }
