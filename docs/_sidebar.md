@@ -13,7 +13,7 @@
     - [概述](editor.md)
     - [页面设置](page-set.md)
     - [图层](layers.md)
-    - [样式设置](cover.md)
+    - [组件样式](styles.md)
     - [组件属性](cover.md)
     - [交互事件](cover.md)
     - [动画效果](cover.md)
