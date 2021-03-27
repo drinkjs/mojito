@@ -41,7 +41,7 @@ const tabs: TabObj[] = [
     render: () => <Layers />
   },
   {
-    label: '组件样式',
+    label: '图层样式',
     key: 'style',
     icon: 'icon-css',
     render: (key?: string) => <Style key={key} />

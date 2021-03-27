@@ -13,9 +13,9 @@
     - [概述](editor.md)
     - [页面设置](page-set.md)
     - [图层](layers.md)
-    - [组件样式](styles.md)
-    - [组件属性](cover.md)
-    - [交互事件](cover.md)
+    - [图层样式](styles.md)
+    - [组件属性](props.md)
+    - [交互事件](events.md)
     - [动画效果](cover.md)
 
 - 进阶

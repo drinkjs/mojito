@@ -24,6 +24,7 @@ export default inject('screenStore')(
     const [form] = Form.useForm();
     const [testData, setTestData] = useState<any>();
     const [testing, setTesting] = useState(false);
+    const [saveing, setSaveing] = useState(false);
 
     useEffect(() => {
       if (!visible) setTestData('');
@@ -64,6 +65,7 @@ export default inject('screenStore')(
           }
         }
         if (!screenStore!.currLayer || !screenStore!.currLayer.id) return;
+        setSaveing(true);
         screenStore!
           .updateLayer(
             screenStore!.currLayer.id,
@@ -78,6 +80,7 @@ export default inject('screenStore')(
             { saveNow: true }
           )
           .then(() => {
+            setSaveing(false);
             Message.success('保存成功');
             props.onCancel && props.onCancel();
           });
@@ -112,18 +115,17 @@ export default inject('screenStore')(
         {...restProps}
         destroyOnClose
         visible={visible}
-        zIndex={9988}
+        // zIndex={9988}
+        afterClose={() => {
+          setSaveing(false);
+        }}
         footer={
           <Space>
             <Button onClick={props.onCancel}>取消</Button>
             <Button onClick={onTest} loading={testing}>
               测试
             </Button>
-            <Button
-              type="primary"
-              onClick={onOk}
-              loading={screenStore!.saveLoading}
-            >
+            <Button type="primary" onClick={onOk} loading={saveing}>
               确定
             </Button>
           </Space>
