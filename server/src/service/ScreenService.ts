@@ -88,12 +88,14 @@ export default class ScreenService extends BaseService {
     if (rel) {
       if (rel.layers && rel.layers.length > 0) {
         // 查询图层组件信息
-        const componentIds = rel.layers.map(v => v.component);
+        const componentIds = rel.layers.map((v) => v.component);
         const components = await this.componentService.findByIds(componentIds);
         rel.layers.forEach((layer, index) => {
-          const component = components.find(comp => comp.id === layer.component);
+          const component = components.find(
+            (comp) => comp.id === layer.component
+          );
           detail.layers[index].component = component;
-        })
+        });
       }
       const project: any = rel.projectId;
       const { name, cdn, _id } = project;
@@ -135,8 +137,11 @@ export default class ScreenService extends BaseService {
     const rel = await this.model.findByIdAndUpdate(
       data.id,
       {
-        layers: data.layers ? data.layers.map(v => ({ ...v, component: v.component?.id })) : [],
+        layers: data.layers
+          ? data.layers.map((v) => ({ ...v, component: v.component?.id }))
+          : [],
         style: data.style,
+        updateTime: createStringDate(),
       },
       { omitUndefined: true }
     );
