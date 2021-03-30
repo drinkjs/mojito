@@ -208,7 +208,7 @@ export default inject('screenStore')(
                           title="预览"
                           rel="noreferrer"
                           target="_blank"
-                          href={`/screen/${v.id}?preview=1`}
+                          href={`/screen/${v.id}`}
                           onClick={(e) => {
                             e.stopPropagation();
                           }}

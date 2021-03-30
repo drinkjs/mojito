@@ -123,17 +123,15 @@ const Layer = inject('screenStore')(
     }: LayerProps) => {
       const targetRef = useRef<HTMLDivElement | null | undefined>();
       const currAnime = useRef<anime.AnimeInstance | undefined | null>();
+      // 事件回调返回值
+      const eventReturn = useRef<EventValue>({});
 
       const funThis = useRef<any>(); // 事件处理的this
 
       const initSizeFlag = useRef<boolean>(data.initSize);
       const dataSourceTimer = useRef<any>();
       const initFlag = useRef<boolean>(false);
-      // 事件回调返回值
-      const [eventReturn, setEventReturn] = useState<EventValue>({
-        styles: {},
-        props: {}
-      });
+
       // 组件的事件处理方法
       const [compEventHandlers, setCompEventHandlers] = useState<any>({}); // 组件事件
       const [allEventHandlers, setAllEventHandlers] = useState<any>({}); // 所有事件
@@ -342,11 +340,10 @@ const Layer = inject('screenStore')(
        */
       const setProps = useCallback(
         (props: any) => {
-          eventReturn.props = {
-            ...eventReturn.props,
+          eventReturn.current.props = {
+            ...eventReturn.current.props,
             ...props
-          };
-          setEventReturn({ ...eventReturn });
+          }
         },
         [eventReturn]
       );
@@ -356,11 +353,10 @@ const Layer = inject('screenStore')(
        */
       const setStyles = useCallback(
         (styles: any) => {
-          eventReturn.props = {
-            ...eventReturn.props,
+          eventReturn.current.styles = {
+            ...eventReturn.current.styles,
             ...styles
           };
-          setEventReturn({ ...eventReturn });
         },
         [eventReturn]
       );
@@ -371,11 +367,11 @@ const Layer = inject('screenStore')(
       const createThis = () => {
         const currArgs = mergeArgs();
         if (funThis.current) {
-          funThis.current.porps = currArgs.props;
+          funThis.current.props = currArgs.props;
           funThis.current.styles = currArgs.styles;
         } else {
           funThis.current = {
-            ...mergeArgs(),
+            ...currArgs,
             eventer,
             request: eventRequest,
             setProps,
@@ -404,12 +400,12 @@ const Layer = inject('screenStore')(
           ...defaultProps,
           ...data.props, // 组件属性配置
           ...dataSource, // 数据源返回
-          ...eventReturn.props // 事件处理返回
+          ...eventReturn.current.props // 事件处理返回
         });
 
         const mergeStyle = toJS({
           ...data.style, // 样式设置
-          ...eventReturn.styles // 事件返回改变样式
+          ...eventReturn.current.styles // 事件返回改变样式
         });
 
         return { props: mergeProps, styles: mergeStyle };
