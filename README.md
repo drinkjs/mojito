@@ -3,7 +3,7 @@
     <img height="200" src="./client/public/logo-black.svg">
   </a>
 </p>
-<p align="center">Mojito数据可视化编辑器是使用可视化交互的方式来分析并展示庞杂数据的产品</p>
+<p align="center">Mojito是一个可视化数据分析、数据展示和轻业务开发的平台</p>
 
 ## ✨ 特性
 

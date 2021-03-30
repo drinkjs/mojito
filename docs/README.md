@@ -3,7 +3,7 @@
     <img height="200" src="http://mojito.drinkjs.com/logo-black.svg">
   </a>
 </p>
-<p align="center">Mojito数据可视化平台是使用可视化交互的方式来分析并展示庞杂数据的产品</p>
+<p align="center">Mojito是一个可视化数据分析、数据展示和轻业务开发的平台</p>
 
 ## ✨ 特性
 

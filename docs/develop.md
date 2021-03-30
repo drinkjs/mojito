@@ -6,6 +6,17 @@ Mojito的组件开发主要分为三步
 2. 编写描述文件declare.json，编写规范请参考[declare.json](/declare.md)
 3. 使用UMD的方式打包组件，将打包好的组件连同declare.json压缩成zip上传到平台
 
+为了减少组件的大小，加快组件的加载速度，建议修改Webpack的externals，依赖在declare.json里引入
+
+```js
+externals: {
+  react: "React",
+  "react-dom": "ReactDOM",
+  vue: "Vue",
+  "element-ui":"ElementUI",
+}
+```
+
 为了方便开发，这里提供三个开发骨架供大家参考
 
 * [**mojito-compack**](https://github.com/drinkjscom/mojito-compack)：基于React的开发骨架

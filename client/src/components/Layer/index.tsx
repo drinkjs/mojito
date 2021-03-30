@@ -142,6 +142,7 @@ const Layer = inject('screenStore')(
       // 加载组件
       const [lib, setLib] = useState<any>();
       const [libLoading, setLibLoading] = useState(false);
+      const [hide, setHide] = useState(false);
       // 事件同步处理
       const [eventySync, setEventSync] = enable
         ? []
@@ -217,6 +218,12 @@ const Layer = inject('screenStore')(
         };
       }, []);
 
+      useEffect(() => {
+        if (data) {
+          setHide(!!data.hide)
+        }
+      }, [data])
+
       /**
        * 接收事件同步
        */
@@ -258,7 +265,8 @@ const Layer = inject('screenStore')(
             if (
               key === LayerEvent.onLoad ||
               key === LayerEvent.onUnload ||
-              key === LayerEvent.onDataSource
+              key === LayerEvent.onDataSource ||
+              key === LayerEvent.onShow
             ) {
               // 系统事件
               //  allEvnet[key] = callFun;
@@ -372,6 +380,7 @@ const Layer = inject('screenStore')(
             request: eventRequest,
             setProps,
             setStyles,
+            setHide,
             router: history,
             currAnime,
             anime: (animeParams: anime.AnimeParams) => {
@@ -534,9 +543,9 @@ const Layer = inject('screenStore')(
             transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
             zIndex: data.style.z,
             display:
-              !enable && (data.hide || data.groupHide) ? 'none' : 'block',
+              !enable && (hide || data.groupHide) ? 'none' : 'block',
             opacity:
-              enable && (data.groupHide || data.hide)
+              enable && (data.groupHide || hide)
                 ? 0.2
                 : data.style.opacity,
             overflow:
@@ -571,6 +580,7 @@ const Layer = inject('screenStore')(
                 alignItems: 'center',
                 pointerEvents: enable && data.eventLock ? 'none' : undefined
               }}
+              componentName={data.component.name}
             />
           )}
           {libLoading && <LoadingComponent />}

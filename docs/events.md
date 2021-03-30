@@ -10,6 +10,7 @@ Mojito具备事件处理的能力，让您对组件有更加全面的控制，�
 
 此外为了方便开发，每个事件处理方法都会注入一个this对象，this对象有以下属性和方法
 
+- layer：当前图层的DOM对象
 - styles：当前图层的样式
 - props: 当前图层组件的属性
 - currAnime: 当前的动画效果对象，可以用来控制播放或停止
@@ -19,6 +20,7 @@ Mojito具备事件处理的能力，让您对组件有更加全面的控制，�
 - request: 网络请求方法，原型：(url:string, method:"get"|"post", params?:object, options?:object) => Promise
 - setProps: 可以用来设置组件的属性，原型： (props:object) => void
 - setStyles: 可以用来设置图层的样式，原型： (styles:object) => void
+- setHide: 控制图层显示/隐藏，原型： (hide:boolean) => void
 
 事件处理的方法和普通的js方法没区别，支持使用es6/7语法，但有几个点需要注意事
 1. 不支持import
