@@ -59,7 +59,6 @@ export default ({
    * @param funComp
    */
   const createReact = () => {
-    console.log('--------------------------', events);
     return React.createElement(component, {
       ...props,
       ...events,
