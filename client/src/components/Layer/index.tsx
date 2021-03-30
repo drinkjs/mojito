@@ -123,9 +123,6 @@ const Layer = inject('screenStore')(
     }: LayerProps) => {
       const targetRef = useRef<HTMLDivElement | null | undefined>();
       const currAnime = useRef<anime.AnimeInstance | undefined | null>();
-      // 事件回调返回值
-      const eventReturn = useRef<EventValue>({});
-
       const funThis = useRef<any>(); // 事件处理的this
 
       const initSizeFlag = useRef<boolean>(data.initSize);
@@ -135,6 +132,8 @@ const Layer = inject('screenStore')(
       // 组件的事件处理方法
       const [compEventHandlers, setCompEventHandlers] = useState<any>({}); // 组件事件
       const [allEventHandlers, setAllEventHandlers] = useState<any>({}); // 所有事件
+      // 事件设置的props和styles
+      const [eventRel, setEventRel] = useState<EventValue>({});
       // 数据源
       const [dataSource, setDataSource] = useState<any>();
       // 加载组件
@@ -144,7 +143,10 @@ const Layer = inject('screenStore')(
       // 事件同步处理
       const [eventySync, setEventSync] = enable
         ? []
-        : useSync<EventSync>({ event: '', args: [] }, `${screenStore!.screenInfo!.id}_${data.id}`); // screenId+layerId组件唯一的同步key
+        : useSync<EventSync>(
+          { event: '', args: [] },
+            `${screenStore!.screenInfo!.id}_${data.id}`
+        ); // screenId+layerId组件唯一的同步key
 
       const history = useHistory();
 
@@ -218,9 +220,9 @@ const Layer = inject('screenStore')(
 
       useEffect(() => {
         if (data) {
-          setHide(!!data.hide)
+          setHide(!!data.hide);
         }
-      }, [data])
+      }, [data]);
 
       /**
        * 接收事件同步
@@ -332,7 +334,7 @@ const Layer = inject('screenStore')(
             showHandlerError(data.name, e);
           }
         },
-        [eventReturn, data]
+        [eventRel, data]
       );
 
       /**
@@ -340,12 +342,13 @@ const Layer = inject('screenStore')(
        */
       const setProps = useCallback(
         (props: any) => {
-          eventReturn.current.props = {
-            ...eventReturn.current.props,
+          eventRel.props = {
+            ...eventRel.props,
             ...props
-          }
+          };
+          setEventRel({ ...eventRel });
         },
-        [eventReturn]
+        [eventRel]
       );
 
       /**
@@ -353,12 +356,13 @@ const Layer = inject('screenStore')(
        */
       const setStyles = useCallback(
         (styles: any) => {
-          eventReturn.current.styles = {
-            ...eventReturn.current.styles,
+          eventRel.styles = {
+            ...eventRel.styles,
             ...styles
           };
+          setEventRel({ ...eventRel });
         },
-        [eventReturn]
+        [eventRel]
       );
 
       /**
@@ -400,12 +404,12 @@ const Layer = inject('screenStore')(
           ...defaultProps,
           ...data.props, // 组件属性配置
           ...dataSource, // 数据源返回
-          ...eventReturn.current.props // 事件处理返回
+          ...eventRel.props // 事件处理返回
         });
 
         const mergeStyle = toJS({
           ...data.style, // 样式设置
-          ...eventReturn.current.styles // 事件返回改变样式
+          ...eventRel.styles // 事件返回改变样式
         });
 
         return { props: mergeProps, styles: mergeStyle };
@@ -538,12 +542,9 @@ const Layer = inject('screenStore')(
             ...data.style,
             transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
             zIndex: data.style.z,
-            display:
-              !enable && (hide || data.groupHide) ? 'none' : 'block',
+            display: !enable && (hide || data.groupHide) ? 'none' : 'block',
             opacity:
-              enable && (data.groupHide || hide)
-                ? 0.2
-                : data.style.opacity,
+              enable && (data.groupHide || hide) ? 0.2 : data.style.opacity,
             overflow:
               screenStore!.resizeing &&
               screenStore!.currLayer &&

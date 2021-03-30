@@ -97,7 +97,7 @@ export default class WebsocketEmitter extends Events.EventEmitter {
       const msgObj: WsMess = JSON.parse(msg);
       this.emit(msgObj.event, msgObj.data, target, this);
     } catch (e) {
-      // logger.log(e);
+      console.error(e)
     }
   }
 

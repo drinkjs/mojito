@@ -91,7 +91,7 @@ export default class ScreenSyncController extends BaseController {
         data,
       },
       pageInfo.page,
-      target.id,
+      target.id
     );
   }
 
