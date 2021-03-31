@@ -1,7 +1,7 @@
 import { IsNotEmpty, Length } from "class-validator";
 import { IsObjectId } from "../common/Mongoer";
 import { LayerApi, LayerStyle } from "../entity/LayerEntity";
-import type { ComponentDto } from "./ComponentDto";
+import { ComponentDto } from "./ComponentDto";
 
 export class LayerDto {
   @IsObjectId({ message: "非法id", groups: ["update"] })

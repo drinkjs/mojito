@@ -1,6 +1,6 @@
 import { Validation } from "../core";
 import { Body, Controller, Get, Post, Query } from "../core/decorator";
-import type { ScreenDto } from "../dto";
+import { ScreenDto } from "../dto";
 import ScreenService from "../service/ScreenService";
 import BaseController from "./BaseController";
 

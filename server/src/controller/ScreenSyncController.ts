@@ -72,10 +72,10 @@ export default class ScreenSyncController extends BaseController {
       target.room = room;
     }
     target.data = data;
-    this.sendAll(room, {
-      event: "join",
-      data: this.wss.getClientsByRoom(room).map((client) => client.data),
-    });
+    // this.sendAll(room, {
+    //   event: "join",
+    //   data: this.wss.getClientsByRoom(room).map((client) => client.data),
+    // });
   }
 
   /**
@@ -131,10 +131,10 @@ export default class ScreenSyncController extends BaseController {
    * @param {object} page 页面信息
    * @param {string} filterId 过滤客户端id
    */
-  sendAll (room: string, msg: any, page?: string, filterId?:string) {
+  sendAll (room: string, msg: any, page?: string, filterId?: string) {
     // 发送信息到客户端
     const clients = this.getRoomClients(room, page);
-    clients.forEach(client => {
+    clients.forEach((client) => {
       if (client.id !== filterId) this.sendMessage(client, msg);
     });
   }

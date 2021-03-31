@@ -5,9 +5,9 @@ import ComponentController from "./ComponentController";
 import ScreenSyncController from "./ScreenSyncController";
 
 export default [
+  ScreenController,
   CommonController,
   ProjectController,
-  ScreenController,
   ComponentController,
   ScreenSyncController,
 ];

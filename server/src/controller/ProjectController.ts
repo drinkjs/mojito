@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Post, Body } from "../core/decorator";
 import { Validation } from "../core";
-import type { ProjectDto } from "../dto";
+import { ProjectDto } from "../dto";
 import ProjectService from "../service/ProjectService";
 import BaseController from "./BaseController";
 
