@@ -10,7 +10,7 @@ interface RenderProps {
   styles: ComponentStyle;
   events: any;
   component: any;
-  componentName:string;
+  componentName: string;
   developLib: ComponentDevelopLib;
   onInitSize: (width: number, height: number) => void;
   onShow?: () => void;
@@ -59,11 +59,15 @@ export default ({
    * @param funComp
    */
   const createReact = () => {
-    return React.createElement(component, {
-      ...props,
-      ...events,
-      styles
-    });
+    try {
+      return React.createElement(component, {
+        ...props,
+        ...events,
+        styles
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   /**
