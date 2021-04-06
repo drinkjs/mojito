@@ -212,9 +212,9 @@ export default inject('screenStore')(
                         )
                       : (
                       <div
-                        onDoubleClick={() => {
-                          setEditLayerNameFlag(true);
-                        }}
+                        // onDoubleClick={() => {
+                        //   setEditLayerNameFlag(true);
+                        // }}
                         style={{ width: '70%', overflow: 'hidden' }}
                       >
                         {screenStore!.currLayer.name}

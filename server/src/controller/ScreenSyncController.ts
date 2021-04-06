@@ -106,7 +106,7 @@ export default class ScreenSyncController extends BaseController {
       room,
       {
         event: "syncPage",
-        data: data.data,
+        data,
       },
       data.page
     );

@@ -77,11 +77,16 @@ export default class ScreenService extends BaseService {
    * @param id
    * @returns
    */
-  async findDetailById (id: string) {
+  async findDetailById (id: string, projectId?: any) {
     if (!id) return null;
 
     const rel = await this.model
-      .findOne({ _id: id, status: 1 }, { coverImg: 0, createTime: 0 })
+      .findOne(
+        mongoose.Types.ObjectId.isValid(id)
+          ? { _id: id, status: 1 }
+          : { name: id, status: 1, projectId },
+        { coverImg: 0, createTime: 0 }
+      )
       .populate({ path: "projectId", select: "name cdn" })
       .exec();
     const detail = this.toDtoObject<ScreenDto>(rel);

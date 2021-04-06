@@ -50,6 +50,10 @@ const systemEvent = [
   {
     label: '数据源加载',
     value: LayerEvent.onDataSource
+  },
+  {
+    label: '跨屏数据同步',
+    value: LayerEvent.onSync
   }
 ];
 

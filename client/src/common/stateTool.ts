@@ -90,7 +90,7 @@ class SyncHelper {
           break;
       }
       const hadndler = this.eventHandlers.get(event);
-      if (hadndler) {
+      if (hadndler && data) {
         hadndler(data);
       }
     });
@@ -158,7 +158,8 @@ class SyncHelper {
 
   // eslint-disable-next-line class-methods-use-this
   syncPageHandler (data: SyncPageData) {
-    syncEventer.emit(`RECV_SYNC_${data.key}`, data);
+    // 如果有key会发送到指定组件，没有则页面处理
+    syncEventer.emit(data.key ? `RECV_SYNC_PAGE_${data.key}` : 'RECV_SYNC_PAGE', data);
   }
 }
 
@@ -221,7 +222,8 @@ export function removeEvent (event: string) {
  */
 export function useSync<T> (
   initialState: T,
-  key?: string
+  key?: string,
+  syncHandler?:(data:any)=>void
 ): [
   T,
   (data: Partial<T>) => void,
@@ -239,6 +241,12 @@ export function useSync<T> (
     }
   };
 
+  const onSyncPage = (data: SyncData) => {
+    if (sender !== data.sender) {
+      setData({ ...data.state, syncPage: true });
+    }
+  }
+
   useEffect(() => {
     if (!xpath) {
       // 确保组件已构建完成
@@ -251,9 +259,11 @@ export function useSync<T> (
     }
     if (xpath) {
       syncEventer.addListener(`RECV_SYNC_${xpath}`, onSync);
+      syncEventer.addListener(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
     }
     return () => {
       syncEventer.removeListener(`RECV_SYNC_${xpath}`, onSync);
+      syncEventer.removeListener(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
     };
   }, [xpath]);
 

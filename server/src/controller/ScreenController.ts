@@ -1,3 +1,4 @@
+import { mongoose } from "@typegoose/typegoose";
 import { Validation } from "../core";
 import { Body, Controller, Get, Post, Query } from "../core/decorator";
 import { ScreenDto } from "../dto";
@@ -100,11 +101,16 @@ export default class ScreenController extends BaseController {
 
   /**
    * 页面明细
-   * @param id
+   * @param id 大屏id或者projectId-大屏名
    */
   @Get("/detail")
   async detail (@Query("id") id: string): PromiseRes<ScreenDto | null> {
-    const rel = await this.service.findDetailById(id);
+    const ids = id.split("-");
+    const rel = mongoose.Types.ObjectId.isValid(id)
+      ? await this.service.findDetailById(id)
+      : ids.length > 1
+        ? await this.service.findDetailById(ids[1], ids[0])
+        : null;
     return this.success(rel);
   }
 

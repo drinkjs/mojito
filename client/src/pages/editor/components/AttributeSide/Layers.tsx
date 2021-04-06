@@ -7,6 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import IconFont from 'components/IconFont';
 import { LayerInfo, ScreenStore } from 'types';
 import styles from './index.module.scss';
+import Message from 'components/Message';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -319,8 +320,13 @@ export default inject('screenStore')(
     );
 
     const onEditLayerName = useCallback((value: LayerInfo, newName: string) => {
-      if (!newName) return;
-      screenStore!.updateLayer(value.id || '', { name: newName });
+      if (!newName || !value.id) return;
+      const layer = screenStore?.screenInfo?.layers?.find(v => v.name === newName);
+      if (layer) {
+        Message.error("图层已存在");
+        return;
+      }
+      screenStore!.updateLayer(value.id, { name: newName });
     }, []);
 
     return (
