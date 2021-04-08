@@ -7,8 +7,6 @@ import Image from 'components/Image';
 import Ellipsis from 'components/Ellipsis';
 import { ComponentInfo } from 'types';
 import styles from './index.module.scss';
-
-const { confirm } = Modal;
 interface Props {
   value: ComponentInfo;
   onRemove: (value: ComponentInfo) => void;
@@ -16,6 +14,7 @@ interface Props {
 }
 
 export default ({ value, onRemove, onEdit }: Props) => {
+  const [modal, contextHolder] = Modal.useModal();
   const [, drag, preview] = useDrag({
     item: { value, type: 'ADD_COMPONENT' },
     // end: (item, monitor: DragSourceMonitor) => {
@@ -41,7 +40,7 @@ export default ({ value, onRemove, onEdit }: Props) => {
   const handleRemove = useCallback(
     (e: React.MouseEvent<any>) => {
       e.stopPropagation();
-      confirm({
+      modal.confirm({
         title: `确定删除${value.title}?`,
         okText: '确定',
         cancelText: '取消',
@@ -73,6 +72,7 @@ export default ({ value, onRemove, onEdit }: Props) => {
           </a>
         </div>
       )}
+      {contextHolder}
     </div>
   );
 };

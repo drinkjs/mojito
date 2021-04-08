@@ -15,7 +15,6 @@ import noData from 'resources/images/noData.png';
 import Message from 'components/Message';
 
 const { useCallback, useState, useEffect } = React;
-const { confirm } = Modal;
 
 interface Props {
   project: ProjectDto;
@@ -29,6 +28,8 @@ export default inject('screenStore')(
     const [screenName, setScreenName] = useState('');
     const [editScreen, setEditScreen] = useState<ScreenDto>();
     const [uploading, setUploading] = useState('');
+
+    const [modal, contextHolder] = Modal.useModal();
 
     useEffect(() => {
       if (project && project.id) {
@@ -107,7 +108,7 @@ export default inject('screenStore')(
     const handleRemove = useCallback(
       (e: React.MouseEvent<any>, data: ScreenDto) => {
         e.stopPropagation();
-        confirm({
+        modal.confirm({
           title: `确定删除${data.name}?`,
           okText: '确定',
           cancelText: '取消',
@@ -309,6 +310,7 @@ export default inject('screenStore')(
             onPressEnter={handleOk}
           />
         </Modal>
+        {contextHolder}
       </div>
     );
   })

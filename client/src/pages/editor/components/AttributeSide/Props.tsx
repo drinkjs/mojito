@@ -70,6 +70,7 @@ export default inject('screenStore')(
     const { currLayer } = screenStore || {};
     const [form] = Form.useForm();
     const [dataSourceVisible, setDataSourceVisible] = useState(false);
+    const [modal, contextHolder] = Modal.useModal();
 
     const componentProps =
       screenStore!.currLayer && screenStore!.currLayer.component
@@ -97,7 +98,7 @@ export default inject('screenStore')(
      * 删除数据源
      */
     const removeDataSource = useCallback(() => {
-      Modal.confirm({
+      modal.confirm({
         title: '确定删除当前数据源设置?',
         okText: '确定',
         cancelText: '取消',
@@ -271,6 +272,7 @@ export default inject('screenStore')(
           visible={dataSourceVisible}
           onCancel={closeDataSource}
         />
+        {contextHolder}
       </div>
     );
   })

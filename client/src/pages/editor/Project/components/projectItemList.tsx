@@ -6,8 +6,6 @@ import styles from './projectItemList.module.scss';
 
 const classNames = require('classnames');
 
-const { confirm } = Modal;
-
 interface Props {
   value: ProjectDto[];
   onSelect: (data: ProjectDto) => void;
@@ -17,7 +15,8 @@ interface Props {
 }
 
 const projectItemList = (props: Props) => {
-  const { value, onSelect, selected, onEdit, onRemove /* ,onCdn */ } = props;
+  const { value, onSelect, selected, onEdit, onRemove } = props;
+  const [modal, contextHolder] = Modal.useModal();
 
   const handleEdit = (e: React.MouseEvent<any>, data: ProjectDto) => {
     e.stopPropagation();
@@ -26,7 +25,7 @@ const projectItemList = (props: Props) => {
 
   const handleRemove = (e: React.MouseEvent<any>, data: ProjectDto) => {
     e.stopPropagation();
-    confirm({
+    modal.confirm({
       title: `确定删除${data.name}?`,
       okText: '确定',
       cancelText: '取消',
@@ -78,6 +77,7 @@ const projectItemList = (props: Props) => {
           );
         })}
       </div>
+      {contextHolder}
     </aside>
   );
 };

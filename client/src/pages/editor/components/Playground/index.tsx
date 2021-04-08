@@ -702,7 +702,7 @@ export default inject('screenStore')(
 
       switch (data.action) {
         case 'REMOVE':
-          screenStore.confirmDeleteLayer(data.layer);
+          // screenStore.confirmDeleteLayer(data.layer);
           break;
         case 'SET_TOP': {
           const topZ = screenLayers[0].style.z;

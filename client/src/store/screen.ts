@@ -1,6 +1,5 @@
 import { CSSProperties } from 'react';
 import { makeAutoObservable, toJS, runInAction, computed } from 'mobx';
-import { Modal } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import * as service from 'services/screen';
 import { loadCDN } from 'components/Loader';
@@ -551,16 +550,16 @@ export default class Screen {
    * 确定删除图层
    * @param layer
    */
-  confirmDeleteLayer (layer: LayerInfo) {
-    Modal.confirm({
-      title: `确定删除${layer.name}?`,
-      onOk: () => {
-        this.setCurrLayer(undefined);
-        this.deleteLayer(layer.id);
-      },
-      onCancel: () => {}
-    });
-  }
+  // confirmDeleteLayer (layer: LayerInfo) {
+  //   Modal.confirm({
+  //     title: `确定删除${layer.name}?`,
+  //     onOk: () => {
+  //       this.setCurrLayer(undefined);
+  //       this.deleteLayer(layer.id);
+  //     },
+  //     onCancel: () => {}
+  //   });
+  // }
 
   /**
    * 删除图层
