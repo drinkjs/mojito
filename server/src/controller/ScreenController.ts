@@ -104,14 +104,18 @@ export default class ScreenController extends BaseController {
    * @param id 大屏id或者projectId-大屏名
    */
   @Get("/detail")
-  async detail (@Query("id") id: string): PromiseRes<ScreenDto | null> {
-    const ids = id.split("-");
-    const rel = mongoose.Types.ObjectId.isValid(id)
-      ? await this.service.findDetailById(id)
-      : ids.length > 1
-        ? await this.service.findDetailById(ids[1], ids[0])
-        : null;
-    return this.success(rel);
+  async detail (@Query("id") id: string): PromiseRes<ScreenDto | null | string> {
+    let rel;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      rel = await this.service.findDetailById(id);
+    } else {
+      const ids = id.split("-");
+      if (ids.length > 1) {
+        const projectId = ids.shift();
+        rel = await this.service.findDetailById(ids.join("-"), projectId);
+      }
+    }
+    return rel ? this.success(rel) : this.fail("页面不存在");
   }
 
   /**

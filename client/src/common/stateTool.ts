@@ -258,12 +258,14 @@ export function useSync<T> (
       }, 1000);
     }
     if (xpath) {
-      syncEventer.addListener(`RECV_SYNC_${xpath}`, onSync);
-      syncEventer.addListener(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
+      syncEventer.on(`RECV_SYNC_${xpath}`, onSync);
+      syncEventer.on(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
+      syncEventer.on('RECV_SYNC_PAGE', onSyncPage)
     }
     return () => {
-      syncEventer.removeListener(`RECV_SYNC_${xpath}`, onSync);
-      syncEventer.removeListener(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
+      syncEventer.off(`RECV_SYNC_${xpath}`, onSync);
+      syncEventer.off(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
+      syncEventer.off('RECV_SYNC_PAGE', onSyncPage)
     };
   }, [xpath]);
 

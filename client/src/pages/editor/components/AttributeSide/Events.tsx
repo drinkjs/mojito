@@ -52,7 +52,7 @@ const systemEvent = [
     value: LayerEvent.onDataSource
   },
   {
-    label: '跨屏数据同步',
+    label: '跨屏交互',
     value: LayerEvent.onSync
   }
 ];
