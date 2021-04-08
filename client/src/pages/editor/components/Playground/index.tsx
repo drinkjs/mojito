@@ -10,7 +10,7 @@ import {
   PlusOutlined,
   LoadingOutlined
 } from '@ant-design/icons';
-import { Tooltip, Switch } from 'antd';
+import { Tooltip, Switch, Modal } from 'antd';
 import { runInAction, toJS } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -115,12 +115,12 @@ const LayerContextMenu = (props: any) => {
           >
             置底
           </MenuItem>
-          <MenuItem
+          {/* <MenuItem
             onClick={handleItemClick}
             data={{ action: 'REMOVE', layer }}
           >
             删除
-          </MenuItem>
+          </MenuItem> */}
         </div>
       ) : (
         <div />
@@ -142,6 +142,8 @@ export default inject('screenStore')(
 
     const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
     const [saveing, setSaveing] = useState(false);
+
+    const [modal, contextHolder] = Modal.useModal();
 
     const pageLayout = screenStore!.screenInfo
       ? screenStore!.screenInfo.style
@@ -530,7 +532,17 @@ export default inject('screenStore')(
 
         if (e.key === 'Delete' && screenStore!.currLayer) {
           // 删除图层
-          return screenStore!.confirmDeleteLayer(screenStore!.currLayer);
+          // return screenStore!.confirmDeleteLayer(screenStore!.currLayer);
+          const layerId = screenStore!.currLayer.id;
+          modal.confirm({
+            title: `确定删除${screenStore!.currLayer.name}?`,
+            onOk: () => {
+              screenStore!.deleteLayer(layerId);
+              screenStore!.setCurrLayer(undefined);
+            },
+            onCancel: () => {}
+          });
+          return;
         }
         // esc取消选中
         if (e.key === 'Escape') {
@@ -1055,7 +1067,9 @@ export default inject('screenStore')(
                 <a
                   rel="noreferrer"
                   target="_blank"
-                  href={`/screen/${screenStore!.screenInfo.project.id}-${screenStore!.screenInfo.name}`}
+                  href={`/screen/${screenStore!.screenInfo.project.id}-${
+                    screenStore!.screenInfo.name
+                  }`}
                   className={styles.preview}
                 >
                   <IconFont type="icon-chakan" />
@@ -1308,6 +1322,7 @@ export default inject('screenStore')(
             </div>
           </div>
           <ConnectedMenu />
+          {contextHolder}
         </section>
       </>
     );

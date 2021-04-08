@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigProvider, Modal, message, notification } from 'antd';
+import { ConfigProvider, message, notification } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import { AppRouter } from './routes';
 import './App.less';
@@ -12,10 +12,6 @@ message.config({
 
 notification.config({
   prefixCls
-});
-
-Modal.config({
-  rootPrefixCls: prefixCls
 });
 
 function App () {

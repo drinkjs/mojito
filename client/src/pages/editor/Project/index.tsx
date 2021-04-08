@@ -6,7 +6,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import { ProjectDto, ProjectStore } from 'types';
 import ProjectItemList from './components/projectItemList';
 import ScreenList from './components/screenList';
-import CdnModal from './components/CdnModal';
 import styles from './index.module.scss';
 import Message from 'components/Message';
 import logo from 'resources/images/logo.svg';
@@ -21,7 +20,6 @@ export default inject('projectStore')(
     const { projectList } = projectStore;
 
     const [visible, setVisible] = useState(false);
-    const [cdnVisible, setCdnVisible] = useState(false);
     const [projectName, setProjectName] = useState<string>();
     const [selectedProject, setSelectedProject] = useState<ProjectDto>();
     const [editProject, setEditProject] = useState<ProjectDto>();
@@ -134,32 +132,6 @@ export default inject('projectStore')(
       [selectedProject]
     );
 
-    const onEditCdn = useCallback((data: ProjectDto) => {
-      setEditProject(data);
-      setCdnVisible(true);
-    }, []);
-
-    const onCdnCancel = useCallback(() => {
-      setCdnVisible(false);
-    }, []);
-
-    /**
-     * 保存cdn
-     */
-    const onCdnSave = useCallback(
-      (cdns?: string[]) => {
-        if (!editProject || !cdns) {
-          return;
-        }
-        projectStore!.updateCDN(editProject.id, cdns).then(() => {
-          onCdnCancel();
-          setEditProject(undefined);
-          projectStore!.getList();
-        });
-      },
-      [editProject]
-    );
-
     return (
       <div style={{ display: 'flex', height: '100%' }}>
         <Skeleton
@@ -182,7 +154,11 @@ export default inject('projectStore')(
                   <span style={{ fontSize: '18px' }}>暂没项目信息</span>
                 }
               >
-                <Button icon={<PlusOutlined />} type="primary" onClick={onAddProject}>
+                <Button
+                  icon={<PlusOutlined />}
+                  type="primary"
+                  onClick={onAddProject}
+                >
                   创建项目
                 </Button>
               </Empty>
@@ -213,7 +189,6 @@ export default inject('projectStore')(
                       selected={selectedProject ? selectedProject.id : ''}
                       onEdit={onEditProject}
                       onRemove={onRemoveProject}
-                      onCdn={onEditCdn}
                     />
                   </div>
                 </div>
@@ -242,13 +217,6 @@ export default inject('projectStore')(
             onPressEnter={handleOk}
           />
         </Modal>
-        <CdnModal
-          visible={cdnVisible}
-          onCancel={onCdnCancel}
-          onConfirm={onCdnSave}
-          projectName={editProject ? editProject.name : ''}
-          value={editProject ? editProject.cdn : undefined}
-        />
       </div>
     );
   })

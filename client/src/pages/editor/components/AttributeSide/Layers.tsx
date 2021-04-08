@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Input } from 'antd';
+import { Input, Modal } from 'antd';
 import { runInAction, toJS } from 'mobx';
 import { DndProvider, DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -212,6 +212,7 @@ const LayerItem = ({
 export default inject('screenStore')(
   observer(({ screenStore }: Props) => {
     const [screenLayers, setScreenLayers] = useState<LayerInfo[]>([]);
+    const [modal, contextHolder] = Modal.useModal();
 
     useEffect(() => {
       if (screenStore!.layers) {
@@ -279,7 +280,16 @@ export default inject('screenStore')(
 
     const onRemove = useCallback(
       (layer: LayerInfo) => {
-        screenStore!.confirmDeleteLayer(layer);
+        // screenStore!.confirmDeleteLayer(layer);
+        const layerId = layer.id;
+        modal.confirm({
+          title: `确定删除${layer.name}?`,
+          onOk: () => {
+            screenStore!.deleteLayer(layerId);
+            screenStore!.setCurrLayer(undefined);
+          },
+          onCancel: () => {}
+        });
       },
       [screenLayers]
     );
@@ -321,9 +331,11 @@ export default inject('screenStore')(
 
     const onEditLayerName = useCallback((value: LayerInfo, newName: string) => {
       if (!newName || !value.id) return;
-      const layer = screenStore?.screenInfo?.layers?.find(v => v.name === newName);
+      const layer = screenStore?.screenInfo?.layers?.find(
+        (v) => v.name === newName
+      );
       if (layer) {
-        Message.error("图层已存在");
+        Message.error('图层已存在');
         return;
       }
       screenStore!.updateLayer(value.id, { name: newName });
@@ -350,6 +362,7 @@ export default inject('screenStore')(
             );
           })}
         </DndProvider>
+        {contextHolder}
       </section>
     );
   })

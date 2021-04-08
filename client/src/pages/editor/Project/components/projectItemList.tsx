@@ -13,7 +13,6 @@ interface Props {
   onSelect: (data: ProjectDto) => void;
   onEdit: (data: ProjectDto) => void;
   onRemove: (data: ProjectDto) => void;
-  onCdn: (data: ProjectDto) => void;
   selected: string;
 }
 
@@ -60,13 +59,6 @@ const projectItemList = (props: Props) => {
               <div style={{ color: '#eee', fontSize: '18px' }}>{v.name}</div>
               <div style={{ marginTop: '12px' }}>{v.createTime}</div>
               <div className={styles.toolBar}>
-                {/* <a
-                  onClick={(e) => {
-                    handleCdn(e, v);
-                  }}
-                >
-                  <IconFont type="icon-cdn" style={{ fontSize: '16px' }} />
-                </a> */}
                 <a
                   onClick={(e) => {
                     handleEdit(e, v);

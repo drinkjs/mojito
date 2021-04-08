@@ -37,7 +37,7 @@ export const loadLib = ({ name, version }, onload) => {
 
   const script = document.createElement('script');
   script.src = bundleUrl;
-  script.crossorigin = 'anonymous';
+  script.crossOrigin = 'anonymous';
   script.onload = () => {
     loadingLib[exportName] = false;
     onload(global[exportName]);
@@ -128,15 +128,13 @@ export const loadCDN = (cdns, onload) => {
       });
     } else {
       const nodeList = document.body.querySelectorAll('script');
-      if (getScriptByUrl(nodeList, url)) {
-        return new Promise((resolve, reject) => {
-          resolve('ok');
-        });
-      }
       return new Promise((resolve, reject) => {
+        if (getScriptByUrl(nodeList, url)) {
+          return resolve('ok');
+        }
         const script = document.createElement('script');
         script.src = url;
-        script.crossorigin = 'anonymous';
+        script.crossOrigin = 'anonymous';
         script.onload = () => {
           resolve('ok');
         };
