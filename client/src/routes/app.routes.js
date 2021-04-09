@@ -22,7 +22,7 @@ const routes = [
     component: 'editor/Screen'
   },
   {
-    path: '/screen/:id',
+    path: '/view/:projectName/:screenName',
     exact: true,
     component: 'preview'
   },

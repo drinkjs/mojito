@@ -279,23 +279,7 @@ export default class Screen {
     return service
       .screenDetail({ id })
       .then((data: ScreenDetailDto) => {
-        data.layers?.sort((a, b) => {
-          return b.style.z - a.style.z;
-        });
-        // 所有组件依赖库
-        const dependencies: Set<string> = new Set();
-        data.layers?.forEach((layer) => {
-          layer.component?.dependencies?.forEach((v) => {
-            dependencies.add(v);
-          });
-        });
-        // 加载组件依赖库
-        loadCDN(Array.from(dependencies), () => {
-          runInAction(() => {
-            this.screenInfo = data;
-            this.getDetailLoading = false;
-          });
-        });
+        this.loadScript(data);
         return data;
       })
       .catch((e) => {
@@ -304,6 +288,49 @@ export default class Screen {
           this.getDetailLoading = false;
         });
       });
+  }
+
+  async getDetailByName (projectName: string, screenName: string) {
+    runInAction(() => {
+      this.getDetailLoading = true;
+      // 清空上一个页面数据
+      this.undoData = [];
+      this.redoData = [];
+      this.screenInfo = undefined;
+      this.selectedLayerIds = new Set();
+    });
+    return service
+      .screenDetailByName({ projectName, screenName })
+      .then((data: ScreenDetailDto) => {
+        this.loadScript(data);
+        return data;
+      })
+      .catch((e) => {
+        console.error(e);
+        runInAction(() => {
+          this.getDetailLoading = false;
+        });
+      });
+  }
+
+  loadScript (data: ScreenDetailDto) {
+    data.layers?.sort((a, b) => {
+      return b.style.z - a.style.z;
+    });
+    // 所有组件依赖库
+    const dependencies: Set<string> = new Set();
+    data.layers?.forEach((layer) => {
+      layer.component?.dependencies?.forEach((v) => {
+        dependencies.add(v);
+      });
+    });
+    // 加载组件依赖库
+    loadCDN(Array.from(dependencies), () => {
+      runInAction(() => {
+        this.screenInfo = data;
+        this.getDetailLoading = false;
+      });
+    });
   }
 
   /**

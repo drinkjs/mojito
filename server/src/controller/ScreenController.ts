@@ -101,20 +101,21 @@ export default class ScreenController extends BaseController {
 
   /**
    * 页面明细
-   * @param id 大屏id或者projectId-大屏名
+   * @param id 大屏id
    */
   @Get("/detail")
   async detail (@Query("id") id: string): PromiseRes<ScreenDto | null | string> {
-    let rel;
-    if (mongoose.Types.ObjectId.isValid(id)) {
-      rel = await this.service.findDetailById(id);
-    } else {
-      const ids = id.split("-");
-      if (ids.length > 1) {
-        const projectId = ids.shift();
-        rel = await this.service.findDetailById(ids.join("-"), projectId);
-      }
-    }
+    const rel = await this.service.findDetailById(id);
+    return rel ? this.success(rel) : this.fail("页面不存在");
+  }
+
+  /**
+   * 页面明细
+   * @param dto
+   */
+   @Post("/view/detail")
+  async previewDetail (@Body() dto: {projectName:string, screenName:string}): PromiseRes<ScreenDto | null | string> {
+    const rel = dto.screenName && dto.projectName ? await this.service.findByName(dto.projectName, dto.screenName) : null;
     return rel ? this.success(rel) : this.fail("页面不存在");
   }
 
@@ -123,8 +124,8 @@ export default class ScreenController extends BaseController {
    * @param params
    */
   @Get("/view")
-  async view (@Query("id") id: string): PromiseRes<any> {
-    const rel = await this.service.findDetailById(id);
-    return this.success(rel);
-  }
+   async view (@Query("id") id: string): PromiseRes<any> {
+     const rel = await this.service.findDetailById(id);
+     return this.success(rel);
+   }
 }

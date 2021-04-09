@@ -1067,9 +1067,10 @@ export default inject('screenStore')(
                 <a
                   rel="noreferrer"
                   target="_blank"
-                  href={`/screen/${screenStore!.screenInfo.project.id}-${
-                    screenStore!.screenInfo.name
-                  }`}
+                  href={`/view/${screenStore!.screenInfo.project.name.replace(
+                    '%',
+                    '%25'
+                  )}/${screenStore!.screenInfo.name.replace('%', '%25')}`}
                   className={styles.preview}
                 >
                   <IconFont type="icon-chakan" />

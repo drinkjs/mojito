@@ -70,7 +70,7 @@ export default class ProjectService extends BaseService {
 
     rel = await this.model.findByIdAndUpdate(
       data.id,
-      { name: data.name, cdn: data.cdn, updateTime: createStringDate() },
+      { name: data.name, updateTime: createStringDate() },
       { omitUndefined: true }
     );
     return rel;

@@ -10,28 +10,28 @@ import React, {
   useEffect,
   useCallback,
   useMemo
-} from "react";
-import { useHistory } from "react-router-dom";
-import { observer, inject } from "mobx-react";
-import anime from "animejs";
-import eventer from "common/eventer";
-import { request } from "common/network";
-import { sendDataToPage, useSync } from "common/stateTool";
+} from 'react';
+import { useHistory } from 'react-router-dom';
+import { observer, inject } from 'mobx-react';
+import anime from 'animejs';
+import eventer from 'common/eventer';
+import { request } from 'common/network';
+import { sendDataToPage, useSync } from 'common/stateTool';
 import {
   ComponentStyleQuery,
   LayerEvents,
   LayerInfo,
   ScreenStore
-} from "types";
-import { buildCode, isEmpty } from "common/util";
-import { loadLib, LoadingComponent } from "../Loader";
-import Render from "./Render";
-import styles from "./index.module.scss";
-import { DefaultLayerSize } from "config";
-import Message from "components/Message";
-import { toJS } from "mobx";
+} from 'types';
+import { buildCode, isEmpty } from 'common/util';
+import { loadLib, LoadingComponent } from '../Loader';
+import Render from './Render';
+import styles from './index.module.scss';
+import { DefaultLayerSize } from 'config';
+import Message from 'components/Message';
+import { toJS } from 'mobx';
 
-const md5 = require("blueimp-md5");
+const md5 = require('blueimp-md5');
 
 function showHandlerError (layerName: string, error: any) {
   Message.error(`${layerName}事件处理错误:${error.message}`);
@@ -50,8 +50,8 @@ export function parseParams (params: string) {
     const newParams = params.replace(regx, (match: string) => {
       const val = match.substring(3, match.length - 2);
       if (
-        typeof globalObj[val] === "object" ||
-        typeof globalObj[val] === "string"
+        typeof globalObj[val] === 'object' ||
+        typeof globalObj[val] === 'string'
       ) {
         return JSON.stringify(globalObj[val]);
       }
@@ -59,7 +59,7 @@ export function parseParams (params: string) {
     });
     return JSON.parse(newParams);
   } catch (e) {
-    Message.error("参数解释错误");
+    Message.error('参数解释错误');
     return {};
   }
 }
@@ -74,18 +74,18 @@ export function eventRequest (
   options?: any
 ) {
   return request(originUrl, method, params || {}, {
-    prefix: "/",
+    prefix: '/',
     checkCode: false,
     ...options
   });
 }
 
 export const LayerEvent: { [key: string]: string } = {
-  onLoad: "__onLayerLoad__",
-  onDataSource: "__onLayerData__",
-  onShow: "__onLayerShow__",
-  onUnload: "__onLayerUnload__",
-  onSync: "__onSync__"
+  onLoad: '__onLayerLoad__',
+  onDataSource: '__onLayerData__',
+  onShow: '__onLayerShow__',
+  onUnload: '__onLayerUnload__',
+  onSync: '__onSync__'
 };
 
 interface LayerProps extends React.HTMLAttributes<Element> {
@@ -113,7 +113,7 @@ interface EventSync {
   syncPage: boolean;
 }
 
-const Layer = inject("screenStore")(
+const Layer = inject('screenStore')(
   observer(
     ({
       screenStore,
@@ -148,13 +148,13 @@ const Layer = inject("screenStore")(
       const [eventySync, setEventSync] = enable
         ? []
         : useSync<EventSync>(
-          { event: "", args: [], syncPage: false },
+          { event: '', args: [], syncPage: false },
           md5(
-              `${screenStore!.screenInfo!.project.id}_${
+              `${screenStore!.screenInfo!.project.name}_${
                 screenStore!.screenInfo!.name
               }_${data.name}`
           )
-        ); // 项目id_大屏名称_图层名称组成唯一的同步key
+        ); // 项目名称_大屏名称_图层名称组成唯一的同步key
 
       const history = useHistory();
 
@@ -276,7 +276,7 @@ const Layer = inject("screenStore")(
               showHandlerError(data.name, e);
             }
 
-            if (!callFun || typeof callFun !== "function") return;
+            if (!callFun || typeof callFun !== 'function') return;
 
             allEvnet[key] = callFun;
             const eventValues = Object.keys(LayerEvent).map(
@@ -399,7 +399,10 @@ const Layer = inject("screenStore")(
             // router: history,
             goto: (screenName: string) => {
               history.push(
-                `/screen/${screenStore?.screenInfo?.project.id}-${screenName}`
+                `/view/${screenStore?.screenInfo?.project.name.replace(
+                  '%',
+                  '%25'
+                )}/${screenName.replace('%', '%25')}`
               );
             },
             goBack: () => {
@@ -407,15 +410,15 @@ const Layer = inject("screenStore")(
             },
             sync: (params: { screen: string; layer?: string; data: any }) => {
               sendDataToPage(
-                `/screen/${screenStore?.screenInfo?.project.id}-${params.screen}`,
+                `/view/${screenStore?.screenInfo?.project.name}/${params.screen}`,
                 { args: [params.data] },
                 params.layer
                   ? md5(
-                      `${screenStore!.screenInfo!.project.id}_${
+                      `${screenStore!.screenInfo!.project.name}_${
                         params.screen
                       }_${params.layer}`
                   )
-                  : ""
+                  : ''
               );
             },
             currAnime,
@@ -563,9 +566,9 @@ const Layer = inject("screenStore")(
       // const formatStyles = parseStyle(data.style);
 
       const scale =
-        data.style.scale !== undefined ? `scale(${data.style.scale})` : "";
+        data.style.scale !== undefined ? `scale(${data.style.scale})` : '';
       const rotate =
-        data.style.rotate !== undefined ? `rotate(${data.style.rotate})` : "";
+        data.style.rotate !== undefined ? `rotate(${data.style.rotate})` : '';
 
       return (
         <div
@@ -578,15 +581,15 @@ const Layer = inject("screenStore")(
             ...data.style,
             transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
             zIndex: data.style.z,
-            display: !enable && (hide || data.groupHide) ? "none" : "block",
+            display: !enable && (hide || data.groupHide) ? 'none' : 'block',
             opacity:
               enable && (data.groupHide || hide) ? 0.2 : data.style.opacity,
             overflow:
               screenStore!.resizeing &&
               screenStore!.currLayer &&
               screenStore!.currLayer.id === data.id
-                ? "hidden"
-                : data.style.overflow || "visible"
+                ? 'hidden'
+                : data.style.overflow || 'visible'
           }}
           onMouseDown={onClick}
           id={data.id}
@@ -606,12 +609,12 @@ const Layer = inject("screenStore")(
               }}
               events={compEventHandlers}
               style={{
-                display: "flex",
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-                pointerEvents: enable && data.eventLock ? "none" : undefined
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                pointerEvents: enable && data.eventLock ? 'none' : undefined
               }}
               componentName={data.component.name}
             />

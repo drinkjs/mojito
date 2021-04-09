@@ -15,7 +15,4 @@ export class ProjectDto {
   createTime?: string;
 
   updateTime?: string;
-
-  @IsNotEmpty({ message: "请输入cdn配置", groups: ["updateCDN"] })
-  cdn: string[];
 }

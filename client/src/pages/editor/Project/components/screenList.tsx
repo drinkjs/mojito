@@ -209,7 +209,10 @@ export default inject('screenStore')(
                           title="预览"
                           rel="noreferrer"
                           target="_blank"
-                          href={`/screen/${v.id}`}
+                          href={`/view/${project.name.replace(
+                            '%',
+                            '%25'
+                          )}/${v.name.replace('%', '%25')}`}
                           onClick={(e) => {
                             e.stopPropagation();
                           }}

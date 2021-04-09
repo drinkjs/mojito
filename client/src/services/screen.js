@@ -19,3 +19,6 @@ export const screenDetailLayers = (params) => get('/screen/view', params);
 
 export const updateScreenCover = (params) =>
   post('/screen/update/cover', params);
+
+export const screenDetailByName = (params) =>
+  post('/screen/view/detail', params);

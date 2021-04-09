@@ -23,13 +23,16 @@ export default inject('screenStore')(
     const { screenStore } = props;
     const screenInfo = screenStore!.screenInfo;
     const isPreview = useQuery().get('preview') === '1';
-    const { id } = useParams<{ id: string }>();
+    const { projectName, screenName } = useParams<{
+      projectName: string;
+      screenName: string;
+    }>();
 
     useEffect(() => {
-      screenStore!.getDetail(id).then((data) => {
+      screenStore!.getDetailByName(projectName, screenName).then((data) => {
         data && joinPage(data.project.name);
       });
-    }, [id]);
+    }, [projectName, screenName]);
 
     useInterval(
       () => {

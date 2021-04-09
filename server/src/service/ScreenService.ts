@@ -73,21 +73,54 @@ export default class ScreenService extends BaseService {
   }
 
   /**
+   * 通过项目名和页面名查询明细
+   * @param projectName
+   * @param screenName
+   * @returns
+   */
+  async findByName (projectName:string, screenName:string) {
+    const projectInfo = await this.projectService.findByName(projectName);
+    if (!projectInfo) return null;
+    const rel = await this.model
+      .findOne(
+        { name: screenName, status: 1, projectId: projectInfo.id },
+        { coverImg: 0, createTime: 0, status: 0 }
+      )
+      .exec();
+    const detail = this.toDtoObject<ScreenDto>(rel);
+    if (rel) {
+      if (rel.layers && rel.layers.length > 0) {
+        // 查询图层组件信息
+        const componentIds = rel.layers.map((v) => v.component);
+        const components = await this.componentService.findByIds(componentIds);
+        rel.layers.forEach((layer, index) => {
+          const component = components.find(
+            (comp) => comp.id === layer.component
+          );
+          detail.layers[index].component = component;
+        });
+      }
+    }
+    const { name, id } = projectInfo;
+    detail.project = { name, id };
+    delete detail.projectId;
+    return detail;
+  }
+
+  /**
    * 页面详细信息
    * @param id
    * @returns
    */
   async findDetailById (id: string, projectId?: any) {
-    if (!id) return null;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
 
     const rel = await this.model
       .findOne(
-        mongoose.Types.ObjectId.isValid(id)
-          ? { _id: id, status: 1 }
-          : { name: id, status: 1, projectId },
+        { _id: id, status: 1 },
         { coverImg: 0, createTime: 0 }
       )
-      .populate({ path: "projectId", select: "name cdn" })
+      .populate({ path: "projectId", select: "name" })
       .exec();
     const detail = this.toDtoObject<ScreenDto>(rel);
     if (rel) {
@@ -103,8 +136,8 @@ export default class ScreenService extends BaseService {
         });
       }
       const project: any = rel.projectId;
-      const { name, cdn, _id } = project;
-      detail.project = { name, cdn, id: _id };
+      const { name, _id } = project;
+      detail.project = { name, id: _id };
       delete detail.projectId;
     }
     return detail;
