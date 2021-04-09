@@ -43,7 +43,7 @@ export default inject('screenStore')(
 
     // 断线重连
     useReconnect(() => {
-      screenStore!.screenInfo && joinPage(screenStore!.screenInfo.project.name);
+      screenStore!.screenInfo && joinPage(screenStore!.screenInfo.project.id);
     });
 
     const { style, layers } = screenInfo || {

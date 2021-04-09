@@ -30,6 +30,7 @@ import styles from './index.module.scss';
 import { DefaultLayerSize } from 'config';
 import Message from 'components/Message';
 import { toJS } from 'mobx';
+import { useUpdateEffect } from 'ahooks';
 
 const md5 = require('blueimp-md5');
 
@@ -235,7 +236,7 @@ const Layer = inject('screenStore')(
       /**
        * 接收事件同步
        */
-      useEffect(() => {
+      useUpdateEffect(() => {
         if (
           eventySync &&
           eventySync.event &&

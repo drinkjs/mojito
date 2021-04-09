@@ -1,21 +1,14 @@
 /* eslint-disable no-eval */
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Select, Button, Tooltip, Switch } from 'antd';
+import { Select, Tooltip, Switch } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import CodeEditor from 'components/CodeEditor';
-import { GlobalEventer } from 'common/eventer';
-import { toJS } from 'mobx';
-import anime from 'animejs';
 import { ScreenStore } from 'types';
-import { eventRequest, LayerEvent } from 'components/Layer';
-import Message from 'components/Message';
-import { buildCode } from 'common/util';
+import { LayerEvent } from 'components/Layer';
 import styles from './index.module.scss';
-import { useHistory } from 'react-router-dom';
+import { useUpdateEffect } from 'ahooks';
 
-const eventer = new GlobalEventer();
-eventer.setMaxListeners(1024);
 const { Option } = Select;
 
 interface Props {
@@ -52,7 +45,7 @@ const systemEvent = [
     value: LayerEvent.onDataSource
   },
   {
-    label: '跨屏交互',
+    label: '跨屏消息',
     value: LayerEvent.onSync
   }
 ];
@@ -64,14 +57,9 @@ export default inject('screenStore')(
     const currLayerId = useRef<string>();
     const currEditor = useRef<any>();
     const [currEvent, setCurrEvent] = useState<string>();
-    const [consoleArgs, setConsoleArgs] = useState<any[]>([]);
-    const [error, setError] = useState<Error>();
     const [eventTips, setEventTips] = useState<string>();
     const [codeString, setCodeString] = useState<string>('');
     const [isSync, setIsSync] = useState(false);
-    const [saveing, setSaveing] = useState(false);
-
-    const history = useHistory();
 
     useEffect(() => {
       // 用于捕获编辑器内的console信息用于调式
@@ -84,7 +72,6 @@ export default inject('screenStore')(
       return () => {
         myConsoleArgs = [];
         console.log = myConsole.log;
-        eventer.removeAllListeners();
       };
     }, []);
 
@@ -94,8 +81,6 @@ export default inject('screenStore')(
         currLayerId.current !== screenStore!.currLayer.id
       ) {
         setCurrEvent(undefined);
-        setConsoleArgs([]);
-        setError(undefined);
         setEventTips('');
         setIsSync(false);
         setCodeString('');
@@ -104,7 +89,14 @@ export default inject('screenStore')(
     }, [screenStore!.currLayer]);
 
     /**
-     * 主动保存代码
+     * 代码改变时保存代码
+     */
+    useUpdateEffect(() => {
+      onSave();
+    }, [codeString]);
+
+    /**
+     * 保存代码
      */
     const onSave = useCallback(() => {
       if (
@@ -113,52 +105,23 @@ export default inject('screenStore')(
         screenStore.currLayer.id &&
         currEvent
       ) {
-        setSaveing(true);
-        screenStore
-          .updateLayer(
-            screenStore.currLayer.id,
-            {
-              events: {
-                ...screenStore.currLayer.events,
-                [currEvent]: { code: codeString, isSync }
-              }
-            },
-            { reload: true, saveNow: true }
-          )
-          .then((rel) => {
-            rel && Message.success('保存成功');
-          })
-          .finally(() => {
-            setSaveing(false);
-          });
+        screenStore.updateLayer(screenStore.currLayer.id, {
+          events: {
+            ...screenStore.currLayer.events,
+            [currEvent]: {
+              code: codeString === DEFAULT_CODE ? '' : codeString,
+              isSync
+            }
+          }
+        });
       }
     }, [currEvent, isSync, codeString]);
-
-    /**
-     * 调式代码
-     */
-    const onDebug = useCallback(() => {
-      myConsoleArgs = [];
-      setError(undefined);
-
-      try {
-        const code = codeString;
-        const fun = buildCode(code);
-        if (fun) {
-          fun.call(createThis());
-          setConsoleArgs(myConsoleArgs);
-        }
-      } catch (e) {
-        setError(e);
-      }
-    }, [codeString]);
 
     /**
      * 选择事件
      */
     const onEventChange = useCallback((value) => {
       setCurrEvent(value);
-      setError(undefined);
       currCodeRef.current = '';
       if (
         value &&
@@ -193,54 +156,23 @@ export default inject('screenStore')(
     }, []);
 
     /**
-     * 回调事件this
+     * 设置事件同步
      */
-    const createThis = () => {
-      if (!screenStore || !screenStore.currLayer) {
-        return {};
-      }
-      return {
-        props: toJS(screenStore!.currLayer.props),
-        style: toJS(screenStore!.currLayer.style),
-        eventer,
-        router: history,
-        request: eventRequest,
-        anime: (animeParams: anime.AnimeParams) => {
-          return anime({
-            ...animeParams,
-            targets: document.getElementById(screenStore!.currLayer!.id)
-          });
-        },
-        setProps: () => {},
-        setStyles: () => {},
-        layer: document.getElementById(screenStore!.currLayer.id)
-      };
-    };
-
-    /**
-     * 显示编辑内的console内容
-     */
-    const printDebug = () => {
-      return consoleArgs.map((args) => {
-        const formatArgs = args.map((v: any) => {
-          return JSON.stringify(
-            v && v.layer ? { ...v, layer: 'div@layer' } : v,
-            null,
-            2
-          );
-        });
-        return <div key="printDebug">{formatArgs.join(',')}</div>;
-      });
-    };
-
     const onSetSync = useCallback((checked) => {
       setIsSync(checked);
     }, []);
 
+    /**
+     * 输入代码
+     */
     const onCodeChange = useCallback((value: string) => {
       setCodeString(value || '');
     }, []);
 
+    /**
+     * 代码编辑器初始成功
+     * @param editor
+     */
     const onEditorReady = (editor: any) => {
       currEditor.current = editor;
     };
@@ -307,71 +239,15 @@ export default inject('screenStore')(
                   />
               )}
             </div>
-            {currEvent && (
-              <div>
-                <Button size="small" onClick={onDebug}>
-                  调试
-                </Button>
-                <Button
-                  type="primary"
-                  size="small"
-                  onClick={onSave}
-                  style={{ marginLeft: '6px', minWidth: '32px' }}
-                  loading={saveing}
-                >
-                  保存
-                </Button>
-              </div>
-            )}
           </section>
           <CodeEditor
-            style={{ width: '100%', height: '400px' }}
+            style={{ width: '100%', height: '600px' }}
             mode="javascript"
             // value={codeString}
             onChange={onCodeChange}
             onReady={onEditorReady}
           />
         </div>
-
-        {currEvent && (
-          <div className={styles.title}>
-            <section
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingBottom: '12px'
-              }}
-            >
-              调试信息{' '}
-              <Button
-                type="primary"
-                size="small"
-                onClick={() => {
-                  setConsoleArgs([]);
-                  setError(undefined);
-                }}
-                style={{ marginLeft: '6px' }}
-              >
-                清空
-              </Button>
-            </section>
-            <div
-              style={{
-                background: '#1e1e1e',
-                height: '150px',
-                overflow: 'auto',
-                padding: '3px'
-              }}
-            >
-              {printDebug()}
-              {error && (
-                <div style={{ color: '#cc0000' }}>
-                  Error：{JSON.stringify(error)}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     );
   })
