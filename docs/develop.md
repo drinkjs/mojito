@@ -2,7 +2,7 @@
 
 Mojito的组件开发主要分为三步
 
-1. 使用React / Vue2 / Vu3作为基础框架开发的组件 
+1. 使用React 16+ / Vue2 / Vu3作为基础框架开发的组件 
 2. 编写描述文件declare.json，编写规范请参考[declare.json](/declare.md)
 3. 使用UMD的方式打包组件，将打包好的组件连同declare.json压缩成zip上传到平台
 

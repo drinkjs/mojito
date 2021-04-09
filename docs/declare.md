@@ -5,7 +5,7 @@
   "name": "BarChart", // 组件名，全局唯一， 必填
   "version": "v1.0.0", // 组件版本号，必填
   "title": "基础柱状图", // 组件显示名称，非必填，可以在上传时修改
-  "dependencies": [ // 组件依赖的js和css，依赖js库必须使用UMD方式，如果你的组件只依赖React和Antd则无需添加
+  "dependencies": [ // 组件依赖的js和css，依赖js库必须使用UMD方式，如果你的组件只依赖React则无需添加
     "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
     "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
   ],
