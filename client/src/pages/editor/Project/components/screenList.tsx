@@ -309,7 +309,7 @@ export default inject('screenStore')(
           <Input
             placeholder="请输入页面名称"
             onChange={onInput}
-            value={screenName}
+            value={screenName?.replace('/', '')}
             onPressEnter={handleOk}
           />
         </Modal>

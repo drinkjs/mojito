@@ -159,7 +159,10 @@ class SyncHelper {
   // eslint-disable-next-line class-methods-use-this
   syncPageHandler (data: SyncPageData) {
     // 如果有key会发送到指定组件，没有则页面处理
-    syncEventer.emit(data.key ? `RECV_SYNC_PAGE_${data.key}` : 'RECV_SYNC_PAGE', data);
+    syncEventer.emit(
+      data.key ? `RECV_SYNC_PAGE_${data.key}` : 'RECV_SYNC_PAGE',
+      data
+    );
   }
 }
 
@@ -176,7 +179,7 @@ export function useReconnect (callback: Function) {
  */
 export function joinPage (room: string, data?: { [key: string]: any }) {
   const { pathname } = window.location;
-  syncHelper.joinPage(pathname, { room, ...data });
+  syncHelper.joinPage(decodeURIComponent(pathname), { room, ...data });
 }
 
 /**
@@ -223,7 +226,7 @@ export function removeEvent (event: string) {
 export function useSync<T> (
   initialState: T,
   key?: string,
-  syncHandler?:(data:any)=>void
+  syncHandler?: (data: any) => void
 ): [
   T,
   (data: Partial<T>) => void,
@@ -245,7 +248,7 @@ export function useSync<T> (
     if (sender !== data.sender) {
       setData({ ...data.state, syncPage: true });
     }
-  }
+  };
 
   useEffect(() => {
     if (!xpath) {
@@ -260,12 +263,12 @@ export function useSync<T> (
     if (xpath) {
       syncEventer.on(`RECV_SYNC_${xpath}`, onSync);
       syncEventer.on(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
-      syncEventer.on('RECV_SYNC_PAGE', onSyncPage)
+      syncEventer.on('RECV_SYNC_PAGE', onSyncPage);
     }
     return () => {
       syncEventer.off(`RECV_SYNC_${xpath}`, onSync);
       syncEventer.off(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
-      syncEventer.off('RECV_SYNC_PAGE', onSyncPage)
+      syncEventer.off('RECV_SYNC_PAGE', onSyncPage);
     };
   }, [xpath]);
 

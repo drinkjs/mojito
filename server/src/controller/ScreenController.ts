@@ -20,6 +20,10 @@ export default class ScreenController extends BaseController {
   async add (
     @Body(new Validation({ groups: ["add"] })) dto: ScreenDto
   ): PromiseRes<string> {
+    dto.name = dto.name.replace("/", "");
+    if (!dto.name) {
+      return this.fail("添加失败");
+    }
     const relId = await this.service.add(dto);
     if (relId) return this.success(relId);
     return this.fail("添加失败");
@@ -55,6 +59,10 @@ export default class ScreenController extends BaseController {
   async update (
     @Body(new Validation({ groups: ["update"] })) dto: ScreenDto
   ): PromiseRes<any> {
+    dto.name = dto.name.replace("/", "");
+    if (!dto.name) {
+      return this.fail("更新失败");
+    }
     const rel = await this.service.update(dto);
     if (rel) return this.success(null);
     return this.fail("更新失败");

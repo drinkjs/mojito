@@ -213,7 +213,7 @@ export default inject('projectStore')(
           <Input
             placeholder="请输入项目名称"
             onChange={onInput}
-            value={projectName}
+            value={projectName?.replace('/', '')}
             onPressEnter={handleOk}
           />
         </Modal>

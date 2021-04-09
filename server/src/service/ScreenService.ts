@@ -78,7 +78,7 @@ export default class ScreenService extends BaseService {
    * @param screenName
    * @returns
    */
-  async findByName (projectName:string, screenName:string) {
+  async findByName (projectName: string, screenName: string) {
     const projectInfo = await this.projectService.findByName(projectName);
     if (!projectInfo) return null;
     const rel = await this.model
@@ -87,6 +87,7 @@ export default class ScreenService extends BaseService {
         { coverImg: 0, createTime: 0, status: 0 }
       )
       .exec();
+    if (!rel) return null;
     const detail = this.toDtoObject<ScreenDto>(rel);
     if (rel) {
       if (rel.layers && rel.layers.length > 0) {
@@ -122,6 +123,7 @@ export default class ScreenService extends BaseService {
       )
       .populate({ path: "projectId", select: "name" })
       .exec();
+    if (!rel) return null;
     const detail = this.toDtoObject<ScreenDto>(rel);
     if (rel) {
       if (rel.layers && rel.layers.length > 0) {
