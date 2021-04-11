@@ -8,19 +8,19 @@ module.exports = {
       ...devServerConfig,
       proxy: {
         '/api': {
-          // target: 'http://mojito.drinkjs.com',
-          target: 'http://127.0.0.1:3838',
-          pathRewrite: { '^/api': '' },
+          target: 'http://mojito.drinkjs.com',
+          // target: 'http://127.0.0.1:3838',
+          // pathRewrite: { '^/api': '' },
           changeOrigin: true
         },
         '/public': {
-          // target: 'http://mojito.drinkjs.com',
-          target: 'http://127.0.0.1:3838',
+          target: 'http://mojito.drinkjs.com',
+          // target: 'http://127.0.0.1:3838',
           changeOrigin: true
         },
         '/ws': {
-          // target: 'ws://mojito.drinkjs.com',
-          target: 'ws://127.0.0.1:3838',
+          target: 'ws://mojito.drinkjs.com',
+          // target: 'ws://127.0.0.1:3838',
           ws: true,
           changeOrigin: true
         }

@@ -1160,7 +1160,7 @@ export default inject('screenStore')(
                     ref={(ref) => {
                       moveableRef.current = ref!;
                     }}
-                    target={groupElement}
+                    target={screenStore?.playing ? [] : groupElement}
                     draggable={!screenStore!.isLayerLock}
                     resizable={!screenStore!.isLayerLock}
                     onDragGroupStart={({ events }) => {

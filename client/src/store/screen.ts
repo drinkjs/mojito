@@ -39,6 +39,9 @@ export default class Screen {
 
   resizeing = false;
 
+  // 图层在执行动画
+  playing = false;
+
   undoData: ScreenDetailDto[] = [];
 
   redoData: ScreenDetailDto[] = [];

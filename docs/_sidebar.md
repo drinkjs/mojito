@@ -16,10 +16,10 @@
     - [图层样式](styles.md)
     - [组件属性](props.md)
     - [交互事件](events.md)
-    - [动画效果](cover.md)
+    - [动画效果](anime.md)
 
 - 进阶
-  - [事件进阶](configuration.md)
+  <!-- - [事件进阶](configuration.md) -->
   - 组件开发
     - [开发指南](develop.md)
     - [declare.json](declare.md)

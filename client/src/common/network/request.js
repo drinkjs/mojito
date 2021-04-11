@@ -30,13 +30,13 @@ function request (originUrl, method = 'get', params = {}, options = {}) {
   return new Promise((resolve, reject) => {
     const lowerMethod = method.toLocaleLowerCase();
     axios({
+      ...opts,
       method,
       url: reg.test(originUrl)
         ? originUrl
         : `${prefix === '/' ? '' : API}${originUrl}`,
       params: lowerMethod === 'get' ? params : {},
       data: lowerMethod !== 'get' ? params : {},
-      ...opts,
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         // 'x-csrf-token': csrfToken,

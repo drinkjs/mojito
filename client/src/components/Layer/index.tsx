@@ -392,6 +392,7 @@ const Layer = inject('screenStore')(
         } else {
           funThis.current = {
             ...currArgs,
+            currAnime: enable ? anime({}) : currAnime.current,
             eventer,
             request: eventRequest,
             setProps,
@@ -422,7 +423,6 @@ const Layer = inject('screenStore')(
                   : ''
               );
             },
-            currAnime,
             anime: (animeParams: anime.AnimeParams) => {
               return anime({
                 ...animeParams,
@@ -519,9 +519,9 @@ const Layer = inject('screenStore')(
             isEmpty(data.anime.translateY) &&
             isEmpty(data.anime.scale) &&
             isEmpty(data.anime.rotate) &&
-            isEmpty(data.anime.opacity) &&
-            isEmpty(data.anime.width) &&
-            isEmpty(data.anime.height)
+            isEmpty(data.anime.opacity)
+            // isEmpty(data.anime.width) &&
+            // isEmpty(data.anime.height)
           ) {
             return;
           }

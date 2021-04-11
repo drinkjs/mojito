@@ -7,6 +7,7 @@ import { InputNumber, Button, Form, Select, Row, Col, Switch } from 'antd';
 import { ScreenStore } from 'types';
 import Message from 'components/Message';
 import { isEmpty } from 'common/util';
+import { runInAction, toJS } from 'mobx';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -57,16 +58,16 @@ const animeFields = [
     name: 'translateY',
     render: () => <InputNumber style={{ width: '90%' }} />
   },
-  {
-    label: '宽度',
-    name: 'width',
-    render: () => <InputNumber style={{ width: '90%' }} />
-  },
-  {
-    label: '高度',
-    name: 'height',
-    render: () => <InputNumber style={{ width: '90%' }} />
-  },
+  // {
+  //   label: '宽度',
+  //   name: 'width',
+  //   render: () => <InputNumber style={{ width: '90%' }} />
+  // },
+  // {
+  //   label: '高度',
+  //   name: 'height',
+  //   render: () => <InputNumber style={{ width: '90%' }} />
+  // },
   {
     label: '角度',
     name: 'rotate',
@@ -104,6 +105,7 @@ const animeFields = [
   {
     label: '效果',
     name: 'easing',
+    default: 'linear',
     render: () => (
       <Select style={{ width: '90%' }} allowClear>
         {easings.map((v) => (
@@ -145,27 +147,26 @@ export default inject('screenStore')(
 
     useEffect(() => {
       return () => {
+        screenStore!.playing = false;
         if (currAnime.current && currElement.current) {
           currAnime.current.pause();
           currAnime.current.seek(0);
-          currAnime.current = null;
           anime.remove(currElement.current);
+          currAnime.current = null;
         }
       };
     }, []);
 
     const onReset = () => {
-      // const initialValues: any = {};
-      // const layerAnime: any = screenStore!.currLayer?.anime;
-      // animeFields.forEach((v) => {
-      //   initialValues[v.name] = layerAnime
-      //     ? layerAnime.params[v.name]
-      //     : v.default;
-      // });
-      // form.setFieldsValue(initialValues);
+      screenStore!.playing = false;
       if (currAnime.current) {
+        runInAction(() => {
+          screenStore!.selectedLayerIds = toJS(screenStore!.selectedLayerIds);
+        });
+
         currAnime.current.pause();
         currAnime.current.seek(0);
+        setPlaying(false);
       }
     };
 
@@ -187,7 +188,11 @@ export default inject('screenStore')(
           rel && Message.success('保存成功');
         })
         .finally(() => {
+          onReset();
           setSaveing(false);
+          runInAction(() => {
+            screenStore!.playing = false;
+          });
         });
     };
 
@@ -230,9 +235,15 @@ export default inject('screenStore')(
           ...params,
           targets: document.getElementById(screenStore!.currLayer!.id),
           begin: () => {
+            runInAction(() => {
+              screenStore!.playing = true;
+            });
             setPlaying(true);
           },
           complete: () => {
+            runInAction(() => {
+              screenStore!.playing = false;
+            });
             setPlaying(false);
           }
         });
