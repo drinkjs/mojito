@@ -4,7 +4,7 @@ import { Skeleton } from 'antd';
 import DocumentTitle from 'components/DocumentTitle';
 import { useParams, useLocation } from 'react-router-dom';
 import { joinPage, useReconnect } from 'common/stateTool';
-import Layer from 'components/Layer';
+import Layer from 'pages/editor/components/Layer';
 import { toJS } from 'mobx';
 import { ScreenStore } from 'types';
 import { DefaultLayerSize } from 'config';

@@ -27,7 +27,7 @@ import {
 } from 'react-contextmenu';
 import * as transformParser from 'transform-parser';
 import IconFont, { IconLink } from 'components/IconFont';
-import Layer from 'components/Layer';
+import Layer from 'pages/editor/components/Layer';
 import Eventer from 'common/eventer';
 import './react-contextmenu.css';
 import { ComponentStore, ComponentStyle, LayerInfo, ScreenStore } from 'types';

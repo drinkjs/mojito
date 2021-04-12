@@ -126,16 +126,11 @@ export default inject('componentStore')(
     const onUploadComp = useCallback(
       (uploadValue: any) => {
         form.setFieldsValue({
-          name: uploadValue
-            ? uploadValue.name
-            : value
-              ? value.name
-              : undefined,
+          name: uploadValue ? uploadValue.name : value ? value.name : undefined,
           title: value
             ? value.title
             : uploadValue
-              ? uploadValue.title ||
-              `${uploadValue.name} ${uploadValue.version}`
+              ? uploadValue.title || `${uploadValue.name} ${uploadValue.version}`
               : undefined
         });
       },
@@ -150,7 +145,6 @@ export default inject('componentStore')(
         onOk={onOk}
         destroyOnClose
         confirmLoading={componentStore!.addLoading}
-        zIndex={9988}
         okText="确定"
         cancelText="取消"
       >
@@ -174,27 +168,35 @@ export default inject('componentStore')(
             label="开发库"
             name="developLib"
             rules={[{ required: true, message: '此项不能为空' }]}
-            initialValue={value && value.developLib ? value.developLib : undefined}
+            initialValue={
+              value && value.developLib ? value.developLib : undefined
+            }
           >
-            <Select placeholder="请选择开发库" getPopupContainer={(target) =>
-              document.getElementById('addModalForm') || target
-              }>
-              {
-                ["Vue2", "Vue3", "React"].map(v => {
-                  return (
-                    <Select.Option key={v} value={v}>{v}</Select.Option>
-                  )
-                })
+            <Select
+              placeholder="请选择开发库"
+              getPopupContainer={(target) =>
+                document.getElementById('addModalForm') || target
               }
+            >
+              {['Vue2', 'Vue3', 'React'].map((v) => {
+                return (
+                  <Select.Option key={v} value={v}>
+                    {v}
+                  </Select.Option>
+                );
+              })}
             </Select>
           </Form.Item>
           <Form.Item
             label="组件名称"
             name="title"
-            rules={[{ required: true, message: '此项不能为空' }]}
+            rules={[
+              { required: true, message: '此项不能为空' },
+              { max: 20, message: '20字以内' }
+            ]}
             initialValue={value && value.title ? value.title : undefined}
           >
-            <Input placeholder="请输入组件中文名称" />
+            <Input placeholder="请输入组件中文名称(20字以内)" />
           </Form.Item>
           <Form.Item
             label="组件类型"

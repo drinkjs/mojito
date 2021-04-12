@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Tooltip, Row, Col, Skeleton } from 'antd';
+import { Tooltip, Row, Col, Skeleton, Popover } from 'antd';
 import { CloseOutlined, RollbackOutlined } from '@ant-design/icons';
 import IconFont from 'components/IconFont';
 import { observer, inject } from 'mobx-react';
@@ -7,6 +7,7 @@ import { toJS } from 'mobx';
 import { ComponentInfo, ComponentStore, ComponentTypeTree } from 'types';
 import Item from './Item';
 import AddComponent from './AddComponent';
+import ComponentTypeList from './ComponentTypeList';
 import styles from './index.module.scss';
 
 const classNames = require('classnames');
@@ -20,6 +21,7 @@ export default inject('componentStore')(
     const { componentStore } = props;
     const [currCategory, setCurrCategory] = useState<ComponentTypeTree[]>([]);
     const [showAdd, setShowAdd] = useState(false);
+    // const [showList, setShowList] = useState(false);
     const [editCompoent, setEditComponent] = useState<ComponentInfo>();
     const [currRoot, setCurrRoot] = useState<ComponentTypeTree>();
 
@@ -54,10 +56,6 @@ export default inject('componentStore')(
       },
       [currCategory]
     );
-
-    const onShow = useCallback(() => {
-      setShowAdd(true);
-    }, []);
 
     const onCancel = useCallback(() => {
       setShowAdd(false);
@@ -135,11 +133,31 @@ export default inject('componentStore')(
     return (
       <section className={styles.bar}>
         <div className={styles.category}>
-          <div>
-            <Tooltip placement="right" title="上传组件" key="上传组件">
-              <div className={styles.icon} onClick={onShow}>
-                <IconFont type="icon-Group-" style={{ color: '#FFF' }} />
+          <div key="上传组件">
+            <Tooltip placement="right" title="上传组件">
+              <div
+                className={styles.icon}
+                onClick={() => {
+                  setShowAdd(true);
+                }}
+              >
+                <IconFont type="icon-upload" style={{ color: '#FFF' }} />
               </div>
+            </Tooltip>
+          </div>
+          <div key="分类管理">
+            <Tooltip placement="right" title="分类管理">
+              <Popover
+                placement="rightTop"
+                title="分类管理"
+                content={<ComponentTypeList />}
+                trigger="click"
+                arrowPointAtCenter
+              >
+                <div className={styles.icon}>
+                  <IconFont type="icon-shezhi" style={{ color: '#FFF' }} />
+                </div>
+              </Popover>
             </Tooltip>
           </div>
           {componentStore!.typeTree.map((v) => {

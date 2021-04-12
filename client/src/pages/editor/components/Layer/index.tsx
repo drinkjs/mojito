@@ -24,7 +24,7 @@ import {
   ScreenStore
 } from 'types';
 import { buildCode, isEmpty } from 'common/util';
-import { loadLib, LoadingComponent } from '../Loader';
+import { loadLib, LoadingComponent } from '../../../../components/Loader';
 import Render from './Render';
 import styles from './index.module.scss';
 import { DefaultLayerSize } from 'config';

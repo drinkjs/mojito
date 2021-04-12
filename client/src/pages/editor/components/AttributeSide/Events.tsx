@@ -5,7 +5,7 @@ import { Select, Tooltip, Switch } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import CodeEditor from 'components/CodeEditor';
 import { ScreenStore } from 'types';
-import { LayerEvent } from 'components/Layer';
+import { LayerEvent } from 'pages/editor/components/Layer';
 import styles from './index.module.scss';
 import { useUpdateEffect } from 'ahooks';
 

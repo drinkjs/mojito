@@ -1,10 +1,10 @@
 import React from 'react';
-import { Image as Img } from 'antd';
+import { Image as AntImage } from 'antd';
 import noImg from 'resources/images/noImg.png';
 
 const Image = (props: any) => {
   return (
-    <Img preview={false} placeholder={false} fallback={noImg} {...props} />
+    <AntImage preview={false} placeholder={false} fallback={noImg} {...props} />
   );
 };
 
