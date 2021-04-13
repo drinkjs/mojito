@@ -12,7 +12,7 @@ import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ComponentStore, ComponentTypeTree } from 'types';
-import { getTreeItem, getTreeParent } from 'common/util';
+import { getTreeItem, getTreeAllParent } from 'common/util';
 import IconFont from 'components/IconFont';
 import { toJS } from 'mobx';
 
@@ -123,8 +123,12 @@ export default inject('componentStore')(
     const onEdit = (recond: ComponentTypeTree) => {
       setValue(recond);
       setShowAdd(true);
-      const pv = getTreeParent(componentStore!.typeTree, recond.id);
-      if (pv.length > 1) {
+      const pv = getTreeAllParent(
+        toJS(componentStore!.typeTree),
+        recond.id,
+        true
+      );
+      if (pv.length > 0) {
         setParentValue(pv.map((v) => v.id));
       } else {
         setParentValue(undefined);
@@ -133,8 +137,13 @@ export default inject('componentStore')(
 
     const filterOpts = () => {
       const tree = toJS(componentStore!.typeTree);
-      const item = getTreeItem(tree, value?.id);
-      delete item.children;
+      if (!value?.pid) {
+        return tree.filter((v) => v.id !== value?.id);
+      }
+      const pItem = getTreeItem(tree, value?.pid);
+      if (pItem) {
+        delete pItem.children;
+      }
       return tree;
     };
 

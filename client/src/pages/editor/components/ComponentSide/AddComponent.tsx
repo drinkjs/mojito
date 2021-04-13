@@ -6,7 +6,7 @@ import { ModalFuncProps } from 'antd/lib/modal';
 import { RcFile } from 'antd/lib/upload';
 import UploadImg from 'components/UploadImg';
 import { toJS } from 'mobx';
-import { getTreeParent } from 'common/util';
+import { getTreeAllParent } from 'common/util';
 import { ComponentInfo, ComponentStore, ScreenStore } from 'types';
 import Message from 'components/Message';
 import { reloadLib } from 'components/Loader';
@@ -204,9 +204,10 @@ export default inject('componentStore')(
             rules={[{ required: true, message: '此项不能为空' }]}
             initialValue={
               value && value.type
-                ? getTreeParent(toJS(componentStore!.typeTree), value.type).map(
-                  (v) => v.id
-                )
+                ? getTreeAllParent(
+                  toJS(componentStore!.typeTree),
+                  value.type
+                ).map((v) => v.id)
                 : undefined
             }
           >

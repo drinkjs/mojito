@@ -19,8 +19,8 @@ export function parseJson (json: string): any {
 }
 
 // 查找父节点
-export function getTreeParent (tree: any[], id: any) {
-  const temp: any[] = [];
+export function getTreeAllParent (tree: any[], id: any, filterSelf?: boolean) {
+  let temp: any[] = [];
   const forFn = function (childrenTree: any[], itemId: any) {
     for (let i = 0; i < childrenTree.length; i++) {
       const item = childrenTree[i];
@@ -34,6 +34,9 @@ export function getTreeParent (tree: any[], id: any) {
     }
   };
   forFn(tree, id);
+  if (filterSelf) {
+    temp = temp.filter((v) => v.id !== id);
+  }
   return temp.reverse();
 }
 
