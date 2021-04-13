@@ -161,14 +161,49 @@ export default class ComponentController extends BaseController {
   }
 
   /**
+   * 添加组件类型
+   */
+  @Post("/type/add")
+  async addType (@Body(new Validation({ groups: ["add"] })) dto: ComponentTypeDto): PromiseRes<any> {
+    const rel = await this.service.addType(dto);
+    if (rel) {
+      return this.success(rel);
+    }
+    return this.fail("添加失败");
+  }
+
+  /**
+   * 添加组件类型
+   */
+   @Post("/type/update")
+  async updateType (@Body(new Validation({ groups: ["update"] })) dto: ComponentTypeDto): PromiseRes<any> {
+    const rel = await this.service.updateType(dto);
+    if (rel) {
+      return this.success(rel);
+    }
+    return this.fail("更新失败");
+  }
+
+   /**
+   * 添加组件类型
+   */
+   @Get("/type/delete")
+   async delType (@Query("id") id:string): PromiseRes<any> {
+     const rel = await this.service.delType(id);
+     if (rel) {
+       return this.success(null);
+     }
+     return this.fail("删除失败");
+   }
+
+  /**
    * 组件列表
    */
   @Get("/list")
-  async list (@Query() query: any): PromiseRes<ComponentDto[]> {
-    const { type } = query || {};
-    const rel = await this.service.findAll(type);
-    return this.success(rel);
-  }
+   async list (@Query() query?:any): PromiseRes<ComponentDto[]> {
+     const rel = await this.service.findAll(query ? query.type : undefined);
+     return this.success(rel);
+   }
 
   /**
    * 上传组件

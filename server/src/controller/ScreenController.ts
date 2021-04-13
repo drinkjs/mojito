@@ -1,4 +1,3 @@
-import { mongoose } from "@typegoose/typegoose";
 import { Validation } from "../core";
 import { Body, Controller, Get, Post, Query } from "../core/decorator";
 import { ScreenDto } from "../dto";
@@ -126,14 +125,4 @@ export default class ScreenController extends BaseController {
     const rel = dto.screenName && dto.projectName ? await this.service.findByName(dto.projectName, dto.screenName) : null;
     return rel ? this.success(rel) : this.fail("页面不存在");
   }
-
-  /**
-   * 预览大屏信息
-   * @param params
-   */
-  @Get("/view")
-   async view (@Query("id") id: string): PromiseRes<any> {
-     const rel = await this.service.findDetailById(id);
-     return this.success(rel);
-   }
 }

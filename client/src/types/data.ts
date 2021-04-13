@@ -34,7 +34,7 @@ export interface ComponentInfo {
   name: string;
   coverImg?: string;
   coverUrl?: string;
-  type: number;
+  type: string;
   createTime?: string;
   updateTime?: string;
   createUser?: string;

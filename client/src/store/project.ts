@@ -59,23 +59,9 @@ export default class Project {
       });
   }
 
-  async updateCDN (id: string, cdn: string[]) {
-    this.addLoading = true;
-    return service
-      .projectUpdateCDN({
-        cdn,
-        id
-      })
-      .finally(() => {
-        runInAction(() => {
-          this.addLoading = false;
-        });
-      });
-  }
-
   async remove (id: string) {
     this.addLoading = true;
-    return service.projectDelete({ id }).finally(() => {
+    return service.projectDelete(id).finally(() => {
       runInAction(() => {
         this.addLoading = false;
       });
@@ -83,7 +69,7 @@ export default class Project {
   }
 
   async detail (id: string) {
-    return service.projectDetail({ id }).then((rel) => {
+    return service.projectDetail(id).then((rel) => {
       runInAction(() => {
         this.projectDetail = rel;
       });

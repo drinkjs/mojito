@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 import { IsObjectId } from "../common/Mongoer";
 import { LayerApi, LayerStyle } from "../entity/LayerEntity";
 import { ComponentDto } from "./ComponentDto";
@@ -9,7 +9,7 @@ export class LayerDto {
   id: string;
 
   @IsNotEmpty({ message: "name不能为空", groups: ["add"] })
-  @Length(1, 20, { groups: ["add", "update"] })
+  @MaxLength(50, { groups: ["add", "update"] })
   name: string;
 
   @IsObjectId({ message: "非法id", groups: ["add"] })

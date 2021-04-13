@@ -236,7 +236,7 @@ export default class Screen {
    */
   async remove (id: string) {
     this.addLoading = true;
-    return service.screenDelete({ id }).finally(() => {
+    return service.screenDelete(id).finally(() => {
       this.addLoading = false;
     });
   }
@@ -280,7 +280,7 @@ export default class Screen {
       this.selectedLayerIds = new Set();
     });
     return service
-      .screenDetail({ id })
+      .screenDetail(id)
       .then((data: ScreenDetailDto) => {
         this.loadScript(data);
         return data;
@@ -303,7 +303,7 @@ export default class Screen {
       this.selectedLayerIds = new Set();
     });
     return service
-      .screenDetailByName({ projectName, screenName })
+      .screenDetailByName(projectName, screenName)
       .then((data: ScreenDetailDto) => {
         this.loadScript(data);
         return data;
@@ -352,7 +352,7 @@ export default class Screen {
   async reload () {
     if (!this.screenInfo) return;
     return service
-      .screenDetail({ id: this.screenInfo.id })
+      .screenDetail(this.screenInfo.id)
       .then((data: ScreenDetailDto) => {
         data.layers &&
           data.layers.sort((a, b) => {

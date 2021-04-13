@@ -37,6 +37,26 @@ export function getTreeParent (tree: any[], id: any) {
   return temp.reverse();
 }
 
+export function getTreeItem (tree: any[], id: any) {
+  let rel: any = null;
+  const forFn = function (childrenTree: any[]) {
+    for (let i = 0; i < childrenTree.length; i++) {
+      const item = childrenTree[i];
+      if (item.id === id) {
+        rel = item;
+        break;
+      } else if (item.children) {
+        forFn(item.children);
+        if (rel !== null) {
+          break;
+        }
+      }
+    }
+  };
+  forFn(tree);
+  return rel;
+}
+
 export function buildCode (code: string): Function | null {
   if (!code) return null;
   const result = babel.transform(code, {

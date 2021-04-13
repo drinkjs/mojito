@@ -10,8 +10,9 @@ import {
 } from 'antd';
 import { inject, observer } from 'mobx-react';
 import React, { useState } from 'react';
-import { ComponentStore } from 'types';
-import { getTreeParent } from 'common/util';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ComponentStore, ComponentTypeTree } from 'types';
+import { getTreeItem, getTreeParent } from 'common/util';
 import IconFont from 'components/IconFont';
 import { toJS } from 'mobx';
 
@@ -24,105 +25,180 @@ const layout = {
   wrapperCol: { span: 20 }
 };
 
-const columns = [
-  {
-    title: '分类名称',
-    dataIndex: 'name',
-    key: 'name',
-    // eslint-disable-next-line react/display-name
-    render: (text: string, recond: any) => {
-      return (
-        <div>
-          {recond.icon && <IconFont type={recond.icon} />}
-          <span style={{ marginLeft: '12px' }}>{text}</span>
-        </div>
-      );
-    }
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    width: 100,
-    // eslint-disable-next-line react/display-name
-    render: (text: string, recond: any) => {
-      return (
-        <Space>
-          <Button type="primary" size="small">
-            编辑
-          </Button>
-          <Button size="small">删除</Button>
-        </Space>
-      );
-    }
-  }
-];
-
 export default inject('componentStore')(
   observer(({ componentStore, ...restProps }: Props) => {
     const [form] = Form.useForm();
     // eslint-disable-next-line no-unused-vars
-    const [value, setValue] = useState<any>();
+    const [value, setValue] = useState<ComponentTypeTree>();
+    const [parentValue, setParentValue] = useState<string[]>();
     const [showAdd, setShowAdd] = useState(false);
+    const [modal, contextHolder] = Modal.useModal();
+
+    const columns = [
+      {
+        title: '分类名称',
+        dataIndex: 'name',
+        key: 'name',
+        // eslint-disable-next-line react/display-name
+        render: (text: string, recond: ComponentTypeTree) => {
+          return (
+            <div>
+              {recond.icon && <IconFont type={recond.icon} />}
+              <span style={{ marginLeft: '12px' }}>{text}</span>
+            </div>
+          );
+        }
+      },
+      {
+        title: '操作',
+        dataIndex: 'id',
+        key: 'id',
+        width: 100,
+        // eslint-disable-next-line react/display-name
+        render: (text: string, recond: ComponentTypeTree) => {
+          return (
+            <Space>
+              <Button
+                type="link"
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  onEdit(recond);
+                }}
+              ></Button>
+              <Button
+                type="link"
+                size="small"
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  onRemove(recond);
+                }}
+              ></Button>
+            </Space>
+          );
+        }
+      }
+    ];
 
     const onCancel = () => {
       setShowAdd(false);
+      setValue(undefined);
+      setParentValue(undefined);
+    };
+
+    const onSave = () => {
+      form.validateFields().then((values) => {
+        const newValues = {
+          ...values,
+          pid: values.pid ? values.pid[values.pid.length - 1] : undefined,
+          id: value ? value.id : undefined
+        };
+        if (value && value.id) {
+          componentStore?.updateType(newValues).then(() => {
+            onCancel();
+          });
+        } else {
+          componentStore?.addType(newValues).then(() => {
+            onCancel();
+          });
+        }
+      });
+    };
+
+    const onRemove = (recond: ComponentTypeTree) => {
+      if (recond.children && recond.children.length > 0) {
+        // Message.error(`${recond.name}下存在多个子类，请先删除子类`);
+        // return;
+      }
+      modal.confirm({
+        title: `确定删除${recond.name}?`,
+        zIndex: 2000,
+        onOk: () => {
+          componentStore!.removeType(recond.id);
+        },
+        onCancel: () => {}
+      });
+    };
+
+    const onEdit = (recond: ComponentTypeTree) => {
+      setValue(recond);
+      setShowAdd(true);
+      const pv = getTreeParent(componentStore!.typeTree, recond.id);
+      if (pv.length > 1) {
+        setParentValue(pv.map((v) => v.id));
+      } else {
+        setParentValue(undefined);
+      }
+    };
+
+    const filterOpts = () => {
+      const tree = toJS(componentStore!.typeTree);
+      const item = getTreeItem(tree, value?.id);
+      delete item.children;
+      return tree;
     };
 
     return (
-      <div style={{ width: '650px', maxHeight: '500px', overflow: 'auto' }}>
+      <div
+        style={{
+          width: '650px',
+          maxHeight: '500px',
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         <div style={{ paddingBottom: '12px', textAlign: 'right' }}>
           <Button
             type="primary"
+            size="small"
             onClick={() => {
               setShowAdd(true);
             }}
-          >
-            {' '}
-            新增
-          </Button>
+            icon={<PlusOutlined />}
+          ></Button>
         </div>
-        <Table
-          columns={columns}
-          dataSource={componentStore?.typeTree}
-          pagination={false}
-          showHeader={false}
-        />
+        <div style={{ overflow: 'auto' }}>
+          <Table
+            columns={columns}
+            dataSource={componentStore?.typeTree}
+            pagination={false}
+            showHeader={false}
+            rowKey="id"
+          />
+        </div>
         <Modal
           visible={showAdd}
           onCancel={onCancel}
-          title={'新增分类'}
-          zIndex={9999}
+          onOk={onSave}
+          title={value ? '编辑分类' : '新增分类'}
+          destroyOnClose
+          zIndex={9988}
+          confirmLoading={componentStore?.addTypeLoading}
         >
           <Form id="addComponentTypes" {...layout} form={form} preserve={false}>
             <Form.Item
               label="父级类型"
-              name="type"
+              name="pid"
               rules={[{ required: false, message: '' }]}
-              initialValue={
-                value && value.type
-                  ? getTreeParent(
-                    toJS(componentStore!.typeTree),
-                    value.type
-                  ).map((v) => v.id)
-                  : undefined
-              }
+              initialValue={parentValue}
             >
               <Cascader
                 fieldNames={{ label: 'name', value: 'id' }}
-                options={componentStore!.typeTree}
+                options={value ? filterOpts() : componentStore!.typeTree}
                 placeholder="请选择父级类型"
                 getPopupContainer={(target) =>
                   document.getElementById('addComponentTypes') || target
                 }
                 allowClear
+                changeOnSelect
               />
             </Form.Item>
             <Form.Item
               label="分类名称"
               name="name"
               rules={[{ required: true, message: '此项不能为空' }]}
-              // initialValue={}
+              initialValue={value?.name}
             >
               <Input placeholder="请输入分类名称" />
             </Form.Item>
@@ -130,12 +206,13 @@ export default inject('componentStore')(
               label="图标"
               name="icon"
               rules={[{ required: true, message: '此项不能为空' }]}
-              // initialValue={}
+              initialValue={value?.icon}
             >
               <Input placeholder="请输入图标" />
             </Form.Item>
           </Form>
         </Modal>
+        {contextHolder}
       </div>
     );
   })

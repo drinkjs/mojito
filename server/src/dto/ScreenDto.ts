@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 import { IsObjectId } from "../common/Mongoer";
 import { ScreenOptions } from "../entity/ScreenEntity";
 import { LayerDto } from "./LayerDto";
@@ -20,7 +20,7 @@ export class ScreenDto {
   id: string;
 
   @IsNotEmpty({ message: "请输入页面名称", groups: ["add", "update"] })
-  @Length(1, 50, { groups: ["add", "update"] })
+  @MaxLength(50, { groups: ["add", "update"] })
   name: string;
 
   style?: ScreenOptions;

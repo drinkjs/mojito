@@ -10,4 +10,7 @@ export default class ComponentType {
 
   @prop()
   icon?: string;
+
+  @prop({ default: 0, select: false })
+  status: 0 | 1 | undefined; // 0:删除1正常;
 }

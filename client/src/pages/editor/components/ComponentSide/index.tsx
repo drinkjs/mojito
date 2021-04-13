@@ -68,6 +68,9 @@ export default inject('componentStore')(
     }, []);
 
     const onRemoveComponent = useCallback((comp: ComponentInfo) => {
+      if (!comp.id) {
+        return;
+      }
       componentStore!.removeComponent(comp.id).then(() => {
         componentStore!.getTypeComponent(comp.type);
       });

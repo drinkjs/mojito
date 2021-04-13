@@ -1,3 +1,4 @@
+import Message from 'components/Message';
 import { makeAutoObservable, runInAction } from 'mobx';
 import * as service from 'services/component';
 import { ComponentInfo, ComponentTypeTree } from 'types';
@@ -17,7 +18,9 @@ export default class Component {
 
   addLoading = false;
 
-  currSelectType: number | null = null;
+  addTypeLoading = false;
+
+  currSelectType: string | null = null;
 
   constructor () {
     makeAutoObservable(this);
@@ -27,7 +30,6 @@ export default class Component {
    * 组件类树
    */
   async getTypeTree () {
-    if (this.typeTree && this.typeTree.length > 0) return;
     this.getTypeTreeLoading = true;
     service
       .getTypeTree()
@@ -44,11 +46,71 @@ export default class Component {
   }
 
   /**
+   * 添加分类
+   * @param data
+   * @returns
+   */
+  async addType (data: ComponentTypeTree) {
+    this.addTypeLoading = true;
+    return service
+      .addType(data)
+      .then(() => {
+        Message.success('添加成功');
+        this.getTypeTree();
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.addTypeLoading = false;
+        });
+      });
+  }
+
+  /**
+   * 添加分类
+   * @param data
+   * @returns
+   */
+  async removeType (id: string) {
+    this.addTypeLoading = true;
+    return service
+      .removeType(id)
+      .then(() => {
+        Message.success('删除成功');
+        this.getTypeTree();
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.addTypeLoading = false;
+        });
+      });
+  }
+
+  /**
+   * 更新分类
+   * @param data
+   * @returns
+   */
+  async updateType (data: ComponentTypeTree) {
+    this.addTypeLoading = true;
+    return service
+      .updateType(data)
+      .then(() => {
+        Message.success('更新成功');
+        this.getTypeTree();
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.addTypeLoading = false;
+        });
+      });
+  }
+
+  /**
    * 增加组件
    * @param params
    */
   async addComponent (params: ComponentInfo) {
-    this.addLoading = true;
+    this.addTypeLoading = true;
     return service
       .addComponent(params)
       .then((data) => {
@@ -56,7 +118,7 @@ export default class Component {
       })
       .finally(() => {
         runInAction(() => {
-          this.addLoading = false;
+          this.addTypeLoading = false;
         });
       });
   }
@@ -80,33 +142,15 @@ export default class Component {
   }
 
   /**
-   * 增加系统组件
-   * @param params
-   */
-  async addSystemComponent (params: any) {
-    this.addLoading = true;
-    return service
-      .addSystemComponent(params)
-      .then(() => {
-        return true;
-      })
-      .finally(() => {
-        runInAction(() => {
-          this.addLoading = false;
-        });
-      });
-  }
-
-  /**
    * 某种类型下的组件
    * @param type
    */
-  async getTypeComponent (type: number | undefined) {
+  async getTypeComponent (type: string | undefined) {
     if (!type) return;
     this.getTypeTreeLoading = true;
     this.currSelectType = type;
     return service
-      .getTypeComponent({ type })
+      .getTypeComponent(type)
       .then((data) => {
         runInAction(() => {
           this.typeComponent = data;
@@ -126,7 +170,7 @@ export default class Component {
   async getComponentInfo (id: string) {
     this.getComponentInfoLoading = true;
     return service
-      .getComponentInfo({ id })
+      .getComponentInfo(id)
       .then((data) => {
         runInAction(() => {
           this.componentInfo = data;
@@ -143,27 +187,7 @@ export default class Component {
    * 系统组件
    * @param id
    */
-  async getComponentSystem () {
-    this.getComponentInfoLoading = true;
-    return service
-      .getComponentBySystem()
-      .then((data) => {
-        runInAction(() => {
-          this.systemComponent = data;
-        });
-      })
-      .finally(() => {
-        runInAction(() => {
-          this.getComponentInfoLoading = false;
-        });
-      });
-  }
-
-  /**
-   * 系统组件
-   * @param id
-   */
-  async removeComponent (id: string | undefined) {
-    return service.removeComponent({ id });
+  async removeComponent (id: string) {
+    return service.removeComponent(id);
   }
 }

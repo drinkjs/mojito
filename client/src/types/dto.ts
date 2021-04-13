@@ -28,8 +28,9 @@ export interface ScreenDetailDto {
 }
 
 export interface ComponentTypeTree {
-  id: number;
+  id: string;
   name: string;
-  icon?: string;
+  icon: string;
   children?: ComponentTypeTree[];
+  pid?: string;
 }

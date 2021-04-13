@@ -6,6 +6,7 @@ import { ComponentDto, ComponentTypeDto } from "../dto";
 import { createStringDate } from "../common/utils";
 import { DefaultComponentTypes } from "../config";
 import BaseService from "./BaseService";
+import AppError from "src/common/AppError";
 
 @Injectable()
 export default class ComponentService extends BaseService {
@@ -19,9 +20,61 @@ export default class ComponentService extends BaseService {
    * 查询所有分类
    */
   async findTypes () {
-    const rel = await this.typeModel.find().exec();
+    const rel = await this.typeModel.find({ status: 1 }).exec();
     if (!rel || rel.length === 0) return DefaultComponentTypes;
     return rel.map((v) => this.toDtoObject<ComponentTypeDto>(v));
+  }
+
+  /**
+   * 添加分类
+   * @param data
+   * @returns
+   */
+  async addType (data: ComponentTypeDto) {
+    const rel = await this.typeModel.findOne({ status: 1, name: data.name, pid: data.pid }).exec();
+    if (rel) {
+      AppError.assert(`${data.name}已经存在`)
+    }
+    const { _id: id } = await this.typeModel.create({
+      ...data,
+      status: 1
+    });
+    return id;
+  }
+
+  /**
+   * 删除分类
+   * @param data
+   * @returns
+   */
+  async delType (id:string) {
+    let rel = await this.typeModel.findOne({ pid: id, status: 1 }).exec();
+    // 如果存在子类不能删除
+    if (rel) {
+      AppError.assert('当前分类下下存在多个子类，请先删除子类');
+    }
+    const comp = await this.model.findOne({ type: id }).exec();
+    if (comp) {
+      AppError.assert('当前分类下存在多个组件，请先迁移组件');
+    }
+    rel = await this.typeModel.findByIdAndUpdate(id, { status: 0 }); ;
+    return rel;
+  }
+
+  /**
+   * 更新分类
+   * @param data
+   * @returns
+   */
+  async updateType (data: ComponentTypeDto) {
+    const rel = await this.typeModel.findByIdAndUpdate(
+      data.id,
+      {
+        ...data
+      },
+      { omitUndefined: true }
+    );
+    return rel;
   }
 
   /**
@@ -30,7 +83,7 @@ export default class ComponentService extends BaseService {
    */
   async findAll (type?: string) {
     const rel = await this.model.find({ type }).exec();
-    return rel.map((v) => this.toDtoObject<ComponentDto>(v));
+    return rel ? rel.map((v) => this.toDtoObject<ComponentDto>(v)) : [];
   }
 
   async findByName (name: string, version: string) {

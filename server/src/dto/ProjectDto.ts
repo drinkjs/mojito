@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 import { IsObjectId } from "../common/Mongoer";
 
 export class ProjectDto {
@@ -7,7 +7,7 @@ export class ProjectDto {
   id: string;
 
   @IsNotEmpty({ message: "请输入项目名称", groups: ["add", "update"] })
-  @Length(1, 50, { groups: ["add", "update"] })
+  @MaxLength(50, { groups: ["add", "update"] })
   name: string;
 
   createUser?: string;

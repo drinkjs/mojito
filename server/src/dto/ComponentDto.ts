@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 import { IsObjectId } from "../common/Mongoer";
 import { ComponentEvents, ComponentProps } from "../entity/ComponentEntity";
 
@@ -8,15 +8,19 @@ export class ComponentDto {
   id: string;
 
   @IsNotEmpty({ message: "name不能为空", groups: ["add", "update"] })
+  @MaxLength(50, { groups: ["add", "update"] })
   name: string;
 
   @IsNotEmpty({ message: "title不能为空", groups: ["add", "update"] })
+  @MaxLength(50, { groups: ["add", "update"] })
   title: string;
 
   @IsNotEmpty({ message: "type不能为空", groups: ["add", "update"] })
+  @IsObjectId({ message: "非法类型", groups: ["add", "update"] })
   type: string;
 
   @IsNotEmpty({ message: "version不能为空", groups: ["add", "update"] })
+  @MaxLength(10, { groups: ["add", "update"] })
   version: string;
 
   @IsNotEmpty({ message: "sid不能为空", groups: ["add"] })
