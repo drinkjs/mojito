@@ -141,8 +141,9 @@ export default inject('componentStore')(
         return tree.filter((v) => v.id !== value?.id);
       }
       const pItem = getTreeItem(tree, value?.pid);
-      if (pItem) {
-        delete pItem.children;
+      if (pItem && pItem.children) {
+        // 过滤自身节点
+        pItem.children = pItem.children.filter((v: any) => v.id !== value?.id);
       }
       return tree;
     };
