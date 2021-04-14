@@ -15,7 +15,4 @@ export default class Project {
 
   @prop({ default: 0, select: false })
   status: 0 | 1 | undefined; // 0:删除1正常;
-
-  @prop({ type: () => [String] })
-  cdn?: string[];
 }

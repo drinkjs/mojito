@@ -46,19 +46,6 @@ export default class ProjectController extends BaseController {
   }
 
   /**
-   * cdn设置
-   * @param dto
-   */
-  @Post("/update/cdn")
-  async updateCDN (
-    @Body(new Validation({ groups: ["updateCDN"] })) dto: ProjectDto
-  ): PromiseRes<any> {
-    const rel = await this.service.update(dto);
-    if (rel) return this.success(null);
-    return this.fail("更新失败");
-  }
-
-  /**
    * 项目列表
    */
   @Get("/list")

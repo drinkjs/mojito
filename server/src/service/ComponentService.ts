@@ -4,7 +4,6 @@ import ComponentTypeEntity from "../entity/ComponentTypeEntity";
 import ComponentEntity from "../entity/ComponentEntity";
 import { ComponentDto, ComponentTypeDto } from "../dto";
 import { createStringDate } from "../common/utils";
-import { DefaultComponentTypes } from "../config";
 import BaseService from "./BaseService";
 import AppError from "src/common/AppError";
 
@@ -80,7 +79,8 @@ export default class ComponentService extends BaseService {
     const rel = await this.typeModel.findByIdAndUpdate(
       data.id,
       {
-        ...data
+        ...data,
+        status: undefined,
       },
       { omitUndefined: true }
     );

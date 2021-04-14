@@ -40,7 +40,7 @@ export default class ProjectService extends BaseService {
    */
   async findAll () {
     const rel = await this.model
-      .find({ status: 1 }, { status: 0 })
+      .find({ status: 1 })
       .sort({ createTime: -1 })
       .exec();
     return rel.map((v) => this.toDtoObject<ProjectDto>(v));
@@ -52,7 +52,7 @@ export default class ProjectService extends BaseService {
    */
   async findByName (name: string) {
     const rel = await this.model
-      .findOne({ status: 1, name }, { status: 0 })
+      .findOne({ status: 1, name })
       .sort({ createTime: -1 })
       .exec();
     return this.toDtoObject<ProjectDto>(rel);
