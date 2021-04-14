@@ -23,7 +23,7 @@
 - MongoDB >= 4.2.12
 
 ```bash
-git clone https://github.com/drinkjscom/mojito.git
+git clone https://github.com/drinkjs/mojito.git
 ```
 ### 启动后端
 打开server/config/index.ts修改MongoDB相关连接信息
@@ -41,11 +41,11 @@ npm start
 ```
 
 ## 📦 组件开发
-* [**mojito-compack**](https://github.com/drinkjscom/mojito-compack): 使用React 自定义Mojito组件.
+* [**mojito-compack**](https://github.com/drinkjs/mojito-compack): 使用React 自定义Mojito组件.
 
-* [**mojito-compack-vue**](https://github.com/drinkjscom/mojito-compack-vue): 使用Vue2自定义Mojito组件.
+* [**mojito-compack-vue**](https://github.com/drinkjs/mojito-compack-vue): 使用Vue2自定义Mojito组件.
 
-* [**mojito-compack-vue3**](https://github.com/drinkjscom/mojito-compack-vue3): 使用Vue3自定义Mojito组件.
+* [**mojito-compack-vue3**](https://github.com/drinkjs/mojito-compack-vue3): 使用Vue3自定义Mojito组件.
 
 ## 📄 文档
 [http://mojito.drinkjs.com/docs](http://mojito.drinkjs.com/docs)
