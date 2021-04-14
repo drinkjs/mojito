@@ -4,7 +4,7 @@
 - MongoDB >= 4.2.12
 
 ```bash
-git clone https://github.com/drinkjscom/mojito.git
+git clone https://github.com/drinkjs/mojito.git
 ```
 ### 启动后端
 打开server/config/index.ts修改MongoDB相关连接信息

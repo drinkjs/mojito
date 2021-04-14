@@ -19,11 +19,11 @@ externals: {
 
 为了方便开发，这里提供三个开发骨架供大家参考
 
-* [**mojito-compack**](https://github.com/drinkjscom/mojito-compack)：基于React的开发骨架
+* [**mojito-compack**](https://github.com/drinkjs/mojito-compack)：基于React的开发骨架
 
-* [**mojito-compack-vue**](https://github.com/drinkjscom/mojito-compack-vue)：基于Vue2的开发骨架
+* [**mojito-compack-vue**](https://github.com/drinkjs/mojito-compack-vue)：基于Vue2的开发骨架
 
-* [**mojito-compack-vue3**](https://github.com/drinkjscom/mojito-compack-vue3)：基于Vue3的开发骨架
+* [**mojito-compack-vue3**](https://github.com/drinkjs/mojito-compack-vue3)：基于Vue3的开发骨架
 
 骨架是使用[**Storybook**](https://storybook.js.org/)构建的，在开发过程中可以很方便的调试组件
 
