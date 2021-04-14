@@ -1,13 +1,12 @@
-import { IsNotEmpty, MaxLength } from "class-validator";
-import { IsObjectId } from "../common/Mongoer";
+import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
 
 export class ProjectDto {
   @IsNotEmpty({ message: "请输入项目id", groups: ["update"] })
-  @IsObjectId({ message: "非法id", groups: ["update"] })
+  @IsMongoId({ message: "非法id", groups: ["update"] })
   id: string;
 
   @IsNotEmpty({ message: "请输入项目名称", groups: ["add", "update"] })
-  @MaxLength(50, { groups: ["add", "update"] })
+  @MaxLength(30, { groups: ["add", "update"], message: "项目名称30字以内" })
   name: string;
 
   createUser?: string;

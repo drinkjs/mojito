@@ -21,7 +21,17 @@ export default class ComponentService extends BaseService {
    */
   async findTypes () {
     const rel = await this.typeModel.find({ status: 1 }).exec();
-    if (!rel || rel.length === 0) return DefaultComponentTypes;
+    if (!rel || rel.length === 0) {
+      // 没有分类时创建一个默认分类
+      const name = '自定义';
+      const icon = 'icon-zidingyi'
+      const { _id: id } = await this.typeModel.create({
+        name,
+        icon,
+        status: 1
+      });
+      return [{ id, name, icon }]
+    }
     return rel.map((v) => this.toDtoObject<ComponentTypeDto>(v));
   }
 
@@ -47,7 +57,7 @@ export default class ComponentService extends BaseService {
    * @param data
    * @returns
    */
-  async delType (id:string) {
+  async delType (id: string) {
     let rel = await this.typeModel.findOne({ pid: id, status: 1 }).exec();
     // 如果存在子类不能删除
     if (rel) {

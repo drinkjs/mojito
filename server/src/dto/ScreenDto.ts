@@ -1,15 +1,14 @@
-import { IsNotEmpty, MaxLength } from "class-validator";
-import { IsObjectId } from "../common/Mongoer";
+import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
 import { ScreenOptions } from "../entity/ScreenEntity";
 import { LayerDto } from "./LayerDto";
 import { ProjectDto } from "./ProjectDto";
 
 export class ScreenDto {
-  @IsObjectId({ message: "非法id", groups: ["add"] })
+  @IsMongoId({ message: "非法projectId", groups: ["add"] })
   @IsNotEmpty({ message: "请输入项目id", groups: ["add"] })
   projectId: string;
 
-  @IsObjectId({
+  @IsMongoId({
     message: "非法id",
     groups: ["update", "coverImg", "updateLayer"],
   })
@@ -20,7 +19,7 @@ export class ScreenDto {
   id: string;
 
   @IsNotEmpty({ message: "请输入页面名称", groups: ["add", "update"] })
-  @MaxLength(50, { groups: ["add", "update"] })
+  @MaxLength(30, { groups: ["add", "update"], message: "页面名称30字以内" })
   name: string;
 
   style?: ScreenOptions;

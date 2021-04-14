@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Tooltip, Row, Col, Skeleton, Popover } from 'antd';
+import { Tooltip, Row, Col, Skeleton, Popover, Empty } from 'antd';
 import { CloseOutlined, RollbackOutlined } from '@ant-design/icons';
 import IconFont from 'components/IconFont';
 import { observer, inject } from 'mobx-react';
@@ -21,7 +21,7 @@ export default inject('componentStore')(
     const { componentStore } = props;
     const [currCategory, setCurrCategory] = useState<ComponentTypeTree[]>([]);
     const [showAdd, setShowAdd] = useState(false);
-    // const [showList, setShowList] = useState(false);
+    const [showList, setShowList] = useState(false);
     const [editCompoent, setEditComponent] = useState<ComponentInfo>();
     const [currRoot, setCurrRoot] = useState<ComponentTypeTree>();
 
@@ -38,10 +38,10 @@ export default inject('componentStore')(
           setCurrCategory(currCategory.concat(category));
         }
 
-        if (!category.children) {
-          // 最后一层请求组件
-          componentStore!.getTypeComponent(category.id);
-        }
+        // if (!category.children) {
+        // 最后一层请求组件
+        componentStore!.getTypeComponent(category.id);
+        // }
       },
       [currCategory]
     );
@@ -52,6 +52,8 @@ export default inject('componentStore')(
         setCurrCategory(cates);
         if (cates.length === 0) {
           setCurrRoot(undefined);
+        } else {
+          componentStore!.getTypeComponent(cates[cates.length - 1].id);
         }
       },
       [currCategory]
@@ -84,20 +86,39 @@ export default inject('componentStore')(
      */
     const showComponents = () => {
       return (
-        <Row className={styles.componentBox} key="components">
+        <>
           {componentStore!.typeComponent &&
-            componentStore!.typeComponent.map((comp: ComponentInfo) => {
+          componentStore!.typeComponent.length > 0
+            ? componentStore!.typeComponent.map((comp: ComponentInfo) => {
               return (
-                <Col span={12} key={comp.id} style={{ padding: '6px' }}>
-                  <Item
-                    value={comp}
-                    onEdit={onEditComponent}
-                    onRemove={onRemoveComponent}
-                  />
-                </Col>
+                  <Col span={12} key={comp.id} style={{ padding: '6px' }}>
+                    <Item
+                      value={comp}
+                      onEdit={onEditComponent}
+                      onRemove={onRemoveComponent}
+                    />
+                  </Col>
               );
-            })}
-        </Row>
+            })
+            : (!currType ||
+                !currType.children ||
+                currType.children.length === 0) && (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '100%'
+                  }}
+                >
+                  <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="暂无组件"
+                  />
+                </div>
+              )}
+        </>
       );
     };
 
@@ -120,7 +141,7 @@ export default inject('componentStore')(
                   >
                     <div className={styles.componentImg}>
                       <IconFont
-                        type={v.icon || ''}
+                        type={v.icon || 'icon-tupian'}
                         style={{ fontSize: '48px' }}
                       />
                     </div>
@@ -129,6 +150,7 @@ export default inject('componentStore')(
                 </Col>
               );
             })}
+          {showComponents()}
         </Row>
       );
     };
@@ -156,9 +178,21 @@ export default inject('componentStore')(
                 content={<ComponentTypeList />}
                 trigger="click"
                 arrowPointAtCenter
+                onVisibleChange={(visible) => {
+                  setCurrRoot(undefined);
+                  setCurrCategory([]);
+                  setShowList(visible);
+                }}
               >
-                <div className={styles.icon}>
-                  <IconFont type="icon-shezhi" style={{ color: '#FFF' }} />
+                <div
+                  className={classNames(styles.icon, {
+                    [styles.iconSelected]: showList
+                  })}
+                >
+                  <IconFont
+                    type="icon-shezhi"
+                    style={{ color: showList ? '#000' : '#FFF' }}
+                  />
                 </div>
               </Popover>
             </Tooltip>
@@ -195,8 +229,8 @@ export default inject('componentStore')(
               </span>
             </div>
             <Skeleton loading={componentStore!.getTypeTreeLoading}>
-              {!currType.children && showComponents()}
-              {currType.children && showChildrenType()}
+              {showChildrenType()}
+              {/* {showComponents()} */}
             </Skeleton>
           </div>
         )}

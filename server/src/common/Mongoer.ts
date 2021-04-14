@@ -54,22 +54,22 @@ export default class Mongoer {
 }
 
 /**
- * 验证objectId装饰器
+ * 自定义验证objectId装饰器
  * @param property
  * @param validationOptions
  */
-export function IsObjectId (validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      target: object.constructor,
-      propertyName,
-      options: validationOptions,
-      constraints: [],
-      validator: {
-        validate (value: any) {
-          return mongoose.Types.ObjectId.isValid(value);
-        },
-      },
-    });
-  };
-}
+// export function IsObjectId (validationOptions?: ValidationOptions) {
+//   return function (object: Object, propertyName: string) {
+//     registerDecorator({
+//       target: object.constructor,
+//       propertyName,
+//       options: validationOptions,
+//       constraints: [],
+//       validator: {
+//         validate (value: any) {
+//           return mongoose.Types.ObjectId.isValid(value);
+//         },
+//       },
+//     });
+//   };
+// }

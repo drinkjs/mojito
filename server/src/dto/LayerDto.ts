@@ -1,22 +1,21 @@
-import { IsNotEmpty, MaxLength } from "class-validator";
-import { IsObjectId } from "../common/Mongoer";
+import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
 import { LayerApi, LayerStyle } from "../entity/LayerEntity";
 import { ComponentDto } from "./ComponentDto";
 
 export class LayerDto {
-  @IsObjectId({ message: "非法id", groups: ["update"] })
+  @IsMongoId({ message: "非法id", groups: ["update"] })
   @IsNotEmpty({ message: "缺少图层id", groups: ["update"] })
   id: string;
 
   @IsNotEmpty({ message: "name不能为空", groups: ["add"] })
-  @MaxLength(50, { groups: ["add", "update"] })
+  @MaxLength(30, { groups: ["add", "update"], message: "图层名称30字以内" })
   name: string;
 
-  @IsObjectId({ message: "非法id", groups: ["add"] })
+  @IsMongoId({ message: "非法id", groups: ["add"] })
   @IsNotEmpty({ message: "screenId不能为空", groups: ["add"] })
   screenId: string;
 
-  @IsObjectId({ message: "非法id", groups: ["add"] })
+  @IsMongoId({ message: "非法id", groups: ["add"] })
   @IsNotEmpty({ message: "componentId不能为空", groups: ["add"] })
   componentId: string;
 

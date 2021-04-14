@@ -15,6 +15,7 @@ import { ComponentStore, ComponentTypeTree } from 'types';
 import { getTreeItem, getTreeAllParent } from 'common/util';
 import IconFont from 'components/IconFont';
 import { toJS } from 'mobx';
+import Message from 'components/Message';
 
 interface Props extends ModalFuncProps {
   componentStore?: ComponentStore;
@@ -43,7 +44,7 @@ export default inject('componentStore')(
         render: (text: string, recond: ComponentTypeTree) => {
           return (
             <div>
-              {recond.icon && <IconFont type={recond.icon} />}
+              <IconFont type={recond.icon || 'icon-zidingyi'} />
               <span style={{ marginLeft: '12px' }}>{text}</span>
             </div>
           );
@@ -107,8 +108,8 @@ export default inject('componentStore')(
 
     const onRemove = (recond: ComponentTypeTree) => {
       if (recond.children && recond.children.length > 0) {
-        // Message.error(`${recond.name}下存在多个子类，请先删除子类`);
-        // return;
+        Message.error(`${recond.name}下存在多个子类，请先删除子类`);
+        return;
       }
       modal.confirm({
         title: `确定删除${recond.name}?`,
@@ -188,6 +189,14 @@ export default inject('componentStore')(
         >
           <Form id="addComponentTypes" {...layout} form={form} preserve={false}>
             <Form.Item
+              label="分类名称"
+              name="name"
+              rules={[{ required: true, message: '此项不能为空' }]}
+              initialValue={value?.name}
+            >
+              <Input placeholder="请输入分类名称" />
+            </Form.Item>
+            <Form.Item
               label="父级类型"
               name="pid"
               rules={[{ required: false, message: '' }]}
@@ -205,17 +214,9 @@ export default inject('componentStore')(
               />
             </Form.Item>
             <Form.Item
-              label="分类名称"
-              name="name"
-              rules={[{ required: true, message: '此项不能为空' }]}
-              initialValue={value?.name}
-            >
-              <Input placeholder="请输入分类名称" />
-            </Form.Item>
-            <Form.Item
               label="图标"
               name="icon"
-              rules={[{ required: true, message: '此项不能为空' }]}
+              rules={[{ required: false, message: '此项不能为空' }]}
               initialValue={value?.icon}
             >
               <Input placeholder="请输入图标" />
