@@ -467,8 +467,8 @@ export default inject('screenStore')(
         height: pageLayout.height
       });
       if (areaRef.current && rootRef.current && zoomRef.current) {
-        const { width } = areaRef.current.getBoundingClientRect();
-        const zoom = parseFloat((width / pageLayout.width).toFixed(2));
+        const { width, height } = areaRef.current.getBoundingClientRect();
+        const zoom = parseFloat(pageLayout.width >= pageLayout.height ? (width / pageLayout.width).toFixed(2) : (height / pageLayout.height).toFixed(2));
         rootRef.current.style.transform = `scale(${zoom})`;
         rootRef.current.style.transformOrigin = '0 0 0';
         zoomRef.current.style.width = `${pageLayout.width * zoom}px`;
@@ -1264,7 +1264,7 @@ export default inject('screenStore')(
                       if (lastEvent && layerFrame) {
                         screenStore!.updateLayer(layerFrame.layerId, {
                           style: {
-                            ...screenStore!.currLayer!.style,
+                            ...screenStore?.currLayer?.style,
                             ...layerFrame.style
                           }
                         });
