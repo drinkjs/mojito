@@ -170,7 +170,7 @@ export default inject('componentStore')(
               </div>
             </Tooltip>
           </div>
-          <div key="分类管理">
+          <div key="分类管理" style={{ display: "none" }}>
             <Tooltip placement="right" title="分类管理">
               <Popover
                 placement="rightTop"

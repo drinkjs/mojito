@@ -6,6 +6,7 @@ import { ComponentDto, ComponentTypeDto } from "../dto";
 import { createStringDate } from "../common/utils";
 import BaseService from "./BaseService";
 import AppError from "../common/AppError";
+import { DefaultComponentTypes } from "../config";
 
 @Injectable()
 export default class ComponentService extends BaseService {
@@ -22,14 +23,15 @@ export default class ComponentService extends BaseService {
     const rel = await this.typeModel.find({ status: 1 }).exec();
     if (!rel || rel.length === 0) {
       // 没有分类时创建一个默认分类
-      const name = "自定义";
-      const icon = "icon-zidingyi";
-      const { _id: id } = await this.typeModel.create({
-        name,
-        icon,
-        status: 1,
-      });
-      return [{ id, name, icon }];
+      // const name = "自定义";
+      // const icon = "icon-zidingyi";
+      // const { _id: id } = await this.typeModel.create({
+      //   name,
+      //   icon,
+      //   status: 1,
+      // });
+      // return [{ id, name, icon }];
+      return DefaultComponentTypes;
     }
     return rel.map((v) => this.toDtoObject<ComponentTypeDto>(v));
   }
