@@ -10,9 +10,7 @@ export default {
   sessionSecret: "a secret with minimum length of 32 characters", // 一个32位的随机字符串，务必修改
   websocket: true, // 是否启用websocket
   cluster: false, // 是否启用多进程，启用后websocket消息需要通过发布/订阅的方式处理
-  logger: {
-    level: "error", // seet https://www.fastify.io/docs/latest/Logging/
-  },
+  logger: false,
   staticPrefix: "/public/",
   staticPath, // 所有静态文件存放访目录，用户上传的图片也存在这，生产环境建议放在cdn或nginx下
   libPath: process.env.LIBS_PATH || `${staticPath}/libs`, // 组件上传后存放的目录，生产环境建议放在cdn或nginx下

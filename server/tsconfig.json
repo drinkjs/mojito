@@ -6,10 +6,24 @@
     "outDir": "./dist",
     "sourceMap": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata":true,
-    "forceConsistentCasingInFileNames":true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "baseUrl":"./",
+    "baseUrl": "./",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "jsx": "preserve",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "files": [
     "src/main.ts"

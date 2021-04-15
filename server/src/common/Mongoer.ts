@@ -1,6 +1,6 @@
 import { getModelForClass } from "@typegoose/typegoose";
-import { registerDecorator, ValidationOptions } from "class-validator";
-import * as mongoose from "mongoose";
+// import { registerDecorator, ValidationOptions } from "class-validator";
+import mongoose from "mongoose";
 import { MG_MODEL_METADATA } from "../core/decorator/ServiceDecorator";
 
 export default class Mongoer {
@@ -46,7 +46,7 @@ export default class Mongoer {
           });
         }
       })
-      .catch((err) => {
+      .catch((err: any) => {
         this.connected = false;
         console.log(err);
       });

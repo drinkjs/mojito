@@ -37,15 +37,17 @@ export default class Ormer {
               return;
             }
             // 多数据库匹配
-            if (connName === connectName) { target[key] = connection.getRepository(value); }
+            if (connName === connectName) {
+              target[key] = connection.getRepository(value);
+            }
           });
         }
         const connectInfo = `${options.type}@${options.host}:${options.port}`;
         // this.connections.set(connName || connectInfo, connection);
         console.log(`${connectInfo} connected`.green);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((err: any) => {
+        console.error(err);
         setTimeout(() => {
           this.addConnect(options);
         }, 5000);

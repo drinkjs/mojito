@@ -8,3 +8,5 @@ client/build/
 server/public/libs/
 server/public/upload/
 server/dist/
+server/.next/
+server/next-env.d.ts

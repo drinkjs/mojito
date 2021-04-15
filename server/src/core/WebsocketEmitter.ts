@@ -9,7 +9,7 @@ export interface WsClient {
   room: string;
   isAlive: boolean;
   data?: any;
-  socket: Ws;
+  socket: any;
 }
 
 export interface WsMess {
@@ -97,7 +97,7 @@ export default class WebsocketEmitter extends Events.EventEmitter {
       const msgObj: WsMess = JSON.parse(msg);
       this.emit(msgObj.event, msgObj.data, target, this);
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 

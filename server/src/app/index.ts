@@ -17,7 +17,7 @@ export async function launch () {
     await server.listen(config.port);
     console.info(`server listening on ${config.port}`);
   } catch (err) {
-    server.log.error(err);
+    console.error(err);
     process.exit(1);
   }
 }

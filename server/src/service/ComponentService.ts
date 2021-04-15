@@ -5,7 +5,7 @@ import ComponentEntity from "../entity/ComponentEntity";
 import { ComponentDto, ComponentTypeDto } from "../dto";
 import { createStringDate } from "../common/utils";
 import BaseService from "./BaseService";
-import AppError from "src/common/AppError";
+import AppError from "../common/AppError";
 
 @Injectable()
 export default class ComponentService extends BaseService {
@@ -22,14 +22,14 @@ export default class ComponentService extends BaseService {
     const rel = await this.typeModel.find({ status: 1 }).exec();
     if (!rel || rel.length === 0) {
       // 没有分类时创建一个默认分类
-      const name = '自定义';
-      const icon = 'icon-zidingyi'
+      const name = "自定义";
+      const icon = "icon-zidingyi";
       const { _id: id } = await this.typeModel.create({
         name,
         icon,
-        status: 1
+        status: 1,
       });
-      return [{ id, name, icon }]
+      return [{ id, name, icon }];
     }
     return rel.map((v) => this.toDtoObject<ComponentTypeDto>(v));
   }
@@ -40,13 +40,15 @@ export default class ComponentService extends BaseService {
    * @returns
    */
   async addType (data: ComponentTypeDto) {
-    const rel = await this.typeModel.findOne({ status: 1, name: data.name, pid: data.pid }).exec();
+    const rel = await this.typeModel
+      .findOne({ status: 1, name: data.name, pid: data.pid })
+      .exec();
     if (rel) {
-      AppError.assert(`${data.name}已经存在`)
+      AppError.assert(`${data.name}已经存在`);
     }
     const { _id: id } = await this.typeModel.create({
       ...data,
-      status: 1
+      status: 1,
     });
     return id;
   }
@@ -60,13 +62,13 @@ export default class ComponentService extends BaseService {
     let rel = await this.typeModel.findOne({ pid: id, status: 1 }).exec();
     // 如果存在子类不能删除
     if (rel) {
-      AppError.assert('当前分类下下存在多个子类，请先删除子类');
+      AppError.assert("当前分类下下存在多个子类，请先删除子类");
     }
     const comp = await this.model.findOne({ type: id }).exec();
     if (comp) {
-      AppError.assert('当前分类下存在多个组件，请先迁移组件');
+      AppError.assert("当前分类下存在多个组件，请先迁移组件");
     }
-    rel = await this.typeModel.findByIdAndUpdate(id, { status: 0 }); ;
+    rel = await this.typeModel.findByIdAndUpdate(id, { status: 0 });
     return rel;
   }
 

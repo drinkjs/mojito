@@ -4,9 +4,9 @@ module.exports = {
       name: "mojito-server",
       script: "./dist/main.js",
       watch: false,
-      env_prod: {
+      env: {
         NODE_ENV: "production",
-      }
+      },
     },
   ],
 };
