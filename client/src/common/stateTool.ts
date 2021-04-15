@@ -3,9 +3,9 @@ import { useState, useRef, useEffect, MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import * as events from 'events';
 import WebSocketClient from 'common/network/WebSocketClient';
-import { WebsocketEnable } from 'config';
+import { WebsocketEnable, WsPrefix } from 'config';
 
-const eventUrl = '/wss';
+const eventUrl = '/ws';
 
 export const syncEventer = new events.EventEmitter();
 syncEventer.setMaxListeners(1024);
@@ -55,7 +55,7 @@ class SyncHelper {
 
   constructor () {
     if (!WebsocketEnable) return;
-    this.websocket = new WebSocketClient(`ws://${window.location.host}/ws`); // 需要配置websocket代理
+    this.websocket = new WebSocketClient(`ws://${window.location.host}${WsPrefix}`); // 需要配置websocket代理
     this.websocket.connect();
     this.websocket.on('connect', () => {
       if (this.connectNum > 0) {

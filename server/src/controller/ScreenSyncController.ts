@@ -26,7 +26,7 @@ interface SyncPageMsg {
   data: { [key: string]: any };
 }
 
-@Controller("/wss")
+@Controller("/ws")
 export default class ScreenSyncController extends BaseController {
   @WebSocketServer()
   private wss: WebsocketEmitter;
@@ -148,7 +148,7 @@ export default class ScreenSyncController extends BaseController {
     try {
       if (client && client.socket && client.socket.readyState === OPEN) {
         const msgString = JSON.stringify(msg);
-        client.socket.send(msgString, (err) => {
+        client.socket.send(msgString, (err:any) => {
           if (err) {
             console.error(err);
           }

@@ -3,12 +3,12 @@ import { observer, inject } from 'mobx-react';
 import { Skeleton } from 'antd';
 import DocumentTitle from 'components/DocumentTitle';
 import { useParams, useLocation } from 'react-router-dom';
+import { useInterval } from 'ahooks';
 import { joinPage, useReconnect } from 'common/stateTool';
 import Layer from 'pages/editor/components/Layer';
 import { toJS } from 'mobx';
 import { ScreenStore } from 'types';
-import { DefaultLayerSize } from 'config';
-import { useInterval } from 'ahooks';
+import { DefaulBackgroundColor, DefaultLayerSize } from 'config';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -58,7 +58,7 @@ export default inject('screenStore')(
             <div
               style={{
                 ...style,
-                backgroundColor: style.backgroundColor || '#FFF',
+                backgroundColor: style.backgroundColor || DefaulBackgroundColor,
                 backgroundImage: style.backgroundImage
                   ? `url(${style.backgroundImage})`
                   : 'none',

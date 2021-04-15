@@ -8,9 +8,10 @@
 
 import axios from 'axios';
 // import Cookies from "js-cookie";
+import { ApiPrefix } from "config"
 import Message from 'components/Message';
 
-const API = '/api';
+const API = ApiPrefix;
 
 function showError (content) {
   Message.error(content);

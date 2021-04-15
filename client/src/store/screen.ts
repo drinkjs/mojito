@@ -386,8 +386,10 @@ export default class Screen {
     loadCDN(layer.component.dependencies, () => {
       this.addUndoData(this.screenInfo);
       const layers = this.screenInfo?.layers || [];
-      layers.unshift({ ...layer, updateFlag: new Date().getTime() });
-      this.screenInfo!.layers = toJS(layers);
+      runInAction(() => {
+        layers.unshift({ ...layer, updateFlag: new Date().getTime() });
+        this.screenInfo!.layers = toJS(layers);
+      })
     });
   }
 

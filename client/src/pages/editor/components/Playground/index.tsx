@@ -35,7 +35,7 @@ import {
   DefaulBackgroundColor,
   DefaultFontColor,
   DefaultLayerSize,
-  saveTime
+  SaveTime
 } from 'config';
 import styles from './index.module.scss';
 import Message from 'components/Message';
@@ -165,7 +165,7 @@ export default inject('screenStore')(
       if (documentVisibility === 'visible') {
         screenStore?.saveScreen();
       }
-    }, saveTime);
+    }, SaveTime);
 
     /**
      * 接受组件拖入

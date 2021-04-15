@@ -24,7 +24,7 @@ const routes = [
   {
     path: '/view/:projectName/:screenName',
     exact: true,
-    component: 'preview'
+    component: 'View'
   },
   {
     path: '/test',
