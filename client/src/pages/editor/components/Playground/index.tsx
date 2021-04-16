@@ -205,6 +205,7 @@ export default inject('screenStore')(
             name: `${value.title}${compCount[value.name]}`,
             component: value,
             initSize: false,
+            eventLock: true,
             style: {
               x,
               y,
@@ -466,9 +467,15 @@ export default inject('screenStore')(
         width: pageLayout.width,
         height: pageLayout.height
       });
+
       if (areaRef.current && rootRef.current && zoomRef.current) {
         const { width, height } = areaRef.current.getBoundingClientRect();
-        const zoom = parseFloat(pageLayout.width >= pageLayout.height ? (width / pageLayout.width).toFixed(2) : (height / pageLayout.height).toFixed(2));
+        let zoom = 0;
+        if (pageLayout.width < areaRef.current!.offsetWidth && pageLayout.height < areaRef.current!.offsetHeight) {
+          zoom = 1;
+        } else {
+          zoom = parseFloat(pageLayout.width >= pageLayout.height ? (width / pageLayout.width).toFixed(2) : (height / pageLayout.height).toFixed(2));
+        }
         rootRef.current.style.transform = `scale(${zoom})`;
         rootRef.current.style.transformOrigin = '0 0 0';
         zoomRef.current.style.width = `${pageLayout.width * zoom}px`;

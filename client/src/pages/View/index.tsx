@@ -54,7 +54,7 @@ export default inject("screenStore")(
     return (
       <DocumentTitle title={screenInfo ? screenInfo.name : ""}>
         <Skeleton loading={screenStore!.getDetailLoading}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100%" }}>
             {style && (
               <div
                 style={{

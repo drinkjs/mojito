@@ -1,18 +1,105 @@
 [{
   "_id": {
-    "$oid": "5ff6dea00c2bf15a40521e1a"
+    "$oid": "60560b22cc45913509f536f5"
   },
-  "status": 1,
   "origin": 2,
-  "libName": "PieChart",
-  "title": "PieChart v1.0.0",
+  "dependencies": [
+    "https://cdn.staticfile.org/three.js/r125/three.min.js"
+  ],
+  "name": "Earth",
+  "developLib": "React",
+  "title": "地球",
   "type": {
-    "$oid": "5ff52325f5e8fa0e44729958"
+    "$oid": "5ff5221322b3f34f680e41c2"
   },
+  "coverImg": "/public/upload/20210320/95da58af-982e-4cd3-8753-6960f3eafb51.png",
+  "version": "v1.0.0",
+  "props": {
+    "barData": {
+      "type": "array",
+      "comment": "[{ lat: number; lng: number; value: number },...]",
+      "default": []
+    }
+  },
+  "events": {
+    "onControl": {
+      "comment": "(position, isEnd)=>void"
+    }
+  },
+  "createTime": "2021-03-20 22:48:02",
+  "updateTime": "2021-04-08 20:18:28",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60560b5dcc45913509f536f6"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/antd/4.15.0/antd.min.js",
+    "https://cdn.staticfile.org/antd/4.15.0/antd.min.css"
+  ],
+  "name": "Image",
+  "developLib": "React",
+  "title": "图片",
+  "type": {
+    "$oid": "5ff521b7ae405915d45996d0"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "src": {
+      "type": "image",
+      "name": "图片地址",
+      "default": ""
+    }
+  },
+  "createTime": "2021-03-20 22:49:01",
+  "updateTime": "2021-04-08 20:20:07",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60560b75cc45913509f536f7"
+  },
+  "origin": 2,
+  "dependencies": [],
+  "name": "TextView",
+  "developLib": "React",
+  "title": "文本",
+  "type": {
+    "$oid": "5ff5217fbd5fc91e3c7bc672"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "text": {
+      "type": "string",
+      "default": "请输入文本"
+    }
+  },
+  "createTime": "2021-03-20 22:49:25",
+  "updateTime": "2021-04-08 20:19:46",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60560b91cc45913509f536f8"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "LineChart",
+  "developLib": "React",
+  "title": "基础折线图",
+  "type": {
+    "$oid": "5ff522ccd1ccf52bccbec2ad"
+  },
+  "coverImg": "",
   "version": "v1.0.0",
   "props": {
     "data": {
-      "type": [],
+      "type": "array",
+      "name": "数据",
       "comment": "图表数据[{name:类型1, value:100}, ...]",
       "default": [
         {
@@ -46,7 +133,20 @@
       ]
     },
     "option": {
-      "comment": "echarts配置，具体参考echarts官网"
+      "type": "object",
+      "name": "配置",
+      "comment": "Echarts配置，具体参考echarts官网",
+      "default": {}
+    },
+    "smooth": {
+      "type": "boolean",
+      "name": "平滑",
+      "default": false
+    },
+    "itemColor": {
+      "name": "线段颜色",
+      "comment": "如：#FF0000",
+      "type": "string"
     }
   },
   "events": {
@@ -54,25 +154,30 @@
       "comment": "图表初始化完成事件(echart)=>void"
     }
   },
-  "createTime": "2021-01-07 18:12:48",
-  "updateTime": "2021-01-07 18:12:48",
+  "createTime": "2021-03-20 22:49:53",
+  "updateTime": "2021-04-08 20:34:52",
   "__v": 0
 },{
   "_id": {
-    "$oid": "5ff6defc0c2bf15a40521e1c"
+    "$oid": "60560bbdcc45913509f536fa"
   },
-  "status": 1,
   "origin": 2,
-  "libName": "BarChart",
-  "title": "基础柱状图",
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "RadiusChart",
+  "developLib": "React",
+  "title": "基础环形图",
   "type": {
-    "$oid": "5ff5221322b3f34f680e41c2"
+    "$oid": "5ff52325f5e8fa0e44729958"
   },
-  "coverImg": "/public/upload/20210218/d9ff76b1-2cfc-47ea-8d47-26251f7bb816.png",
+  "coverImg": "/public/upload/20210324/2da67086-ed8b-4b9a-93f8-e98960737860.jpg",
   "version": "v1.0.0",
   "props": {
     "data": {
-      "type": [],
+      "type": "array",
+      "name": "数据",
       "comment": "图表数据[{name:类型1, value:100}, ...]",
       "default": [
         {
@@ -106,7 +211,80 @@
       ]
     },
     "option": {
-      "type": {},
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    },
+    "radius": {
+      "type": "array",
+      "name": "半径",
+      "comment": "内外圆半径",
+      "default": [
+        "50%",
+        "80%"
+      ]
+    }
+  },
+  "createTime": "2021-03-20 22:50:37",
+  "updateTime": "2021-04-08 20:35:31",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60560bd1cc45913509f536fb"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "PieChart",
+  "developLib": "React",
+  "title": "基础饼图",
+  "type": {
+    "$oid": "5ff52325f5e8fa0e44729958"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "comment": "图表数据[{name:类型1, value:100}, ...]",
+      "default": [
+        {
+          "name": "Mon",
+          "value": 120
+        },
+        {
+          "name": "Tue",
+          "value": 200
+        },
+        {
+          "name": "Wed",
+          "value": 150
+        },
+        {
+          "name": "Thu",
+          "value": 80
+        },
+        {
+          "name": "Fri",
+          "value": 70
+        },
+        {
+          "name": "Sat",
+          "value": 110
+        },
+        {
+          "name": "Sun",
+          "value": 130
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
       "comment": "echarts配置，具体参考echarts官网",
       "default": {}
     }
@@ -116,18 +294,23 @@
       "comment": "图表初始化完成事件(echart)=>void"
     }
   },
-  "createTime": "2021-01-07 18:14:20",
-  "updateTime": "2021-02-18 14:36:04",
+  "createTime": "2021-03-20 22:50:57",
+  "updateTime": "2021-04-08 20:35:41",
   "__v": 0
 },{
   "_id": {
-    "$oid": "5fffd43511d27301fce742bb"
+    "$oid": "60560befcc45913509f536fc"
   },
   "origin": 2,
-  "libName": "GaugeChart",
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "GaugeChart",
+  "developLib": "React",
   "title": "基础仪表盘",
   "type": {
-    "$oid": "5ff5221322b3f34f680e41c2"
+    "$oid": "5ff5255008c04b0e48293f2a"
   },
   "coverImg": "",
   "version": "v1.0.0",
@@ -143,7 +326,7 @@
       ]
     },
     "option": {
-      "type": {},
+      "type": "object",
       "comment": "echarts配置，具体参考echarts官网",
       "default": {}
     }
@@ -153,61 +336,217 @@
       "comment": "图表初始化完成事件(echart)=>void"
     }
   },
-  "createTime": "2021-01-14 13:18:45",
-  "updateTime": "2021-02-18 14:41:46",
+  "createTime": "2021-03-20 22:51:27",
+  "updateTime": "2021-04-08 20:36:55",
   "__v": 0
 },{
   "_id": {
-    "$oid": "60010b3d2c25085f705418f3"
+    "$oid": "605619cecc45913509f53701"
   },
   "origin": 2,
-  "libName": "VueButton",
-  "title": "VueButton v1.0.0",
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "BarChart",
+  "developLib": "React",
+  "title": "基础柱状图",
   "type": {
-    "$oid": "5ff5221322b3f34f680e41c2"
+    "$oid": "5ff52309ca47cc1cd8933560"
   },
   "coverImg": "",
   "version": "v1.0.0",
   "props": {
-    "label": {
-      "type": "",
-      "comment": "按钮显示文本",
-      "default": ""
+    "data": {
+      "name": "数据",
+      "type": [],
+      "comment": "图表数据[{name:类型1, value:100}, ...]",
+      "default": [
+        {
+          "name": "Mon",
+          "value": 120
+        },
+        {
+          "name": "Tue",
+          "value": 200
+        },
+        {
+          "name": "Wed",
+          "value": 150
+        },
+        {
+          "name": "Thu",
+          "value": 80
+        },
+        {
+          "name": "Fri",
+          "value": 70
+        },
+        {
+          "name": "Sat",
+          "value": 110
+        },
+        {
+          "name": "Sun",
+          "value": 130
+        }
+      ]
     },
-    "primary": {
-      "type": false,
-      "default": false
+    "itemColors": {
+      "name": "柱体颜色",
+      "type": "array",
+      "default": [
+        "#ff0000",
+        "#330000"
+      ]
     },
-    "size": {
-      "type": [
-        "small",
-        "medium",
-        "large"
-      ],
-      "default": "medium"
-    },
-    "backgroundColor": {
-      "type": ""
+    "option": {
+      "name": "配置",
+      "type": "object",
+      "comment": "Echarts配置，具体参考echarts官网",
+      "default": {}
     }
   },
   "events": {
-    "onAlert": {
-      "comment": "点击按钮弹框(label)=>void"
-    },
-    "onTest": {
-      "comment": "测试显示"
+    "onCreated": {
+      "name": "图表初始化完成",
+      "comment": "图表初始化完成事件(echart)=>void"
     }
   },
-  "createTime": "2021-01-15 11:25:49",
-  "updateTime": "2021-02-18 14:42:13",
+  "createTime": "2021-03-20 23:50:38",
+  "updateTime": "2021-04-08 20:36:11",
   "__v": 0
 },{
   "_id": {
-    "$oid": "6013c6720f27b70dccc1c8f0"
+    "$oid": "6056c6fbcc45913509f53703"
   },
   "origin": 2,
-  "libName": "TestView",
-  "title": "组件测试",
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "RadarChart",
+  "developLib": "React",
+  "title": "基础雷达图",
+  "type": {
+    "$oid": "5ff5255008c04b0e48293f2a"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": [],
+      "comment": "图表数据[{name:类型1, value:100, max:500}, ...]",
+      "default": [
+        {
+          "name": "销售",
+          "max": 6500,
+          "value": 4300
+        },
+        {
+          "name": "管理",
+          "max": 16000,
+          "value": 10000
+        },
+        {
+          "name": "信息技术",
+          "max": 30000,
+          "value": 28000
+        },
+        {
+          "name": "客服",
+          "max": 38000,
+          "value": 35000
+        },
+        {
+          "name": "研发",
+          "max": 52000,
+          "value": 50000
+        },
+        {
+          "name": "市场",
+          "max": 25000,
+          "value": 19000
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "events": {
+    "onCreated": {
+      "comment": "图表初始化完成事件(echart)=>void"
+    }
+  },
+  "createTime": "2021-03-21 12:09:31",
+  "updateTime": "2021-04-08 20:37:03",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "605b0ca6a387893cf16d4ab1"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/venn.js/0.2.11/venn.min.js",
+    "https://cdn.staticfile.org/d3/1.29.5/d3.min.js"
+  ],
+  "name": "Venn",
+  "developLib": "React",
+  "title": "维恩图",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "/public/upload/20210324/b933125a-69fe-4c02-8c2a-e79b4a5b13b2.png",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "name": "数据",
+      "type": "object",
+      "comment": "图表数据[{sets : [0], label : 'SE', size : 28}, {sets : [1], label : 'Treat', size: 35}, {sets : [0,1], size:1}]",
+      "default": [
+        {
+          "sets": [
+            0
+          ],
+          "label": "A",
+          "size": 28
+        },
+        {
+          "sets": [
+            1
+          ],
+          "label": "B",
+          "size": 28
+        },
+        {
+          "sets": [
+            0,
+            1
+          ],
+          "size": 10
+        }
+      ]
+    }
+  },
+  "createTime": "2021-03-24 17:55:50",
+  "updateTime": "2021-03-24 17:55:50",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6062c1ebaba8435ed880ff2d"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/vue/2.6.9/vue.runtime.min.js",
+    "https://cdn.staticfile.org/element-ui/2.15.1/index.min.js",
+    "https://cdn.staticfile.org/element-ui/2.15.1/theme-chalk/index.min.css"
+  ],
+  "name": "EleButton",
+  "developLib": "Vue2",
+  "title": "element-ui按钮",
   "type": {
     "$oid": "5ff5221322b3f34f680e41c2"
   },
@@ -216,10 +555,1598 @@
   "props": {
     "label": {
       "type": "string",
+      "comment": "按钮显示文本",
       "default": ""
+    },
+    "type": {
+      "type": [
+        "primary",
+        "success",
+        "warning",
+        "danger",
+        "info",
+        "text"
+      ],
+      "default": "primary"
+    },
+    "size": {
+      "type": [
+        "medium",
+        "small",
+        "mini"
+      ],
+      "default": "small"
     }
   },
-  "createTime": "2021-01-29 16:25:22",
-  "updateTime": "2021-01-29 16:25:22",
+  "events": {
+    "onClick": {
+      "name": "点击",
+      "comment": "点击事件()=>void"
+    }
+  },
+  "createTime": "2021-03-30 14:15:07",
+  "updateTime": "2021-03-30 14:23:51",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6062ce8faba8435ed880ff30"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/vue/3.0.9/vue.runtime.global.prod.js"
+  ],
+  "name": "VueButton",
+  "developLib": "Vue3",
+  "title": "Vue3按钮",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "label": {
+      "type": "string",
+      "comment": "按钮显示文本",
+      "default": ""
+    },
+    "primary": {
+      "type": "boolean",
+      "default": true
+    },
+    "size": {
+      "type": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "default": "medium"
+    }
+  },
+  "events": {
+    "onClick": {
+      "comment": "点击()=>void"
+    }
+  },
+  "createTime": "2021-03-30 15:09:03",
+  "updateTime": "2021-03-30 15:26:22",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6065bd2c6bf7c609daf07521"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "LinesChart",
+  "developLib": "React",
+  "title": "多折线图",
+  "type": {
+    "$oid": "5ff522ccd1ccf52bccbec2ad"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "default": [
+        {
+          "name": "类型1",
+          "data": [
+            {
+              "category": "2/15",
+              "value": 22
+            },
+            {
+              "category": "2/16",
+              "value": 50
+            },
+            {
+              "category": "2/17",
+              "value": 100
+            },
+            {
+              "category": "2/18",
+              "value": 120
+            },
+            {
+              "category": "2/19",
+              "value": 67
+            },
+            {
+              "category": "2/20",
+              "value": 55
+            }
+          ],
+          "color": "#FF0000"
+        },
+        {
+          "name": "类型2",
+          "data": [
+            {
+              "category": "2/15",
+              "value": 200
+            },
+            {
+              "category": "2/16",
+              "value": 121
+            },
+            {
+              "category": "2/17",
+              "value": 121
+            },
+            {
+              "category": "2/18",
+              "value": 222
+            },
+            {
+              "category": "2/19",
+              "value": 222
+            },
+            {
+              "category": "2/20",
+              "value": 1111
+            }
+          ]
+        },
+        {
+          "name": "类型3",
+          "data": [
+            {
+              "category": "2/15",
+              "value": 11
+            },
+            {
+              "category": "2/16",
+              "value": 42
+            },
+            {
+              "category": "2/17",
+              "value": 140
+            },
+            {
+              "category": "2/18",
+              "value": 200
+            },
+            {
+              "category": "2/19",
+              "value": 66
+            },
+            {
+              "category": "2/20",
+              "value": 57
+            }
+          ]
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "Echarts配置，具体参考Echarts官网",
+      "default": {}
+    },
+    "smooth": {
+      "type": "boolean",
+      "name": "平滑",
+      "default": false
+    }
+  },
+  "createTime": "2021-04-01 20:31:40",
+  "updateTime": "2021-04-08 20:35:00",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6065bd6e6bf7c609daf07522"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "BarsChart",
+  "developLib": "React",
+  "title": "多柱状图",
+  "type": {
+    "$oid": "5ff52309ca47cc1cd8933560"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "comment": "图表数据[{type:string, value:[100, 200, ...], color?:string}, ...]",
+      "default": [
+        {
+          "name": "类型1",
+          "data": [
+            {
+              "category": "2/15",
+              "value": 22
+            },
+            {
+              "category": "2/16",
+              "value": 50
+            },
+            {
+              "category": "2/17",
+              "value": 100
+            },
+            {
+              "category": "2/18",
+              "value": 120
+            },
+            {
+              "category": "2/19",
+              "value": 67
+            },
+            {
+              "category": "2/20",
+              "value": 55
+            }
+          ],
+          "color": "#FF0000"
+        },
+        {
+          "name": "类型2",
+          "data": [
+            {
+              "category": "2/15",
+              "value": 200
+            },
+            {
+              "category": "2/16",
+              "value": 121
+            },
+            {
+              "category": "2/17",
+              "value": 121
+            },
+            {
+              "category": "2/18",
+              "value": 222
+            },
+            {
+              "category": "2/19",
+              "value": 222
+            },
+            {
+              "category": "2/20",
+              "value": 1111
+            }
+          ]
+        },
+        {
+          "name": "类型3",
+          "data": [
+            {
+              "category": "2/15",
+              "value": 11
+            },
+            {
+              "category": "2/16",
+              "value": 42
+            },
+            {
+              "category": "2/17",
+              "value": 140
+            },
+            {
+              "category": "2/18",
+              "value": 200
+            },
+            {
+              "category": "2/19",
+              "value": 66
+            },
+            {
+              "category": "2/20",
+              "value": 57
+            }
+          ]
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "createTime": "2021-04-01 20:32:46",
+  "updateTime": "2021-04-08 20:36:19",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6065bd7e6bf7c609daf07523"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "StackedBarChart",
+  "developLib": "React",
+  "title": "堆叠柱状图",
+  "type": {
+    "$oid": "5ff52309ca47cc1cd8933560"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "comment": "图表数据[{type:string, value:[100, 200, ...], color?:string}, ...]",
+      "default": [
+        {
+          "name": "直接访问",
+          "stack": "广告",
+          "data": [
+            {
+              "category": "周一",
+              "value": 100
+            },
+            {
+              "category": "周二",
+              "value": 200
+            },
+            {
+              "category": "周三",
+              "value": 150
+            },
+            {
+              "category": "周四",
+              "value": 180
+            },
+            {
+              "category": "周五",
+              "value": 50
+            }
+          ]
+        },
+        {
+          "name": "邮件营销",
+          "stack": "广告",
+          "data": [
+            {
+              "category": "周一",
+              "value": 66
+            },
+            {
+              "category": "周二",
+              "value": 500
+            },
+            {
+              "category": "周三",
+              "value": 88
+            },
+            {
+              "category": "周四",
+              "value": 66
+            },
+            {
+              "category": "周五",
+              "value": 100
+            }
+          ]
+        },
+        {
+          "name": "联盟广告",
+          "stack": "广告",
+          "data": [
+            {
+              "category": "周一",
+              "value": 444
+            },
+            {
+              "category": "周二",
+              "value": 500
+            },
+            {
+              "category": "周三",
+              "value": 32
+            },
+            {
+              "category": "周四",
+              "value": 456
+            },
+            {
+              "category": "周五",
+              "value": 210
+            }
+          ]
+        },
+        {
+          "name": "百度",
+          "stack": "搜索引擎",
+          "color": "#ff00ff",
+          "data": [
+            {
+              "category": "周一",
+              "value": 444
+            },
+            {
+              "category": "周二",
+              "value": 500
+            },
+            {
+              "category": "周三",
+              "value": 32
+            },
+            {
+              "category": "周四",
+              "value": 456
+            },
+            {
+              "category": "周五",
+              "value": 210
+            }
+          ]
+        },
+        {
+          "name": "谷歌",
+          "stack": "搜索引擎",
+          "data": [
+            {
+              "category": "周一",
+              "value": 444
+            },
+            {
+              "category": "周二",
+              "value": 500
+            },
+            {
+              "category": "周三",
+              "value": 32
+            },
+            {
+              "category": "周四",
+              "value": 456
+            },
+            {
+              "category": "周五",
+              "value": 210
+            }
+          ]
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "createTime": "2021-04-01 20:33:02",
+  "updateTime": "2021-04-08 20:36:29",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6065c19d6bf7c609daf07524"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "RoseChart",
+  "developLib": "React",
+  "title": "南丁格尔玫瑰图",
+  "type": {
+    "$oid": "5ff52325f5e8fa0e44729958"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "comment": "图表数据[{name:类型1, value:100}, ...]",
+      "default": [
+        {
+          "name": "Mon",
+          "value": 120
+        },
+        {
+          "name": "Tue",
+          "value": 200
+        },
+        {
+          "name": "Wed",
+          "value": 150
+        },
+        {
+          "name": "Thu",
+          "value": 80
+        },
+        {
+          "name": "Fri",
+          "value": 70
+        },
+        {
+          "name": "Sat",
+          "value": 110
+        },
+        {
+          "name": "Sun",
+          "value": 130
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    },
+    "radius": {
+      "type": "array",
+      "name": "半径",
+      "comment": "内外圆半径",
+      "default": [
+        "25%",
+        "90%"
+      ]
+    }
+  },
+  "createTime": "2021-04-01 20:50:37",
+  "updateTime": "2021-04-08 20:35:49",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6066ab916bf7c609daf07525"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "LRChart",
+  "developLib": "React",
+  "title": "线性回归",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "comment": "图表数据[[x1, y1], [x2, y2], ...]",
+      "default": [
+        [
+          0.067732,
+          3.176513
+        ],
+        [
+          0.42781,
+          3.816464
+        ],
+        [
+          0.995731,
+          4.550095
+        ],
+        [
+          0.738336,
+          4.256571
+        ],
+        [
+          0.981083,
+          4.560815
+        ],
+        [
+          0.526171,
+          3.929515
+        ],
+        [
+          0.378887,
+          3.52617
+        ],
+        [
+          0.033859,
+          3.156393
+        ],
+        [
+          0.132791,
+          3.110301
+        ],
+        [
+          0.138306,
+          3.149813
+        ],
+        [
+          0.247809,
+          3.476346
+        ],
+        [
+          0.64827,
+          4.119688
+        ],
+        [
+          0.731209,
+          4.282233
+        ],
+        [
+          0.236833,
+          3.486582
+        ],
+        [
+          0.969788,
+          4.655492
+        ],
+        [
+          0.607492,
+          3.965162
+        ],
+        [
+          0.358622,
+          3.5149
+        ],
+        [
+          0.147846,
+          3.125947
+        ],
+        [
+          0.63782,
+          4.094115
+        ],
+        [
+          0.230372,
+          3.476039
+        ],
+        [
+          0.070237,
+          3.21061
+        ],
+        [
+          0.067154,
+          3.190612
+        ],
+        [
+          0.925577,
+          4.631504
+        ],
+        [
+          0.717733,
+          4.29589
+        ],
+        [
+          0.015371,
+          3.085028
+        ],
+        [
+          0.33507,
+          3.44808
+        ],
+        [
+          0.040486,
+          3.16744
+        ],
+        [
+          0.212575,
+          3.364266
+        ],
+        [
+          0.617218,
+          3.993482
+        ],
+        [
+          0.541196,
+          3.891471
+        ],
+        [
+          0.045353,
+          3.143259
+        ],
+        [
+          0.126762,
+          3.114204
+        ],
+        [
+          0.556486,
+          3.851484
+        ],
+        [
+          0.901144,
+          4.621899
+        ],
+        [
+          0.958476,
+          4.580768
+        ],
+        [
+          0.274561,
+          3.620992
+        ],
+        [
+          0.394396,
+          3.580501
+        ],
+        [
+          0.87248,
+          4.618706
+        ],
+        [
+          0.409932,
+          3.676867
+        ],
+        [
+          0.908969,
+          4.641845
+        ],
+        [
+          0.166819,
+          3.175939
+        ],
+        [
+          0.665016,
+          4.26498
+        ],
+        [
+          0.263727,
+          3.558448
+        ],
+        [
+          0.231214,
+          3.436632
+        ],
+        [
+          0.552928,
+          3.831052
+        ],
+        [
+          0.047744,
+          3.182853
+        ],
+        [
+          0.365746,
+          3.498906
+        ],
+        [
+          0.495002,
+          3.946833
+        ],
+        [
+          0.493466,
+          3.900583
+        ],
+        [
+          0.792101,
+          4.238522
+        ],
+        [
+          0.76966,
+          4.23308
+        ],
+        [
+          0.251821,
+          3.521557
+        ],
+        [
+          0.181951,
+          3.203344
+        ],
+        [
+          0.808177,
+          4.278105
+        ],
+        [
+          0.334116,
+          3.555705
+        ],
+        [
+          0.33863,
+          3.502661
+        ],
+        [
+          0.452584,
+          3.859776
+        ],
+        [
+          0.69477,
+          4.275956
+        ],
+        [
+          0.590902,
+          3.916191
+        ],
+        [
+          0.307928,
+          3.587961
+        ],
+        [
+          0.148364,
+          3.183004
+        ],
+        [
+          0.70218,
+          4.225236
+        ],
+        [
+          0.721544,
+          4.231083
+        ],
+        [
+          0.666886,
+          4.240544
+        ],
+        [
+          0.124931,
+          3.222372
+        ],
+        [
+          0.618286,
+          4.021445
+        ],
+        [
+          0.381086,
+          3.567479
+        ],
+        [
+          0.385643,
+          3.56258
+        ],
+        [
+          0.777175,
+          4.262059
+        ],
+        [
+          0.116089,
+          3.208813
+        ],
+        [
+          0.115487,
+          3.169825
+        ],
+        [
+          0.66351,
+          4.193949
+        ],
+        [
+          0.254884,
+          3.491678
+        ],
+        [
+          0.993888,
+          4.533306
+        ],
+        [
+          0.295434,
+          3.550108
+        ],
+        [
+          0.952523,
+          4.636427
+        ],
+        [
+          0.307047,
+          3.557078
+        ],
+        [
+          0.277261,
+          3.552874
+        ],
+        [
+          0.279101,
+          3.494159
+        ],
+        [
+          0.175724,
+          3.206828
+        ],
+        [
+          0.156383,
+          3.195266
+        ],
+        [
+          0.733165,
+          4.221292
+        ],
+        [
+          0.848142,
+          4.413372
+        ],
+        [
+          0.771184,
+          4.184347
+        ],
+        [
+          0.429492,
+          3.742878
+        ],
+        [
+          0.162176,
+          3.201878
+        ],
+        [
+          0.917064,
+          4.648964
+        ],
+        [
+          0.315044,
+          3.510117
+        ],
+        [
+          0.201473,
+          3.274434
+        ],
+        [
+          0.297038,
+          3.579622
+        ],
+        [
+          0.336647,
+          3.489244
+        ],
+        [
+          0.666109,
+          4.237386
+        ],
+        [
+          0.583888,
+          3.913749
+        ],
+        [
+          0.085031,
+          3.22899
+        ],
+        [
+          0.687006,
+          4.286286
+        ],
+        [
+          0.949655,
+          4.628614
+        ],
+        [
+          0.189912,
+          3.239536
+        ],
+        [
+          0.844027,
+          4.457997
+        ],
+        [
+          0.333288,
+          3.513384
+        ],
+        [
+          0.427035,
+          3.729674
+        ],
+        [
+          0.466369,
+          3.834274
+        ],
+        [
+          0.550659,
+          3.811155
+        ],
+        [
+          0.278213,
+          3.598316
+        ],
+        [
+          0.918769,
+          4.692514
+        ],
+        [
+          0.886555,
+          4.604859
+        ],
+        [
+          0.569488,
+          3.864912
+        ],
+        [
+          0.066379,
+          3.184236
+        ],
+        [
+          0.335751,
+          3.500796
+        ],
+        [
+          0.426863,
+          3.743365
+        ],
+        [
+          0.395746,
+          3.622905
+        ],
+        [
+          0.694221,
+          4.310796
+        ],
+        [
+          0.27276,
+          3.583357
+        ],
+        [
+          0.503495,
+          3.901852
+        ],
+        [
+          0.067119,
+          3.233521
+        ],
+        [
+          0.038326,
+          3.105266
+        ],
+        [
+          0.599122,
+          3.865544
+        ],
+        [
+          0.947054,
+          4.628625
+        ],
+        [
+          0.671279,
+          4.231213
+        ],
+        [
+          0.434811,
+          3.791149
+        ],
+        [
+          0.509381,
+          3.968271
+        ],
+        [
+          0.749442,
+          4.25391
+        ],
+        [
+          0.058014,
+          3.19471
+        ],
+        [
+          0.482978,
+          3.996503
+        ],
+        [
+          0.466776,
+          3.904358
+        ],
+        [
+          0.357767,
+          3.503976
+        ],
+        [
+          0.949123,
+          4.557545
+        ],
+        [
+          0.41732,
+          3.699876
+        ],
+        [
+          0.920461,
+          4.613614
+        ],
+        [
+          0.156433,
+          3.140401
+        ],
+        [
+          0.656662,
+          4.206717
+        ],
+        [
+          0.616418,
+          3.969524
+        ],
+        [
+          0.853428,
+          4.476096
+        ],
+        [
+          0.133295,
+          3.136528
+        ],
+        [
+          0.693007,
+          4.279071
+        ],
+        [
+          0.178449,
+          3.200603
+        ],
+        [
+          0.199526,
+          3.299012
+        ],
+        [
+          0.073224,
+          3.209873
+        ],
+        [
+          0.286515,
+          3.632942
+        ],
+        [
+          0.182026,
+          3.248361
+        ],
+        [
+          0.621523,
+          3.995783
+        ],
+        [
+          0.344584,
+          3.563262
+        ],
+        [
+          0.398556,
+          3.649712
+        ],
+        [
+          0.480369,
+          3.951845
+        ],
+        [
+          0.15335,
+          3.145031
+        ],
+        [
+          0.171846,
+          3.181577
+        ],
+        [
+          0.867082,
+          4.637087
+        ],
+        [
+          0.223855,
+          3.404964
+        ],
+        [
+          0.528301,
+          3.873188
+        ],
+        [
+          0.890192,
+          4.633648
+        ],
+        [
+          0.106352,
+          3.154768
+        ],
+        [
+          0.917886,
+          4.623637
+        ],
+        [
+          0.014855,
+          3.078132
+        ],
+        [
+          0.567682,
+          3.913596
+        ],
+        [
+          0.068854,
+          3.221817
+        ],
+        [
+          0.603535,
+          3.938071
+        ],
+        [
+          0.53205,
+          3.880822
+        ],
+        [
+          0.651362,
+          4.176436
+        ],
+        [
+          0.901225,
+          4.648161
+        ],
+        [
+          0.204337,
+          3.332312
+        ],
+        [
+          0.696081,
+          4.240614
+        ],
+        [
+          0.963924,
+          4.532224
+        ],
+        [
+          0.98139,
+          4.557105
+        ],
+        [
+          0.987911,
+          4.610072
+        ],
+        [
+          0.990947,
+          4.636569
+        ],
+        [
+          0.736021,
+          4.229813
+        ],
+        [
+          0.253574,
+          3.50086
+        ],
+        [
+          0.674722,
+          4.245514
+        ],
+        [
+          0.939368,
+          4.605182
+        ],
+        [
+          0.235419,
+          3.45434
+        ],
+        [
+          0.110521,
+          3.180775
+        ],
+        [
+          0.218023,
+          3.38082
+        ],
+        [
+          0.869778,
+          4.56502
+        ],
+        [
+          0.19683,
+          3.279973
+        ],
+        [
+          0.958178,
+          4.554241
+        ],
+        [
+          0.972673,
+          4.63352
+        ]
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "createTime": "2021-04-02 13:28:49",
+  "updateTime": "2021-04-08 20:18:56",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6066abc76bf7c609daf07526"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "ERChart",
+  "developLib": "React",
+  "title": "指数回归",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "comment": "图表数据[[x1, y1], [x2, y2], ...]",
+      "default": [
+        [
+          1,
+          4862.4
+        ],
+        [
+          2,
+          5294.7
+        ],
+        [
+          3,
+          5934.5
+        ],
+        [
+          4,
+          7171
+        ],
+        [
+          5,
+          8964.4
+        ],
+        [
+          6,
+          10202.2
+        ],
+        [
+          7,
+          11962.5
+        ],
+        [
+          8,
+          14928.3
+        ],
+        [
+          9,
+          16909.2
+        ],
+        [
+          10,
+          18547.9
+        ],
+        [
+          11,
+          21617.8
+        ],
+        [
+          12,
+          26638.1
+        ],
+        [
+          13,
+          34634.4
+        ],
+        [
+          14,
+          46759.4
+        ],
+        [
+          15,
+          58478.1
+        ],
+        [
+          16,
+          67884.6
+        ],
+        [
+          17,
+          74462.6
+        ],
+        [
+          18,
+          79395.7
+        ]
+      ]
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "createTime": "2021-04-02 13:29:43",
+  "updateTime": "2021-04-08 20:20:20",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6066abe86bf7c609daf07527"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://cdn.staticfile.org/echarts/5.0.2/echarts.min.js",
+    "https://cdn.staticfile.org/lodash.js/4.17.20/lodash.min.js"
+  ],
+  "name": "ScatterChart",
+  "developLib": "React",
+  "title": "散点图",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "comment": "图表数据[[x1, y1], [x2, y2], ...]",
+      "default": [
+        [
+          10,
+          8.04
+        ],
+        [
+          8.07,
+          6.95
+        ],
+        [
+          13,
+          7.58
+        ],
+        [
+          9.05,
+          8.81
+        ],
+        [
+          11,
+          8.33
+        ],
+        [
+          14,
+          7.66
+        ],
+        [
+          13.4,
+          6.81
+        ],
+        [
+          10,
+          6.33
+        ],
+        [
+          14,
+          8.96
+        ],
+        [
+          12.5,
+          6.82
+        ],
+        [
+          9.15,
+          7.2
+        ],
+        [
+          11.5,
+          7.2
+        ],
+        [
+          3.03,
+          4.23
+        ],
+        [
+          12.2,
+          7.83
+        ],
+        [
+          2.02,
+          4.47
+        ],
+        [
+          1.05,
+          3.33
+        ],
+        [
+          4.05,
+          4.96
+        ],
+        [
+          6.03,
+          7.24
+        ],
+        [
+          12,
+          6.26
+        ],
+        [
+          12,
+          8.84
+        ],
+        [
+          7.08,
+          5.82
+        ],
+        [
+          5.02,
+          5.68
+        ]
+      ]
+    },
+    "itemSize": {
+      "type": "number",
+      "name": "散点大小"
+    },
+    "itemColor": {
+      "type": "string",
+      "name": "散点颜色"
+    },
+    "option": {
+      "type": "object",
+      "name": "配置",
+      "comment": "echarts配置，具体参考echarts官网",
+      "default": {}
+    }
+  },
+  "createTime": "2021-04-02 13:30:16",
+  "updateTime": "2021-04-08 20:20:29",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6066c9436bf7c609daf07528"
+  },
+  "origin": 2,
+  "dependencies": [
+    "https://d3js.org/d3.v6.min.js"
+  ],
+  "name": "FunnelChart",
+  "developLib": "React",
+  "title": "漏斗图",
+  "type": {
+    "$oid": "5ff5221322b3f34f680e41c2"
+  },
+  "coverImg": "",
+  "version": "v1.0.0",
+  "props": {
+    "data": {
+      "type": "array",
+      "name": "数据",
+      "default": [
+        {
+          "name": "分类1",
+          "value": 500000
+        },
+        {
+          "name": "分类2",
+          "value": 350138
+        },
+        {
+          "name": "分类3",
+          "value": 213067
+        },
+        {
+          "name": "分类4",
+          "value": 177635
+        },
+        {
+          "name": "分类5",
+          "value": 140071
+        },
+        {
+          "name": "分类6",
+          "value": 93081
+        }
+      ]
+    },
+    "style": {
+      "type": [
+        "2d",
+        "3d",
+        "flat"
+      ],
+      "name": "风格",
+      "default": "2d"
+    }
+  },
+  "createTime": "2021-04-02 15:35:31",
+  "updateTime": "2021-04-08 20:20:38",
   "__v": 0
 }]

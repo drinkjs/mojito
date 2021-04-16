@@ -1,0 +1,2609 @@
+[{
+  "_id": {
+    "$oid": "602e81649e3dbd6ed7c02b1b"
+  },
+  "status": 0,
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "demo",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-02-18 23:01:56",
+  "updateTime": "2021-02-18 23:01:56",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "602fbc6c5c1d967645e1e629"
+  },
+  "status": 0,
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "covid-19",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(0,0,0,1)",
+    "backgroundImage": "/public/upload/20210303/492d3d96-aa52-4693-8867-e89c2e237452.jpg",
+    "backgroundRepeat": "repeat",
+    "color": "rgba(255,255,255,1)"
+  },
+  "createTime": "2021-02-19 21:26:04",
+  "updateTime": "2021-03-03 15:50:40",
+  "__v": 0,
+  "coverImg": "/public/upload/20210224/a6c5b4b2-a41a-4057-a063-d2e459f8f1f4.png",
+  "layers": [
+    {
+      "name": "多折线图2",
+      "component": "6035a537a624690fac48d61a",
+      "initSize": true,
+      "style": {
+        "x": 1543,
+        "y": 538,
+        "z": 8,
+        "width": 300,
+        "height": 200
+      },
+      "id": "f166ad70-6cd0-4f80-9d8d-c18bf722f44d",
+      "updateFlag": 1615914465272
+    },
+    {
+      "name": "文本1",
+      "component": "6035d300a624690fac48d628",
+      "initSize": true,
+      "style": {
+        "x": 372,
+        "y": 10,
+        "z": 7,
+        "width": 1171,
+        "height": 100,
+        "textAlign": "center",
+        "color": "rgba(236,226,226,1)",
+        "fontSize": 64,
+        "opacity": "1.00",
+        "fontFamily": "微软雅黑"
+      },
+      "id": "01bcd9eb-c6c2-48f9-b592-d86f4324cdf0",
+      "updateFlag": 1615295044409,
+      "reloadKey": 0,
+      "props": {
+        "text": "全球COVID-19数据统计"
+      },
+      "lock": true,
+      "group": "",
+      "groupLock": false,
+      "groupHide": false
+    },
+    {
+      "reloadKey": 0,
+      "name": "基础环形图1",
+      "initSize": true,
+      "style": {
+        "x": -48,
+        "y": 35,
+        "z": 6,
+        "width": 546,
+        "height": 431,
+        "scale": "0.23"
+      },
+      "props": {
+        "option": {
+          "color": [
+            "#510000",
+            "#900000",
+            "#c80200",
+            "#ee7070",
+            "#FF0000",
+            "#ffc0c0",
+            "#ffdfe0",
+            "#cc8020"
+          ]
+        }
+      },
+      "api": {
+        "url": "https://disease.sh/v3/covid-19/countries",
+        "method": "get"
+      },
+      "events": {
+        "__onLayerData__": {
+          "code": "export function handler(data){\n  data.sort((a, b) => {\n    return b.cases - a.cases\n  })\n  const formatData = data.map(v => {\n    return { name: v.country, value: v.cases }\n  })\n  this.setProps({\n    data: formatData\n  })\n}",
+          "isSync": false
+        }
+      },
+      "id": "603df28598718629ec79f44e",
+      "component": "603df27798718629ec79f44c",
+      "updateFlag": 1615626045504,
+      "anime": {
+        "scale": 1,
+        "loop": 1,
+        "duration": 1000,
+        "delay": 2000,
+        "direction": "normal",
+        "autoplay": true
+      },
+      "hide": false
+    },
+    {
+      "reloadKey": 1,
+      "name": "基础柱状图1",
+      "initSize": true,
+      "style": {
+        "x": 1502,
+        "y": 0,
+        "z": 5,
+        "width": 418,
+        "height": 347,
+        "scale": "1.00",
+        "opacity": "1.00",
+        "overflow": "visible",
+        "rotate": "0deg"
+      },
+      "anime": {
+        "translateX": null,
+        "translateY": null,
+        "width": null,
+        "rotate": null,
+        "scale": 1,
+        "opacity": null,
+        "duration": 500,
+        "easing": "easeInQuart",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "props": {
+        "data": [
+          {
+            "name": "Mon",
+            "value": 120
+          },
+          {
+            "name": "Tue",
+            "value": 200
+          },
+          {
+            "name": "Wed",
+            "value": 150
+          },
+          {
+            "name": "Thu",
+            "value": 80
+          },
+          {
+            "name": "Fri",
+            "value": 70
+          },
+          {
+            "name": "Sat",
+            "value": 110
+          },
+          {
+            "name": "Sun",
+            "value": 130
+          }
+        ],
+        "option": {
+          "xAxis": {
+            "axisLabel": {
+              "interval": 0,
+              "rotate": 45
+            },
+            "axisLine": {
+              "lineStyle": {
+                "color": "rgba(255,255,255,0.5)"
+              }
+            }
+          },
+          "yAxis": {
+            "axisLine": {
+              "lineStyle": {
+                "color": "rgba(255,255,255,0.5)"
+              }
+            }
+          }
+        }
+      },
+      "api": {
+        "url": "https://disease.sh/v3/covid-19/vaccine/coverage/countries",
+        "method": "get"
+      },
+      "events": {
+        "__onLayerData__": {
+          "code": "export function handler(data){\n  let formatData = data.map(v => {\n    const timelineKeys = Object.keys(v.timeline);\n    return { name: v.country, value: v.timeline[timelineKeys[timelineKeys.length - 1]] }\n  });\n  formatData.sort((a, b) => {\n    return b.value - a.value;\n  });\n  formatData = formatData.slice(0, 10);\n  this.setProps({\n    data: formatData\n  })\n}",
+          "isSync": false
+        }
+      },
+      "id": "603a3faec28fb31dd9d6e0e4",
+      "component": "603a3dc9c28fb31dd9d6e0e0",
+      "updateFlag": 1615995328684,
+      "lock": false,
+      "group": "",
+      "groupLock": false,
+      "groupHide": false
+    },
+    {
+      "reloadKey": 1,
+      "name": "多折线图1",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": 704,
+        "z": 4,
+        "width": 431,
+        "height": 376
+      },
+      "id": "6035a53ca624690fac48d61b",
+      "component": "6035a537a624690fac48d61a",
+      "updateFlag": 1616079437208,
+      "group": "",
+      "groupLock": false,
+      "groupHide": false
+    },
+    {
+      "reloadKey": 0,
+      "name": "地球1",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": 0,
+        "z": 3,
+        "width": 1920,
+        "height": 1081
+      },
+      "eventLock": true,
+      "api": {
+        "url": "https://disease.sh/v3/covid-19/jhucsse",
+        "method": "get"
+      },
+      "events": {
+        "__onLayerData__": {
+          "code": "export function handler(data){\n  const barData = data.map((v) => {\n    return {\n      lat: v.coordinates.latitude,\n      lng: v.coordinates.longitude,\n      value: v.stats.confirmed,\n    }\n  })\n  this.setProps({\n      barData\n  })\n}",
+          "isSync": false
+        },
+        "onControl": {
+          "code": "export function handler(pos, isEnd){\n\tthis.setProps({\n\t    syncPosition: pos,\n\t    isEnd\n\t})\n}",
+          "isSync": true
+        },
+        "__onLayerLoad__": {
+          "code": "export function handler(){\n    console.log(this)\n    this.aaa = \"fffff\"\n}",
+          "isSync": false
+        },
+        "__onLayerShow__": {
+          "code": "export function handler(){\n\tconsole.log(this)\n\tthis.bb = \"xxxx\"\n}",
+          "isSync": false
+        }
+      },
+      "lock": true,
+      "hide": false,
+      "group": "",
+      "groupHide": false,
+      "groupLock": false,
+      "id": "603518f0a624690fac48d619",
+      "component": "60351878a624690fac48d617",
+      "updateFlag": 1615944923417
+    },
+    {
+      "reloadKey": 0,
+      "name": "图片1",
+      "initSize": true,
+      "style": {
+        "x": 453,
+        "y": 215,
+        "z": 2,
+        "width": 950,
+        "height": 650
+      },
+      "props": {
+        "src": "/public/upload/20210302/3c82717a-1b3d-42b8-8815-b5561c7c2458.png"
+      },
+      "group": "",
+      "groupHide": false,
+      "groupLock": false,
+      "lock": true,
+      "hide": false,
+      "id": "603df3cf98718629ec79f44f",
+      "component": "603df14e98718629ec79f44a"
+    }
+  ]
+},{
+  "_id": {
+    "$oid": "6035cb89a624690fac48d61f"
+  },
+  "status": 1,
+  "projectId": {
+    "$oid": "6035cb7fa624690fac48d61e"
+  },
+  "name": "test-page",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-02-24 11:44:09",
+  "updateTime": "2021-02-24 11:46:14",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6035d4aea624690fac48d638"
+  },
+  "status": 0,
+  "projectId": {
+    "$oid": "6035d4a6a624690fac48d637"
+  },
+  "name": "test-page",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(12,12,12,1)"
+  },
+  "createTime": "2021-02-24 12:23:10",
+  "updateTime": "2021-02-24 12:24:20",
+  "__v": 0,
+  "coverImg": "/public/upload/20210224/c223a77c-52cc-4e1a-914c-8d528777da01.jpg"
+},{
+  "_id": {
+    "$oid": "6035eaa6a624690fac48d644"
+  },
+  "status": 0,
+  "projectId": {
+    "$oid": "6035d4a6a624690fac48d637"
+  },
+  "name": "88",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-02-24 13:56:54",
+  "updateTime": "2021-02-24 13:56:54",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "603e4bd3f3bbc440d8ace913"
+  },
+  "status": 0,
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "大数据分析",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-02 22:29:39",
+  "updateTime": "2021-03-02 22:32:21",
+  "__v": 0,
+  "coverImg": "/public/upload/20210302/ffe603fe-6fa6-4733-a6a5-b980aeef76ed.jpg"
+},{
+  "_id": {
+    "$oid": "6045f3b57586ef60c7d224fc"
+  },
+  "status": 0,
+  "layers": [
+    {
+      "name": "基础仪表盘1",
+      "component": "6035d3ffa624690fac48d62f",
+      "initSize": true,
+      "style": {
+        "x": 845,
+        "y": 386,
+        "z": 5,
+        "width": 300,
+        "height": 200
+      },
+      "id": "80170efe-d2f2-40a1-8209-9aebf0a09ce5",
+      "updateFlag": 1615197859222
+    },
+    {
+      "name": "基础饼图1",
+      "component": "6035d332a624690fac48d62b",
+      "initSize": true,
+      "style": {
+        "x": 426,
+        "y": 449,
+        "z": 4,
+        "width": 300,
+        "height": 200
+      },
+      "id": "1a5fc13b-77a1-4771-8772-c0ed177fb4b9",
+      "updateFlag": 1615197857755
+    },
+    {
+      "name": "基础环形图1",
+      "component": "603df27798718629ec79f44c",
+      "initSize": true,
+      "style": {
+        "x": 591,
+        "y": 202,
+        "z": 2,
+        "width": 300,
+        "height": 200
+      },
+      "id": "6a073a1a-5e7f-42d4-a575-6515f11fbd6b",
+      "updateFlag": 1615197857755
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "333",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-08 17:51:49",
+  "updateTime": "2021-03-08 17:51:49",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6048349f7586ef60c7d224fd"
+  },
+  "status": 0,
+  "layers": [
+    {
+      "name": "VueButton v1.0.01",
+      "component": "60534b2ff6a1961cef62a196",
+      "initSize": true,
+      "style": {
+        "x": 952,
+        "y": 177,
+        "z": 4,
+        "width": 103,
+        "height": 47
+      },
+      "id": "1fd48d1e-9afb-43a0-88a1-614491cb1806",
+      "updateFlag": 1616147657728,
+      "props": {
+        "label": "ooooo",
+        "primary": true,
+        "size": "large"
+      },
+      "events": {
+        "onAlert": {
+          "code": "export function handler(){\n\tthis.router.push(\"/screen/602fbc6c5c1d967645e1e629\")\n}",
+          "isSync": false
+        }
+      },
+      "reloadKey": 1,
+      "eventLock": true
+    },
+    {
+      "name": "基础仪表盘2",
+      "component": "6035d3ffa624690fac48d62f",
+      "initSize": true,
+      "style": {
+        "x": 1189,
+        "y": 28,
+        "z": 3,
+        "width": 448,
+        "height": 294
+      },
+      "id": "888cebee-f9e4-4960-acba-ef065c965681",
+      "updateFlag": 1616178079283,
+      "reloadKey": 1
+    },
+    {
+      "name": "基础柱状图1",
+      "component": "603a3dc9c28fb31dd9d6e0e0",
+      "initSize": true,
+      "style": {
+        "x": 425,
+        "y": 386,
+        "z": 0,
+        "width": 253,
+        "height": 200,
+        "scale": "1.00"
+      },
+      "id": "ba2375af-3571-4d91-a0ae-51256aa69a38",
+      "updateFlag": 1616178365024,
+      "group": "08e087be-3876-46b4-8c21-9b809b31ea23",
+      "groupLock": false,
+      "groupHide": false,
+      "reloadKey": 0
+    },
+    {
+      "name": "基础环形图2",
+      "component": "603df27798718629ec79f44c",
+      "initSize": true,
+      "style": {
+        "x": 140,
+        "y": 286,
+        "z": -1,
+        "width": 97,
+        "height": 300
+      },
+      "id": "af7f3068-9546-4119-9258-cf49c9914d84",
+      "updateFlag": 1616178365024,
+      "reloadKey": 0,
+      "group": "08e087be-3876-46b4-8c21-9b809b31ea23",
+      "groupLock": false,
+      "groupHide": false
+    },
+    {
+      "name": "基础饼图1",
+      "component": "6035d332a624690fac48d62b",
+      "initSize": true,
+      "style": {
+        "x": 98,
+        "y": 86,
+        "z": -2,
+        "width": 263,
+        "height": 200
+      },
+      "id": "fd917473-1071-4d5e-a948-182a8e5b5104",
+      "updateFlag": 1616178365024,
+      "group": "08e087be-3876-46b4-8c21-9b809b31ea23",
+      "groupLock": false,
+      "groupHide": false,
+      "reloadKey": 0,
+      "props": {
+        "data": [
+          {
+            "name": "Mon",
+            "value": 120
+          },
+          {
+            "name": "Tue",
+            "value": 200
+          },
+          {
+            "name": "Wed",
+            "value": 150
+          },
+          {
+            "name": "Thu",
+            "value": 80
+          },
+          {
+            "name": "Fri",
+            "value": 70
+          },
+          {
+            "name": "Sat",
+            "value": 110
+          },
+          {
+            "name": "Sun",
+            "value": 130
+          }
+        ]
+      }
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "yyyy",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-10 10:53:19",
+  "updateTime": "2021-03-10 10:53:19",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6051597bf6a1961cef62a194"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "基础饼图1",
+      "component": "6035d332a624690fac48d62b",
+      "initSize": false,
+      "style": {
+        "x": 1337,
+        "y": 92,
+        "z": 6,
+        "width": 549,
+        "height": 416
+      },
+      "id": "79853699-568e-4ab7-9ed8-4d2f4650fffe",
+      "updateFlag": 1615968501779
+    },
+    {
+      "name": "基础环形图1",
+      "component": "603df27798718629ec79f44c",
+      "initSize": false,
+      "style": {
+        "x": 136,
+        "y": 637,
+        "z": 5,
+        "width": 354,
+        "height": 219
+      },
+      "id": "46d36194-12fa-4bd3-85ba-34a62afc927b",
+      "updateFlag": 1615945208711
+    },
+    {
+      "name": "基础柱状图1",
+      "component": "603a3dc9c28fb31dd9d6e0e0",
+      "initSize": false,
+      "style": {
+        "x": 136,
+        "y": 92,
+        "z": 4,
+        "width": 532,
+        "height": 430
+      },
+      "id": "d990aae9-221c-47fd-b4e3-cb2a0c98b897",
+      "updateFlag": 1615971584681
+    },
+    {
+      "name": "地球1",
+      "component": "60351878a624690fac48d617",
+      "initSize": false,
+      "style": {
+        "x": 547,
+        "y": 92,
+        "z": 2,
+        "width": 728,
+        "height": 609
+      },
+      "id": "7e07ed18-e33b-4022-ba56-bca0b8b1cf93",
+      "updateFlag": 1615945006669,
+      "api": {
+        "url": "https://disease.sh/v3/covid-19/jhucsse",
+        "method": "get"
+      },
+      "anime": {
+        "loop": 1,
+        "duration": 500,
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 1
+    }
+  ],
+  "projectId": {
+    "$oid": "6051595ef6a1961cef62a193"
+  },
+  "name": "w-page",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(10,0,0,1)"
+  },
+  "createTime": "2021-03-17 09:20:59",
+  "updateTime": "2021-03-17 09:20:59",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6055a1faf6a1961cef62a198"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "基础柱状图1",
+      "component": "603a3dc9c28fb31dd9d6e0e0",
+      "initSize": false,
+      "style": {
+        "x": 379,
+        "y": 319,
+        "z": 1,
+        "width": 300,
+        "height": 200
+      },
+      "id": "50de4e19-d646-4a51-abc1-1ffa1a32b4b6",
+      "updateFlag": 1616224801215
+    }
+  ],
+  "projectId": {
+    "$oid": "6055a1f1f6a1961cef62a197"
+  },
+  "name": "123",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-20 15:19:22",
+  "updateTime": "2021-03-20 15:19:22",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "605612cacc45913509f53700"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "散点图1",
+      "component": "6066abe86bf7c609daf07527",
+      "initSize": true,
+      "style": {
+        "x": 1430,
+        "y": 73,
+        "z": 9,
+        "width": 416,
+        "height": 288
+      },
+      "id": "71111af2-dd74-4f55-9af5-271ac3fd39e4",
+      "updateFlag": 1618455086447
+    },
+    {
+      "name": "指数回归1",
+      "component": "6066abc76bf7c609daf07526",
+      "initSize": true,
+      "style": {
+        "x": 1247,
+        "y": 654,
+        "z": 7,
+        "width": 315,
+        "height": 279
+      },
+      "id": "e1979c7a-e038-410e-b95b-4a1eef6e4e3f",
+      "updateFlag": 1618455086447
+    },
+    {
+      "name": "漏斗图1",
+      "component": "6066c9436bf7c609daf07528",
+      "initSize": true,
+      "style": {
+        "x": 25,
+        "y": 417,
+        "z": 6,
+        "width": 357,
+        "height": 290
+      },
+      "id": "fc12f6ab-a1e9-4750-9881-1cbfddf1efae",
+      "updateFlag": 1618455086447
+    },
+    {
+      "name": "线性回归1",
+      "component": "6066ab916bf7c609daf07525",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": -6,
+        "z": 5,
+        "width": 478,
+        "height": 382
+      },
+      "id": "ff540a6a-9ffb-4478-8ca4-50ea8af9511b",
+      "updateFlag": 1618455086447
+    },
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": 575.5,
+        "y": 0,
+        "z": 4,
+        "width": 769,
+        "height": 92,
+        "color": "rgba(226,226,226,1)",
+        "fontSize": 64
+      },
+      "id": "2c5a7a75-da4a-46c3-94e0-ee1a3940dcd6",
+      "updateFlag": 1618455086447,
+      "props": {
+        "text": "全球COVID-19数据统计"
+      },
+      "reloadKey": 1,
+      "lock": true
+    },
+    {
+      "name": "图片1",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 443,
+        "y": 118,
+        "z": 2,
+        "width": 956,
+        "height": 841
+      },
+      "id": "ffe0454d-ad8c-4ae3-9418-1f763f36237c",
+      "updateFlag": 1618455086447,
+      "props": {
+        "src": "/public/upload/20210409/572021b8-8896-4bb2-8760-bfa3abacb914.png"
+      },
+      "lock": true
+    },
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": 0,
+        "z": 1,
+        "width": 1920,
+        "height": 1080
+      },
+      "id": "950dff75-f4f7-4a33-8c7c-44ba30dcf7ad",
+      "updateFlag": 1618455086447,
+      "eventLock": true,
+      "api": {
+        "url": "https://disease.sh/v3/covid-19/jhucsse",
+        "method": "get"
+      },
+      "events": {
+        "__onLayerData__": {
+          "code": "export function handler(data){\n    const barData = data.map((v) => {\n        return {\n            lat: v.coordinates.latitude,\n            lng: v.coordinates.longitude,\n            value: v.stats.confirmed,\n        }\n        \n    })\n    this.setProps({\n        barData\n    })\n}",
+          "isSync": false
+        },
+        "onControl": {
+          "code": "export function handler(pos, isEnd){\n    this.setProps({\n        syncPosition: pos,\n        isEnd\n    })\n}",
+          "isSync": true
+        }
+      },
+      "reloadKey": 1,
+      "lock": true,
+      "hide": false
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "COVID-19",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(4,4,4,1)",
+    "backgroundImage": "/public/upload/20210320/f2a19a2b-0032-46e0-95c0-f8f9644a350a.jpg",
+    "backgroundRepeat": "repeat"
+  },
+  "createTime": "2021-03-20 23:20:42",
+  "updateTime": "2021-04-16 22:14:40",
+  "__v": 0,
+  "coverImg": "/public/upload/20210320/a062736d-c8fa-4767-9655-bdb6bb0df0bf.png"
+},{
+  "_id": {
+    "$oid": "6056c30fcc45913509f53702"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": -459,
+        "y": 77,
+        "z": 15,
+        "width": 390,
+        "height": 44,
+        "color": "rgba(255,6,6,1)"
+      },
+      "id": "bff7a395-9c88-4d60-9021-6058e8f2fbb2",
+      "updateFlag": 1618487748747,
+      "props": {
+        "text": "点击右上角预览查看效果"
+      },
+      "reloadKey": 0
+    },
+    {
+      "name": "图片10",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 289,
+        "y": 700,
+        "z": 14,
+        "width": 222,
+        "height": 107,
+        "opacity": "0.01"
+      },
+      "id": "8b8b2a22-b8a8-454a-8d41-26efa504f5f5",
+      "updateFlag": 1618486827671,
+      "props": {
+        "src": "/public/upload/20210415/199714d9-b520-4f55-a5bd-d7631ed17b12.png"
+      },
+      "reloadKey": 0,
+      "anime": {
+        "opacity": 1,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1600,
+        "easing": "linear",
+        "direction": "normal",
+        "autoplay": true
+      }
+    },
+    {
+      "name": "图片9",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 250,
+        "y": 605,
+        "z": 13,
+        "width": 300,
+        "height": 84,
+        "opacity": "1.00",
+        "scale": "0.01"
+      },
+      "id": "ecd85aae-72f4-4137-9d0b-faab1154e7e1",
+      "updateFlag": 1618486726748,
+      "props": {
+        "src": "/public/upload/20210415/4a77e5b4-cccb-46df-8639-ab3234ee5368.png"
+      },
+      "reloadKey": 0,
+      "lock": true,
+      "anime": {
+        "scale": 1,
+        "opacity": 1,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1500,
+        "easing": "easeInCirc",
+        "direction": "normal",
+        "autoplay": true
+      }
+    },
+    {
+      "name": "图片8",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 250,
+        "y": 662,
+        "z": 12,
+        "width": 300,
+        "height": 86,
+        "opacity": "0.01"
+      },
+      "id": "3fe267b5-ebec-4b28-8b1a-0f533e2ebcab",
+      "updateFlag": 1618486791483,
+      "props": {
+        "src": "/public/upload/20210415/cf2235fe-7f2f-4f22-b8df-c9919199dd12.png"
+      },
+      "reloadKey": 0,
+      "anime": {
+        "opacity": 1,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1600,
+        "easing": "linear",
+        "direction": "normal",
+        "autoplay": true
+      }
+    },
+    {
+      "name": "图片7",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 267.5,
+        "y": 552,
+        "z": 11,
+        "width": 265,
+        "height": 80,
+        "scale": "2.00"
+      },
+      "id": "07e17f52-6b58-4426-b729-f1df1411d082",
+      "updateFlag": 1618487155089,
+      "props": {
+        "src": "/public/upload/20210415/31213175-2c6b-4314-b31e-bd75394769b6.png"
+      },
+      "reloadKey": 1,
+      "anime": {
+        "scale": 1,
+        "loop": 1,
+        "duration": 1000,
+        "easing": "easeInCubic",
+        "direction": "normal",
+        "autoplay": true
+      }
+    },
+    {
+      "name": "图片6",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 814,
+        "y": 143,
+        "z": 10,
+        "width": 152,
+        "height": 137
+      },
+      "id": "66a17d76-a52f-410a-aa10-93286d4a5efe",
+      "updateFlag": 1618486477696,
+      "props": {
+        "src": "/public/upload/20210415/d77b3b4b-4ef4-424c-bc06-571201e33641.png"
+      },
+      "anime": {
+        "translateX": 667,
+        "translateY": 130,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1500,
+        "easing": "linear",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 0
+    },
+    {
+      "name": "图片5",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 250,
+        "y": 244,
+        "z": 9,
+        "width": 300,
+        "height": 200,
+        "opacity": "0.01"
+      },
+      "id": "e9c6f43d-6aa3-418f-b5df-9f81d8cab594",
+      "updateFlag": 1618487041416,
+      "props": {
+        "src": "/public/upload/20210415/dd2ad8e1-316a-426c-9ecc-0c4a5a03ab2b.png"
+      },
+      "lock": true,
+      "reloadKey": 0,
+      "anime": {
+        "opacity": 1,
+        "loop": 1,
+        "duration": 2000,
+        "delay": 1500,
+        "easing": "linear",
+        "direction": "normal",
+        "autoplay": true
+      }
+    },
+    {
+      "name": "图片5",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 445,
+        "y": 1216,
+        "z": 8,
+        "width": 197,
+        "height": 213
+      },
+      "id": "9fa0a937-edc8-4bfb-854b-7272b5216c8b",
+      "updateFlag": 1618486387567,
+      "props": {
+        "src": "/public/upload/20210415/6c4b388f-7d04-46a1-a0e0-344bab86a9d2.png"
+      },
+      "anime": {
+        "translateX": 380,
+        "translateY": 1014,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1400,
+        "easing": "easeInQuart",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 1
+    },
+    {
+      "name": "图片4",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": -81,
+        "y": 1246,
+        "z": 7,
+        "width": 182,
+        "height": 195
+      },
+      "id": "13688bb4-cc8a-44e4-9513-8519f12efaa9",
+      "updateFlag": 1618486284253,
+      "props": {
+        "src": "/public/upload/20210415/bb069767-3b66-4ab3-9bc1-52ffb182569e.png"
+      },
+      "anime": {
+        "translateX": 73,
+        "translateY": 963,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1200,
+        "easing": "easeInQuad",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 0
+    },
+    {
+      "name": "图片3",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 229,
+        "y": 1278,
+        "z": 6,
+        "width": 151,
+        "height": 181
+      },
+      "id": "b0306393-0814-46f9-8555-8e5bddcb3336",
+      "updateFlag": 1618486307022,
+      "props": {
+        "src": "/public/upload/20210415/531986b3-0cb8-4f54-a385-30c627bbda18.png"
+      },
+      "anime": {
+        "translateX": 249,
+        "translateY": 1040,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1300,
+        "easing": "linear",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 1
+    },
+    {
+      "name": "图片2",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": -218,
+        "y": 965,
+        "z": 5,
+        "width": 222,
+        "height": 154
+      },
+      "id": "934c7768-8830-42b6-bec5-01f55d5b8f7b",
+      "updateFlag": 1618486277061,
+      "props": {
+        "src": "/public/upload/20210415/6c6fb823-e7c8-42ba-9f66-e5b1ec13f284.png"
+      },
+      "anime": {
+        "translateX": -60,
+        "translateY": 919,
+        "loop": 1,
+        "duration": 500,
+        "delay": 1000,
+        "easing": "easeInCubic",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 1
+    },
+    {
+      "name": "按钮",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 800,
+        "y": 812,
+        "z": 4,
+        "width": 158,
+        "height": 52,
+        "rotate": "0deg",
+        "scale": "0.10"
+      },
+      "id": "e456c71f-02fb-4eb2-be36-348cbbe6d777",
+      "updateFlag": 1618488523748,
+      "props": {
+        "label": "立即购买",
+        "type": "primary",
+        "size": "medium"
+      },
+      "anime": {
+        "translateX": 321,
+        "translateY": 812,
+        "rotate": 360,
+        "scale": 1,
+        "opacity": 1,
+        "loop": 1,
+        "duration": 1000,
+        "delay": 2000,
+        "easing": "linear",
+        "direction": "normal",
+        "autoplay": true
+      },
+      "reloadKey": 0,
+      "events": {
+        "__onLayerShow__": {
+          "code": "",
+          "isSync": false
+        },
+        "onClick": {
+          "code": "export function handler(){\n\twindow.location.href = \"https://mei.taobao.com/\"\n}",
+          "isSync": false
+        }
+      }
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "动画配置示例",
+  "style": {
+    "width": 800,
+    "height": 1200,
+    "backgroundColor": "#FFF",
+    "backgroundRepeat": "no-repeat",
+    "backgroundImage": "/public/upload/20210415/7622332b-7b2a-4298-9fbd-ce21da0c601c.png"
+  },
+  "createTime": "2021-03-21 11:52:47",
+  "updateTime": "2021-04-17 00:05:10",
+  "__v": 0,
+  "coverImg": "/public/upload/20210415/305c4608-6c3a-4287-af82-0945e0620474.png"
+},{
+  "_id": {
+    "$oid": "605ad679a387893cf16d4aa9"
+  },
+  "status": 0,
+  "layers": [
+    {
+      "name": "维恩图1",
+      "initSize": true,
+      "style": {
+        "x": 342,
+        "y": 257,
+        "z": 1,
+        "width": 100,
+        "height": 100,
+        "overflow": "hidden"
+      },
+      "id": "6ce1f18c-ddfe-406e-8298-b430008a03ba",
+      "updateFlag": 1616576523196,
+      "reloadKey": 0,
+      "component": null
+    }
+  ],
+  "projectId": {
+    "$oid": "605ad66ea387893cf16d4aa8"
+  },
+  "name": "w-page",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(8,8,8,1)"
+  },
+  "createTime": "2021-03-24 14:04:41",
+  "updateTime": "2021-03-24 14:04:41",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "605b0606a387893cf16d4aaf"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "基础柱状图1",
+      "component": "605619cecc45913509f53701",
+      "initSize": true,
+      "style": {
+        "x": 270,
+        "y": 337,
+        "z": 3,
+        "width": 300,
+        "height": 200
+      },
+      "id": "a55a6e2e-660c-4f5b-b966-607f8a46f511",
+      "updateFlag": 1618194894295
+    },
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 670,
+        "y": 186,
+        "z": 2,
+        "width": 452,
+        "height": 346
+      },
+      "id": "cd88c005-533c-46c9-bc63-34b5fce3c91c",
+      "updateFlag": 1618194882614,
+      "eventLock": true
+    },
+    {
+      "name": "维恩图1",
+      "component": "605b0ca6a387893cf16d4ab1",
+      "initSize": true,
+      "style": {
+        "x": 1232,
+        "y": 428,
+        "z": 1,
+        "width": 227,
+        "height": 217
+      },
+      "id": "4a5738f0-48af-4c03-acb5-6e4e6e6468a9",
+      "updateFlag": 1617968225174,
+      "hide": false
+    }
+  ],
+  "projectId": {
+    "$oid": "605ad66ea387893cf16d4aa8"
+  },
+  "name": "w-page",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(10,10,10,1)"
+  },
+  "createTime": "2021-03-24 17:27:34",
+  "updateTime": "2021-04-12 10:35:00",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "605d4e0baba8435ed880ff2c"
+  },
+  "status": 0,
+  "layers": [
+    {
+      "name": "多折线图1",
+      "component": "60560ba0cc45913509f536f9",
+      "initSize": true,
+      "style": {
+        "x": 133,
+        "y": 115,
+        "z": 1,
+        "width": 300,
+        "height": 200,
+        "fontSize": 20,
+        "scale": "1.46"
+      },
+      "id": "4e86ea0d-59c3-4571-bfff-66a1a1e5e7d3",
+      "updateFlag": 1616727645307,
+      "reloadKey": 0
+    }
+  ],
+  "projectId": {
+    "$oid": "605d4e05aba8435ed880ff2b"
+  },
+  "name": "1",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-26 10:59:23",
+  "updateTime": "2021-03-26 10:59:23",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6062c580aba8435ed880ff2f"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": 652,
+        "y": 23,
+        "z": 11,
+        "width": 300,
+        "height": 52,
+        "fontSize": 24,
+        "fontWeight": "bold"
+      },
+      "id": "5da61fc7-8793-4f03-836d-a320527881ce",
+      "updateFlag": 1617366144898,
+      "props": {
+        "text": "大数据云平台"
+      },
+      "reloadKey": 1
+    },
+    {
+      "name": "散点图2",
+      "component": "6066abe86bf7c609daf07527",
+      "initSize": true,
+      "style": {
+        "x": 1123,
+        "y": 407,
+        "z": 10,
+        "width": 408,
+        "height": 281
+      },
+      "id": "83a0713e-f160-4289-bd12-824eae964752",
+      "updateFlag": 1617379499818
+    },
+    {
+      "name": "维恩图1",
+      "component": "605b0ca6a387893cf16d4ab1",
+      "initSize": true,
+      "style": {
+        "x": 199,
+        "y": 688,
+        "z": 9,
+        "width": 300,
+        "height": 200
+      },
+      "id": "1eaf1d8b-5226-4f4a-a32d-718d22c968cb",
+      "updateFlag": 1617365925176
+    },
+    {
+      "name": "element-ui按钮1",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 576,
+        "y": 734,
+        "z": 7,
+        "width": 32,
+        "height": 20
+      },
+      "id": "503d2021-8b4a-45ba-a6ca-2448643653f3",
+      "updateFlag": 1617379502057
+    },
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 507,
+        "y": 322,
+        "z": 6,
+        "width": 300,
+        "height": 200
+      },
+      "id": "1aab91ca-5036-42ea-afc4-78f74b175a3e",
+      "updateFlag": 1617365897420
+    },
+    {
+      "name": "漏斗图1",
+      "component": "6066c9436bf7c609daf07528",
+      "initSize": true,
+      "style": {
+        "x": 1452,
+        "y": 322,
+        "z": 5,
+        "width": 342,
+        "height": 390
+      },
+      "id": "8e552fc1-4aa5-4208-a6a7-4f4cb8a53486",
+      "updateFlag": 1617797657155,
+      "props": {
+        "style": "2d"
+      }
+    },
+    {
+      "name": "散点图1",
+      "component": "6066abe86bf7c609daf07527",
+      "initSize": true,
+      "style": {
+        "x": 692,
+        "y": 784,
+        "z": 4,
+        "width": 480,
+        "height": 313
+      },
+      "id": "f14adf8b-6b44-49e3-a979-4b6cb1935ad8",
+      "updateFlag": 1617863512457
+    },
+    {
+      "name": "指数回归1",
+      "component": "6066abc76bf7c609daf07526",
+      "initSize": true,
+      "style": {
+        "x": 53,
+        "y": 405,
+        "z": 3,
+        "width": 533,
+        "height": 336
+      },
+      "id": "1d40ba62-1bd8-4665-bfa0-cff0e3e27487",
+      "updateFlag": 1617357391848
+    },
+    {
+      "name": "线性回归1",
+      "component": "6066ab916bf7c609daf07525",
+      "initSize": true,
+      "style": {
+        "x": 633,
+        "y": 42,
+        "z": 2,
+        "width": 539,
+        "height": 389
+      },
+      "id": "d9713aec-c2c9-4886-b9ef-0ea47a524918",
+      "updateFlag": 1617356898409
+    },
+    {
+      "name": "基础折线图1",
+      "component": "60560b91cc45913509f536f8",
+      "initSize": true,
+      "style": {
+        "x": 65,
+        "y": 42,
+        "z": 1,
+        "width": 500,
+        "height": 328,
+        "backgroundColor": "rgba(74,74,74,1)"
+      },
+      "id": "665159ee-9691-4fcf-9f94-ee139e19e254",
+      "updateFlag": 1617377954302,
+      "reloadKey": 0
+    }
+  ],
+  "projectId": {
+    "$oid": "6062c578aba8435ed880ff2e"
+  },
+  "name": "123",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "rgba(0,7,35,1)"
+  },
+  "createTime": "2021-03-30 14:30:24",
+  "updateTime": "2021-04-08 14:33:59",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6062db8baba8435ed880ff31"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "eventLock": true,
+      "style": {
+        "x": -22.5,
+        "y": -109,
+        "z": 3,
+        "width": 845,
+        "height": 82
+      },
+      "id": "2f2ac6b3-f17f-40a9-89fe-b91c7c399e2a",
+      "updateFlag": 1618581800503,
+      "props": {
+        "text": "打开两个预览窗口并点击按钮，观察两个浏览器的效果"
+      }
+    },
+    {
+      "name": "基础饼图1",
+      "component": "60560bd1cc45913509f536fb",
+      "initSize": true,
+      "style": {
+        "x": 255,
+        "y": 280,
+        "z": 2,
+        "width": 300,
+        "height": 200
+      },
+      "id": "415aaeb6-1f66-45f9-9238-095b68cecd7a",
+      "updateFlag": 1618581379652,
+      "hide": true,
+      "events": {
+        "__onLayerShow__": {
+          "code": "export function handler(){\n\tthis.eventer.on(\"show\", ()=>{\n\t    this.setHide(false)\n\t});\n\t\n\tthis.eventer.on('hide', ()=>{\n\t    this.setHide(true)\n\t})\n}",
+          "isSync": false
+        },
+        "__onLayerUnload__": {
+          "code": "export function handler(){\n\tthis.eventer.removeAllListeners('show');\n\tthis.eventer.removeAllListeners(\"hide\")\n}",
+          "isSync": false
+        }
+      },
+      "reloadKey": 1
+    },
+    {
+      "name": "element-ui按钮1",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 322,
+        "y": 107,
+        "z": 1,
+        "width": 156,
+        "height": 81
+      },
+      "id": "a7c7a8bd-4499-4f63-ba2d-a576868f2b1c",
+      "updateFlag": 1618581377045,
+      "props": {
+        "label": "显示图表",
+        "type": "primary"
+      },
+      "events": {
+        "onClick": {
+          "code": "export function handler(){\n    const {label} = this.props;\n    if(label === \"显示图表\"){\n        this.eventer.emit(\"show\")\n        this.setProps({\n            label:\"隐藏图表\"\n        })\n    }else{\n       this.eventer.emit(\"hide\")\n        this.setProps({\n            label:\"显示图表\"\n        }) \n    }\n}",
+          "isSync": true
+        },
+        "__onLayerShow__": {
+          "code": "// export function handler(){\n// \tconsole.log(this)\n// }",
+          "isSync": false
+        }
+      },
+      "reloadKey": 0
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "组件通讯 & 事件同步示例",
+  "style": {
+    "width": 800,
+    "height": 600
+  },
+  "createTime": "2021-03-30 16:04:27",
+  "updateTime": "2021-04-17 00:04:56",
+  "__v": 0,
+  "coverImg": "/public/upload/20210330/6db64e9a-8d48-4b6d-aeb0-e4e12296d59c.png"
+},{
+  "_id": {
+    "$oid": "6063da7ad28be97ff047c5b4"
+  },
+  "status": 0,
+  "layers": [],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "anonymous",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-31 10:12:10",
+  "updateTime": "2021-03-31 10:13:01",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6063dabdd28be97ff047c5b5"
+  },
+  "status": 0,
+  "layers": [],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "anonymous",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-31 10:13:17",
+  "updateTime": "2021-03-31 10:13:17",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6063db3bd28be97ff047c5b6"
+  },
+  "status": 0,
+  "layers": [
+    {
+      "name": "基础折线图1",
+      "component": "60560b91cc45913509f536f8",
+      "initSize": true,
+      "style": {
+        "x": 345,
+        "y": 171,
+        "z": 1,
+        "width": 479,
+        "height": 290
+      },
+      "id": "2d437e72-6c29-4cf7-b3f7-c27098a3d443",
+      "updateFlag": 1617157029294
+    }
+  ],
+  "projectId": {
+    "$oid": "605ad66ea387893cf16d4aa8"
+  },
+  "name": "ddddddddd",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-31 10:15:23",
+  "updateTime": "2021-04-01 00:36:03",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6063e21cd28be97ff047c5b8"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "图片1",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 222,
+        "y": 542,
+        "z": 5,
+        "width": 300,
+        "height": 200
+      },
+      "id": "cd6f3a7a-d3f6-4625-870d-5c517370357a",
+      "updateFlag": 1617158711806
+    },
+    {
+      "name": "维恩图1",
+      "component": "605b0ca6a387893cf16d4ab1",
+      "initSize": true,
+      "style": {
+        "x": 111,
+        "y": 291,
+        "z": 4,
+        "width": 300,
+        "height": 200
+      },
+      "id": "9e2337a4-130b-45be-bb75-44a839156575",
+      "updateFlag": 1617158707056
+    },
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 522,
+        "y": 235,
+        "z": 3,
+        "width": 300,
+        "height": 200
+      },
+      "id": "8c30ed64-9e3c-4e69-b356-6de35a82d939",
+      "updateFlag": 1617158704832
+    },
+    {
+      "name": "element-ui按钮1",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 702,
+        "y": 40,
+        "z": 2,
+        "width": 32,
+        "height": 20
+      },
+      "id": "108b931e-407f-41a2-8bb1-ae3ebe028e78",
+      "updateFlag": 1617158702463
+    },
+    {
+      "name": "Vue3按钮1",
+      "component": "6062ce8faba8435ed880ff30",
+      "initSize": true,
+      "style": {
+        "x": 355,
+        "y": 114,
+        "z": 1,
+        "width": 40,
+        "height": 22
+      },
+      "id": "54416182-7b71-4c88-a62b-9c415d65d432",
+      "updateFlag": 1617158700643
+    }
+  ],
+  "projectId": {
+    "$oid": "6063e212d28be97ff047c5b7"
+  },
+  "name": "anonymous",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-31 10:44:44",
+  "updateTime": "2021-03-31 10:45:17",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60641aacd28be97ff047c5ba"
+  },
+  "status": 1,
+  "layers": [],
+  "projectId": {
+    "$oid": "60641aa3d28be97ff047c5b9"
+  },
+  "name": "anonymous",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-03-31 14:46:04",
+  "updateTime": "2021-03-31 14:46:04",
+  "__v": 0,
+  "coverImg": "/public/upload/20210331/fbcf9899-3477-400f-988b-37af35dbf4fc.png"
+},{
+  "_id": {
+    "$oid": "6066cb236bf7c609daf07529"
+  },
+  "status": 0,
+  "layers": [
+    {
+      "name": "漏斗图1",
+      "component": "6066c9436bf7c609daf07528",
+      "initSize": true,
+      "style": {
+        "x": 255,
+        "y": 201,
+        "z": 1,
+        "width": 574,
+        "height": 558
+      },
+      "id": "8a83609e-ef7f-4caf-9e81-9fb25080377c",
+      "updateFlag": 1617356610898,
+      "props": {
+        "data": [
+          {
+            "name": "分类1",
+            "value": 452010
+          },
+          {
+            "name": "分类2",
+            "value": 350138
+          },
+          {
+            "name": "分类3",
+            "value": 213067
+          },
+          {
+            "name": "分类4",
+            "value": 177635
+          },
+          {
+            "name": "分类5",
+            "value": 140071
+          },
+          {
+            "name": "分类6",
+            "value": 93081
+          }
+        ],
+        "style": "2d"
+      },
+      "reloadKey": 0
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "888",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-02 15:43:31",
+  "updateTime": "2021-04-02 17:43:30",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "606c812a6bf7c609daf0752a"
+  },
+  "status": 1,
+  "layers": [],
+  "projectId": {
+    "$oid": "6062c578aba8435ed880ff2e"
+  },
+  "name": "1",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-06 23:41:30",
+  "updateTime": "2021-04-08 23:40:23",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "606dc058315ae12f8d0fb22e"
+  },
+  "status": 1,
+  "layers": [],
+  "projectId": {
+    "$oid": "606dc050315ae12f8d0fb22d"
+  },
+  "name": "1",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-07 22:23:20",
+  "updateTime": "2021-04-09 00:15:58",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6073ba63f01b9648768fe6df"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": 112,
+        "z": 4,
+        "width": 383,
+        "height": 309
+      },
+      "id": "3efa69a4-79af-4584-b284-8cf076ff420a",
+      "updateFlag": 1618197249724,
+      "eventLock": false
+    },
+    {
+      "name": "element-ui按钮1",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 553,
+        "y": 137,
+        "z": 3,
+        "width": 300,
+        "height": 200
+      },
+      "id": "e3e29710-8478-49c3-8d73-03b15ce523c9",
+      "updateFlag": 1618197168032
+    },
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": 78,
+        "y": 75,
+        "z": 2,
+        "width": 300,
+        "height": 200
+      },
+      "id": "d21680cb-942f-46ac-8773-406f5f5ccad5",
+      "updateFlag": 1618197151820,
+      "events": {
+        "__onLayerShow__": {
+          "code": "",
+          "isSync": false
+        }
+      }
+    },
+    {
+      "name": "基础雷达图1",
+      "component": "6056c6fbcc45913509f53703",
+      "initSize": true,
+      "style": {
+        "x": 197,
+        "y": 331,
+        "z": 1,
+        "width": 349,
+        "height": 290
+      },
+      "id": "a1de69b5-9623-441b-8201-29c01e76105d",
+      "updateFlag": 1618197118410
+    }
+  ],
+  "projectId": {
+    "$oid": "605ad66ea387893cf16d4aa8"
+  },
+  "name": "vsd",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-12 11:11:31",
+  "updateTime": "2021-04-15 16:45:28",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6073f93df01b9648768fe6e1"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": 486,
+        "y": 463,
+        "z": 3,
+        "width": 300,
+        "height": 200,
+        "rotate": "0deg"
+      },
+      "id": "bc75ebdc-1f55-46ed-b1d2-989d350e409d",
+      "updateFlag": 1618213976373,
+      "reloadKey": 0,
+      "events": {
+        "__onLayerLoad__": {
+          "code": "",
+          "isSync": false
+        }
+      },
+      "hide": false,
+      "group": "3ceaa28e-4c14-4dca-a52d-4fdbc0a15a01",
+      "groupHide": false
+    },
+    {
+      "name": "文本2",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": 878,
+        "y": 375,
+        "z": 2,
+        "width": 300,
+        "height": 200
+      },
+      "id": "a03553aa-6844-4390-a7b0-072bb1f86bfe",
+      "updateFlag": 1618213976373,
+      "group": "3ceaa28e-4c14-4dca-a52d-4fdbc0a15a01",
+      "groupHide": false
+    }
+  ],
+  "projectId": {
+    "$oid": "6073f938f01b9648768fe6e0"
+  },
+  "name": "alan",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundColor": "#FFF"
+  },
+  "createTime": "2021-04-12 15:39:41",
+  "updateTime": "2021-04-12 16:27:34",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "607529c5f01b9648768fe6e3"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "漏斗图1",
+      "component": "6066c9436bf7c609daf07528",
+      "initSize": true,
+      "style": {
+        "x": 525,
+        "y": 389,
+        "z": 12,
+        "width": 300,
+        "height": 200,
+        "overflow": "visible"
+      },
+      "id": "d7edc584-e775-4bb2-967c-67e763cc121a",
+      "updateFlag": 1618291259172,
+      "reloadKey": 0
+    },
+    {
+      "name": "散点图1",
+      "component": "6066abe86bf7c609daf07527",
+      "initSize": true,
+      "style": {
+        "x": 472,
+        "y": 373,
+        "z": 11,
+        "width": 300,
+        "height": 200
+      },
+      "id": "10562881-e991-4b93-9a78-e8122ab09242",
+      "updateFlag": 1618291249080
+    },
+    {
+      "name": "指数回归1",
+      "component": "6066abc76bf7c609daf07526",
+      "initSize": true,
+      "style": {
+        "x": 510,
+        "y": 219,
+        "z": 10,
+        "width": 300,
+        "height": 200
+      },
+      "id": "48a773d6-414f-4e0e-b495-dbca0e84df8a",
+      "updateFlag": 1618291247421
+    },
+    {
+      "name": "Vue3按钮2",
+      "component": "6062ce8faba8435ed880ff30",
+      "initSize": true,
+      "style": {
+        "x": 620,
+        "y": 243,
+        "z": 9,
+        "width": 40,
+        "height": 22
+      },
+      "id": "f0fbf44b-501d-4ca3-b7d7-934696ed83c1",
+      "updateFlag": 1618291246358
+    },
+    {
+      "name": "线性回归1",
+      "component": "6066ab916bf7c609daf07525",
+      "initSize": true,
+      "style": {
+        "x": 228,
+        "y": 215,
+        "z": 8,
+        "width": 300,
+        "height": 200
+      },
+      "id": "1c1983d8-1481-4b53-a763-01260683edc4",
+      "updateFlag": 1618291243579
+    },
+    {
+      "name": "Vue3按钮1",
+      "component": "6062ce8faba8435ed880ff30",
+      "initSize": true,
+      "style": {
+        "x": 872,
+        "y": 467,
+        "z": 7,
+        "width": 543,
+        "height": 140
+      },
+      "id": "6f2a71ae-74a4-4fd2-8dcf-3cf4ac7973dc",
+      "updateFlag": 1618291237695
+    },
+    {
+      "name": "维恩图2",
+      "component": "605b0ca6a387893cf16d4ab1",
+      "initSize": true,
+      "style": {
+        "x": 288,
+        "y": 439,
+        "z": 6,
+        "width": 300,
+        "height": 200
+      },
+      "id": "6d91881d-f4fc-4cc8-b62b-4f3f6954759d",
+      "updateFlag": 1618291217158
+    },
+    {
+      "name": "地球2",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 849,
+        "y": 399,
+        "z": 5,
+        "width": 300,
+        "height": 200
+      },
+      "id": "094ac0a6-5105-4109-a684-bc5654beb0e8",
+      "updateFlag": 1618291202605
+    },
+    {
+      "name": "element-ui按钮1",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 348,
+        "y": 343,
+        "z": 4,
+        "width": 32,
+        "height": 20
+      },
+      "id": "d2cc55e7-1d81-4f60-b229-e932ab24351a",
+      "updateFlag": 1618291178746
+    },
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 924,
+        "y": 155,
+        "z": 3,
+        "width": 300,
+        "height": 200
+      },
+      "id": "f1cdebaa-2d31-4fd8-ae59-a0de2a84009b",
+      "updateFlag": 1618291160038
+    },
+    {
+      "name": "维恩图1",
+      "component": "605b0ca6a387893cf16d4ab1",
+      "initSize": true,
+      "style": {
+        "x": 588,
+        "y": 90,
+        "z": 2,
+        "width": 300,
+        "height": 200
+      },
+      "id": "a0525e15-610b-40f9-9f71-56d145a8a847",
+      "updateFlag": 1618291165461
+    },
+    {
+      "name": "基础折线图1",
+      "component": "60560b91cc45913509f536f8",
+      "initSize": true,
+      "style": {
+        "x": 157,
+        "y": 59,
+        "z": 1,
+        "width": 300,
+        "height": 200
+      },
+      "id": "3dc78333-f088-4518-9f51-47f1b4f08167",
+      "updateFlag": 1618291150377
+    }
+  ],
+  "projectId": {
+    "$oid": "607529bff01b9648768fe6e2"
+  },
+  "name": "11",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-13 13:19:01",
+  "updateTime": "2021-04-13 14:55:58",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6077ef95f01b9648768fe6e5"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 845,
+        "y": 478,
+        "z": 4,
+        "width": 300,
+        "height": 200
+      },
+      "id": "f91a798a-b40e-4220-871d-a4dad56c562d",
+      "updateFlag": 1618473046736
+    },
+    {
+      "name": "基础饼图1",
+      "component": "60560bd1cc45913509f536fb",
+      "initSize": true,
+      "style": {
+        "x": 685,
+        "y": 55,
+        "z": 3,
+        "width": 491,
+        "height": 200
+      },
+      "id": "d5e3b94a-4a6e-486c-9fc7-d08432b3f260",
+      "updateFlag": 1618473035337,
+      "reloadKey": 1
+    },
+    {
+      "name": "漏斗图1",
+      "component": "6066c9436bf7c609daf07528",
+      "initSize": true,
+      "style": {
+        "x": 35,
+        "y": 348,
+        "z": 2,
+        "width": 311,
+        "height": 294
+      },
+      "id": "fba646a3-901d-48da-8346-fd61ac3aa081",
+      "updateFlag": 1618506016169
+    },
+    {
+      "name": "多折线图1",
+      "component": "6065bd2c6bf7c609daf07521",
+      "initSize": true,
+      "style": {
+        "x": 346,
+        "y": 170,
+        "z": 1,
+        "width": 562,
+        "height": 575
+      },
+      "id": "65deee86-91f4-4fac-a29b-4f078417fd15",
+      "updateFlag": 1618506017747,
+      "eventLock": false
+    }
+  ],
+  "projectId": {
+    "$oid": "6077ef8ef01b9648768fe6e4"
+  },
+  "name": "12",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "color": "rgba(177,94,94,1)"
+  },
+  "createTime": "2021-04-15 15:47:33",
+  "updateTime": "2021-04-16 02:08:48",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "607849b9f01b9648768fe6e7"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "地球1",
+      "component": "60560b22cc45913509f536f5",
+      "initSize": true,
+      "style": {
+        "x": 120,
+        "y": 15,
+        "z": 1,
+        "width": 300,
+        "height": 200
+      },
+      "id": "1b97ef68-22eb-418b-9948-59c73d905e87",
+      "updateFlag": 1618495947793
+    }
+  ],
+  "projectId": {
+    "$oid": "607849b4f01b9648768fe6e6"
+  },
+  "name": "111",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-15 22:12:09",
+  "updateTime": "2021-04-16 11:25:07",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6078ee309bc3da63f1d75944"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "基础环形图1",
+      "component": "60560bbdcc45913509f536fa",
+      "initSize": true,
+      "style": {
+        "x": 153,
+        "y": 868,
+        "z": 7,
+        "width": 300,
+        "height": 200
+      },
+      "id": "78e3d195-597d-4519-9da1-4bebd5960cf7",
+      "updateFlag": 1618546615087
+    },
+    {
+      "name": "基础饼图1",
+      "component": "60560bd1cc45913509f536fb",
+      "initSize": true,
+      "style": {
+        "x": 489,
+        "y": 389,
+        "z": 6,
+        "width": 300,
+        "height": 200
+      },
+      "id": "c56ea0ed-f550-4c39-a18d-df4c060bafef",
+      "updateFlag": 1618581240938
+    },
+    {
+      "name": "南丁格尔玫瑰图1",
+      "component": "6065c19d6bf7c609daf07524",
+      "initSize": true,
+      "style": {
+        "x": 161,
+        "y": 624,
+        "z": 5,
+        "width": 300,
+        "height": 200
+      },
+      "id": "97d5d534-1766-45ce-b0be-1d0e3bcafe6c",
+      "updateFlag": 1618546608651
+    },
+    {
+      "name": "基础仪表盘1",
+      "component": "60560befcc45913509f536fc",
+      "initSize": true,
+      "style": {
+        "x": 979,
+        "y": 147,
+        "z": 4,
+        "width": 354,
+        "height": 334
+      },
+      "id": "3440f597-b8b8-4ec5-92f9-12fb76beb6bf",
+      "updateFlag": 1618581239737
+    },
+    {
+      "name": "图片1",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": 351,
+        "z": 3,
+        "width": 385,
+        "height": 121
+      },
+      "id": "eab0944b-5763-4c29-b67a-1b740c078373",
+      "updateFlag": 1618546571505,
+      "props": {
+        "src": "/public/upload/20210416/b9232f9b-1485-45b9-bccb-acb2b0ad5dde.jpg"
+      }
+    },
+    {
+      "name": "文本1",
+      "component": "60560b75cc45913509f536f7",
+      "initSize": true,
+      "style": {
+        "x": 371,
+        "y": 0,
+        "z": 2,
+        "width": 336,
+        "height": 42,
+        "color": "rgba(255,255,255,1)",
+        "fontFamily": "黑体",
+        "rotate": "0deg"
+      },
+      "id": "eda25937-6ab8-4f78-bfda-71494e4d1b4f",
+      "updateFlag": 1618546467620,
+      "props": {
+        "text": "消防平台"
+      },
+      "reloadKey": 1
+    },
+    {
+      "name": "多折线图1",
+      "component": "6065bd2c6bf7c609daf07521",
+      "initSize": true,
+      "style": {
+        "x": 0,
+        "y": 56,
+        "z": 1,
+        "width": 385,
+        "height": 295,
+        "color": "rgba(255,255,255,1)",
+        "fontSize": 20,
+        "opacity": "1.00",
+        "scale": "1.00",
+        "backgroundColor": "rgba(209,209,222,1)"
+      },
+      "id": "ff2c2a95-80c8-48a6-bed1-ea2848c72045",
+      "updateFlag": 1618546481364,
+      "reloadKey": 1
+    }
+  ],
+  "projectId": {
+    "$oid": "602e81599e3dbd6ed7c02b1a"
+  },
+  "name": "测试",
+  "style": {
+    "width": 1920,
+    "height": 1080,
+    "backgroundImage": "/public/upload/20210416/1d6686bc-b7c2-45a1-a69e-1cce365e73bd.jpg",
+    "color": "rgba(255,255,255,1)",
+    "backgroundColor": "rgba(179,136,136,1)"
+  },
+  "createTime": "2021-04-16 09:53:52",
+  "updateTime": "2021-04-16 21:54:03",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "607903a89bc3da63f1d75946"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "图片1",
+      "component": "60560b5dcc45913509f536f6",
+      "initSize": true,
+      "style": {
+        "x": 2,
+        "y": 227,
+        "z": 5,
+        "width": 300,
+        "height": 200
+      },
+      "id": "1b284496-7b63-4f8b-8b6a-8117b096e176",
+      "updateFlag": 1618554959735
+    },
+    {
+      "name": "维恩图1",
+      "component": "605b0ca6a387893cf16d4ab1",
+      "initSize": true,
+      "style": {
+        "x": 216,
+        "y": -29,
+        "z": 4,
+        "width": 300,
+        "height": 200
+      },
+      "id": "3d6dfbd2-6c8e-4bc5-90e4-34b34e6bc966",
+      "updateFlag": 1618554939208
+    },
+    {
+      "name": "Vue3按钮1",
+      "component": "6062ce8faba8435ed880ff30",
+      "initSize": true,
+      "style": {
+        "x": 55,
+        "y": 177,
+        "z": 3,
+        "width": 40,
+        "height": 22
+      },
+      "id": "53fabcd5-43ff-4660-a2b3-5c6883547c64",
+      "updateFlag": 1618554937877
+    },
+    {
+      "name": "element-ui按钮1",
+      "component": "6062c1ebaba8435ed880ff2d",
+      "initSize": true,
+      "style": {
+        "x": 420,
+        "y": 199,
+        "z": 2,
+        "width": 32,
+        "height": 20
+      },
+      "id": "518652cd-c761-4f97-9457-0aac2f359de7",
+      "updateFlag": 1618554932188
+    },
+    {
+      "name": "基础折线图1",
+      "component": "60560b91cc45913509f536f8",
+      "initSize": true,
+      "style": {
+        "x": 810,
+        "y": 880,
+        "z": 1,
+        "width": 300,
+        "height": 200
+      },
+      "id": "c56192e5-1c8d-4f5f-a4de-d30268fab5ae",
+      "updateFlag": 1618554979783
+    }
+  ],
+  "projectId": {
+    "$oid": "607903a19bc3da63f1d75945"
+  },
+  "name": "0",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-16 11:25:28",
+  "updateTime": "2021-04-16 14:36:26",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "607938709bc3da63f1d75948"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "多折线图1",
+      "component": "6065bd2c6bf7c609daf07521",
+      "initSize": true,
+      "style": {
+        "x": 66,
+        "y": 39,
+        "z": 1,
+        "width": 300,
+        "height": 200
+      },
+      "id": "d71c7730-5631-429c-9f15-8d78bcb53ad6",
+      "updateFlag": 1618557148030,
+      "eventLock": false
+    }
+  ],
+  "projectId": {
+    "$oid": "60792b9b9bc3da63f1d75947"
+  },
+  "name": "abc",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-16 15:10:40",
+  "updateTime": "2021-04-16 15:29:49",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60793cfa9bc3da63f1d75949"
+  },
+  "status": 1,
+  "layers": [
+    {
+      "name": "多折线图1",
+      "component": "6065bd2c6bf7c609daf07521",
+      "initSize": true,
+      "style": {
+        "x": 108,
+        "y": 104,
+        "z": 1,
+        "width": 300,
+        "height": 200
+      },
+      "id": "958533e2-2782-4f14-9503-a74bfb19797c",
+      "updateFlag": 1618574570221
+    }
+  ],
+  "projectId": {
+    "$oid": "60792b9b9bc3da63f1d75947"
+  },
+  "name": "abcadf",
+  "style": {
+    "width": 1920,
+    "height": 1080
+  },
+  "createTime": "2021-04-16 15:30:02",
+  "updateTime": "2021-04-16 23:13:32",
+  "__v": 0
+}]
