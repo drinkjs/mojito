@@ -11,8 +11,8 @@ import { RelativePosition, ScreenStore } from "types";
 
 interface RelativeSettingProps {
   label?: string;
-  screenStore?: ScreenStore;
   value?: RelativePosition;
+  screenStore?: ScreenStore;
   onChange: (value?: RelativePosition) => void;
   positionTypes: ("left" | "right" | "top" | "bottom")[]; // left right top bottom
 }
@@ -28,7 +28,7 @@ const { Option } = Select;
 
 const RelativeSetting = inject("screenStore")(
   observer((props: RelativeSettingProps) => {
-    const { screenStore, label, value, positionTypes, onChange } = props;
+    const { screenStore, label, positionTypes, value, onChange } = props;
     const [changeValue, setChangeValue] = useState<
       | {
           layerId?: string;
@@ -39,27 +39,59 @@ const RelativeSetting = inject("screenStore")(
     >(value);
 
     useEffect(() => {
-      if (changeValue?.layerId && changeValue?.offset !== undefined && changeValue?.positionType) {
-        const { layerId, offset, positionType } = changeValue;
-        onChange({ layerId, offset, positionType })
-      } else {
-        onChange(undefined)
+      if (value) {
+        const { layerId, offset, positionType } = value;
+        const layer = screenStore?.layers.find((v) => v.id === layerId);
+        if (layer) {
+          const layerX = layer.style.x + (positionType === "right" ? layer.style.width : 0);
+          const layerY = layer.style.y + (positionType === "bottom" ? layer.style.height : 0);
+          const currX = screenStore?.currLayer?.style.x;
+          const currY = screenStore?.currLayer?.style.y;
+          if ((positionType === "left" || positionType === "right") && currX && (currX - layerX !== offset)) {
+            setChangeValue({ ...value, offset: currX - layerX })
+          } else if ((positionType === "top" || positionType === "bottom") && currY && (currY - layerY !== offset)) {
+            setChangeValue({ ...value, offset: currY - layerY })
+          }
+        }
       }
-    }, [changeValue])
+    }, [value, screenStore?.currLayer?.style.x, screenStore?.currLayer?.style.y]);
 
-    const findLayer = (layerId:string) => {
-      const layer = screenStore?.layers.find(v => v.id === layerId);
-      return layer ? layer.id : undefined
-    }
+    useEffect(() => {
+      if (
+        changeValue?.layerId &&
+        changeValue?.offset !== undefined &&
+        changeValue?.positionType
+      ) {
+        const { layerId, offset, positionType } = changeValue;
+        if (value?.layerId !== layerId || value?.offset !== offset || value.positionType !== positionType) {
+          onChange({ layerId, offset, positionType });
+        }
+      } else if (
+        !changeValue?.layerId &&
+        changeValue?.offset === undefined &&
+        !changeValue?.positionType
+      ) {
+        onChange(undefined);
+      }
+    }, [changeValue]);
+
+    const findLayer = (layerId: string) => {
+      const layer = screenStore?.layers.find((v) => v.id === layerId);
+      return layer ? layer.id : undefined;
+    };
 
     return (
       <Space>
-         {label}
+        {label}
         <Select
           style={{ width: "100px" }}
           placeholder="相对图层"
           allowClear
-          value={value ? findLayer(value.layerId) : undefined}
+          value={
+            changeValue && changeValue.layerId
+              ? findLayer(changeValue.layerId)
+              : undefined
+          }
           onChange={(layerId: string) => {
             setChangeValue({ ...changeValue, layerId });
           }}
@@ -70,8 +102,11 @@ const RelativeSetting = inject("screenStore")(
             </Option>
           ))}
         </Select>
-        <Select placeholder="位置" allowClear value={value ? value.positionType : undefined}
-          onChange={(positionType:"left" | "right" | "top" | "bottom") => {
+        <Select
+          placeholder="位置"
+          allowClear
+          value={changeValue ? changeValue.positionType : undefined}
+          onChange={(positionType: "left" | "right" | "top" | "bottom") => {
             setChangeValue({ ...changeValue, positionType });
           }}
         >
@@ -83,7 +118,7 @@ const RelativeSetting = inject("screenStore")(
         </Select>
         <InputNumber
           placeholder="偏移"
-          value={value ? value.offset : undefined}
+          value={changeValue ? changeValue.offset : undefined}
           onChange={(offset: number) => {
             setChangeValue({ ...changeValue, offset });
           }}
