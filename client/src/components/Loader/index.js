@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-undef */
 /* eslint-disable prefer-template */
-import React from 'react';
-import { Spin, Skeleton } from 'antd';
-import Message from 'components/Message';
+import React from "react";
+import { Spin, Skeleton } from "antd";
+import Message from "components/Message";
 
 const loadingLib = {};
 
@@ -27,7 +27,7 @@ export const loadLib = ({ name, version }, onload) => {
     return;
   }
   const bundleUrl = `${
-    REACT_APP_LIB_URI || ''
+    REACT_APP_LIB_URI || ""
   }/${exportName}/bundle.js?t=${Math.random()}`;
   if (global[exportName]) {
     onload(global[exportName]);
@@ -36,22 +36,22 @@ export const loadLib = ({ name, version }, onload) => {
 
   loadingLib[exportName] = true;
 
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.src = bundleUrl;
-  script.crossOrigin = 'anonymous';
+  script.crossOrigin = "anonymous";
   script.onload = () => {
     loadingLib[exportName] = false;
     onload(global[exportName]);
   };
   script.onerror = () => {
-    Message.error(`${exportName}加载失败`)
-  }
+    Message.error(`${exportName}加载失败`);
+  };
   document.body.appendChild(script);
 };
 
 export const getLibScriptTag = (name, version) => {
   const exportName = name + version;
-  const nodeList = document.body.querySelectorAll('script');
+  const nodeList = document.body.querySelectorAll("script");
   for (let i = 0; i < nodeList.length; ++i) {
     const item = nodeList[i];
     if (item.src.indexOf(`${exportName}/bundle.js`) !== -1) {
@@ -74,7 +74,7 @@ export const reloadLib = (name, version, onLoad) => {
 };
 
 export const getScriptBySrc = (src) => {
-  const nodeList = document.body.querySelectorAll('script');
+  const nodeList = document.body.querySelectorAll("script");
   for (let i = 0; i < nodeList.length; ++i) {
     const item = nodeList[i];
     if (item.src === src) {
@@ -112,52 +112,48 @@ export const loadCDN = (cdns, onload) => {
     }
   };
 
-  const promises = cdns.map((url) => {
-    if (url.substring(url.length - 4) === '.css') {
-      const head = document.getElementsByTagName('head')[0];
-      const linkList = head.querySelectorAll('link');
-      return new Promise((resolve, reject) => {
-        if (!getLinkByUrl(linkList, url)) {
-          const link = document.createElement('link');
-          link.type = 'text/css';
-          link.rel = 'stylesheet';
-          head.appendChild(link);
-          link.href = url;
-          link.onload = () => {
-            resolve('ok');
-          };
-        } else {
-          resolve('ok');
-        }
-      });
-    } else {
-      const nodeList = document.body.querySelectorAll('script');
-      return new Promise((resolve, reject) => {
-        if (getScriptByUrl(nodeList, url)) {
-          return resolve('ok');
-        }
-        const script = document.createElement('script');
-        script.src = url;
-        script.crossOrigin = 'anonymous';
-        script.onload = () => {
-          resolve('ok');
-        };
-        script.onerror = () => {
-          Message.error(`${url}加载失败`)
-          reject(new Error(`${url}加载失败`));
-        }
-        document.body.appendChild(script);
-      });
+  const promiseLoad = () => {
+    if (cdns.length === 0) {
+      return onload();
     }
-  });
+    const url = cdns.shift();
+    if (url.substring(url.length - 4) === ".css") {
+      const head = document.getElementsByTagName("head")[0];
+      const linkList = head.querySelectorAll("link");
+      if (!getLinkByUrl(linkList, url)) {
+        const link = document.createElement("link");
+        link.type = "text/css";
+        link.rel = "stylesheet";
+        head.appendChild(link);
+        link.href = url;
+        link.onload = () => {
+          promiseLoad()
+        };
+        link.onerror = () => {
+          Message.error(`${url}加载失败`);
+        }
+      } else {
+        promiseLoad()
+      }
+    } else {
+      const nodeList = document.body.querySelectorAll("script");
+      if (getScriptByUrl(nodeList, url)) {
+        return promiseLoad()
+      }
+      const script = document.createElement("script");
+      script.src = url;
+      script.crossOrigin = "anonymous";
+      script.onload = () => {
+        promiseLoad()
+      };
+      script.onerror = () => {
+        Message.error(`${url}加载失败`);
+      };
+      document.body.appendChild(script);
+    }
+  };
 
-  Promise.all(promises)
-    .then((result) => {
-      onload();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  promiseLoad();
 };
 
 export const LoadingComponent = (props) => {
@@ -165,11 +161,11 @@ export const LoadingComponent = (props) => {
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        width: '100%',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
         ...style
       }}
     >
