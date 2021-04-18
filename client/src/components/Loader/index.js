@@ -3,6 +3,7 @@
 /* eslint-disable prefer-template */
 import React from 'react';
 import { Spin, Skeleton } from 'antd';
+import Message from 'components/Message';
 
 const loadingLib = {};
 
@@ -42,6 +43,9 @@ export const loadLib = ({ name, version }, onload) => {
     loadingLib[exportName] = false;
     onload(global[exportName]);
   };
+  script.onerror = () => {
+    Message.error(`${exportName}加载失败`)
+  }
   document.body.appendChild(script);
 };
 
@@ -138,6 +142,10 @@ export const loadCDN = (cdns, onload) => {
         script.onload = () => {
           resolve('ok');
         };
+        script.onerror = () => {
+          Message.error(`${url}加载失败`)
+          reject(new Error(`${url}加载失败`));
+        }
         document.body.appendChild(script);
       });
     }
