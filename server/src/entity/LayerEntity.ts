@@ -19,6 +19,12 @@ export interface LayerApi {
   };
 }
 
+export interface RelativePosition {
+  layerId: string;
+  offset: number;
+  positionType: "left" | "right" | "top" | "bottom";
+}
+
 // export default class Layer {
 //   @prop({ required: true })
 //   name!: string;

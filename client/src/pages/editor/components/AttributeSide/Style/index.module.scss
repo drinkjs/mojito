@@ -1,0 +1,119 @@
+@import '../../../../../resources/css/variable';
+
+.attrRoot {
+  height: 100%;
+  background: $mainColor;
+  display: flex;
+
+  :global {
+    .mojito-slider-track {
+      background-color: #335ae9 !important;
+    }
+    .mojito-slider:hover .ant-slider-track {
+      background-color: #335ae9 !important;
+    }
+    .mojito-slider-handle {
+      border: 1px solid #fff;
+      background: #6f6ff5;
+    }
+    .mojito-slider-rail {
+      background: #444;
+    }
+  }
+}
+
+.tabBox {
+  width: 40px;
+  flex-shrink: 0;
+  border-left: 1px solid $borderColor;
+}
+
+.tab {
+  height: 30px;
+  font-size: 18px;
+  text-align: center;
+  color: $textColor;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 0;
+  margin: 10px 5px;
+  cursor: pointer;
+}
+
+.tabSelected {
+  color: $heightLightTextColor;
+  background-color: $heightLightColor;
+  border-radius: 4px;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  background: $subColor;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.title {
+  padding: 10px 12px;
+  border-bottom: 1px solid $borderColor;
+  position: relative;
+  .icons {
+    font-size: 18px;
+    margin: 0 3px;
+    cursor: pointer;
+    color: #444;
+  }
+
+  .icon:hover {
+    color: #fff;
+  }
+}
+
+.setting {
+  height: 100%;
+  overflow: auto;
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+
+  .itemBox {
+    display: flex;
+    width: 50%;
+    margin: 3px 0;
+    align-items: center;
+    > label {
+      text-align: right;
+      width: 50px;
+      font-size: 12px;
+    }
+  }
+
+.codeBox {
+  width: 500;
+  height: 300px;
+  overflow: auto;
+}
+
+.layer {
+  display: flex;
+  height: 45px;
+  font-size: 14px;
+  padding: 6px;
+  align-items: center;
+  &:hover {
+    background: linear-gradient(
+      134deg,
+      rgba(51, 90, 233, 0.2),
+      rgba(111, 111, 245, 0.2)
+    );
+  }
+}
+
+.layerSelected {
+  background: #012;
+}

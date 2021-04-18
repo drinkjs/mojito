@@ -40,7 +40,7 @@ const typeComp: any = {
   array: () => (
     <CodeEditor style={{ width: '100%', height: '300px' }} mode="json" />
   ),
-  string: () => <Input.TextArea />,
+  string: () => <Input.TextArea autoFocus />,
   boolean: () => (
     <Radio.Group>
       <Radio value>true</Radio>
@@ -120,7 +120,7 @@ export default inject('screenStore')(
     const debounceFn = useDebounceFn((changeValues: any, values: any) => {
       const keys = Object.keys(changeValues);
       const submitObj: any = {};
-      if (!componentProps) {
+      if (!componentProps || !screenStore?.currLayer) {
         return;
       }
       keys.forEach((key) => {
@@ -141,12 +141,7 @@ export default inject('screenStore')(
         }
       });
 
-      if (
-        Object.keys(submitObj).length > 0 &&
-        screenStore &&
-        screenStore.currLayer &&
-        screenStore.currLayer.id
-      ) {
+      if (Object.keys(submitObj).length > 0) {
         screenStore.updateLayer(screenStore.currLayer.id, {
           props: {
             ...screenStore.currLayer.props,
@@ -154,7 +149,7 @@ export default inject('screenStore')(
           }
         });
       }
-    });
+    }, { wait: 300 });
 
     const onPropsChange = debounceFn.run;
 

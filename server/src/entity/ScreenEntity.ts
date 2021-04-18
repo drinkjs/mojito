@@ -5,6 +5,7 @@ import {
   prop,
   Severity,
 } from "@typegoose/typegoose";
+import { LayerApi, LayerStyle, RelativePosition } from "./LayerEntity";
 // import Component from "./ComponentEntity";
 import Project from "./ProjectEntity";
 
@@ -17,23 +18,6 @@ export interface ScreenOptions {
   backgroundRepeat?: string;
   fontFamily?: string;
   fontSize?: string;
-}
-
-interface LayerStyle {
-  x: number;
-  y: number;
-  z: number;
-  width: number;
-  height: number;
-  [key: string]: any;
-}
-interface LayerApi {
-  url: string;
-  method: string;
-  interval?: number;
-  params?: {
-    [key: string]: any;
-  };
 }
 export interface LayerInfo {
   name: string;
@@ -52,6 +36,10 @@ export interface LayerInfo {
   groupHide?: boolean;
   reloadKey?: number;
   anime?: { [key: string]: any };
+  relativePosition?: {
+    x?: RelativePosition;
+    y?: RelativePosition;
+  }; // 相对位置
 }
 
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })

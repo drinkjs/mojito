@@ -1,5 +1,5 @@
 import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
-import { LayerApi, LayerStyle } from "../entity/LayerEntity";
+import { LayerApi, LayerStyle, RelativePosition } from "../entity/LayerEntity";
 import { ComponentDto } from "./ComponentDto";
 
 export class LayerDto {
@@ -49,4 +49,9 @@ export class LayerDto {
   reloadKey?: number;
 
   anime?: { [key: string]: any };
+
+  relativePosition?: {
+    x?: RelativePosition;
+    y?: RelativePosition;
+  }; // 相对位置
 }

@@ -502,7 +502,7 @@ export default inject('screenStore')(
           e.preventDefault();
         }
 
-        if (groupframes.length > 0 && moveKeys.indexOf(e.key) >= 0) {
+        if (e.ctrlKey && groupframes.length > 0 && moveKeys.indexOf(e.key) >= 0) {
           e.preventDefault();
           let valueX: number = 0;
           let valueY: number = 0;
@@ -636,9 +636,6 @@ export default inject('screenStore')(
         layerData: LayerInfo,
         event?: React.MouseEvent<HTMLDivElement, MouseEvent>
       ) => {
-        // 为了让右侧输入框失去焦点，如果不焦点input的value无法更新图层的值
-        event && document.querySelectorAll('input').forEach((v) => v.blur());
-
         if (screenStore!.selectedLayerIds.has(layerData.id)) return;
 
         currNativeEvent.current = event ? event.nativeEvent : null;
@@ -1172,9 +1169,6 @@ export default inject('screenStore')(
                     resizable={!screenStore!.isLayerLock}
                     onDragGroupStart={({ events }) => {
                       screenStore!.setResizeing(true);
-                      document
-                        .querySelectorAll('input')
-                        .forEach((v) => v.blur());
                       events.forEach((ev, i) => {
                         const frame = groupframes[i];
                         ev.set([frame.style.x, frame.style.y]);
@@ -1200,9 +1194,6 @@ export default inject('screenStore')(
                       saveGroup();
                     }}
                     onResizeGroupStart={({ events }) => {
-                      document
-                        .querySelectorAll('input')
-                        .forEach((v) => v.blur());
                       screenStore!.setResizeing(true);
                       events.forEach((ev, i) => {
                         const frame = groupframes[i];

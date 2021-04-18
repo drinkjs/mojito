@@ -171,7 +171,7 @@ export default inject('screenStore')(
     };
 
     const onSave = async () => {
-      if (!screenStore!.currLayer) return;
+      if (!screenStore?.currLayer) return;
 
       const values = await form.validateFields();
       delete values.disable;

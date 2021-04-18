@@ -6,7 +6,7 @@ import UploadImg from 'components/UploadImg';
 import { ScreenStore } from 'types';
 import { DefaulBackgroundColor, DefaultFontColor } from 'config';
 import styles from './index.module.scss';
-import { SizeItem, ColorItem } from './Style';
+import { SizeSetting, ColorSetting } from './Style';
 
 const sizeItems = [
   {
@@ -71,7 +71,7 @@ export default inject('screenStore')(
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {sizeItems.map((v) => {
               return (
-                <SizeItem
+                <SizeSetting
                   key={v.key}
                   label={v.label}
                   onChange={(value) => {
@@ -86,7 +86,7 @@ export default inject('screenStore')(
         <div className={styles.title}>
           <p>页面颜色</p>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            <ColorItem
+            <ColorSetting
               label="背景颜色"
               defaultColor={DefaulBackgroundColor}
               value={screenStyle.backgroundColor}
@@ -94,7 +94,7 @@ export default inject('screenStore')(
                 onStyleChange('backgroundColor', color);
               }}
             />
-            <ColorItem
+            <ColorSetting
               label="字体颜色"
               defaultColor={DefaultFontColor}
               value={screenStyle.color}

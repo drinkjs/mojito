@@ -5,7 +5,7 @@ import { ScreenStore } from 'types';
 import { toJS } from 'mobx';
 import Eventer from 'common/eventer';
 import styles from './index.module.scss';
-import { SizeItem } from './Style';
+import { SizeSetting } from './Style';
 import { GROUP_STYLE_CHANGE } from 'config/events';
 import { useDebounceFn } from 'ahooks';
 
@@ -72,7 +72,7 @@ export default inject('screenStore')(
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {sizeItems.map((v) => {
               return (
-                <SizeItem
+                <SizeSetting
                   key={v.key}
                   label={v.label}
                   onChange={(value) => {

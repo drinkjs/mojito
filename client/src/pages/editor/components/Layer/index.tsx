@@ -461,6 +461,7 @@ const Layer = inject('screenStore')(
       const onClick = useCallback(
         (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
           e.stopPropagation();
+          targetRef.current?.focus()
           if (onSelected) {
             onSelected(data, e);
           }
@@ -594,6 +595,7 @@ const Layer = inject('screenStore')(
           }}
           onMouseDown={onClick}
           id={data.id}
+          tabIndex={0}
         >
           {!libLoading && lib && (
             <Render
@@ -604,9 +606,14 @@ const Layer = inject('screenStore')(
               props={mergeParms.props}
               styles={{
                 ...mergeParms.styles,
+                background: undefined,
                 opacity: undefined,
                 transform: undefined,
-                overflow: undefined
+                overflow: undefined,
+                borderStyle: undefined,
+                borderWidth: undefined,
+                borderColor: undefined,
+                borderRadius: undefined
               }}
               events={compEventHandlers}
               style={{

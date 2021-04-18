@@ -57,6 +57,11 @@ export interface ComponentCategory {
 export interface LayerEvents {
   [key: string]: { code: string; isSync: boolean };
 }
+export interface RelativePosition {
+  layerId: string;
+  offset: number;
+  positionType: "left" | "right" | "top" | "bottom";
+}
 
 /**
  * 图层信息
@@ -103,6 +108,10 @@ export interface LayerInfo {
     autoplay?: boolean;
   };
   reloadKey?: number; // 强制刷新
+  relativePosition?: {
+    x?: RelativePosition,
+    y?: RelativePosition
+  } // 相对位置
 }
 
 export interface ScreenLayout extends CSSProperties {
