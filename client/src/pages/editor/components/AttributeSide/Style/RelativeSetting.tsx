@@ -96,7 +96,7 @@ const RelativeSetting = inject("screenStore")(
             setChangeValue({ ...changeValue, layerId });
           }}
         >
-          {screenStore?.layers.map((v) => (
+          {screenStore?.layers?.filter(v => v.id !== screenStore?.currLayer?.id).map((v) => (
             <Option key={v.id} value={v.id}>
               {v.name}
             </Option>
