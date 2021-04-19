@@ -34,6 +34,7 @@
     "mobx": "^6.0.1",
     "mobx-react": "^7.0.0",
     "node-sass": "^5.0.0",
+    "numeral": "^2.0.6",
     "prettier": "^2.2.1",
     "re-resizable": "^6.9.0",
     "react": "^17.0.0",

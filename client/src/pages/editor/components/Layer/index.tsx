@@ -33,6 +33,7 @@ import { toJS } from 'mobx';
 import { useUpdateEffect } from 'ahooks';
 
 const md5 = require('blueimp-md5');
+const numeral = require('numeral');
 
 function showHandlerError (layerName: string, error: any) {
   Message.error(`${layerName}事件处理错误:${error.message}`);
@@ -145,6 +146,7 @@ const Layer = inject('screenStore')(
       const [lib, setLib] = useState<any>();
       const [libLoading, setLibLoading] = useState(false);
       const [hide, setHide] = useState(false);
+      const [dataloading, setDataloading] = useState(false);
       // 事件同步处理
       const [eventySync, setEventSync] = enable
         ? []
@@ -314,14 +316,16 @@ const Layer = inject('screenStore')(
         onLayerData?: Function
       ) => {
         const newParams = params || {};
-
+        setDataloading(true);
         eventRequest(api, method, newParams).then((res) => {
           setDataSource(res);
           // 数据加载完成事件处理
           if (onLayerData) {
             runEventHandler(onLayerData, res);
           }
-        });
+        }).finally(() => {
+          setDataloading(false)
+        })
       };
 
       /**
@@ -395,6 +399,7 @@ const Layer = inject('screenStore')(
             currAnime: enable ? anime({}) : currAnime.current,
             eventer,
             request: eventRequest,
+            numeral,
             setProps,
             setStyles,
             setHide,
@@ -595,7 +600,7 @@ const Layer = inject('screenStore')(
           }}
           onMouseDown={onClick}
           id={data.id}
-          tabIndex={0}
+          tabIndex={enable ? 0 : undefined}
         >
           {!libLoading && lib && (
             <Render
@@ -603,7 +608,7 @@ const Layer = inject('screenStore')(
               onShow={onShow}
               developLib={data.component.developLib}
               component={lib.default}
-              props={mergeParms.props}
+              props={{ ...mergeParms.props, dataloading }}
               styles={{
                 ...mergeParms.styles,
                 background: undefined,
