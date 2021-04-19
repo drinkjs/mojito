@@ -7,7 +7,6 @@ import Eventer from 'common/eventer';
 import styles from './index.module.scss';
 import { SizeSetting } from './Style';
 import { GROUP_STYLE_CHANGE } from 'config/events';
-import { useDebounceFn } from 'ahooks';
 
 interface Props {
   screenStore?: ScreenStore;
@@ -40,12 +39,6 @@ export default inject('screenStore')(
     );
 
     useEffect(() => {
-      return () => {
-        debounceChange.cancel();
-      };
-    }, []);
-
-    useEffect(() => {
       setDefaultStyle(toJS(screenStore?.moveableRect));
     }, [screenStore?.moveableRect]);
 
@@ -53,17 +46,8 @@ export default inject('screenStore')(
       if (isNaN(value)) return;
       const newStyle: any = { ...defaultStyle, [type]: value };
       setDefaultStyle(newStyle);
-      debounceChange.run(newStyle);
+      Eventer.emit(GROUP_STYLE_CHANGE, newStyle);
     };
-
-    const debounceChange = useDebounceFn(
-      (style: any) => {
-        Eventer.emit(GROUP_STYLE_CHANGE, style);
-      },
-      {
-        wait: 500
-      }
-    );
 
     return (
       <section className={styles.styleSetting}>

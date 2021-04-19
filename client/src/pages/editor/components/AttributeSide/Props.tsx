@@ -227,7 +227,7 @@ export default inject('screenStore')(
                     <Panel
                       header={
                         <div>
-                          {propsValue.name || key}
+                          {propsValue.name} {key}
                           <Tooltip title={propsValue.comment || key}>
                             <span style={{ color: '#666', marginLeft: '6px' }}>
                               <ExclamationCircleOutlined />

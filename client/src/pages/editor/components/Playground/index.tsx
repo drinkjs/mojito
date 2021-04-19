@@ -1,51 +1,51 @@
 /* eslint-disable multiline-ternary */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useRef, useEffect, useState } from 'react';
-import { useDrop } from 'react-dnd';
-import Moveable from 'react-moveable';
-import { observer, inject } from 'mobx-react';
+import React, { useCallback, useRef, useEffect, useState } from "react";
+import { useDrop } from "react-dnd";
+import Moveable from "react-moveable";
+import { observer, inject } from "mobx-react";
 import {
   MinusOutlined,
   PlusOutlined,
   LoadingOutlined
-} from '@ant-design/icons';
-import { Tooltip, Switch, Modal } from 'antd';
-import { runInAction, toJS } from 'mobx';
-import { v4 as uuidv4 } from 'uuid';
+} from "@ant-design/icons";
+import { Tooltip, Switch, Modal } from "antd";
+import { runInAction, toJS } from "mobx";
+import { v4 as uuidv4 } from "uuid";
 import {
   useDebounceFn,
   useInterval,
   useDocumentVisibility,
   useUpdateEffect
-} from 'ahooks';
+} from "ahooks";
 import {
   ContextMenu,
   MenuItem,
   connectMenu,
   ContextMenuTrigger
-} from 'react-contextmenu';
-import * as transformParser from 'transform-parser';
-import IconFont, { IconLink } from 'components/IconFont';
-import Layer from 'pages/editor/components/Layer';
-import Eventer from 'common/eventer';
-import './react-contextmenu.css';
-import { ComponentStore, ComponentStyle, LayerInfo, ScreenStore } from 'types';
+} from "react-contextmenu";
+import * as transformParser from "transform-parser";
+import IconFont, { IconLink } from "components/IconFont";
+import Layer from "pages/editor/components/Layer";
+import Eventer from "common/eventer";
+import "./react-contextmenu.css";
+import { ComponentStore, ComponentStyle, LayerInfo, ScreenStore } from "types";
 import {
   DefaulBackgroundColor,
   DefaultFontColor,
   DefaultLayerSize,
   SaveTime
-} from 'config';
-import styles from './index.module.scss';
-import Message from 'components/Message';
-import { LAYER_STYLE_CHANGE, GROUP_STYLE_CHANGE } from 'config/events';
+} from "config";
+import styles from "./index.module.scss";
+import Message from "components/Message";
+import { LAYER_STYLE_CHANGE, GROUP_STYLE_CHANGE } from "config/events";
 
 let compCount: { [key: string]: number } = {};
 
-const shortKeys = ['g', 'b', 'z', 'y', 'h', 'l', 's'];
-const moveKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-type AlignType = 'left' | 'right' | 'top' | 'bottom' | 'v-center' | 'h-center';
+const shortKeys = ["g", "b", "z", "y", "h", "l", "s"];
+const moveKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
 
 interface Props {
   screenStore?: ScreenStore;
@@ -58,11 +58,11 @@ interface FrameInfo {
 }
 
 const toolStyles = {
-  margin: '0 6px'
+  margin: "0 6px"
 };
 
 const formatTransform = (
-  transform: CSSStyleDeclaration['transform'],
+  transform: CSSStyleDeclaration["transform"],
   x?: number,
   y?: number
 ) => {
@@ -84,7 +84,7 @@ const LayerContextMenu = (props: any) => {
   const layer: LayerInfo = trigger ? trigger.layer : null;
 
   return (
-    <ContextMenu id={id} style={{ display: trigger ? 'block' : 'none' }}>
+    <ContextMenu id={id} style={{ display: trigger ? "block" : "none" }}>
       {trigger ? (
         <div
           onMouseDown={(e) => {
@@ -93,25 +93,25 @@ const LayerContextMenu = (props: any) => {
         >
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: 'SET_TOP', layer }}
+            data={{ action: "SET_TOP", layer }}
           >
             置顶
           </MenuItem>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: 'SET_UP', layer }}
+            data={{ action: "SET_UP", layer }}
           >
             上移
           </MenuItem>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: 'SET_DOWN', layer }}
+            data={{ action: "SET_DOWN", layer }}
           >
             下移
           </MenuItem>
           <MenuItem
             onClick={handleItemClick}
-            data={{ action: 'SET_BOTTOM', layer }}
+            data={{ action: "SET_BOTTOM", layer }}
           >
             置底
           </MenuItem>
@@ -129,10 +129,10 @@ const LayerContextMenu = (props: any) => {
   );
 };
 
-const MENU_TYPE = 'LAYER_CONTEXT_MENU';
+const MENU_TYPE = "LAYER_CONTEXT_MENU";
 const ConnectedMenu = connectMenu(MENU_TYPE)(LayerContextMenu);
 
-export default inject('screenStore')(
+export default inject("screenStore")(
   observer(({ screenStore }: Props) => {
     const rootRef = useRef<HTMLDivElement>();
     const areaRef = useRef<HTMLDivElement>();
@@ -162,7 +162,7 @@ export default inject('screenStore')(
      * 定时保存图层信息
      */
     useInterval(() => {
-      if (documentVisibility === 'visible') {
+      if (documentVisibility === "visible") {
         screenStore?.saveScreen();
       }
     }, SaveTime);
@@ -171,7 +171,7 @@ export default inject('screenStore')(
      * 接受组件拖入
      */
     const [, dropTarget] = useDrop({
-      accept: 'ADD_COMPONENT',
+      accept: "ADD_COMPONENT",
       drop: (item: any, monitor) => {
         const { value } = item;
         let x = 0;
@@ -231,7 +231,7 @@ export default inject('screenStore')(
       return () => {
         debounceChange.cancel();
         debounceRect.cancel();
-        window.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener("keydown", onKeyDown);
       };
     }, []);
 
@@ -244,12 +244,14 @@ export default inject('screenStore')(
 
     const debounceRect = useDebounceFn(() => {
       const rect = moveableRef.current!.getRect();
-      screenStore!.moveableRect = {
-        x: Math.round(rect.left),
-        y: Math.round(rect.top),
-        width: Math.round(rect.width),
-        height: Math.round(rect.height)
-      };
+      runInAction(() => {
+        screenStore!.moveableRect = {
+          x: Math.round(rect.left),
+          y: Math.round(rect.top),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height)
+        };
+      });
     });
 
     /**
@@ -271,9 +273,9 @@ export default inject('screenStore')(
      */
     useUpdateEffect(() => {
       updateRect();
-      window.addEventListener('keydown', onKeyDown);
+      window.addEventListener("keydown", onKeyDown);
       return () => {
-        window.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener("keydown", onKeyDown);
       };
     }, [groupElement, groupframes]);
 
@@ -361,44 +363,39 @@ export default inject('screenStore')(
      */
     const onGroupStyle = useCallback(
       ({ x, y, width, height }) => {
-        const rect = screenStore!.moveableRect!;
-        const offsetX = x - rect.x;
-        const offsetY = y - rect.y;
-        const ratioWidth = Math.max(1, width) / rect.width;
-        const ratioHeight = Math.max(1, height) / rect.height;
+        // const rect = screenStore!.moveableRect;
+        // if (!rect) return;
+        // // const offsetX = x - rect.x;
+        // // const offsetY = y - rect.y;
 
-        groupframes.forEach((frame, index) => {
-          const { style } = frame;
-          if (
-            !style ||
-            style.width === undefined ||
-            style.height === undefined
-          ) {
-            return;
-          }
-          const target = groupElement[index];
-          const localX = style.x - rect.x;
-          const localY = style.y - rect.y;
-          if (ratioWidth !== 1) {
-            style.x = Math.round(ratioWidth * localX + rect.x);
-            style.width = Math.round(ratioWidth * style.width);
-          } else if (ratioHeight !== 1) {
-            style.y = Math.round(ratioHeight * localY + rect.y);
-            style.height = Math.round(ratioHeight * style.height);
-          } else {
-            style.x += offsetX;
-            style.y += offsetY;
-          }
-          target.style.transform = formatTransform(
-            target.style.transform,
-            style.x,
-            style.y
-          );
-          target.style.width = `${style.width}px`;
-          target.style.height = `${style.height}px`;
-        });
-        updateRect();
-        saveGroup();
+        // const ratioWidth = Math.max(1, width) / rect.width;
+        // const ratioHeight = Math.max(1, height) / rect.height;
+
+        // // console.log(x, y, width, height);
+
+        // groupframes.forEach((frame, index) => {
+        //   const { style } = frame;
+        //   if (
+        //     !style ||
+        //     style.width === undefined ||
+        //     style.height === undefined
+        //   ) {
+        //     return;
+        //   }
+        //   const target = groupElement[index];
+        //   if (ratioWidth !== 1) {
+        //     style.width = Math.round(ratioWidth * style.width);
+        //   } else if (ratioHeight !== 1) {
+        //     style.height = Math.round(ratioHeight * style.height);
+        //   }
+
+        //   target.style.width = `${style.width}px`;
+        //   target.style.height = `${style.height}px`;
+        // });
+        moveableRef?.current?.request("draggable", { x, y }, true);
+        moveableRef?.current?.request("resizable", { offsetWidth: width, offsetHeight: height }, true);
+        // updateRect();
+        // saveGroup();
       },
       [groupframes, groupElement]
     );
@@ -444,7 +441,7 @@ export default inject('screenStore')(
       scaleInt = parseFloat((scaleInt / 10).toFixed(2));
       if (rootRef.current && zoomRef.current && pageLayout) {
         rootRef.current.style.transform = `scale(${scaleInt})`;
-        rootRef.current.style.transformOrigin = '0 0 0';
+        rootRef.current.style.transformOrigin = "0 0 0";
         zoomRef.current.style.width = `${pageLayout.width * scaleInt}px`;
         zoomRef.current.style.height = `${pageLayout.height * scaleInt}px`;
         setScale(scaleInt);
@@ -471,13 +468,20 @@ export default inject('screenStore')(
       if (areaRef.current && rootRef.current && zoomRef.current) {
         const { width, height } = areaRef.current.getBoundingClientRect();
         let zoom = 0;
-        if (pageLayout.width < areaRef.current!.offsetWidth && pageLayout.height < areaRef.current!.offsetHeight) {
+        if (
+          pageLayout.width < areaRef.current!.offsetWidth &&
+          pageLayout.height < areaRef.current!.offsetHeight
+        ) {
           zoom = 1;
         } else {
-          zoom = parseFloat(pageLayout.width >= pageLayout.height ? (width / pageLayout.width).toFixed(2) : (height / pageLayout.height).toFixed(2));
+          zoom = parseFloat(
+            pageLayout.width >= pageLayout.height
+              ? (width / pageLayout.width).toFixed(2)
+              : (height / pageLayout.height).toFixed(2)
+          );
         }
         rootRef.current.style.transform = `scale(${zoom})`;
-        rootRef.current.style.transformOrigin = '0 0 0';
+        rootRef.current.style.transformOrigin = "0 0 0";
         zoomRef.current.style.width = `${pageLayout.width * zoom}px`;
         zoomRef.current.style.height = `${pageLayout.height * zoom}px`;
         setScale(zoom);
@@ -502,21 +506,25 @@ export default inject('screenStore')(
           e.preventDefault();
         }
 
-        if (e.ctrlKey && groupframes.length > 0 && moveKeys.indexOf(e.key) >= 0) {
+        if (
+          e.ctrlKey &&
+          groupframes.length > 0 &&
+          moveKeys.indexOf(e.key) >= 0
+        ) {
           e.preventDefault();
           let valueX: number = 0;
           let valueY: number = 0;
           switch (e.key) {
-            case 'ArrowUp':
+            case "ArrowUp":
               valueY = -1;
               break;
-            case 'ArrowDown':
+            case "ArrowDown":
               valueY = 1;
               break;
-            case 'ArrowLeft':
+            case "ArrowLeft":
               valueX = -1;
               break;
-            case 'ArrowRight':
+            case "ArrowRight":
               valueX = 1;
               break;
           }
@@ -537,7 +545,7 @@ export default inject('screenStore')(
           return;
         }
 
-        if (e.key === 'Delete' && screenStore!.currLayer) {
+        if (e.key === "Delete" && screenStore!.currLayer) {
           // 删除图层
           // return screenStore!.confirmDeleteLayer(screenStore!.currLayer);
           const layerId = screenStore!.currLayer.id;
@@ -552,40 +560,40 @@ export default inject('screenStore')(
           return;
         }
         // esc取消选中
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           screenStore!.selectedLayerIds = new Set();
           return;
         }
 
         if (e.ctrlKey) {
           // 显示/隐藏
-          if (e.key === 'h' && screenStore?.currLayer) {
+          if (e.key === "h" && screenStore?.currLayer) {
             screenStore?.hideLayer(!screenStore!.isLayerHide);
           }
           // 锁定/解锁
-          if (e.key === 'l' && screenStore?.currLayer) {
+          if (e.key === "l" && screenStore?.currLayer) {
             screenStore?.lockLayer(!screenStore?.isLayerLock);
           }
 
-          if (e.key === 'z') {
+          if (e.key === "z") {
             return undo();
           }
 
-          if (e.key === 'y') {
+          if (e.key === "y") {
             return redo();
           }
           // 群组
-          if (e.key === 'g' && currLayerIds.current.size > 1) {
+          if (e.key === "g" && currLayerIds.current.size > 1) {
             return groupLayer();
           }
 
           // 解除群组
-          if (e.key === 'b' && currLayerIds.current.size > 1) {
+          if (e.key === "b" && currLayerIds.current.size > 1) {
             return disbandLayer();
           }
 
           // 保存
-          if (e.key === 's') {
+          if (e.key === "s") {
             return saveScreen();
           }
         }
@@ -601,7 +609,7 @@ export default inject('screenStore')(
       screenStore
         ?.saveScreen()
         .then((rel) => {
-          if (rel) Message.success('保存成功');
+          if (rel) Message.success("保存成功");
         })
         .finally(() => {
           setSaveing(false);
@@ -705,10 +713,10 @@ export default inject('screenStore')(
       if (!layer) return;
 
       switch (data.action) {
-        case 'REMOVE':
+        case "REMOVE":
           // screenStore.confirmDeleteLayer(data.layer);
           break;
-        case 'SET_TOP': {
+        case "SET_TOP": {
           const topZ = screenLayers[0].style.z;
           if (screenLayers[0].id !== layer.id) {
             layer.style.z = topZ + 1;
@@ -718,7 +726,7 @@ export default inject('screenStore')(
           }
           break;
         }
-        case 'SET_BOTTOM': {
+        case "SET_BOTTOM": {
           const bottomZ = screenLayers[screenLayers.length - 1].style.z;
           if (screenLayers[screenLayers.length - 1].id !== layer.id) {
             layer.style.z = bottomZ - 1;
@@ -728,7 +736,7 @@ export default inject('screenStore')(
           }
           break;
         }
-        case 'SET_UP': {
+        case "SET_UP": {
           const index = screenLayers.findIndex((v) => v.id === layer.id);
           if (index <= 0) return;
           const upLayer = screenLayers[index - 1];
@@ -740,7 +748,7 @@ export default inject('screenStore')(
           );
           break;
         }
-        case 'SET_DOWN': {
+        case "SET_DOWN": {
           const downIndex = screenLayers.findIndex((v) => v.id === layer.id);
           if (downIndex < 0 || downIndex === screenLayers.length - 1) return;
           const downLayer = screenLayers[downIndex + 1];
@@ -769,14 +777,14 @@ export default inject('screenStore')(
       const rect = moveableRef.current?.getRect()!;
 
       switch (type) {
-        case 'left':
+        case "left":
           if (size === 1) {
             aligns.push({ x: 0 });
           } else {
             aligns = groupframes.map(() => ({ x: rect.left }));
           }
           break;
-        case 'right':
+        case "right":
           if (size === 1) {
             aligns.push({
               x:
@@ -789,14 +797,14 @@ export default inject('screenStore')(
             }));
           }
           break;
-        case 'top':
+        case "top":
           if (size === 1) {
             aligns.push({ y: 0 });
           } else {
             aligns = groupframes.map(() => ({ y: rect.top }));
           }
           break;
-        case 'bottom':
+        case "bottom":
           if (size === 1) {
             aligns.push({
               y:
@@ -809,7 +817,7 @@ export default inject('screenStore')(
             }));
           }
           break;
-        case 'h-center':
+        case "h-center":
           if (size === 1) {
             aligns.push({
               y:
@@ -823,7 +831,7 @@ export default inject('screenStore')(
             }));
           }
           break;
-        case 'v-center':
+        case "v-center":
           if (size === 1) {
             aligns.push({
               x:
@@ -891,7 +899,7 @@ export default inject('screenStore')(
             <Tooltip placement="bottom" title="自适应">
               <div
                 onClick={() => onZoomReset(true)}
-                style={{ width: '50px' }}
+                style={{ width: "50px" }}
                 className={styles.zoomBtn}
               >
                 {(scale * 100).toFixed(0)}%
@@ -908,7 +916,7 @@ export default inject('screenStore')(
           </div>
           {screenStore!.screenInfo && (
             <div className={styles.toolbar}>
-              <span style={{ ...toolStyles, fontSize: '12px' }}>
+              <span style={{ ...toolStyles, fontSize: "12px" }}>
                 事件锁定
                 <Switch
                   size="small"
@@ -942,7 +950,7 @@ export default inject('screenStore')(
                 icon="icon-zuoduiqi-"
                 style={toolStyles}
                 onClick={() => {
-                  alignHandler('left');
+                  alignHandler("left");
                 }}
                 title="左对齐"
                 disabled={screenStore!.selectedLayerIds.size < 1}
@@ -951,7 +959,7 @@ export default inject('screenStore')(
                 icon="icon-dingduanduiqi-"
                 style={toolStyles}
                 onClick={() => {
-                  alignHandler('top');
+                  alignHandler("top");
                 }}
                 title="顶部对齐"
                 disabled={screenStore!.selectedLayerIds.size < 1}
@@ -960,7 +968,7 @@ export default inject('screenStore')(
                 icon="icon-youduiqi-"
                 style={toolStyles}
                 onClick={() => {
-                  alignHandler('right');
+                  alignHandler("right");
                 }}
                 title="右对齐"
                 disabled={screenStore!.selectedLayerIds.size < 1}
@@ -969,7 +977,7 @@ export default inject('screenStore')(
                 icon="icon-dingduanduiqi--copy"
                 style={toolStyles}
                 onClick={() => {
-                  alignHandler('bottom');
+                  alignHandler("bottom");
                 }}
                 title="底部对齐"
                 disabled={screenStore!.selectedLayerIds.size < 1}
@@ -978,7 +986,7 @@ export default inject('screenStore')(
                 icon="icon-align-level"
                 style={toolStyles}
                 onClick={() => {
-                  alignHandler('v-center');
+                  alignHandler("v-center");
                 }}
                 title="水平居中"
                 disabled={screenStore!.selectedLayerIds.size < 1}
@@ -987,7 +995,7 @@ export default inject('screenStore')(
                 icon="icon-align-vertical"
                 style={toolStyles}
                 onClick={() => {
-                  alignHandler('h-center');
+                  alignHandler("h-center");
                 }}
                 title="垂直居中"
                 disabled={screenStore!.selectedLayerIds.size < 1}
@@ -1010,8 +1018,8 @@ export default inject('screenStore')(
                 disabled={screenStore!.selectedLayerIds.size === 0}
                 title={
                   screenStore!.isLayerLock
-                    ? '解锁组件(Ctrl+L)'
-                    : '锁定组件(Ctrl+L)'
+                    ? "解锁组件(Ctrl+L)"
+                    : "锁定组件(Ctrl+L)"
                 }
                 onClick={() => {
                   screenStore?.lockLayer(!screenStore!.isLayerLock);
@@ -1029,8 +1037,8 @@ export default inject('screenStore')(
                 }}
                 title={
                   screenStore?.isLayerHide
-                    ? '显示组件(Ctrl+H)'
-                    : '隐藏组件(Ctrl+H)'
+                    ? "显示组件(Ctrl+H)"
+                    : "隐藏组件(Ctrl+H)"
                 }
               />
               <IconLink
@@ -1072,9 +1080,9 @@ export default inject('screenStore')(
                   rel="noreferrer"
                   target="_blank"
                   href={`/view/${screenStore!.screenInfo.project.name.replace(
-                    '%',
-                    '%25'
-                  )}/${screenStore!.screenInfo.name.replace('%', '%25')}`}
+                    "%",
+                    "%25"
+                  )}/${screenStore!.screenInfo.name.replace("%", "%25")}`}
                   className={styles.preview}
                 >
                   <IconFont type="icon-chakan" />
@@ -1094,7 +1102,7 @@ export default inject('screenStore')(
               ref={(ref) => {
                 zoomRef.current = ref!;
               }}
-              style={{ margin: 'auto' }}
+              style={{ margin: "auto" }}
             >
               {pageLayout && (
                 <div
@@ -1104,15 +1112,15 @@ export default inject('screenStore')(
                       pageLayout.backgroundColor || DefaulBackgroundColor,
                     backgroundImage: pageLayout.backgroundImage
                       ? `url(${pageLayout.backgroundImage})`
-                      : 'none',
+                      : "none",
                     color: pageLayout.color || DefaultFontColor,
                     backgroundSize:
-                      pageLayout.backgroundRepeat === 'no-repeat'
-                        ? '100% 100%'
+                      pageLayout.backgroundRepeat === "no-repeat"
+                        ? "100% 100%"
                         : undefined,
                     backgroundRepeat: pageLayout.backgroundRepeat,
-                    position: 'relative',
-                    boxShadow: '3px 3px 15px rgb(0 0 0 / 15%)',
+                    position: "relative",
+                    boxShadow: "3px 3px 15px rgb(0 0 0 / 15%)",
                     zIndex: 1
                   }}
                   ref={(ref) => {
@@ -1161,6 +1169,7 @@ export default inject('screenStore')(
                     throttleDrag={0}
                     verticalGuidelines={verLines}
                     horizontalGuidelines={horLines}
+                    keepRatio
                     ref={(ref) => {
                       moveableRef.current = ref!;
                     }}
@@ -1198,7 +1207,7 @@ export default inject('screenStore')(
                       events.forEach((ev, i) => {
                         const frame = groupframes[i];
                         // Set origin if transform-orgin use %.
-                        ev.setOrigin(['%', '%']);
+                        ev.setOrigin(["%", "%"]);
                         // If cssSize and offsetSize are different, set cssSize.
                         const style = window.getComputedStyle(ev.target);
                         const cssWidth = parseFloat(style.width);
@@ -1213,7 +1222,7 @@ export default inject('screenStore')(
                     onResizeGroup={({ events }) => {
                       events.forEach(({ target, width, height, drag }, i) => {
                         const frame = groupframes[i];
-                        target.style.overflow = 'hidden';
+                        target.style.overflow = "hidden";
                         frame.style.width = Math.round(width);
                         frame.style.height = Math.round(height);
                         frame.style.x = Math.round(drag.beforeTranslate[0]);
@@ -1231,7 +1240,7 @@ export default inject('screenStore')(
                     onResizeGroupEnd={({ isDrag, targets }) => {
                       targets.forEach((target, i) => {
                         target.style.overflow =
-                          groupframes[i].style.overflow || 'visible';
+                          groupframes[i].style.overflow || "visible";
                       });
                       screenStore!.setResizeing(false);
                       if (!isDrag) return;
@@ -1269,7 +1278,7 @@ export default inject('screenStore')(
                       }
                     }}
                     onResizeStart={({ setOrigin, dragStart }) => {
-                      setOrigin(['%', '%']);
+                      setOrigin(["%", "%"]);
                       const layerFrame = groupframes[0];
                       screenStore!.setResizeing(true);
                       if (dragStart && layerFrame) {
