@@ -34,7 +34,7 @@ export default inject("screenStore")(
      * 自适应
      */
     useUpdateEffect(() => {
-      function handleResize() {
+      function handleResize () {
         if (
           !screenStore!.screenInfo?.style ||
           !rootRef.current ||
@@ -86,7 +86,7 @@ export default inject("screenStore")(
 
     const { style, layers } = screenInfo || {
       layout: undefined,
-      layers: undefined,
+      layers: undefined
     };
 
     return (
@@ -97,7 +97,7 @@ export default inject("screenStore")(
               minHeight: "100%",
               display: "flex",
               justifyContent: "center",
-              alignItems: "center",
+              alignItems: "center"
             }}
           >
             <div
@@ -126,7 +126,7 @@ export default inject("screenStore")(
                     color: style.color,
                     position: "relative",
                     overflow: "hidden",
-                    zIndex: 1,
+                    zIndex: 1
                   }}
                 >
                   {layers &&
