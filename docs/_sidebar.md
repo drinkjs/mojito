@@ -1,7 +1,5 @@
 - [特性](/)
 
-- [更新日志](changelog.md)
-
 - 入门
 
   - [安装启动](quickstart.md)
