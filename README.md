@@ -17,7 +17,7 @@
 - 跨终端事件同步、跨大屏联动交互
 - 100%开源，支持私有化部署
 <p>
-  <img width="800" src="http://mojito.drinkjs.com/demo.png">
+  <img width="800" src="./client/public/demo.png">
 </p>
 
 ## ⚙️ 安装 Install
