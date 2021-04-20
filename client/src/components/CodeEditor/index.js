@@ -26,6 +26,9 @@ const CodeEditor = (props) => {
     editor.setTheme('ace/theme/twilight');
     editor.session.setMode(`ace/mode/${mode}`);
     editor.setFontSize(14);
+    editor.session.setOptions(
+      { tabSize: 2, useSoftTabs: true }
+    )
     editor.setValue(value || '', 1);
     currCode.current = value || '';
     editor.on('change', () => {

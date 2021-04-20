@@ -14,6 +14,7 @@ import React, {
 import { useHistory } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import anime from 'animejs';
+import { merge } from "lodash";
 import eventer from 'common/eventer';
 import { request } from 'common/network';
 import { sendDataToPage, useSync } from 'common/stateTool';
@@ -400,6 +401,7 @@ const Layer = inject('screenStore')(
             eventer,
             request: eventRequest,
             numeral,
+            merge,
             setProps,
             setStyles,
             setHide,

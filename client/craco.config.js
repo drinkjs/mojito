@@ -2,25 +2,24 @@ const path = require('path');
 const webpack = require('webpack');
 const CracoLessPlugin = require('craco-less');
 
+const isDevelop = process.env.IS_USE_LOCAL === 'true';
+
 module.exports = {
   devServer: (devServerConfig, { env, paths, proxy, allowedHost }) => {
     return {
       ...devServerConfig,
       proxy: {
         '/api': {
-          target: 'http://mojito.drinkjs.com',
-          // target: 'http://127.0.0.1:3838',
-          // pathRewrite: { '^/api': '' },
+          target: isDevelop ? 'http://127.0.0.1:3838' : 'http://mojito.drinkjs.com',
+          pathRewrite: isDevelop ? { '^/api': '' } : {},
           changeOrigin: true
         },
         '/public': {
-          target: 'http://mojito.drinkjs.com',
-          // target: 'http://127.0.0.1:3838',
+          target: isDevelop ? 'http://127.0.0.1:3838' : 'http://mojito.drinkjs.com',
           changeOrigin: true
         },
         '/ws': {
-          // target: 'ws://mojito.drinkjs.com',
-          target: 'ws://127.0.0.1:3838',
+          target: isDevelop ? 'ws://127.0.0.1:3838' : 'ws://mojito.drinkjs.com',
           ws: true,
           changeOrigin: true
         }

@@ -1169,7 +1169,7 @@ export default inject("screenStore")(
                     throttleDrag={0}
                     verticalGuidelines={verLines}
                     horizontalGuidelines={horLines}
-                    keepRatio
+                    keepRatio={false}
                     ref={(ref) => {
                       moveableRef.current = ref!;
                     }}

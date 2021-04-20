@@ -13,11 +13,14 @@
 - 支持通过HTTP数据源接入，轮询
 - 组件可视化样式配置
 - 组件可视化动画配置
-- 事件系统可以进行组件间通讯，页面下钻，数据源解释等各种复杂业务场景
-- 事件同步实现跨终端大屏联动交互
+- 组件间通讯、页面下钻、动态脚本...
+- 跨终端事件同步、跨大屏联动交互
 - 100%开源，支持私有化部署
+<p>
+  <img width="800" src="http://mojito.drinkjs.com/demo.png">
+</p>
 
-## ⚙️ 安装
+## ⚙️ 安装 Install
 ### 环境要求
 - Node.js >= 10.16.0
 - MongoDB >= 4.2.12
@@ -40,15 +43,15 @@ npm install --registry=https://registry.npm.taobao.org
 npm start
 ```
 
-## 📦 组件开发
+## 📦 组件开发 Develop
 * [**mojito-compack**](https://github.com/drinkjs/mojito-compack): 使用React 自定义Mojito组件.
 
 * [**mojito-compack-vue**](https://github.com/drinkjs/mojito-compack-vue): 使用Vue2自定义Mojito组件.
 
 * [**mojito-compack-vue3**](https://github.com/drinkjs/mojito-compack-vue3): 使用Vue3自定义Mojito组件.
 
-## 📄 文档
+## 📄 文档 Document
 [http://mojito.drinkjs.com/docs](http://mojito.drinkjs.com/docs)
 
-## 🚀 演示
+## 🚀 演示 Demo
 [http://mojito.drinkjs.com](http://mojito.drinkjs.com)

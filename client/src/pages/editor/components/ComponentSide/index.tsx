@@ -142,7 +142,7 @@ export default inject('componentStore')(
                     <div className={styles.componentImg}>
                       <IconFont
                         type={v.icon || 'icon-tupian'}
-                        style={{ fontSize: '48px' }}
+                        style={{ fontSize: '48px', color: "#e3e6ff" }}
                       />
                     </div>
                     <div className={styles.componentTitle}>{v.name}</div>
