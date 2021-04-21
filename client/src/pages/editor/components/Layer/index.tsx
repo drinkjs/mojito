@@ -589,7 +589,7 @@ const Layer = inject('screenStore')(
           style={{
             ...data.style,
             transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
-            zIndex: screenStore!.currLayer?.id === data.id ? 999 : data.style.z,
+            zIndex: data.style.z,
             display: !enable && (hide || data.groupHide) ? 'none' : 'block',
             opacity:
               enable && (data.groupHide || hide) ? 0.2 : data.style.opacity,
