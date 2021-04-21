@@ -2,12 +2,5 @@
   position: absolute;
   width: 300px;
   height: 200px;
-}
-
-.noSelected {
-  :global {
-    .moveable-line {
-      background: none !important;
-    }
-  }
+  outline: none
 }

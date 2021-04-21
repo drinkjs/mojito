@@ -40,6 +40,7 @@ import {
 import styles from "./index.module.scss";
 import Message from "components/Message";
 import { LAYER_STYLE_CHANGE, GROUP_STYLE_CHANGE } from "config/events";
+import { isPointInRect } from "common/util";
 
 let compCount: { [key: string]: number } = {};
 
@@ -80,41 +81,85 @@ const formatTransform = (
 // 右键菜单
 const LayerContextMenu = (props: any) => {
   const { id, trigger } = props;
-  const handleItemClick = trigger ? trigger.onItemClick : null;
-  const layer: LayerInfo = trigger ? trigger.layer : null;
+  const handleItemClick = trigger?.onItemClick;
+  const layer: LayerInfo = trigger?.layer;
+  const layers: LayerInfo[] = trigger?.layers;
+  const areaOffset: { x: number; y: number } = trigger?.areaOffset;
+  const scale:number = trigger?.scale || 1;
+
+  const [showPosition, setShowPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0
+  });
+  const [hitLayers, setHitLayers] = useState<LayerInfo[]>([]);
+
+  useEffect(() => {
+    if (!layers || !areaOffset || !layer) {
+      return;
+    }
+    const element = document.elementFromPoint(showPosition.x, showPosition.y);
+
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const offsetX = showPosition.x - rect.x;
+      const offsetY = showPosition.y - rect.y;
+      const pointX = layer.style.x * scale + offsetX;
+      const pointY = layer.style.y * scale + offsetY;
+
+      // 查找右键菜单位置的所有图层
+      const areaLayers = layers.filter((v) => {
+        if (v.id === layer.id) return false;
+
+        const { x, y, width, height } = v.style;
+        return isPointInRect(
+          {
+            x: x * scale, y: y * scale, width: width * scale, height: height * scale
+          },
+          { x: pointX, y: pointY }
+        );
+      });
+      setHitLayers(areaLayers);
+    }
+  }, [showPosition]);
+
+  const onShow = (e: any) => {
+    const { position } = e.detail;
+    setShowPosition({ x: position.x, y: position.y });
+  };
 
   return (
-    <ContextMenu id={id} style={{ display: trigger ? "block" : "none" }}>
+    <ContextMenu
+      id={id}
+      style={{ display: trigger ? "block" : "none" }}
+      onShow={onShow}
+    >
       {trigger ? (
         <div
           onMouseDown={(e) => {
             e.stopPropagation();
           }}
         >
-          <MenuItem
-            onClick={handleItemClick}
-            data={{ action: "SET_TOP", layer }}
-          >
+          <MenuItem onClick={handleItemClick} data={{ action: "SET_TOP" }}>
             置顶
           </MenuItem>
-          <MenuItem
-            onClick={handleItemClick}
-            data={{ action: "SET_UP", layer }}
-          >
+          <MenuItem onClick={handleItemClick} data={{ action: "SET_UP" }}>
             上移
           </MenuItem>
-          <MenuItem
-            onClick={handleItemClick}
-            data={{ action: "SET_DOWN", layer }}
-          >
+          <MenuItem onClick={handleItemClick} data={{ action: "SET_DOWN" }}>
             下移
           </MenuItem>
-          <MenuItem
-            onClick={handleItemClick}
-            data={{ action: "SET_BOTTOM", layer }}
-          >
+          <MenuItem onClick={handleItemClick} data={{ action: "SET_BOTTOM" }}>
             置底
           </MenuItem>
+          {hitLayers.map((v) => (
+            <MenuItem
+              onClick={handleItemClick}
+              data={{ action: "SELECT_LAYER", selectLayer: v }}
+              key={v.id}
+            >
+              {v.name}
+            </MenuItem>
+          ))}
           {/* <MenuItem
             onClick={handleItemClick}
             data={{ action: 'REMOVE', layer }}
@@ -156,8 +201,20 @@ export default inject("screenStore")(
 
     const [groupframes, setGroupFrames] = useState<FrameInfo[]>([]); // 图层组位置信息
     const [groupElement, setGroupElement] = useState<HTMLElement[]>([]); // 图层组dom
+    const [areaOffset, setAreaOffset] = useState<{ x: number; y: number }>({
+      x: 0,
+      y: 0
+    });
 
     const documentVisibility = useDocumentVisibility();
+
+    useEffect(() => {
+      if (areaRef.current) {
+        const { x, y } = areaRef.current.getBoundingClientRect();
+        setAreaOffset({ x, y });
+      }
+    }, []);
+
     /**
      * 定时保存图层信息
      */
@@ -393,7 +450,11 @@ export default inject("screenStore")(
         //   target.style.height = `${style.height}px`;
         // });
         moveableRef?.current?.request("draggable", { x, y }, true);
-        moveableRef?.current?.request("resizable", { offsetWidth: width, offsetHeight: height }, true);
+        moveableRef?.current?.request(
+          "resizable",
+          { offsetWidth: width, offsetHeight: height },
+          true
+        );
         // updateRect();
         // saveGroup();
       },
@@ -665,7 +726,6 @@ export default inject("screenStore")(
         currGroupLayers.forEach((v) => {
           ids.add(v.id);
         });
-
         runInAction(() => {
           screenStore!.selectedLayerIds = ids;
         });
@@ -688,7 +748,7 @@ export default inject("screenStore")(
      */
     const onEmptyClick = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.stopPropagation();
+        // e.stopPropagation();
         if (!screenStore!.resizeing) {
           screenStore!.setCurrLayer(undefined);
           runInAction(() => {
@@ -716,13 +776,13 @@ export default inject("screenStore")(
         case "REMOVE":
           // screenStore.confirmDeleteLayer(data.layer);
           break;
+        case "SELECT_LAYER":
+          onSelectLayer(toJS(data.selectLayer));
+          return;
         case "SET_TOP": {
           const topZ = screenLayers[0].style.z;
           if (screenLayers[0].id !== layer.id) {
             layer.style.z = topZ + 1;
-            screenStore.batchUpdateLayer(
-              screenLayers.map((v) => ({ id: v.id, style: v.style }))
-            );
           }
           break;
         }
@@ -730,9 +790,6 @@ export default inject("screenStore")(
           const bottomZ = screenLayers[screenLayers.length - 1].style.z;
           if (screenLayers[screenLayers.length - 1].id !== layer.id) {
             layer.style.z = bottomZ - 1;
-            screenStore.batchUpdateLayer(
-              screenLayers.map((v) => ({ id: v.id, style: v.style }))
-            );
           }
           break;
         }
@@ -743,9 +800,6 @@ export default inject("screenStore")(
           const upZ = upLayer.style.z;
           upLayer.style.z = layer.style.z;
           layer.style.z = upZ;
-          screenStore.batchUpdateLayer(
-            screenLayers.map((v) => ({ id: v.id, style: v.style }))
-          );
           break;
         }
         case "SET_DOWN": {
@@ -755,12 +809,14 @@ export default inject("screenStore")(
           const downZ = downLayer.style.z;
           downLayer.style.z = layer.style.z;
           layer.style.z = downZ;
-          screenStore.batchUpdateLayer(
-            screenLayers.map((v) => ({ id: v.id, style: v.style }))
-          );
           break;
         }
       }
+      // 更新图层
+      screenStore.batchUpdateLayer(
+        screenLayers.map((v) => ({ id: v.id, style: v.style }))
+      );
+      screenStore!.selectedLayerIds = new Set();
     }, []);
 
     /**
@@ -1145,6 +1201,9 @@ export default inject("screenStore")(
                             return {
                               ...data,
                               layer: layerData,
+                              layers: screenLayers,
+                              areaOffset,
+                              scale,
                               onItemClick: onContentMenuClick
                             };
                           }}

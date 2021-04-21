@@ -77,4 +77,11 @@ export function isEmpty (str: any): boolean {
   return str === undefined || str === null || str === '';
 }
 
+// 判断点p是否在正方形内
+export function isPointInRect (rc: { x: number, y: number, width: number, height: number }, p: {x:number, y:number}) {
+  const { x, y, width, height } = rc;
+  return x <= p.x && p.x <= x + width &&
+    y <= p.y && p.y <= y + height;
+}
+
 export { typeis };
