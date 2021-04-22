@@ -1,20 +1,20 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { Empty, Button, Modal, Input, Skeleton } from 'antd';
-import { observer, inject } from 'mobx-react';
-import { toJS } from 'mobx';
-import { PlusOutlined } from '@ant-design/icons';
-import { ProjectDto, ProjectStore } from 'types';
-import ProjectItemList from './components/projectItemList';
-import ScreenList from './components/screenList';
-import styles from './index.module.scss';
-import Message from 'components/Message';
-import logo from 'resources/images/logo.svg';
+import React, { useCallback, useState, useEffect } from "react";
+import { Empty, Button, Modal, Input, Skeleton } from "antd";
+import { observer, inject } from "mobx-react";
+import { toJS } from "mobx";
+import { PlusOutlined } from "@ant-design/icons";
+import { ProjectDto, ProjectStore } from "types";
+import ProjectItemList from "./components/projectItemList";
+import ScreenList from "./components/screenList";
+import styles from "./index.module.scss";
+import Message from "components/Message";
+import logo from "resources/images/logo.svg";
 
 interface Props {
   projectStore: ProjectStore;
 }
 
-export default inject('projectStore')(
+export default inject("projectStore")(
   observer((props: Props) => {
     const { projectStore } = props;
     const { projectList } = projectStore;
@@ -25,7 +25,7 @@ export default inject('projectStore')(
     const [editProject, setEditProject] = useState<ProjectDto>();
 
     useEffect(() => {
-      const selectedProjectCache = localStorage.getItem('selectedProject');
+      const selectedProjectCache = localStorage.getItem("selectedProject");
       const sel = selectedProjectCache
         ? JSON.parse(selectedProjectCache)
         : undefined;
@@ -41,7 +41,7 @@ export default inject('projectStore')(
     const handleOk = useCallback(
       (e: any) => {
         if (!projectName) {
-          Message.warning('请输入项目名称');
+          Message.warning("请输入项目名称");
           return;
         }
         // 编辑项目
@@ -99,8 +99,8 @@ export default inject('projectStore')(
     const onSelectProject = useCallback((data?: ProjectDto) => {
       setSelectedProject(toJS(data));
       localStorage.setItem(
-        'selectedProject',
-        data ? JSON.stringify(data) : '{}'
+        "selectedProject",
+        data ? JSON.stringify(data) : "{}"
       );
     }, []);
 
@@ -133,7 +133,7 @@ export default inject('projectStore')(
     );
 
     return (
-      <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ display: "flex", height: "100%" }}>
         <Skeleton
           loading={
             projectStore!.projectList.length === 0
@@ -145,13 +145,13 @@ export default inject('projectStore')(
             {projectList.length === 0 && (
               <Empty
                 image={logo}
-                style={{ margin: 'auto' }}
+                style={{ margin: "auto" }}
                 imageStyle={{
                   height: 289
                   // width: 381
                 }}
                 description={
-                  <span style={{ fontSize: '18px' }}>暂没项目信息</span>
+                  <span style={{ fontSize: "18px" }}>暂没项目信息</span>
                 }
               >
                 <Button
@@ -166,27 +166,47 @@ export default inject('projectStore')(
             {projectList.length > 0 && (
               <>
                 <div className={styles.projectListBox}>
-                  <div style={{ textAlign: 'center', margin: '12px 0' }}>
+                  <div style={{ textAlign: "center", margin: "12px 0" }}>
                     <img src={logo} height={100} />
                   </div>
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    block
+                  <div
                     style={{
-                      height: '40px',
-                      borderRadius: '4px',
-                      fontSize: '18px'
+                      textAlign: "center"
                     }}
-                    onClick={onAddProject}
                   >
-                    创建项目
-                  </Button>
-                  <div style={{ flexGrow: 1, height: '100%' }}>
+                    <a href="https://gitee.com/drinkjs/mojito">
+                      <img
+                        src="https://gitee.com/logo.svg?20171024"
+                        height="28"
+                      />
+                    </a>
+                    <a
+                      href="https://github.com/drinkjs/mojito"
+                      style={{ marginLeft: "12px" }}
+                    >
+                      <img src="/github.png" height="28" />
+                    </a>
+                  </div>
+                  <div style={{ marginTop: "12px" }}>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      block
+                      style={{
+                        height: "40px",
+                        borderRadius: "4px",
+                        fontSize: "18px"
+                      }}
+                      onClick={onAddProject}
+                    >
+                      创建项目
+                    </Button>
+                  </div>
+                  <div style={{ flexGrow: 1, height: "100%" }}>
                     <ProjectItemList
                       value={projectList}
                       onSelect={onSelectProject}
-                      selected={selectedProject ? selectedProject.id : ''}
+                      selected={selectedProject ? selectedProject.id : ""}
                       onEdit={onEditProject}
                       onRemove={onRemoveProject}
                     />
@@ -213,7 +233,7 @@ export default inject('projectStore')(
           <Input
             placeholder="请输入项目名称"
             onChange={onInput}
-            value={projectName?.replace('/', '')}
+            value={projectName?.replace("/", "")}
             onPressEnter={handleOk}
           />
         </Modal>
