@@ -1,4 +1,5 @@
 import { prop } from "@typegoose/typegoose";
+import { ConnectionOptions } from "typeorm";
 
 export default class Project {
   @prop({ required: true })
@@ -15,4 +16,7 @@ export default class Project {
 
   @prop({ default: 0, select: false })
   status: 0 | 1 | undefined; // 0:删除1正常;
+
+  @prop()
+  dataSources?: ConnectionOptions[];
 }

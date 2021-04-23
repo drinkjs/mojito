@@ -64,4 +64,15 @@ export default class ProjectController extends BaseController {
     if (rel) return this.success(null);
     return this.fail("删除失败");
   }
+
+  /**
+   * 删除项目
+   * @param id
+   */
+  @Get("/datasource/add")
+  async datasource (
+    @Body(new Validation({ groups: ["update"] })) dto: ProjectDto
+  ): PromiseRes<any> {
+    return this.fail("删除失败");
+  }
 }

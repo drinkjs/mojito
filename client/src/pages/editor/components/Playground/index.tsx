@@ -420,43 +420,12 @@ export default inject("screenStore")(
      */
     const onGroupStyle = useCallback(
       ({ x, y, width, height }) => {
-        // const rect = screenStore!.moveableRect;
-        // if (!rect) return;
-        // // const offsetX = x - rect.x;
-        // // const offsetY = y - rect.y;
-
-        // const ratioWidth = Math.max(1, width) / rect.width;
-        // const ratioHeight = Math.max(1, height) / rect.height;
-
-        // // console.log(x, y, width, height);
-
-        // groupframes.forEach((frame, index) => {
-        //   const { style } = frame;
-        //   if (
-        //     !style ||
-        //     style.width === undefined ||
-        //     style.height === undefined
-        //   ) {
-        //     return;
-        //   }
-        //   const target = groupElement[index];
-        //   if (ratioWidth !== 1) {
-        //     style.width = Math.round(ratioWidth * style.width);
-        //   } else if (ratioHeight !== 1) {
-        //     style.height = Math.round(ratioHeight * style.height);
-        //   }
-
-        //   target.style.width = `${style.width}px`;
-        //   target.style.height = `${style.height}px`;
-        // });
         moveableRef?.current?.request("draggable", { x, y }, true);
         moveableRef?.current?.request(
           "resizable",
           { offsetWidth: width, offsetHeight: height },
           true
         );
-        // updateRect();
-        // saveGroup();
       },
       [groupframes, groupElement]
     );
