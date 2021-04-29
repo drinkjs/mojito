@@ -83,13 +83,13 @@ export default ({
     const globalAny: any = global;
     const { Vue } = globalAny;
     if (!Vue) {
-      Message.error('Vue没定义，请检查项目CDN配置');
+      Message.error(`Vue没定义，请检查组件${componentName}CDN配置`);
       return;
     }
 
     const { createApp } = Vue;
     if (createApp) {
-      Message.error(`当前Vue版本与组件${componentName}使用版本不一致`);
+      Message.error(`当前Vue版本与组件${componentName}使用版本不一致，你可能在同一页面使用了两个版本的Vue组件`);
       return;
     }
 
@@ -136,7 +136,7 @@ export default ({
     const { Vue } = globalAny;
 
     if (!Vue) {
-      Message.error('Vue没定义，请检查项目CDN配置');
+      Message.error(`Vue没定义，请检查组件${componentName}CDN配置`);
       return;
     }
 
@@ -151,7 +151,7 @@ export default ({
 
     const { createApp, h } = Vue;
     if (!createApp) {
-      Message.error(`当前Vue版本与组件${componentName}使用版本不一致`);
+      Message.error(`当前Vue版本与组件${componentName}使用版本不一致，你可能在同一页面使用了两个版本的Vue组件`);
       return;
     }
 

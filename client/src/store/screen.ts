@@ -250,7 +250,7 @@ export default class Screen {
     return service
       .updateLayer({
         id: this.screenInfo.id,
-        layers: this.screenInfo.layers,
+        layers: this.screenInfo.layers?.map((layer) => ({ ...layer, component: { id: layer.component.id } })),
         style: this.screenInfo.style
       })
       .then(() => {
@@ -383,7 +383,7 @@ export default class Screen {
   async addLayer (layer: LayerInfo) {
     if (!this.screenInfo) return;
     // 加载组件依赖库
-    loadCDN(layer.component.dependencies, () => {
+    loadCDN(toJS(layer.component.dependencies), () => {
       this.addUndoData(this.screenInfo);
       const layers = this.screenInfo?.layers || [];
       runInAction(() => {
