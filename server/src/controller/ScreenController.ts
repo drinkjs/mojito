@@ -1,6 +1,6 @@
 import { Validation } from "../core";
 import { Body, Controller, Get, Post, Query } from "../core/decorator";
-import { ScreenDto } from "../dto";
+import { DatasourceDto, ScreenDto } from "../dto";
 import ScreenService from "../service/ScreenService";
 import BaseController from "./BaseController";
 
@@ -117,12 +117,28 @@ export default class ScreenController extends BaseController {
   }
 
   /**
-   * 页面明细
+   * 通过项目名和页面名查页面明细
    * @param dto
    */
-   @Post("/view/detail")
-  async previewDetail (@Body() dto: {projectName:string, screenName:string}): PromiseRes<ScreenDto | null | string> {
-    const rel = dto.screenName && dto.projectName ? await this.service.findByName(dto.projectName, dto.screenName) : null;
+  @Post("/view/detail")
+  async previewDetail (
+    @Body() dto: { projectName: string; screenName: string }
+  ): PromiseRes<ScreenDto | null | string> {
+    const rel =
+      dto.screenName && dto.projectName
+        ? await this.service.findByName(dto.projectName, dto.screenName)
+        : null;
     return rel ? this.success(rel) : this.fail("页面不存在");
+  }
+
+  /**
+   * 添加数据源连接
+   * @param dto
+   * @returns
+   */
+  @Post("/datasource/add")
+  async addDatasource (@Body() dto: DatasourceDto): PromiseRes<string> {
+    const rel = await this.service.addDatasource(dto.screenId, dto);
+    return this.success(rel);
   }
 }

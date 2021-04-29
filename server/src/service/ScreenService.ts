@@ -1,9 +1,9 @@
 import { mongoose } from "@typegoose/typegoose";
 import { Injectable, MgModel, MgModelType } from "../core/decorator";
-import { ScreenDto } from "../dto";
+import { DatasourceDto, ScreenDto } from "../dto";
 import AppError from "../common/AppError";
 import { createStringDate } from "../common/utils";
-import ScreenEntity from "../entity/ScreenEntity";
+import ScreenEntity, { DatasourceInfo } from "../entity/ScreenEntity";
 import BaseService from "./BaseService";
 import ProjectService from "./ProjectService";
 import ComponentService from "./ComponentService";
@@ -39,6 +39,7 @@ export default class ScreenService extends BaseService {
       style: data.style,
       createTime: createStringDate(),
       updateTime: createStringDate(),
+      dataSources: [],
       status: 1,
     };
     const { _id: id } = await this.model.create(project);
@@ -117,10 +118,7 @@ export default class ScreenService extends BaseService {
     if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
 
     const rel = await this.model
-      .findOne(
-        { _id: id, status: 1 },
-        { coverImg: 0, createTime: 0 }
-      )
+      .findOne({ _id: id, status: 1 }, { coverImg: 0, createTime: 0 })
       .populate({ path: "projectId", select: "name" })
       .exec();
     if (!rel) return null;
@@ -207,5 +205,27 @@ export default class ScreenService extends BaseService {
   async delete (id: string) {
     const rel = await this.model.findByIdAndUpdate(id, { status: 0 });
     return rel;
+  }
+
+  /**
+   * 新增数据源
+   * @param id
+   * @param imgPath
+   * @returns
+   */
+  async addDatasource (id: string, dto: DatasourceDto) {
+    const data: DatasourceInfo = {
+      id: new mongoose.Types.ObjectId(),
+      type: dto.type,
+      host: dto.host,
+      port: dto.port,
+      username: dto.username,
+      password: dto.password || "",
+      database: dto.database,
+    };
+    return await this.model.updateOne(
+      { _id: id },
+      { updateTime: createStringDate(), $push: { dataSources: data } }
+    );
   }
 }

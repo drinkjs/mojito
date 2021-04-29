@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { observer, inject } from 'mobx-react';
-import { Radio } from 'antd';
-import { useDebounceFn } from 'ahooks';
-import UploadImg from 'components/UploadImg';
-import { ScreenStore } from 'types';
-import { DefaulBackgroundColor, DefaultFontColor } from 'config';
-import styles from './index.module.scss';
-import { SizeSetting, ColorSetting } from './Style';
+import React, { useEffect, useState } from "react";
+import { observer, inject } from "mobx-react";
+import { Button, Empty, Radio } from "antd";
+import { useDebounceFn } from "ahooks";
+import { PlusOutlined } from "@ant-design/icons";
+import UploadImg from "components/UploadImg";
+import { DatasourceInfo, ScreenStore } from "types";
+import { DefaulBackgroundColor, DefaultFontColor } from "config";
+import DataSourceConnectModal from "./DataSourceConnectModal";
+import styles from "./index.module.scss";
+import { SizeSetting, ColorSetting } from "./Style";
+import Message from "components/Message";
 
 const sizeItems = [
   {
-    label: '宽度',
-    key: 'width'
+    label: "宽度",
+    key: "width"
   },
   {
-    label: '高度',
-    key: 'height'
+    label: "高度",
+    key: "height"
   }
 ];
 
@@ -23,7 +26,7 @@ interface Props {
   screenStore?: ScreenStore;
 }
 
-export default inject('screenStore')(
+export default inject("screenStore")(
   observer((props: Props) => {
     const { screenStore } = props;
     const [screenStyle, setScreenStyle] = useState<any>(
@@ -31,6 +34,8 @@ export default inject('screenStore')(
         ? screenStore!.screenInfo.style
         : {}
     );
+
+    const [showDatasource, setShowDatasource] = useState(false);
 
     useEffect(() => {
       return () => {
@@ -64,11 +69,27 @@ export default inject('screenStore')(
       debounceFn.run(type, value);
     };
 
+    const onCancel = () => {
+      setShowDatasource(false)
+    }
+
+    /**
+     * 新增数据源连接
+     * @param values
+     */
+    const onAddDatasource = (values:DatasourceInfo) => {
+      screenStore?.addDatasource(values).then(() => {
+        Message.success("新增成功");
+        onCancel();
+        screenStore?.reload();
+      })
+    }
+
     return (
       <section className={styles.styleSetting}>
         <div className={styles.title}>
           <p>页面尺寸</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
             {sizeItems.map((v) => {
               return (
                 <SizeSetting
@@ -85,13 +106,13 @@ export default inject('screenStore')(
         </div>
         <div className={styles.title}>
           <p>页面颜色</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
             <ColorSetting
               label="背景颜色"
               defaultColor={DefaulBackgroundColor}
               value={screenStyle.backgroundColor}
               onChange={(color: string | undefined) => {
-                onStyleChange('backgroundColor', color);
+                onStyleChange("backgroundColor", color);
               }}
             />
             <ColorSetting
@@ -99,7 +120,7 @@ export default inject('screenStore')(
               defaultColor={DefaultFontColor}
               value={screenStyle.color}
               onChange={(color: string | undefined) => {
-                onStyleChange('color', color);
+                onStyleChange("color", color);
               }}
             />
           </div>
@@ -130,11 +151,11 @@ export default inject('screenStore')(
               screenStore!.screenInfo.style.backgroundImage && (
                 <Radio.Group
                   value={
-                    screenStore!.screenInfo.style.backgroundRepeat || 'repeat'
+                    screenStore!.screenInfo.style.backgroundRepeat || "repeat"
                   }
                   buttonStyle="solid"
                   onChange={(e) => {
-                    onStyleChange('backgroundRepeat', e.target.value);
+                    onStyleChange("backgroundRepeat", e.target.value);
                   }}
                 >
                   <Radio.Button value="repeat">平铺</Radio.Button>
@@ -143,6 +164,29 @@ export default inject('screenStore')(
               )}
           </div>
         )}
+        <div className={styles.title}>
+          <p>
+            数据源{" "}
+            <Button
+              size="small"
+              icon={<PlusOutlined />}
+              style={{ marginLeft: "6px" }}
+              onClick={() => {
+                setShowDatasource(true);
+              }}
+            ></Button>
+          </p>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+              {
+                screenStore?.screenInfo?.dataSources?.length
+                  ? screenStore?.screenInfo?.dataSources.map(v => {
+                    return `${v.type}://${v.host}:${v.port}@${v.username}`
+                  })
+                  : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              }
+          </div>
+        </div>
+        <DataSourceConnectModal visible={showDatasource} onCancel={onCancel} onOk={onAddDatasource} />
       </section>
     );
   })

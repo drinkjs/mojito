@@ -1,5 +1,5 @@
 import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
-import { ScreenOptions } from "../entity/ScreenEntity";
+import { DatasourceInfo, ScreenOptions } from "../entity/ScreenEntity";
 import { LayerDto } from "./LayerDto";
 import { ProjectDto } from "./ProjectDto";
 
@@ -34,4 +34,6 @@ export class ScreenDto {
   layers?: LayerDto[];
 
   project?: ProjectDto;
+
+  dataSources?: DatasourceInfo[];
 }

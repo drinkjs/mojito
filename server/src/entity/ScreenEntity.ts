@@ -6,7 +6,6 @@ import {
   Severity,
 } from "@typegoose/typegoose";
 import { LayerApi, LayerStyle, RelativePosition } from "./LayerEntity";
-// import Component from "./ComponentEntity";
 import Project from "./ProjectEntity";
 
 export interface ScreenOptions {
@@ -42,6 +41,16 @@ export interface LayerInfo {
   }; // 相对位置
 }
 
+export interface DatasourceInfo {
+  id: mongoose.Types.ObjectId;
+  type: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database?: string;
+}
+
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export default class Screen {
   @prop({ required: true, ref: () => Project })
@@ -70,4 +79,7 @@ export default class Screen {
 
   @prop()
   layers?: LayerInfo[];
+
+  @prop()
+  dataSources?: DatasourceInfo[];
 }

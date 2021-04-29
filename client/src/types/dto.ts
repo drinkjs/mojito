@@ -1,4 +1,4 @@
-import { LayerInfo, ScreenLayout } from './data';
+import { DatasourceInfo, LayerInfo, ScreenLayout } from './data';
 
 export interface ProjectDto {
   id: string;
@@ -25,6 +25,7 @@ export interface ScreenDetailDto {
   style: ScreenLayout;
   layers?: LayerInfo[];
   project: ProjectDto;
+  dataSources?: DatasourceInfo[]
 }
 
 export interface ComponentTypeTree {
