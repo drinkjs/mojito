@@ -71,3 +71,11 @@ export const screenDetailByName = (projectName: string, screenName: string) =>
  */
 export const addDatasource = (params:any) =>
   post('/screen/datasource/add', params);
+
+/**
+ * 新增数据源连接
+ * @param {*} params
+ * @returns
+ */
+export const delDatasource = (params:any) =>
+  post('/screen/datasource/delete', params);

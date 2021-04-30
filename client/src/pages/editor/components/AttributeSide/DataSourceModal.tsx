@@ -1,13 +1,13 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { observer, inject } from 'mobx-react';
-import { ModalFuncProps } from 'antd/lib/modal';
+import { ModalProps } from 'antd/lib/modal';
 import { Modal, Form, Input, Button, Select, Space, InputNumber } from 'antd';
 import CodeEditor from 'components/CodeEditor';
 import { request } from 'common/network';
 import { formatJson } from 'common/util';
 import { ScreenStore } from 'types';
 import Message from 'components/Message';
-interface Props extends ModalFuncProps {
+interface Props extends ModalProps {
   onSubmit?: (values: any) => void;
   screenStore?: ScreenStore;
 }
@@ -82,7 +82,7 @@ export default inject('screenStore')(
           .then(() => {
             setSaveing(false);
             Message.success('保存成功');
-            props.onCancel && props.onCancel();
+            // props.onCancel && props.onCancel(undefined);
           });
       });
     }, [form, props]);

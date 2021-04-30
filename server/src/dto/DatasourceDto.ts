@@ -1,10 +1,15 @@
 import { IsMongoId, IsNotEmpty } from "class-validator";
 
 export class DatasourceDto {
-  @IsMongoId({ message: "非法id", groups: ["add"] })
-  @IsNotEmpty({ message: "请选择类型", groups: ["add"] })
+  @IsMongoId({ message: "非法id", groups: ["add", "update", "delete"] })
+  @IsNotEmpty({
+    message: "screenId不能为空",
+    groups: ["add", "update", "delete"],
+  })
   screenId: string;
 
+  @IsMongoId({ message: "非法id", groups: ["update", "delete"] })
+  @IsNotEmpty({ message: "id不能为空", groups: ["update", "delete"] })
   id?: string;
 
   @IsNotEmpty({ message: "请选择类型", groups: ["add", "test"] })

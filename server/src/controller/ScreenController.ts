@@ -137,8 +137,23 @@ export default class ScreenController extends BaseController {
    * @returns
    */
   @Post("/datasource/add")
-  async addDatasource (@Body() dto: DatasourceDto): PromiseRes<string> {
+  async addDatasource (
+    @Body(new Validation({ groups: ["add"] })) dto: DatasourceDto
+  ): PromiseRes<string> {
     const rel = await this.service.addDatasource(dto.screenId, dto);
-    return this.success(rel);
+    return rel ? this.success(rel) : this.fail("添加失败");
+  }
+
+  /**
+   * 删除数据源连接
+   * @param dto
+   * @returns
+   */
+  @Post("/datasource/delete")
+  async delDatasource (
+    @Body(new Validation({ groups: ["delete"] })) dto: DatasourceDto
+  ): PromiseRes<string> {
+    const rel = await this.service.delDatasource(dto.screenId, dto.id);
+    return rel ? this.success(rel) : this.fail("删除失败");
   }
 }

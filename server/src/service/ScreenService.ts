@@ -214,6 +214,19 @@ export default class ScreenService extends BaseService {
    * @returns
    */
   async addDatasource (id: string, dto: DatasourceDto) {
+    const rel = await this.model.findById(id);
+
+    if (rel.dataSources) {
+      const datasource = rel.dataSources.find(
+        (v) =>
+          `${v.type}://${v.host}:${v.port}@${v.username}` ===
+          `${dto.type}://${dto.host}:${dto.port}@${dto.username}`
+      );
+      if (datasource) {
+        AppError.assert("数据源已存在");
+      }
+    }
+
     const data: DatasourceInfo = {
       id: new mongoose.Types.ObjectId(),
       type: dto.type,
@@ -226,6 +239,23 @@ export default class ScreenService extends BaseService {
     return await this.model.updateOne(
       { _id: id },
       { updateTime: createStringDate(), $push: { dataSources: data } }
+    );
+  }
+
+  /**
+   * 删除数据源
+   * @param id
+   * @returns
+   */
+  async delDatasource (screenId: string, datasourceId: string) {
+    return await this.model.updateOne(
+      { _id: screenId },
+      {
+        updateTime: createStringDate(),
+        $pull: {
+          dataSources: { id: new mongoose.Types.ObjectId(datasourceId) },
+        },
+      }
     );
   }
 }

@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { observer, inject } from "mobx-react";
-import { Button, Empty, Radio } from "antd";
+import { Radio, Popconfirm } from "antd";
 import { useDebounceFn } from "ahooks";
-import { PlusOutlined } from "@ant-design/icons";
 import UploadImg from "components/UploadImg";
-import { DatasourceInfo, ScreenStore } from "types";
+import { ScreenStore } from "types";
 import { DefaulBackgroundColor, DefaultFontColor } from "config";
-import DataSourceConnectModal from "./DataSourceConnectModal";
 import styles from "./index.module.scss";
 import { SizeSetting, ColorSetting } from "./Style";
-import Message from "components/Message";
+import DataSourceSet from "./DataSourceSet"
 
 const sizeItems = [
   {
@@ -34,8 +32,6 @@ export default inject("screenStore")(
         ? screenStore!.screenInfo.style
         : {}
     );
-
-    const [showDatasource, setShowDatasource] = useState(false);
 
     useEffect(() => {
       return () => {
@@ -68,22 +64,6 @@ export default inject("screenStore")(
       });
       debounceFn.run(type, value);
     };
-
-    const onCancel = () => {
-      setShowDatasource(false)
-    }
-
-    /**
-     * 新增数据源连接
-     * @param values
-     */
-    const onAddDatasource = (values:DatasourceInfo) => {
-      screenStore?.addDatasource(values).then(() => {
-        Message.success("新增成功");
-        onCancel();
-        screenStore?.reload();
-      })
-    }
 
     return (
       <section className={styles.styleSetting}>
@@ -164,29 +144,7 @@ export default inject("screenStore")(
               )}
           </div>
         )}
-        <div className={styles.title}>
-          <p>
-            数据源{" "}
-            <Button
-              size="small"
-              icon={<PlusOutlined />}
-              style={{ marginLeft: "6px" }}
-              onClick={() => {
-                setShowDatasource(true);
-              }}
-            ></Button>
-          </p>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-              {
-                screenStore?.screenInfo?.dataSources?.length
-                  ? screenStore?.screenInfo?.dataSources.map(v => {
-                    return `${v.type}://${v.host}:${v.port}@${v.username}`
-                  })
-                  : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              }
-          </div>
-        </div>
-        <DataSourceConnectModal visible={showDatasource} onCancel={onCancel} onOk={onAddDatasource} />
+        <DataSourceSet />
       </section>
     );
   })

@@ -618,4 +618,16 @@ export default class Screen {
       ...dto
     })
   }
+
+  /**
+   * 新增数据源连接
+   * @param dto
+   * @returns
+   */
+  delDatasource (id: string) {
+    return service.delDatasource({
+      screenId: this.screenInfo!.id,
+      id
+    })
+  }
 }
