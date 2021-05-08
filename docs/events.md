@@ -24,6 +24,7 @@ Mojito具备事件处理的能力，让您对组件有更加全面的控制，�
 - setProps: 可以用来设置组件的属性，原型： (props:object) => void
 - setStyles: 可以用来设置图层的样式，原型： (styles:object) => void
 - setHide: 控制图层显示/隐藏，原型： (hide:boolean) => void
+- merge: 对象合并，原型：(target:obj, source:obj)主要场景用于图层属性的设置，
 
 事件处理的方法和普通的js方法没区别，支持使用es6/7语法，但有几个点需要注意事
 1. 不支持import
