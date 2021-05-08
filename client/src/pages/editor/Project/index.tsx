@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { Empty, Button, Modal, Input, Skeleton, Space } from "antd";
+import { Empty, Button, Modal, Input, Skeleton } from "antd";
 import { observer, inject } from "mobx-react";
 import { toJS } from "mobx";
 import { PlusOutlined } from "@ant-design/icons";
@@ -155,7 +155,7 @@ export default inject("projectStore")(
                 image={logo}
                 style={{ margin: "auto" }}
                 imageStyle={{
-                  height: 289,
+                  height: 289
                   // width: 381
                 }}
                 description={
@@ -179,7 +179,7 @@ export default inject("projectStore")(
                   </div>
                   <div
                     style={{
-                      textAlign: "center",
+                      textAlign: "center"
                     }}
                   >
                     <a href="https://gitee.com/drinkjs/mojito">
@@ -203,7 +203,7 @@ export default inject("projectStore")(
                       style={{
                         height: "40px",
                         borderRadius: "4px",
-                        fontSize: "18px",
+                        fontSize: "18px"
                       }}
                       onClick={onAddProject}
                     >

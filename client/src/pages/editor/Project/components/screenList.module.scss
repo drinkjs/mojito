@@ -27,10 +27,33 @@
   // align-content: flex-start;
 }
 
+.itemBox{
+  padding: 12px;
+  width: 25%;
+}
+
+@media (max-width: 1440px){
+  .itemBox{
+    width: 33.33%;
+  }
+}
+
+@media (max-width: 1280px){
+  .itemBox{
+    width: 50%;
+  }
+}
+
+@media (max-width: 960px){
+  .itemBox{
+    width: 100%;
+  }
+}
+
 .item {
   position: relative;
   border-radius: 4px;
-  width: 367px;
+  width: 100%;
   overflow: hidden;
   cursor: pointer;
   background-color: #24364e;

@@ -187,7 +187,7 @@ export default inject('screenStore')(
               project.id &&
               screenStore!.screenList.map((v) => {
                 return (
-                  <div key={v.id} style={{ padding: '12px' }}>
+                  <div key={v.id} className={styles.itemBox}>
                     <div className={styles.item}>
                       <div className={styles.toolBar}>
                         <UploadImg
