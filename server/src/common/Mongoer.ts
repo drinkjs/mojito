@@ -3,6 +3,11 @@ import { getModelForClass } from "@typegoose/typegoose";
 import mongoose from "mongoose";
 import { MG_MODEL_METADATA } from "../core/decorator/ServiceDecorator";
 
+export interface MongoConnectionOptions {
+  uris: string;
+  options: mongoose.ConnectionOptions;
+}
+
 export default class Mongoer {
   static instance: Mongoer;
 

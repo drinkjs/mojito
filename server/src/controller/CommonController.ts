@@ -2,12 +2,12 @@ import * as fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { Controller, Post } from "../core/decorator";
 import { createStringDate } from "../common/utils";
-import config from "../config";
+import { defaultStaticConfig } from "../config";
 import BaseController from "./BaseController";
 
 @Controller()
 export default class CommonController extends BaseController {
-  private readonly staticPath = config.staticPath;
+  private readonly staticPath = defaultStaticConfig.staticPath;
 
   /**
    * 上传图片
@@ -36,6 +36,8 @@ export default class CommonController extends BaseController {
     fs.mkdirSync(`${this.staticPath}/${dataPath}`, { recursive: true });
     fs.createReadStream(file.filepath).pipe(fs.createWriteStream(savePath));
 
-    return this.success({ path: `${config.staticPrefix}${urlPath}` });
+    return this.success({
+      path: `${defaultStaticConfig.staticPrefix}${urlPath}`,
+    });
   }
 }

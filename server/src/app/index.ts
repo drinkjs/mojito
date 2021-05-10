@@ -6,16 +6,18 @@ import Fastify, {
   FastifyReply,
   FastifyRequest,
 } from "fastify";
-import config from "../config";
+import { defaultConfig } from "../config";
 import loader from "./loader";
 
-export const server: FastifyInstance = Fastify({ logger: config.logger });
+export const server: FastifyInstance = Fastify({
+  logger: defaultConfig.logger,
+});
 
 export async function launch () {
   try {
     await loader(server);
-    await server.listen(config.port);
-    console.info(`server listening on ${config.port}`);
+    await server.listen(defaultConfig.port);
+    console.info(`server listening on ${defaultConfig.port}`);
   } catch (err) {
     console.error(err);
     process.exit(1);

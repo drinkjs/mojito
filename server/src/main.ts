@@ -1,8 +1,8 @@
 import * as cluster from "cluster";
 import { launch } from "./app";
-import config from "./config";
+import { defaultConfig } from "./config";
 
-if (cluster.isMaster && config.cluster) {
+if (cluster.isMaster && defaultConfig.cluster) {
   // 创建子进程
   // eslint-disable-next-line global-require
   const numCPUs = require("os").cpus().length; // 获取CPU的个数
