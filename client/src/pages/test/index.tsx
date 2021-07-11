@@ -1,129 +1,62 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import Moveable from 'react-moveable';
+import React, { useEffect, useRef, useState } from "react";
+
+let x = 50;
+let y = 50;
+let lastX = 0;
+let lastY = 0;
 
 const Test = () => {
-  const rootRef = useRef<HTMLDivElement>();
-  const moveableRef = useRef<Moveable>();
-  const [element, setElement] = useState<HTMLElement | null>();
-  const [frame, setFrame] = useState({ x: 100, y: 100 });
+  const rootRef = useRef<HTMLDivElement | null>();
+  const currPos = useRef<any>({});
+  const [isReady, setIsReady] = useState(false);
+  const [rect, setRect] = useState<any>();
 
-  useLayoutEffect(() => {
-    setElement(document.getElementById('ele'));
-  });
-
-  const onZoom = (zoom: number) => {
-    rootRef.current!.style.transform = `scale(${zoom})`;
-    moveableRef.current?.updateRect();
-  };
+  useEffect(() => {
+    const rect1 = rootRef.current?.getBoundingClientRect();
+    setRect(rect1)
+  }, [])
 
   return (
     <div
       style={{
-        width: '100%',
-        height: '100%',
-        background: '#fff',
-        color: '#000'
+        width: "100%",
+        height: "100%",
+        background: "#ccc",
+        color: "#000",
+        position: "revert"
+      }}
+      onMouseMove={(e) => {
+        if (rootRef.current && isReady) {
+          const offsetX = e.clientX - currPos.current.x
+          const offSetY = e.clientY - currPos.current.y;
+          lastX = x + offsetX;
+          lastY = y + offSetY;
+          rootRef.current.style.transform = `translateX(${x + offsetX}px) translateY(${y + offSetY}px)`;
+        }
+      }}
+      onMouseUp={() => {
+        setIsReady(false);
+        x = lastX;
+        y = lastY;
       }}
     >
-      <div>
-        <button
-          onClick={() => {
-            onZoom(0.5);
-          }}
-        >
-          0.5
-        </button>
-        <button
-          onClick={() => {
-            onZoom(1);
-          }}
-          style={{ marginLeft: '12px' }}
-        >
-          1.0
-        </button>
-        <span style={{ marginLeft: '12px' }}>
-          x:{' '}
-          <input
-            value={frame.x}
-            onChange={(e) => {
-              moveableRef.current?.request(
-                'draggable',
-                {
-                  x: parseInt(e.target.value),
-                  y: frame.y
-                },
-                true
-              );
-            }}
-          />
-        </span>
-        <span style={{ marginLeft: '12px' }}>
-          y:{' '}
-          <input
-            value={frame.y}
-            onChange={(e) => {
-              moveableRef.current?.request(
-                'draggable',
-                {
-                  x: frame.x,
-                  y: parseInt(e.target.value)
-                },
-                true
-              );
-            }}
-          />
-        </span>
-      </div>
-
       <div
-        ref={(ref) => {
-          rootRef.current = ref!;
+        id="box"
+        ref={(r) => (rootRef.current = r)}
+        onMouseDown={(e) => {
+          setIsReady(true);
+          if (rect) {
+            currPos.current.x = e.clientX;
+            currPos.current.y = e.clientY;
+          }
         }}
         style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          background: '#000'
+          width: "100px",
+          height: "100px",
+          background: "#ff0000",
+          transform: `translateX(${x}px) translateY(${y}px)`
         }}
-      >
-        <div
-          id="ele"
-          style={{
-            width: '300px',
-            height: '200px',
-            background: '#FFFF00',
-            lineHeight: '200px',
-            color: '#000',
-            transform: `translate(${frame.x}px, ${frame.y}px)`
-          }}
-        >
-          Moveable
-        </div>
-
-        <Moveable
-          target={element}
-          snappable
-          throttleDrag={0}
-          draggable
-          rootContainer={document.body}
-          ref={(ref) => {
-            moveableRef.current = ref!;
-          }}
-          onDragStart={(e) => {
-            const { set } = e;
-            set([frame.x, frame.y]);
-          }}
-          onDrag={(e) => {
-            const { target, beforeTranslate } = e;
-            frame.x = Math.round(beforeTranslate[0]);
-            frame.y = Math.round(beforeTranslate[1]);
-            target.style.transform = `translate(${frame.x}px, ${frame.y}px)`;
-          }}
-          onDragEnd={() => {
-            setFrame({ ...frame });
-          }}
-        />
-      </div>
+      ></div>
     </div>
   );
 };
