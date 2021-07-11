@@ -7,7 +7,7 @@ import { ComponentDto, ComponentTypeDto } from "../dto";
 import ComponentService from "../service/ComponentService";
 import AppError from "../common/AppError";
 import { tmpdir } from "os";
-import config from "../config";
+import { defaultStaticConfig } from "../config";
 import BaseController from "./BaseController";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -26,7 +26,7 @@ export default class ComponentController extends BaseController {
     super();
   }
 
-  private readonly libSavePath = config.libPath;
+  private readonly libSavePath = defaultStaticConfig.libPath;
 
   /**
    * 类型树

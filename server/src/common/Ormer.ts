@@ -1,18 +1,6 @@
 import { createConnection, ConnectionOptions } from "typeorm";
 import { ORM_MODEL_METADATA } from "../core/decorator/ServiceDecorator";
 
-export type OrmConnectionOpations = {
-  name?: string;
-  type: string;
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-  entities: string[];
-  synchronize: boolean;
-};
-
 export default class Ormer {
   static instance: Ormer;
 
@@ -25,9 +13,8 @@ export default class Ormer {
 
   // connections: Map<string, Connection> = new Map();
 
-  addConnect (options: OrmConnectionOpations) {
-    const connName = options.name;
-    createConnection(options as ConnectionOptions)
+  addConnect (options: ConnectionOptions) {
+    createConnection(options)
       .then((connection) => {
         // 注入orm repository
         const services: any[] = Reflect.getMetadata(ORM_MODEL_METADATA, Ormer);
@@ -37,12 +24,14 @@ export default class Ormer {
               return;
             }
             // 多数据库匹配
-            if (connName === connectName) {
+            if (options.name === connectName) {
               target[key] = connection.getRepository(value);
             }
           });
         }
-        const connectInfo = `${options.type}@${options.host}:${options.port}`;
+
+        const connectOptions: any = options;
+        const connectInfo = `${options.type}@${connectOptions?.host}:${connectOptions?.port}`;
         // this.connections.set(connName || connectInfo, connection);
         console.log(`${connectInfo} connected`.green);
       })
