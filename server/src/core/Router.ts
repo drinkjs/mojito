@@ -32,8 +32,6 @@ export default class Router {
 
   private wss: WebsocketEmitter | undefined;
 
-  private exceptionFilter: ExceptionFilter | undefined;
-
   static instance: Router;
 
   static getInstance (app: FastifyInstance, websocketFlag?: boolean) {
@@ -100,10 +98,6 @@ export default class Router {
     }
   }
 
-  useExceptionFilter (filter: ExceptionFilter) {
-    this.exceptionFilter = filter;
-  }
-
   /**
    * 生成路由处理方法
    * @param func
@@ -113,22 +107,10 @@ export default class Router {
   handlerFactory (func: (...args: any[]) => any, paramList: any[]) {
     return async (req: FastifyRequest, res: FastifyReply) => {
       const ctx: RouterContext = { req, res };
-      try {
-        // 获取路由函数的参数
-        const args = await this.extractParameters(ctx, paramList);
-        const rel = await func(...args);
-        res.send(rel);
-      } catch (e) {
-        console.error(e);
-        if (this.exceptionFilter) {
-          this.exceptionFilter.catch(e, ctx);
-        } else {
-          res.send({
-            code: 500,
-            message: e,
-          });
-        }
-      }
+      // 获取路由函数的参数
+      const args = await this.extractParameters(ctx, paramList);
+      const rel = await func(...args);
+      res.send(rel);
     };
   }
 

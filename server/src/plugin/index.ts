@@ -21,9 +21,9 @@ export default async function plugin (server: FastifyInstance) {
     secret: defaultConfig.sessionSecret,
   });
   await server.register(fastifyCsrf, { sessionPlugin: "fastify-session" });
-  server
-    .register(fastifyNextjs, { dev: process.env.NODE_ENV !== "production" })
-    .after(() => {
-      server.next("/view");
-    });
+  await server.register(fastifyNextjs, {
+    dev: process.env.NODE_ENV !== "production",
+  });
+  // 注册nextjs路由
+  server.next("/view");
 }
