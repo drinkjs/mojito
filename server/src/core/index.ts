@@ -1,2 +1,2 @@
-export * from "./decorator";
 export * from "./Validation";
+export * from "./decorator";

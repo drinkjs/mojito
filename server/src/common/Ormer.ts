@@ -1,5 +1,10 @@
-import { createConnection, ConnectionOptions } from "typeorm";
+import {
+  createConnection,
+  ConnectionOptions,
+  getConnectionManager,
+} from "typeorm";
 import { ORM_MODEL_METADATA } from "../core/decorator/ServiceDecorator";
+import { defaultConfig } from "../config";
 
 export default class Ormer {
   static instance: Ormer;
@@ -11,35 +16,38 @@ export default class Ormer {
     return Ormer.instance;
   }
 
-  // connections: Map<string, Connection> = new Map();
+  async addConnect (options: ConnectionOptions) {
+    const conn = await createConnection(options).catch((err) => {
+      throw err;
+    });
+    if (conn) {
+      const connectOptions: any = options;
+      const connectInfo = `${options.type}@${connectOptions?.host}:${connectOptions?.port}`;
+      console.log(`${connectInfo} connected`.green);
+    }
+    return conn;
+  }
 
-  addConnect (options: ConnectionOptions) {
-    createConnection(options)
-      .then((connection) => {
-        // 注入orm repository
-        const services: any[] = Reflect.getMetadata(ORM_MODEL_METADATA, Ormer);
-        if (services) {
-          services.forEach(({ key, target, value, connectName }) => {
-            if (target[key]) {
-              return;
-            }
-            // 多数据库匹配
-            if (options.name === connectName) {
-              target[key] = connection.getRepository(value);
-            }
-          });
+  async inject () {
+    // 注入orm repository
+    const services: any[] = Reflect.getMetadata(ORM_MODEL_METADATA, Ormer);
+    if (services) {
+      for (const service of services) {
+        const { key, target, entity, options } = service;
+        if (target[key]) {
+          return;
         }
-
-        const connectOptions: any = options;
-        const connectInfo = `${options.type}@${connectOptions?.host}:${connectOptions?.port}`;
-        // this.connections.set(connName || connectInfo, connection);
-        console.log(`${connectInfo} connected`.green);
-      })
-      .catch((err: any) => {
-        console.error(err);
-        setTimeout(() => {
-          this.addConnect(options);
-        }, 5000);
-      });
+        const opts = options || defaultConfig.orm;
+        if (!opts.name) {
+          opts.name = "default";
+        }
+        const connection = getConnectionManager().has(opts.name)
+          ? getConnectionManager().get(opts.name)
+          : await this.addConnect(opts);
+        if (connection) {
+          target[key] = connection.getRepository(entity);
+        }
+      }
+    }
   }
 }

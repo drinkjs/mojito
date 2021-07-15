@@ -11,6 +11,7 @@ import loader from "./loader";
 
 export const server: FastifyInstance = Fastify({
   logger: defaultConfig.logger,
+  pluginTimeout: 60 * 1000,
 });
 
 export async function launch () {
@@ -33,6 +34,9 @@ declare global {
     code: number;
     msg?: string;
     data?: T;
+    current?: number;
+    pageSize?: number;
+    total?: number;
   }
   type PromiseRes<T> = Promise<IResult<T>>;
   interface ExceptionFilter {

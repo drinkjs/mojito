@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import IORedis from "ioredis";
 import { MongoConnectionOptions } from "src/common/Mongoer";
 import { ConnectionOptions } from "typeorm";
 
@@ -15,6 +16,7 @@ export interface IConfig {
   readonly sessionSecret: string;
   readonly mongo?: MongoConnectionOptions;
   readonly orm?: ConnectionOptions;
+  readonly redis?: IORedis.RedisOptions;
 }
 
 export interface IStaticConfig {
@@ -58,5 +60,11 @@ export const defaultConfig: IConfig = {
   //     `${__dirname}/../entity/*.ts`,
   //   ],
   //   synchronize: false,
-  // }
+  // },
+
+  // redis: {
+  //   host: "127.0.0.1",
+  //   port: 6379,
+  //   keyPrefix: "shoes:",
+  // },
 };

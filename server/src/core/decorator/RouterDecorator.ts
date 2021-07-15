@@ -72,7 +72,7 @@ export function createParamDecorator (type: Param) {
   };
 }
 
-export const Headers = createParamDecorator("headers");
+// export const Headers = createParamDecorator("headers");
 
 export function Query(): ParameterDecorator;
 export function Query(property: string): ParameterDecorator;
@@ -100,6 +100,23 @@ export function Body (property?: string | Validation, validator?: Validation) {
   const key = hasParamData ? property : undefined;
   const vail = hasParamData ? validator : property;
   return createParamDecorator("body")(key, vail);
+}
+
+export function Headers(): ParameterDecorator;
+export function Headers(property: string): ParameterDecorator;
+export function Headers(validator: Validation): ParameterDecorator;
+export function Headers(
+  property: string,
+  validator: Validation
+): ParameterDecorator;
+export function Headers (
+  property?: string | Validation,
+  validator?: Validation
+) {
+  const hasParamData = property && typeof property === "string";
+  const key = hasParamData ? property : undefined;
+  const vail = hasParamData ? validator : property;
+  return createParamDecorator("headers")(key, vail);
 }
 
 export function UploadedFile () {

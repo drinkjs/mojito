@@ -35,6 +35,7 @@
     "fastify-nextjs": "^6.0.0",
     "fastify-session": "^5.2.1",
     "fastify-static": "^4.0.1",
+    "ioredis": "^4.27.6",
     "is-type-of": "^1.2.1",
     "mongoose": "5.10.18",
     "mysql": "^2.18.1",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.13.15",
+    "@types/ioredis": "^4.26.5",
     "@types/mongoose": "^5.10.3",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.3",
