@@ -33,7 +33,7 @@ export default class ComponentController extends BaseController {
    * @param types
    * @param pid
    */
-  formatTypes (types: ComponentTypeDto[], pid: string): ComponentTypeDto[] {
+  formatTypes (types: ComponentTypeDto[], pid?: string): ComponentTypeDto[] {
     const arr: ComponentTypeDto[] = [];
     types.forEach((v) => {
       if (v.pid === pid) {
@@ -156,7 +156,8 @@ export default class ComponentController extends BaseController {
    */
   @Get("/types")
   async getTypes (): PromiseRes<ComponentTypeDto[]> {
-    const rel = await this.service.findTypes();
+    const rel: any = await this.service.findTypes();
+    if (!rel) return this.success([]);
     return this.success(rel ? this.formatTypes(rel, undefined) : []);
   }
 

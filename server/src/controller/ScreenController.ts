@@ -88,7 +88,7 @@ export default class ScreenController extends BaseController {
   async updateCover (
     @Body(new Validation({ groups: ["coverImg"] })) dto: ScreenDto
   ): PromiseRes<any> {
-    const rel = await this.service.updateCover(dto.id, dto.coverImg);
+    const rel = await this.service.updateCover(dto.id, dto.coverImg!);
     if (rel) return this.success(null);
     return this.fail("更新失败");
   }
@@ -153,7 +153,9 @@ export default class ScreenController extends BaseController {
   async delDatasource (
     @Body(new Validation({ groups: ["delete"] })) dto: DatasourceDto
   ): PromiseRes<string> {
-    const rel = await this.service.delDatasource(dto.screenId, dto.id);
+    const rel = dto.id
+      ? await this.service.delDatasource(dto.screenId, dto.id)
+      : false;
     return rel ? this.success(rel) : this.fail("删除失败");
   }
 }

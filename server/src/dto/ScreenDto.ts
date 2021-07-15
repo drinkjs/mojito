@@ -6,7 +6,7 @@ import { ProjectDto } from "./ProjectDto";
 export class ScreenDto {
   @IsMongoId({ message: "非法projectId", groups: ["add"] })
   @IsNotEmpty({ message: "请输入项目id", groups: ["add"] })
-  projectId: string;
+  projectId!: string;
 
   @IsMongoId({
     message: "非法id",
@@ -16,11 +16,11 @@ export class ScreenDto {
     message: "请输入页面id",
     groups: ["update", "coverImg", "updateLayer"],
   })
-  id: string;
+  id!: string;
 
   @IsNotEmpty({ message: "请输入页面名称", groups: ["add", "update"] })
   @MaxLength(30, { groups: ["add", "update"], message: "页面名称30字以内" })
-  name: string;
+  name!: string;
 
   style?: ScreenOptions;
 

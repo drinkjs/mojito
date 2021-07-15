@@ -5,10 +5,10 @@ export default class Project {
   name!: string;
 
   @prop()
-  createTime: string;
+  createTime?: string;
 
   @prop()
-  updateTime: string;
+  updateTime?: string;
 
   @prop()
   createUser?: string;

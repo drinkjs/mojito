@@ -29,7 +29,7 @@ interface SyncPageMsg {
 @Controller("/ws")
 export default class ScreenSyncController extends BaseController {
   @WebSocketServer()
-  private wss: WebsocketEmitter;
+  private wss!: WebsocketEmitter;
 
   /**
    * http对外接口，房间的所有页面
@@ -42,7 +42,7 @@ export default class ScreenSyncController extends BaseController {
     clients.forEach((v) => {
       const clientData: JoinPage = v.data;
       if (!pages.find((p) => p.page === clientData.page)) {
-        pages.push({ ...clientData, pageId: undefined });
+        pages.push({ ...clientData });
       }
     });
     return this.success(pages);
@@ -148,7 +148,7 @@ export default class ScreenSyncController extends BaseController {
     try {
       if (client && client.socket && client.socket.readyState === OPEN) {
         const msgString = JSON.stringify(msg);
-        client.socket.send(msgString, (err:any) => {
+        client.socket.send(msgString, (err: any) => {
           if (err) {
             console.error(err);
           }

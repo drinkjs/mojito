@@ -18,7 +18,7 @@
     "jsx": "preserve",
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "noEmit": false,
     "esModuleInterop": true,
     "moduleResolution": "node",

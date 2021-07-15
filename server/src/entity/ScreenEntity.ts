@@ -63,16 +63,16 @@ export default class Screen {
   style?: ScreenOptions;
 
   @prop()
-  createTime: string;
+  createTime?: string;
 
   @prop()
-  updateTime: string;
+  updateTime?: string;
 
   @prop()
   createUser?: string;
 
   @prop({ default: 0, select: false })
-  status: 0 | 1; // 0:删除1正常;
+  status!: 0 | 1; // 0:删除1正常;
 
   @prop()
   coverImg?: string;

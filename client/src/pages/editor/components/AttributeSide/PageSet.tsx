@@ -144,7 +144,7 @@ export default inject("screenStore")(
               )}
           </div>
         )}
-        <DataSourceSet />
+        {/* <DataSourceSet /> */}
       </section>
     );
   })

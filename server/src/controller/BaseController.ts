@@ -6,7 +6,7 @@ export default class BaseController {
     };
   }
 
-  success<T> (data: T, msg?: string): IResult<T> {
+  success<T> (data: T | any, msg?: string): IResult<T> {
     return {
       code: 0,
       data,

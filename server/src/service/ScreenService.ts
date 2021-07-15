@@ -20,7 +20,7 @@ export default class ScreenService extends BaseService {
   }
 
   @MgModel(ScreenEntity)
-  private model: MgModelType<ScreenEntity>;
+  private model!: MgModelType<ScreenEntity>;
 
   /**
    * 新增页面
@@ -33,7 +33,7 @@ export default class ScreenService extends BaseService {
     if (rel) {
       AppError.assert("页面已存在");
     }
-    const project: ScreenEntity = {
+    const project: any = {
       projectId: new mongoose.Types.ObjectId(data.projectId),
       name: data.name,
       style: data.style,
@@ -90,22 +90,24 @@ export default class ScreenService extends BaseService {
       .exec();
     if (!rel) return null;
     const detail = this.toDtoObject<ScreenDto>(rel);
-    if (rel) {
+    if (rel && detail) {
       if (rel.layers && rel.layers.length > 0) {
         // 查询图层组件信息
         const componentIds = rel.layers.map((v) => v.component);
         const components = await this.componentService.findByIds(componentIds);
         rel.layers.forEach((layer, index) => {
           const component = components.find(
-            (comp) => comp.id === layer.component
+            (comp) => comp!.id === layer.component
           );
-          detail.layers[index].component = component;
+          if (component && detail.layers) {
+            detail.layers[index].component = component;
+          }
         });
       }
     }
     const { name, id } = projectInfo;
-    detail.project = { name, id };
-    delete detail.projectId;
+    detail!.project = { name, id };
+    // delete detail.projectId;
     return detail;
   }
 
@@ -123,22 +125,24 @@ export default class ScreenService extends BaseService {
       .exec();
     if (!rel) return null;
     const detail = this.toDtoObject<ScreenDto>(rel);
-    if (rel) {
+    if (rel && detail) {
       if (rel.layers && rel.layers.length > 0) {
         // 查询图层组件信息
         const componentIds = rel.layers.map((v) => v.component);
         const components = await this.componentService.findByIds(componentIds);
         rel.layers.forEach((layer, index) => {
           const component = components.find(
-            (comp) => comp.id === layer.component
+            (comp) => comp!.id === layer.component
           );
-          detail.layers[index].component = component;
+          if (component && detail.layers) {
+            detail.layers[index].component = component!;
+          }
         });
       }
       const project: any = rel.projectId;
       const { name, _id } = project;
       detail.project = { name, id: _id };
-      delete detail.projectId;
+      // delete detail.projectId;
     }
     return detail;
   }
@@ -216,7 +220,7 @@ export default class ScreenService extends BaseService {
   async addDatasource (id: string, dto: DatasourceDto) {
     const rel = await this.model.findById(id);
 
-    if (rel.dataSources) {
+    if (rel && rel.dataSources) {
       const datasource = rel.dataSources.find(
         (v) =>
           `${v.type}://${v.host}:${v.port}@${v.username}` ===
