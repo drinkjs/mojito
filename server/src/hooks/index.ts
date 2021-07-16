@@ -8,6 +8,7 @@ import AppError from "src/common/AppError";
 export default async function hooks (fastify: FastifyInstance) {
   // 异常处理
   fastify.setErrorHandler(function (error, request, reply) {
+    reply.hijack();
     if (error instanceof AppError) {
       reply.send({
         code: 200,

@@ -30,24 +30,19 @@ function selfish (target: any) {
 export default class Router {
   private server: FastifyInstance;
 
-  private wss: WebsocketEmitter | undefined;
+  private wss?: WebsocketEmitter;
 
   static instance: Router;
 
-  static getInstance (app: FastifyInstance, websocketFlag?: boolean) {
+  static getInstance (app: FastifyInstance) {
     if (!Router.instance) {
-      Router.instance = new Router(app, websocketFlag);
+      Router.instance = new Router(app);
     }
     return Router.instance;
   }
 
-  constructor (server: FastifyInstance, websocketFlag?: boolean) {
+  constructor (server: FastifyInstance) {
     this.server = server;
-
-    if (websocketFlag) {
-      this.wss = new WebsocketEmitter();
-    }
-
     // ioc方式生成controller
     controllers.forEach((controller) => {
       const instance = IocFactory(controller);
@@ -73,7 +68,10 @@ export default class Router {
         const urlPath =
           typeof path === "string" ? controllerMetadata + path : path;
         // webaocket事件
-        if (this.wss && type === "ws") {
+        if (type === "ws") {
+          if (!this.wss) {
+            this.wss = new WebsocketEmitter();
+          }
           this.wss.on(urlPath, self[routeName]);
           return;
         }

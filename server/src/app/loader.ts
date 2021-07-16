@@ -10,7 +10,7 @@ import hooks from "../hooks";
 export default async function loader (fastify: FastifyInstance) {
   await plugin(fastify);
   await hooks(fastify);
-  Router.getInstance(fastify, defaultConfig.websocket);
+  Router.getInstance(fastify);
 
   if (defaultConfig.mongo) {
     Mongoer.getInstance().inject();
