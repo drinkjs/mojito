@@ -41,3 +41,7 @@ code {
   background: none;
   border-radius: 5px;
 }
+
+::-webkit-scrollbar-corner{
+  background: none;
+}
