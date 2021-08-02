@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { observer, inject } from "mobx-react";
-import { Radio, Popconfirm } from "antd";
+import { Radio } from "antd";
 import { useDebounceFn } from "ahooks";
 import UploadImg from "components/UploadImg";
 import { ScreenStore } from "types";
 import { DefaulBackgroundColor, DefaultFontColor } from "config";
 import styles from "./index.module.scss";
 import { SizeSetting, ColorSetting } from "./Style";
-import DataSourceSet from "./DataSourceSet"
+// import DataSourceSet from "./DataSourceSet"
 
 const sizeItems = [
   {
