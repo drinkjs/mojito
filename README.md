@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="http://mojito.drinkjs.com">
-    <img height="200" src="./client/public/logo-black.svg">
-  </a>
+  <img height="200" src="./client/public/logo-black.png">
 </p>
 <p align="center">Mojito是一个可视化数据分析、数据展示和轻业务开发的平台</p>
 
@@ -22,7 +20,7 @@
 
 ## ⚙️ 安装 Install
 ### 环境要求
-- Node.js >= 10.16.0
+- Node.js >= 14.0.0
 - MongoDB >= 4.2.12
 
 ```bash
@@ -32,14 +30,14 @@ git clone https://gitee.com/drinkjs/mojito.git
 打开server/config/index.ts修改MongoDB相关连接信息
 ```bash
 cd server
-npm install --registry=https://registry.npm.taobao.org
+npm install --registry=https://registry.npmmirror.com/
 npm run dev
 ```
 
 ### 启动前端
 ```bash
 cd client
-npm install --registry=https://registry.npm.taobao.org
+npm install --registry=https://registry.npmmirror.com/
 npm start
 ```
 

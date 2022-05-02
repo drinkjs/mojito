@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
+import { IsMongoId, IsNotEmpty, MaxLength } from "ngulf/class-validator";
 
 export class ProjectDto {
   @IsNotEmpty({ message: "请输入项目id", groups: ["update"] })

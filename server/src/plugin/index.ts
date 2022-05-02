@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance } from "ngulf/fastify";
 import fastifyMultipart from "fastify-multipart";
 import fastifyStatic from "fastify-static";
 import fastifyCookie from "fastify-cookie";

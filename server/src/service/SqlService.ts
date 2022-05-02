@@ -1,4 +1,4 @@
-import { OrmModelType, OrmModel } from "../core/decorator";
+import { OrmModelType, OrmModel } from "ngulf";
 import ProjectEntity from "../entity/ProjectEntity";
 
 export default class SqlService {

@@ -1,15 +1,9 @@
 /* eslint-disable no-shadow */
-import { DocumentToObjectOptions, MongooseDocument } from "mongoose";
+import mongoose, { ToObjectOptions } from "ngulf/mongoose";
 
 export default class BaseService {
-  toDtoObject<T> (
-    value: MongooseDocument | null,
-    options?: DocumentToObjectOptions
-  ): T | null {
-    if (!value) {
-      return null;
-    }
-    return value.toObject({
+  toDtoObject<T> (value: mongoose.Document, options?: ToObjectOptions): T {
+    return value.toObject<T>({
       versionKey: false,
       // eslint-disable-next-line no-unused-vars
       transform: (doc, ret, options) => {

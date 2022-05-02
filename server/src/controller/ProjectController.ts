@@ -1,8 +1,14 @@
-import { Controller, Get, Query, Post, Body } from "../core/decorator";
-import { Validation } from "../core";
+import {
+  Controller,
+  Get,
+  Query,
+  Post,
+  Body,
+  Validation,
+  BaseController,
+} from "ngulf";
 import { ProjectDto } from "../dto";
 import ProjectService from "../service/ProjectService";
-import BaseController from "./BaseController";
 
 @Controller("/project")
 export default class ProjectController extends BaseController {
@@ -16,9 +22,7 @@ export default class ProjectController extends BaseController {
    * @param dto
    */
   @Post("/add")
-  async add (
-    @Body(new Validation({ groups: ["add"] })) dto: ProjectDto
-  ): PromiseRes<string> {
+  async add (@Body(new Validation({ groups: ["add"] })) dto: ProjectDto) {
     dto.name = dto.name.replace("/", "");
     if (!dto.name) {
       return this.fail("添加失败");
@@ -33,9 +37,7 @@ export default class ProjectController extends BaseController {
    * @param dto
    */
   @Post("/update")
-  async update (
-    @Body(new Validation({ groups: ["update"] })) dto: ProjectDto
-  ): PromiseRes<any> {
+  async update (@Body(new Validation({ groups: ["update"] })) dto: ProjectDto) {
     dto.name = dto.name.replace("/", "");
     if (!dto.name) {
       return this.fail("添加失败");
@@ -49,7 +51,7 @@ export default class ProjectController extends BaseController {
    * 项目列表
    */
   @Get("/list")
-  async list (): PromiseRes<any[]> {
+  async list () {
     const rel = await this.service.findAll();
     return this.success(rel);
   }
@@ -59,7 +61,7 @@ export default class ProjectController extends BaseController {
    * @param id
    */
   @Get("/delete")
-  async delete (@Query("id") id: string): PromiseRes<any> {
+  async delete (@Query("id") id: string) {
     const rel = await this.service.delete(id);
     if (rel) return this.success(null);
     return this.fail("删除失败");

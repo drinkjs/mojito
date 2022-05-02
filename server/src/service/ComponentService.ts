@@ -1,11 +1,10 @@
 import { mongoose } from "@typegoose/typegoose";
-import { Injectable, MgModel, MgModelType } from "../core/decorator";
+import { Injectable, MgModel, MgModelType, AppError } from "ngulf";
 import ComponentTypeEntity from "../entity/ComponentTypeEntity";
 import ComponentEntity from "../entity/ComponentEntity";
 import { ComponentDto, ComponentTypeDto } from "../dto";
 import { createStringDate } from "../common/utils";
 import BaseService from "./BaseService";
-import AppError from "../common/AppError";
 
 @Injectable()
 export default class ComponentService extends BaseService {
@@ -100,12 +99,12 @@ export default class ComponentService extends BaseService {
 
   async findByName (name: string, version: string) {
     const rel = await this.model.findOne({ name, version }).exec();
-    return this.toDtoObject<ComponentDto>(rel);
+    return rel && this.toDtoObject<ComponentDto>(rel);
   }
 
   async findById (id: string) {
     const rel = await this.model.findOne({ _id: id }).exec();
-    return this.toDtoObject<ComponentDto>(rel);
+    return rel && this.toDtoObject<ComponentDto>(rel);
   }
 
   async findByIds (ids: string[]) {

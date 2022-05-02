@@ -1,9 +1,8 @@
 import * as fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import { Controller, Post } from "../core/decorator";
+import { Controller, Post, RouterContext, BaseController } from "ngulf";
 import { createStringDate } from "../common/utils";
 import config from "../config";
-import BaseController from "./BaseController";
 
 @Controller()
 export default class CommonController extends BaseController {
@@ -14,7 +13,7 @@ export default class CommonController extends BaseController {
    * @param file
    */
   @Post("/upload/image")
-  async uploadImage (ctx: RouterContext): PromiseRes<any> {
+  async uploadImage (ctx: RouterContext) {
     const { req } = ctx;
     const files = await req.saveRequestFiles();
     const file = files[0];

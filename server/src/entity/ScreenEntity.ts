@@ -1,10 +1,4 @@
-import {
-  Ref,
-  modelOptions,
-  mongoose,
-  prop,
-  Severity,
-} from "@typegoose/typegoose";
+import { Ref, modelOptions, mongoose, prop, Severity } from "ngulf/typegoose";
 import { LayerApi, LayerStyle, RelativePosition } from "./LayerEntity";
 // import Component from "./ComponentEntity";
 import Project from "./ProjectEntity";

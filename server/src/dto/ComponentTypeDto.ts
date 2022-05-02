@@ -1,4 +1,9 @@
-import { IsMongoId, IsNotEmpty, IsOptional, MaxLength } from "class-validator";
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+} from "ngulf/class-validator";
 
 export class ComponentTypeDto {
   @IsNotEmpty({ message: "id不能为空", groups: ["update"] })

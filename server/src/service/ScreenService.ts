@@ -1,7 +1,6 @@
 import { mongoose } from "@typegoose/typegoose";
-import { Injectable, MgModel, MgModelType } from "../core/decorator";
+import { Injectable, MgModel, MgModelType, AppError } from "ngulf";
 import { ScreenDto } from "../dto";
-import AppError from "../common/AppError";
 import { createStringDate } from "../common/utils";
 import ScreenEntity from "../entity/ScreenEntity";
 import BaseService from "./BaseService";
@@ -33,15 +32,19 @@ export default class ScreenService extends BaseService {
     if (rel) {
       AppError.assert("页面已存在");
     }
+
     const project: ScreenEntity = {
-      projectId: new mongoose.Types.ObjectId(data.projectId),
+      projectId: undefined,
       name: data.name,
       style: data.style,
       createTime: createStringDate(),
       updateTime: createStringDate(),
       status: 1,
     };
-    const { _id: id } = await this.model.create(project);
+    const { _id: id } = await this.model.create({
+      ...project,
+      projectId: new mongoose.Types.ObjectId(data.projectId),
+    });
     return id;
   }
 
@@ -53,7 +56,7 @@ export default class ScreenService extends BaseService {
       .find({ status: 1, projectId }, { status: 0, projectId: 0 })
       .sort({ updateTime: -1 })
       .exec();
-    return rel && rel.map((v) => this.toDtoObject<ScreenDto>(v));
+    return rel ? rel.map((v) => this.toDtoObject<ScreenDto>(v)) : [];
   }
 
   /**
@@ -98,7 +101,9 @@ export default class ScreenService extends BaseService {
           const component = components.find(
             (comp) => comp.id === layer.component
           );
-          detail.layers[index].component = component;
+          if (component && detail.layers) {
+            detail.layers[index].component = component;
+          }
         });
       }
     }
@@ -117,10 +122,7 @@ export default class ScreenService extends BaseService {
     if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
 
     const rel = await this.model
-      .findOne(
-        { _id: id, status: 1 },
-        { coverImg: 0, createTime: 0 }
-      )
+      .findOne({ _id: id, status: 1 }, { coverImg: 0, createTime: 0 })
       .populate({ path: "projectId", select: "name" })
       .exec();
     if (!rel) return null;
@@ -134,7 +136,9 @@ export default class ScreenService extends BaseService {
           const component = components.find(
             (comp) => comp.id === layer.component
           );
-          detail.layers[index].component = component;
+          if (component && detail.layers) {
+            detail.layers[index].component = component;
+          }
         });
       }
       const project: any = rel.projectId;

@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
+import { IsMongoId, IsNotEmpty, MaxLength } from "ngulf/class-validator";
 import { ComponentEvents, ComponentProps } from "../entity/ComponentEntity";
 
 export class ComponentDto {
@@ -24,7 +24,7 @@ export class ComponentDto {
   version: string;
 
   @IsNotEmpty({ message: "sid不能为空", groups: ["add"] })
-   // 上传时组件临时存入的目录，上传组件时返回，新增组件时原样提交
+  // 上传时组件临时存入的目录，上传组件时返回，新增组件时原样提交
   sid: string;
 
   coverImg?: string;

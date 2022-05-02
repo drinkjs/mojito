@@ -1,8 +1,14 @@
-import { Validation } from "../core";
-import { Body, Controller, Get, Post, Query } from "../core/decorator";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Validation,
+  BaseController,
+} from "ngulf";
 import { ScreenDto } from "../dto";
 import ScreenService from "../service/ScreenService";
-import BaseController from "./BaseController";
 
 @Controller("/screen")
 export default class ScreenController extends BaseController {
@@ -16,9 +22,7 @@ export default class ScreenController extends BaseController {
    * @param dto
    */
   @Post("/add")
-  async add (
-    @Body(new Validation({ groups: ["add"] })) dto: ScreenDto
-  ): PromiseRes<string> {
+  async add (@Body(new Validation({ groups: ["add"] })) dto: ScreenDto) {
     dto.name = dto.name.replace("/", "");
     if (!dto.name) {
       return this.fail("添加失败");
@@ -33,7 +37,7 @@ export default class ScreenController extends BaseController {
    * @param projectId
    */
   @Get("/list")
-  async list (@Query("projectId") projectId: string): PromiseRes<ScreenDto[]> {
+  async list (@Query("projectId") projectId: string) {
     const rel = await this.service.findByProject(projectId);
     return this.success(rel);
   }
@@ -43,9 +47,7 @@ export default class ScreenController extends BaseController {
    * @param name
    */
   @Get("/list/projectName")
-  async listByProjectName (
-    @Query("name") name: string
-  ): PromiseRes<ScreenDto[]> {
+  async listByProjectName (@Query("name") name: string) {
     const rel = await this.service.findByProjectName(name);
     return this.success(rel);
   }
@@ -55,9 +57,7 @@ export default class ScreenController extends BaseController {
    * @param dto
    */
   @Post("/update")
-  async update (
-    @Body(new Validation({ groups: ["update"] })) dto: ScreenDto
-  ): PromiseRes<any> {
+  async update (@Body(new Validation({ groups: ["update"] })) dto: ScreenDto) {
     dto.name = dto.name.replace("/", "");
     if (!dto.name) {
       return this.fail("更新失败");
@@ -74,7 +74,7 @@ export default class ScreenController extends BaseController {
   @Post("/update/layer")
   async updateLayer (
     @Body(new Validation({ groups: ["updateLayer"] })) dto: ScreenDto
-  ): PromiseRes<any> {
+  ) {
     const rel = await this.service.updateScreen(dto);
     if (rel) return this.success(null);
     return this.fail("图层更新失败");
@@ -87,8 +87,8 @@ export default class ScreenController extends BaseController {
   @Post("/update/cover")
   async updateCover (
     @Body(new Validation({ groups: ["coverImg"] })) dto: ScreenDto
-  ): PromiseRes<any> {
-    const rel = await this.service.updateCover(dto.id, dto.coverImg);
+  ) {
+    const rel = await this.service.updateCover(dto.id, dto.coverImg!);
     if (rel) return this.success(null);
     return this.fail("更新失败");
   }
@@ -98,7 +98,7 @@ export default class ScreenController extends BaseController {
    * @param id
    */
   @Get("/delete")
-  async delete (@Query("id") id: string): PromiseRes<any> {
+  async delete (@Query("id") id: string) {
     const rel = await this.service.delete(id);
     if (rel) {
       return this.success(null);
@@ -111,7 +111,7 @@ export default class ScreenController extends BaseController {
    * @param id 大屏id
    */
   @Get("/detail")
-  async detail (@Query("id") id: string): PromiseRes<ScreenDto | null | string> {
+  async detail (@Query("id") id: string) {
     const rel = await this.service.findDetailById(id);
     return rel ? this.success(rel) : this.fail("页面不存在");
   }
@@ -120,9 +120,14 @@ export default class ScreenController extends BaseController {
    * 页面明细
    * @param dto
    */
-   @Post("/view/detail")
-  async previewDetail (@Body() dto: {projectName:string, screenName:string}): PromiseRes<ScreenDto | null | string> {
-    const rel = dto.screenName && dto.projectName ? await this.service.findByName(dto.projectName, dto.screenName) : null;
+  @Post("/view/detail")
+  async previewDetail (
+    @Body() dto: { projectName: string; screenName: string }
+  ) {
+    const rel =
+      dto.screenName && dto.projectName
+        ? await this.service.findByName(dto.projectName, dto.screenName)
+        : null;
     return rel ? this.success(rel) : this.fail("页面不存在");
   }
 }

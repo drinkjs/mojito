@@ -1,10 +1,19 @@
 import { OPEN } from "ws";
-import { Controller, Get, Query, WebSocketServer, Ws } from "../core";
-import WebsocketEmitter, {
+import {
+  Controller,
+  Get,
+  Query,
+  WebSocketServer,
+  Ws,
   WebsocketEvent,
   WsClient,
-} from "../core/WebsocketEmitter";
-import BaseController from "./BaseController";
+  WebsocketEmitter,
+  BaseController,
+} from "ngulf";
+// import WebsocketEmitter, {
+//   WebsocketEvent,
+//   WsClient,
+// } from "../core/WebsocketEmitter";
 
 interface JoinPage {
   room: string;
@@ -36,13 +45,13 @@ export default class ScreenSyncController extends BaseController {
    * @param params
    */
   @Get("/connects")
-  async getPageByRoom (@Query("room") room: string): PromiseRes<JoinPage[]> {
+  async getPageByRoom (@Query("room") room: string) {
     const clients = this.getRoomClients(room);
     const pages: JoinPage[] = [];
     clients.forEach((v) => {
       const clientData: JoinPage = v.data;
       if (!pages.find((p) => p.page === clientData.page)) {
-        pages.push({ ...clientData, pageId: undefined });
+        pages.push(clientData);
       }
     });
     return this.success(pages);
@@ -148,7 +157,7 @@ export default class ScreenSyncController extends BaseController {
     try {
       if (client && client.socket && client.socket.readyState === OPEN) {
         const msgString = JSON.stringify(msg);
-        client.socket.send(msgString, (err:any) => {
+        client.socket.send(msgString, (err: any) => {
           if (err) {
             console.error(err);
           }

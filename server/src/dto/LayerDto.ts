@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, MaxLength } from "class-validator";
+import { IsMongoId, IsNotEmpty, MaxLength } from "ngulf/class-validator";
 import { LayerApi, LayerStyle, RelativePosition } from "../entity/LayerEntity";
 import { ComponentDto } from "./ComponentDto";
 

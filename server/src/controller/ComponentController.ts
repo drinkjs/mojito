@@ -2,13 +2,21 @@ import * as fs from "fs";
 import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
 import * as compressing from "compressing";
-import { Body, Controller, Get, Post, Query, Validation } from "../core";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Validation,
+  AppError,
+  RouterContext,
+  BaseController,
+} from "ngulf";
 import { ComponentDto, ComponentTypeDto } from "../dto";
 import ComponentService from "../service/ComponentService";
-import AppError from "../common/AppError";
 import { tmpdir } from "os";
 import config from "../config";
-import BaseController from "./BaseController";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { ncp } = require("ncp");
@@ -33,7 +41,7 @@ export default class ComponentController extends BaseController {
    * @param types
    * @param pid
    */
-  formatTypes (types: ComponentTypeDto[], pid: string): ComponentTypeDto[] {
+  formatTypes (types: ComponentTypeDto[], pid?: string): ComponentTypeDto[] {
     const arr: ComponentTypeDto[] = [];
     types.forEach((v) => {
       if (v.pid === pid) {
@@ -155,7 +163,7 @@ export default class ComponentController extends BaseController {
    * 组件类型树
    */
   @Get("/types")
-  async getTypes (): PromiseRes<ComponentTypeDto[]> {
+  async getTypes () {
     const rel = await this.service.findTypes();
     return this.success(rel ? this.formatTypes(rel, undefined) : []);
   }
@@ -166,7 +174,7 @@ export default class ComponentController extends BaseController {
   @Post("/type/add")
   async addType (
     @Body(new Validation({ groups: ["add"] })) dto: ComponentTypeDto
-  ): PromiseRes<any> {
+  ) {
     const rel = await this.service.addType(dto);
     if (rel) {
       return this.success(rel);
@@ -180,7 +188,7 @@ export default class ComponentController extends BaseController {
   @Post("/type/update")
   async updateType (
     @Body(new Validation({ groups: ["update"] })) dto: ComponentTypeDto
-  ): PromiseRes<any> {
+  ) {
     const rel = await this.service.updateType(dto);
     if (rel) {
       return this.success(rel);
@@ -192,7 +200,7 @@ export default class ComponentController extends BaseController {
    * 添加组件类型
    */
   @Get("/type/delete")
-  async delType (@Query("id") id: string): PromiseRes<any> {
+  async delType (@Query("id") id: string) {
     const rel = await this.service.delType(id);
     if (rel) {
       return this.success(null);
@@ -204,7 +212,7 @@ export default class ComponentController extends BaseController {
    * 组件列表
    */
   @Get("/list")
-  async list (@Query() query?: any): PromiseRes<ComponentDto[]> {
+  async list (@Query() query?: any) {
     const rel = await this.service.findAll(query ? query.type : undefined);
     return this.success(rel);
   }
@@ -214,7 +222,7 @@ export default class ComponentController extends BaseController {
    * @param file
    */
   @Post("/upload")
-  async upload (ctx: RouterContext): PromiseRes<any> {
+  async upload (ctx: RouterContext) {
     const { req } = ctx;
     const data = await req.file();
     const fields = data.fields as any;
@@ -235,7 +243,7 @@ export default class ComponentController extends BaseController {
   @Post("/add")
   async addComponent (
     @Body(new Validation({ groups: ["add"] })) dto: ComponentDto
-  ): PromiseRes<any> {
+  ) {
     const rel = await this.service.add({ ...dto, origin: 2 });
     const dest = this.libSavePath;
     const savePath = `${dest}/${dto.name}${dto.version}`;
@@ -258,7 +266,7 @@ export default class ComponentController extends BaseController {
   @Post("/update")
   async updateComponent (
     @Body(new Validation({ groups: ["update"] })) dto: ComponentDto
-  ): PromiseRes<any> {
+  ) {
     const rel = await this.service.update({ ...dto, origin: 2 });
     // 复制文件
     const dest = this.libSavePath;
@@ -280,7 +288,7 @@ export default class ComponentController extends BaseController {
    * 组件列表
    */
   @Get("/delete")
-  async del (@Query("id") id: string): PromiseRes<any> {
+  async del (@Query("id") id: string) {
     const rel = await this.service.delete(id);
     if (rel) {
       // 删除组件目录
@@ -296,7 +304,7 @@ export default class ComponentController extends BaseController {
    * 组件详情
    */
   @Get("/detail")
-  async detail (@Query("id") id: string): PromiseRes<ComponentDto> {
+  async detail (@Query("id") id: string) {
     const rel = await this.service.findById(id);
     return this.success(rel);
   }

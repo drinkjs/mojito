@@ -1,8 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-import { Injectable, MgModel, MgModelType } from "../core/decorator";
+import { Injectable, MgModel, MgModelType, AppError } from "ngulf";
 import { ProjectDto } from "../dto";
 import ProjectEntity from "../entity/ProjectEntity";
-import AppError from "../common/AppError";
 import { createStringDate } from "../common/utils";
 import BaseService from "./BaseService";
 
@@ -55,7 +54,7 @@ export default class ProjectService extends BaseService {
       .findOne({ status: 1, name })
       .sort({ createTime: -1 })
       .exec();
-    return this.toDtoObject<ProjectDto>(rel);
+    return rel && this.toDtoObject<ProjectDto>(rel);
   }
 
   /**

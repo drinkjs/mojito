@@ -1,4 +1,4 @@
-import { modelOptions, prop } from "@typegoose/typegoose";
+import { modelOptions, prop } from "ngulf/typegoose";
 
 @modelOptions({ options: { customName: "component_type" } })
 export default class ComponentType {

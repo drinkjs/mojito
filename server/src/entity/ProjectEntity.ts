@@ -1,4 +1,4 @@
-import { prop } from "@typegoose/typegoose";
+import { prop } from "ngulf/typegoose";
 
 export default class Project {
   @prop({ required: true })

@@ -1,4 +1,4 @@
-import { modelOptions, mongoose, prop, Severity } from "@typegoose/typegoose";
+import { modelOptions, mongoose, prop, Severity } from "ngulf/typegoose";
 
 export interface ComponentProps {
   [propsName: string]: {
