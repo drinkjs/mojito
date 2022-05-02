@@ -25,11 +25,6 @@ const routes = [
     path: '/view/:projectName/:screenName',
     exact: true,
     component: 'View'
-  },
-  {
-    path: '/test',
-    exact: true,
-    component: 'test'
   }
 ];
 

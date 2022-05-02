@@ -38,7 +38,7 @@ interface SyncPageMsg {
 @Controller("/ws")
 export default class ScreenSyncController extends BaseController {
   @WebSocketServer()
-  private wss: WebsocketEmitter;
+  private wss!: WebsocketEmitter;
 
   /**
    * http对外接口，房间的所有页面

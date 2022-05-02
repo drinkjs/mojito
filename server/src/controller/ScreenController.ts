@@ -7,7 +7,7 @@ import {
   Validation,
   BaseController,
 } from "ngulf";
-import { ScreenDto } from "../dto";
+import { DatasourceDto, ScreenDto } from "../dto";
 import ScreenService from "../service/ScreenService";
 
 @Controller("/screen")
@@ -117,7 +117,7 @@ export default class ScreenController extends BaseController {
   }
 
   /**
-   * 页面明细
+   * 通过项目名和页面名查页面明细
    * @param dto
    */
   @Post("/view/detail")
@@ -129,5 +129,33 @@ export default class ScreenController extends BaseController {
         ? await this.service.findByName(dto.projectName, dto.screenName)
         : null;
     return rel ? this.success(rel) : this.fail("页面不存在");
+  }
+
+  /**
+   * 添加数据源连接
+   * @param dto
+   * @returns
+   */
+  @Post("/datasource/add")
+  async addDatasource (
+    @Body(new Validation({ groups: ["add"] })) dto: DatasourceDto
+  ) {
+    const rel = await this.service.addDatasource(dto.screenId, dto);
+    return rel ? this.success(rel) : this.fail("添加失败");
+  }
+
+  /**
+   * 删除数据源连接
+   * @param dto
+   * @returns
+   */
+  @Post("/datasource/delete")
+  async delDatasource (
+    @Body(new Validation({ groups: ["delete"] })) dto: DatasourceDto
+  ) {
+    const rel = dto.id
+      ? await this.service.delDatasource(dto.screenId, dto.id)
+      : false;
+    return rel ? this.success(rel) : this.fail("删除失败");
   }
 }

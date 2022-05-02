@@ -9,10 +9,10 @@ import BaseService from "./BaseService";
 @Injectable()
 export default class ComponentService extends BaseService {
   @MgModel(ComponentTypeEntity)
-  private typeModel: MgModelType<ComponentTypeEntity>;
+  private typeModel!: MgModelType<ComponentTypeEntity>;
 
   @MgModel(ComponentEntity)
-  private model: MgModelType<ComponentEntity>;
+  private model!: MgModelType<ComponentEntity>;
 
   /**
    * 查询所有分类

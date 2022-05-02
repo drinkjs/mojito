@@ -5,6 +5,7 @@ import * as service from 'services/screen';
 import { loadCDN } from 'components/Loader';
 import {
   ComponentStyleQuery,
+  DatasourceInfo,
   LayerInfo,
   LayerQuery,
   ScreenDetailDto,
@@ -250,7 +251,7 @@ export default class Screen {
     return service
       .updateLayer({
         id: this.screenInfo.id,
-        layers: this.screenInfo.layers?.map((layer) => ({ ...layer, component: { id: layer.component.id } })),
+        layers: this.screenInfo.layers?.map((layer) => ({ ...layer, component: layer?.component ? { id: layer.component?.id } : undefined })),
         style: this.screenInfo.style
       })
       .then(() => {
@@ -604,5 +605,29 @@ export default class Screen {
         (v) => v.id !== layerId
       );
     }
+  }
+
+  /**
+   * 新增数据源连接
+   * @param dto
+   * @returns
+   */
+  addDatasource (dto: DatasourceInfo) {
+    return service.addDatasource({
+      screenId: this.screenInfo!.id,
+      ...dto
+    })
+  }
+
+  /**
+   * 新增数据源连接
+   * @param dto
+   * @returns
+   */
+  delDatasource (id: string) {
+    return service.delDatasource({
+      screenId: this.screenInfo!.id,
+      id
+    })
   }
 }

@@ -1,1 +1,1 @@
-export default () => <div>sssssssssfffsssss</div>
+export default () => <h1>hello nextjs</h1>

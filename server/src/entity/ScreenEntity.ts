@@ -1,6 +1,5 @@
 import { Ref, modelOptions, mongoose, prop, Severity } from "ngulf/typegoose";
 import { LayerApi, LayerStyle, RelativePosition } from "./LayerEntity";
-// import Component from "./ComponentEntity";
 import Project from "./ProjectEntity";
 
 export interface ScreenOptions {
@@ -36,6 +35,16 @@ export interface LayerInfo {
   }; // 相对位置
 }
 
+export interface DatasourceInfo {
+  id: mongoose.Types.ObjectId;
+  type: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database?: string;
+}
+
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export default class Screen {
   @prop({ required: true, ref: () => Project })
@@ -48,20 +57,23 @@ export default class Screen {
   style?: ScreenOptions;
 
   @prop()
-  createTime: string;
+  createTime?: string;
 
   @prop()
-  updateTime: string;
+  updateTime?: string;
 
   @prop()
   createUser?: string;
 
   @prop({ default: 0, select: false })
-  status: 0 | 1; // 0:删除1正常;
+  status!: 0 | 1; // 0:删除1正常;
 
   @prop()
   coverImg?: string;
 
   @prop()
   layers?: LayerInfo[];
+
+  @prop()
+  dataSources?: DatasourceInfo[];
 }

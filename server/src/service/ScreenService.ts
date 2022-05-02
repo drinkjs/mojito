@@ -1,8 +1,8 @@
 import { mongoose } from "@typegoose/typegoose";
 import { Injectable, MgModel, MgModelType, AppError } from "ngulf";
-import { ScreenDto } from "../dto";
+import { DatasourceDto, ScreenDto } from "../dto";
 import { createStringDate } from "../common/utils";
-import ScreenEntity from "../entity/ScreenEntity";
+import ScreenEntity, { DatasourceInfo } from "../entity/ScreenEntity";
 import BaseService from "./BaseService";
 import ProjectService from "./ProjectService";
 import ComponentService from "./ComponentService";
@@ -19,7 +19,7 @@ export default class ScreenService extends BaseService {
   }
 
   @MgModel(ScreenEntity)
-  private model: MgModelType<ScreenEntity>;
+  private model!: MgModelType<ScreenEntity>;
 
   /**
    * 新增页面
@@ -39,6 +39,7 @@ export default class ScreenService extends BaseService {
       style: data.style,
       createTime: createStringDate(),
       updateTime: createStringDate(),
+      dataSources: [],
       status: 1,
     };
     const { _id: id } = await this.model.create({
@@ -92,14 +93,14 @@ export default class ScreenService extends BaseService {
       .exec();
     if (!rel) return null;
     const detail = this.toDtoObject<ScreenDto>(rel);
-    if (rel) {
+    if (rel && detail) {
       if (rel.layers && rel.layers.length > 0) {
         // 查询图层组件信息
         const componentIds = rel.layers.map((v) => v.component);
         const components = await this.componentService.findByIds(componentIds);
         rel.layers.forEach((layer, index) => {
           const component = components.find(
-            (comp) => comp.id === layer.component
+            (comp) => comp!.id === layer.component
           );
           if (component && detail.layers) {
             detail.layers[index].component = component;
@@ -108,8 +109,8 @@ export default class ScreenService extends BaseService {
       }
     }
     const { name, id } = projectInfo;
-    detail.project = { name, id };
-    delete detail.projectId;
+    detail!.project = { name, id };
+    // delete detail.projectId;
     return detail;
   }
 
@@ -127,14 +128,14 @@ export default class ScreenService extends BaseService {
       .exec();
     if (!rel) return null;
     const detail = this.toDtoObject<ScreenDto>(rel);
-    if (rel) {
+    if (rel && detail) {
       if (rel.layers && rel.layers.length > 0) {
         // 查询图层组件信息
         const componentIds = rel.layers.map((v) => v.component);
         const components = await this.componentService.findByIds(componentIds);
         rel.layers.forEach((layer, index) => {
           const component = components.find(
-            (comp) => comp.id === layer.component
+            (comp) => comp!.id === layer.component
           );
           if (component && detail.layers) {
             detail.layers[index].component = component;
@@ -144,7 +145,7 @@ export default class ScreenService extends BaseService {
       const project: any = rel.projectId;
       const { name, _id } = project;
       detail.project = { name, id: _id };
-      delete detail.projectId;
+      // delete detail.projectId;
     }
     return detail;
   }
@@ -211,5 +212,57 @@ export default class ScreenService extends BaseService {
   async delete (id: string) {
     const rel = await this.model.findByIdAndUpdate(id, { status: 0 });
     return rel;
+  }
+
+  /**
+   * 新增数据源
+   * @param id
+   * @param imgPath
+   * @returns
+   */
+  async addDatasource (id: string, dto: DatasourceDto) {
+    const rel = await this.model.findById(id);
+
+    if (rel && rel.dataSources) {
+      const datasource = rel.dataSources.find(
+        (v) =>
+          `${v.type}://${v.host}:${v.port}@${v.username}` ===
+          `${dto.type}://${dto.host}:${dto.port}@${dto.username}`
+      );
+      if (datasource) {
+        AppError.assert("数据源已存在");
+      }
+    }
+
+    const data: DatasourceInfo = {
+      id: new mongoose.Types.ObjectId(),
+      type: dto.type,
+      host: dto.host,
+      port: dto.port,
+      username: dto.username,
+      password: dto.password || "",
+      database: dto.database,
+    };
+    return await this.model.updateOne(
+      { _id: id },
+      { updateTime: createStringDate(), $push: { dataSources: data } }
+    );
+  }
+
+  /**
+   * 删除数据源
+   * @param id
+   * @returns
+   */
+  async delDatasource (screenId: string, datasourceId: string) {
+    return await this.model.updateOne(
+      { _id: screenId },
+      {
+        updateTime: createStringDate(),
+        $pull: {
+          dataSources: { id: new mongoose.Types.ObjectId(datasourceId) },
+        },
+      }
+    );
   }
 }

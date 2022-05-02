@@ -25,14 +25,22 @@ export default inject("projectStore")(
     const [editProject, setEditProject] = useState<ProjectDto>();
 
     useEffect(() => {
+      // 获取上次打开的项目
       const selectedProjectCache = localStorage.getItem("selectedProject");
       const sel = selectedProjectCache
         ? JSON.parse(selectedProjectCache)
         : undefined;
-      if (sel && sel.id) {
-        setSelectedProject(sel);
-      }
-      projectStore!.getList();
+
+      projectStore!.getList().then(() => {
+        if (sel && sel.id) {
+          // 选中上次打开过的项目
+          setSelectedProject(sel);
+        } else {
+          if (projectStore.projectList.length > 0) {
+            onSelectProject(projectStore.projectList[0]);
+          }
+        }
+      });
     }, []);
 
     /**

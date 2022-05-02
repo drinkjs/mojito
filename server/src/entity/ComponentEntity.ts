@@ -20,7 +20,7 @@ export default class Component {
   name!: string;
 
   @prop()
-  title: string;
+  title!: string;
 
   @prop({ required: true })
   type!: mongoose.Types.ObjectId;
@@ -38,7 +38,7 @@ export default class Component {
   createUser?: string;
 
   @prop({ default: 2 })
-  origin: 1 | 2; // 来源:1系统2第三方
+  origin!: 1 | 2; // 来源:1系统2第三方
 
   @prop()
   props?: ComponentProps;
@@ -47,10 +47,10 @@ export default class Component {
   events?: ComponentEvents;
 
   @prop()
-  version: string;
+  version!: string;
 
   @prop()
-  developLib: string; // 组件开发的底层库，现阶段支持React, Vue2, Vue3
+  developLib!: string; // 组件开发的底层库，现阶段支持React, Vue2, Vue3
 
   @prop()
   dependencies?: string[]; // 组件依赖库的CDN地址 如：https://lib.baomitu.com/vue/3.0.7/vue.global.js

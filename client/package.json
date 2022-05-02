@@ -73,7 +73,7 @@
       "not op_mini all"
     ],
     "development": [
-      ">0.01%",
+      ">0.2%",
       "not dead",
       "not op_mini all"
     ]

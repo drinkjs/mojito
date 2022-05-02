@@ -63,3 +63,19 @@ export const updateScreenCover = (params: any) =>
  */
 export const screenDetailByName = (projectName: string, screenName: string) =>
   post('/screen/view/detail', { projectName, screenName });
+
+/**
+ * 新增数据源连接
+ * @param {*} params
+ * @returns
+ */
+export const addDatasource = (params:any) =>
+  post('/screen/datasource/add', params);
+
+/**
+ * 新增数据源连接
+ * @param {*} params
+ * @returns
+ */
+export const delDatasource = (params:any) =>
+  post('/screen/datasource/delete', params);

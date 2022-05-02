@@ -114,6 +114,16 @@ export interface LayerInfo {
   } // 相对位置
 }
 
+export interface DatasourceInfo {
+  id?: string
+  type: string;
+  host: string;
+  port: number;
+  username: string;
+  password?: string;
+  database?: string;
+}
+
 export interface ScreenLayout extends CSSProperties {
   width: number;
   height: number;

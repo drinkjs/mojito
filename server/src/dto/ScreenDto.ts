@@ -1,5 +1,5 @@
 import { IsMongoId, IsNotEmpty, MaxLength } from "ngulf/class-validator";
-import { ScreenOptions } from "../entity/ScreenEntity";
+import { DatasourceInfo, ScreenOptions } from "../entity/ScreenEntity";
 import { LayerDto } from "./LayerDto";
 import { ProjectDto } from "./ProjectDto";
 
@@ -16,11 +16,11 @@ export class ScreenDto {
     message: "请输入页面id",
     groups: ["update", "coverImg", "updateLayer"],
   })
-  id: string;
+  id!: string;
 
   @IsNotEmpty({ message: "请输入页面名称", groups: ["add", "update"] })
   @MaxLength(30, { groups: ["add", "update"], message: "页面名称30字以内" })
-  name: string;
+  name!: string;
 
   style?: ScreenOptions;
 
@@ -34,4 +34,6 @@ export class ScreenDto {
   layers?: LayerDto[];
 
   project?: ProjectDto;
+
+  dataSources?: DatasourceInfo[];
 }
