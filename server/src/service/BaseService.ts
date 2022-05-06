@@ -3,7 +3,7 @@ import mongoose, { ToObjectOptions } from "ngulf/mongoose";
 
 export default class BaseService {
   toDtoObject<T> (value: mongoose.Document, options?: ToObjectOptions): T {
-    return value.toObject<T>({
+    return value.toObject({
       versionKey: false,
       // eslint-disable-next-line no-unused-vars
       transform: (doc, ret, options) => {

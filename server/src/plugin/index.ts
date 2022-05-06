@@ -4,7 +4,7 @@ import fastifyStatic from "fastify-static";
 import fastifyCookie from "fastify-cookie";
 import fastifySession from "fastify-session";
 import fastifyCsrf from "fastify-csrf";
-import fastifyNextjs from "fastify-nextjs";
+// import fastifyNextjs from "fastify-nextjs";
 import config from "../config";
 
 export default async function plugin (server: FastifyInstance) {
@@ -21,9 +21,9 @@ export default async function plugin (server: FastifyInstance) {
     secret: config.sessionSecret,
   });
   await server.register(fastifyCsrf, { sessionPlugin: "fastify-session" });
-  await server.register(fastifyNextjs, {
-    dev: process.env.NODE_ENV !== "production",
-  });
+  // await server.register(fastifyNextjs, {
+  //   dev: process.env.NODE_ENV !== "production",
+  // });
   // 注册nextjs路由
-  server.next("/view");
+  // server.next("/view");
 }
