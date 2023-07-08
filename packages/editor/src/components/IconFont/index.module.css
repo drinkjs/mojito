@@ -1,0 +1,15 @@
+.iconLink {
+  color: #92abcf !important;
+}
+
+.iconLink:hover {
+  color: #11ece5 !important;
+}
+
+.iconLikDisabled {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.iconLikDisabled:hover{
+  color: rgba(255, 255, 255, 0.2) !important;
+}

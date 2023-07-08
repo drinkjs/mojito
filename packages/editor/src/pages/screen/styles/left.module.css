@@ -1,0 +1,5 @@
+.left{
+  width: 40px;
+  height: 100%;
+  background-color: var(--sub-color);
+}

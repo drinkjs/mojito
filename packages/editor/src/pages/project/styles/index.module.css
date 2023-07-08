@@ -1,0 +1,28 @@
+.container{
+  display: flex;
+  height: 100vh;
+}
+
+.projectListBox{
+  max-width: 300px;
+  min-width: 200px;
+  width: 100%;
+  padding: 12px;
+}
+
+.screenListBox{
+  flex-grow: 1;
+  height: 100%;
+  flex-basis: 0;
+  padding: 24px;
+  background: #0f1724;
+}
+
+.logoBox{
+  text-align: center;
+  margin: 12px 0px;
+}
+
+.gitBox{
+  text-align: center;
+}

@@ -1,0 +1,89 @@
+:root {
+  --base-size-4: 0.25rem;
+  --base-size-8: 0.5rem;
+  --base-size-12: 0.75rem;
+  --base-size-16: 1rem;
+  --base-size-20: 1.25rem;
+  --base-size-24: 1.5rem;
+  --base-size-28: 1.75rem;
+  --base-size-32: 2rem;
+  --base-size-36: 2.25rem;
+  --base-size-40: 2.5rem;
+  --base-size-44: 2.75rem;
+  --base-size-48: 3rem;
+  --base-size-64: 4rem;
+  --base-size-80: 5rem;
+  --base-size-96: 6rem;
+  --base-size-112: 7rem;
+  --base-size-128: 8rem;
+
+  --width-100: 7.2rem;
+  --width-150: 10rem;
+  --width-200: 14rem;
+  --width-250: 18rem;
+  --width-300: 20rem;
+
+  --main-color: #0f1724;
+  --sub-color: #212c3d;
+  --font-color: #92abcf;
+  --hover-color: #11ece5
+}
+
+html{
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+body{
+  background-color: #121212;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--font-color);
+  overflow: hidden;
+}
+
+a:hover{
+  color: var(--hover-color);
+}
+
+.mg-12{
+  margin: 12px;
+}
+
+.mgTop-12{
+  margin-top: 12px;
+}
+
+@media screen and (max-width: 600px) {
+  html {
+      font-size: 12px;
+  }
+}
+
+ /*滚动条整体样式*/
+ ::-webkit-scrollbar {
+  width: 6px; /*竖向滚动条的宽度*/
+  height: 6px; /*横向滚动条的高度*/
+}
+::-webkit-scrollbar-thumb {
+  /*滚动条里面的小方块*/
+  background: #666666;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-track {
+  /*滚动条轨道的样式*/
+  background: none;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-corner{
+  background: none;
+}
+
+.moveable-control {
+  width: 8px !important;
+  height: 8px !important;
+  margin-top: -4px !important;
+  margin-left: -4px !important;
+  background: #fff !important;
+  border: 1px solid #4af !important;
+}

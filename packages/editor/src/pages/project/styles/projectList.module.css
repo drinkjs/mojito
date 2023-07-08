@@ -1,0 +1,55 @@
+.projectItem {
+  height: 137px;
+  background: url(/project.png);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  background-size: 264px 137px;
+  padding-top: 20px;
+  padding-left: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: relative;
+}
+
+.title{
+  border-bottom: 1px solid #2b2d32;
+  border-radius: 4px;
+  height: 40px;
+  line-height: 40px;
+  color: #92abcf;
+  font-size: var(--base-size-20);
+  padding: 0 12px;
+  margin: 12px 0;
+}
+
+.projectItem:hover{
+  border: 1px dashed #3b50ff;
+}
+
+.projectItem:hover .toolBar{
+  display: block;
+}
+
+.projectName{
+  color: #eee;
+  font-size: var(--base-size-20);
+}
+
+.projectItemSelected {
+  border: 1px solid #3b50ff;
+}
+
+.toolBar {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  text-align: right;
+}
+
+.toolBar a {
+  margin: 0 6px;
+}

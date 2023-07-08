@@ -1,0 +1,56 @@
+.header{
+  height: 35px;
+  width: 100%;
+  background-color: var(--sub-color);
+  display: flex;
+  justify-content: space-between;
+}
+
+.titleBox, .toolBox{
+  display: flex;
+  align-items: center;
+  width: 50%;
+}
+
+.titleBox{
+  padding-left: 14px;
+  justify-content: space-between;
+}
+
+.title{
+  color: #eee;
+  padding-left: 12px;
+}
+
+.toolBox{
+  justify-content: flex-end;
+  padding-right: 14px;
+}
+
+.zoomBox{
+  display: flex;
+  align-items: center;
+  margin-right: -55px;
+  z-index: 1;
+}
+
+.zoomBox div {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+.zoomBtn:hover {
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.backIcon {
+  color: var(--font-color);
+}
+
+.backIcon:hover{
+  color: var(--height-color);
+}

@@ -1,0 +1,14 @@
+.root{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.area{
+  margin-top: 3px;
+  flex-grow: 1;
+  display: flex;
+  overflow: hidden;
+}

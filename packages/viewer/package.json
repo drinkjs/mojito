@@ -1,0 +1,9 @@
+{
+  "name": "@mojito/viewer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  }
+}

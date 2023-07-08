@@ -1,12 +1,24 @@
-client/node_modules/
-server/node_modules/
-docs/node_modules/
-server/static/libs/GaugeChartv1.0.0/bundle.js
-server/static/libs/
-server/static/upload/
-client/build/
-server/public/libs/
-server/public/upload/
-server/dist/
-server/.next/
-server/next-env.d.ts
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

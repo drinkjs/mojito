@@ -1,0 +1,318 @@
+/* eslint-disable no-undef */
+import { useState, useRef, useEffect, MutableRefObject } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import WebSocketClient from '@mojito/common/network/WebSocketClient';
+import eventer, { MojitoEvent } from "./eventer"
+
+const eventUrl = '/ws';
+const WsPrefix = "/ws";
+const WebsocketEnable = false;
+
+export const syncEventer = eventer;
+
+interface SyncData {
+  key: string;
+  sender: string;
+  state: any;
+}
+
+interface SyncPageData {
+  key?: string;
+  page: string;
+  sender?: string;
+  state: any;
+}
+
+interface SyncMessage {
+  data: any;
+  event: string;
+}
+
+interface JoinPageData {
+  page: string;
+  pageId: string;
+  master?: boolean;
+}
+
+class SyncHelper {
+  websocket?: WebSocketClient;
+
+  connectNum = 0;
+
+  pathnameNum = 0;
+
+  isMaster = false;
+
+  joinPages: JoinPageData[] = [];
+
+  pageId = uuidv4();
+
+  currPage?: string;
+
+  reconnectCallback?: (...args: any)=>any;
+
+  eventHandlers: Map<string, (...args: any)=>any> = new Map();
+
+  constructor () {
+    if (!WebsocketEnable) return;
+    this.websocket = new WebSocketClient(`ws://${window.location.host}${WsPrefix}`); // 需要配置websocket代理
+    this.websocket.connect();
+    this.websocket.on('connect', () => {
+      if (this.connectNum > 0) {
+        // 断开重连时重新
+        if (this.reconnectCallback) this.reconnectCallback();
+      }
+      this.connectNum += 1;
+    });
+
+    //  服务器返回websokcet事件
+    this.websocket.on('message', (msg: SyncMessage) => {
+      // console.log('websocket msg：', msg);
+      const { data, event } = msg;
+      switch (event) {
+        case 'join':
+          this.joinHandler(data);
+          break;
+        case 'sync':
+          this.syncHandler(data);
+          break;
+        case 'syncPage':
+          this.syncPageHandler(data);
+          break;
+        default:
+          //   // const hadndler = this.eventHandlers.get(event);
+          //   // if(hadndler){
+          //   //   hadndler(data);
+          //   // }else{
+          //   //   console.error(`no [${event}] hander`)
+          //   // }
+          //   console.error(`no [${event}] hander`)
+          break;
+      }
+      const hadndler = this.eventHandlers.get(event);
+      if (hadndler && data) {
+        hadndler(data);
+      }
+    });
+  }
+
+  on (event: string, callback: ()=>any) {
+    this.eventHandlers.set(event, callback);
+  }
+
+  removeEvent (event: string) {
+    this.eventHandlers.delete(event);
+  }
+
+  onReconnect (callback: ()=>any) {
+    this.reconnectCallback = callback;
+  }
+
+  send (event: string, data?: any) {
+    if (this.websocket) this.websocket.emit(`${eventUrl}/${event}`, data);
+  }
+
+  /**
+   * 向服务器发送join消息
+   * @param {*} params
+   */
+  joinPage (page: string, data: { room: string; [key: string]: any }) {
+    this.currPage = page;
+    this.send('join', { ...data, page, pageId: this.pageId });
+  }
+
+  /**
+   * 同步组件状态
+   * @param {SyncData} stateData
+   */
+  syncData (stateData: SyncData) {
+    this.send('sync', stateData);
+  }
+
+  /**
+   * 发送数据到指定页面下的组件
+   * @param {*} data
+   */
+  sendDataToPage (page: string, state: object, key: string) {
+    const data: SyncPageData = {
+      page,
+      state,
+      key,
+      sender: this.currPage
+    };
+    this.send('syncPage', data);
+  }
+
+  /**
+   * join事件返回处理
+   * @param {*} data
+   */
+  joinHandler (data: JoinPageData[]) {
+    this.joinPages = data;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  syncHandler (data: SyncData) {
+    syncEventer.emit(`RECV_SYNC_${data.key}`, data);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  syncPageHandler (data: SyncPageData) {
+    // 如果有key会发送到指定组件，没有则页面处理
+    syncEventer.emit(
+      data.key ? `RECV_SYNC_PAGE_${data.key}` : 'RECV_SYNC_PAGE',
+      data
+    );
+  }
+}
+
+const syncHelper = new SyncHelper();
+const rootNode = document.getElementById('root');
+
+export function useReconnect (callback: ()=>any) {
+  syncHelper.onReconnect(callback);
+}
+
+/**
+ * 加入页面
+ * @param page
+ */
+export function joinPage (room: string, data?: { [key: string]: any }) {
+  const { pathname } = window.location;
+  syncHelper.joinPage(decodeURIComponent(pathname), { room, ...data });
+}
+
+/**
+ * 发送数据到指定页面的组件
+ * @param page
+ * @param state
+ * @param key
+ */
+export function sendDataToPage (page: string, state: object, key: string) {
+  syncHelper.sendDataToPage(page, state, key);
+}
+
+/**
+ * 发送自定义事件
+ * @param event
+ * @param data
+ */
+export function sendEvent (event: string, data?: any) {
+  syncHelper.send(event, data);
+}
+
+/**
+ * 自定义事件回调
+ * @param event
+ * @param callback
+ */
+export function onEvent (event: string, callback: ()=>any) {
+  syncHelper.on(event, callback);
+}
+
+/**
+ * 删除自定义事件
+ * @param event
+ */
+export function removeEvent (event: string) {
+  syncHelper.removeEvent(event);
+}
+
+/**
+ * 定义组件内部的同步状态
+ * @param initialState
+ * @param key 组件唯一标识，不传的话默认使用xpath作为唯一标识
+ */
+export function useStateSync<T> (
+  initialState: T,
+  key?: string,
+  syncHandler?: (data: any) => void
+): [
+  T,
+  (data: Partial<T>) => void,
+  MutableRefObject<HTMLAnchorElement>,
+  string
+] {
+  const ref = useRef<any>();
+  const [value, setValue] = useState(initialState);
+  const [xpath, setXpath] = useState<string>(key || '');
+  const [sender] = useState(uuidv4());
+
+  const onSync = (e:MojitoEvent<SyncData>) => {
+    const data = e.data
+    if (data && sender !== data.sender) {
+      setData(data.state);
+    }
+  };
+
+  const onSyncPage = (e:MojitoEvent<SyncData>) => {
+    const data = e.data
+    if (data && sender !== data.sender) {
+      setData({ ...data.state, syncPage: true });
+    }
+  };
+
+  useEffect(() => {
+    if (!xpath) {
+      // 确保组件已构建完成
+      setTimeout(() => {
+        // eslint-disable-next-line no-unused-expressions
+        if (ref.current && rootNode) {
+          setXpath(getXPathForElement(ref.current, rootNode));
+        }
+      }, 1000);
+    }
+    if (xpath) {
+      syncEventer.on(`RECV_SYNC_${xpath}`, onSync);
+      syncEventer.on(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
+      syncEventer.on('RECV_SYNC_PAGE', onSyncPage);
+    }
+    return () => {
+      syncEventer.off(`RECV_SYNC_${xpath}`, onSync);
+      syncEventer.off(`RECV_SYNC_PAGE_${xpath}`, onSyncPage);
+      syncEventer.off('RECV_SYNC_PAGE', onSyncPage);
+    };
+  }, [xpath]);
+
+  const setData = (data: Partial<T>) => {
+    setValue({ ...initialState, ...data });
+  };
+
+  const setSync = (data: Partial<T>) => {
+    setData(data);
+    let syncKey = xpath;
+    if (!syncKey && rootNode) {
+      syncKey = getXPathForElement(ref.current, rootNode);
+      setXpath(syncKey);
+    }
+    syncHelper.syncData({ state: data, key: syncKey, sender });
+  };
+
+  return [value, setSync, ref, sender];
+}
+
+function getXPathForElement (el: Node, root: Node) {
+  let xpath = '';
+  let pos;
+  let tempitem2;
+
+  while (el !== root && el !== document.documentElement) {
+    pos = 0;
+    tempitem2 = el;
+    while (tempitem2) {
+      if (tempitem2.nodeType === 1 && tempitem2.nodeName === el.nodeName) {
+        // If it is ELEMENT_NODE of the same name
+        pos += 1;
+      }
+      tempitem2 = tempitem2.previousSibling;
+    }
+    xpath = `${el.nodeName}[${pos}]/${xpath}`;
+    // eslint-disable-next-line no-param-reassign
+    if (el && el.parentNode) {
+      el = el.parentNode;
+    }
+  }
+  xpath = `${root.nodeName}/${xpath}`;
+  xpath = xpath.substr(0, xpath.length - 1);
+  return xpath;
+}
