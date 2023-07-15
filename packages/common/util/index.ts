@@ -86,4 +86,25 @@ export function isPointInRect (rc: { x: number, y: number, width: number, height
     y <= p.y && p.y <= y + height;
 }
 
+export const localCache = {
+  get(key:string){
+    const cache = localStorage.getItem(key);
+    if(cache){
+      try{
+        return JSON.parse(cache);
+      }catch{
+        return cache;
+      }
+    }
+  },
+
+  set(key:string, value:any){
+    if(typeof value === "object"){
+      localStorage.setItem(key, JSON.stringify(value));
+    }else{
+      localStorage.setItem(key, value);
+    }
+  }
+}
+
 export { typeis };

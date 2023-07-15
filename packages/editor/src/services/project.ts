@@ -5,7 +5,7 @@ import {get, post} from '../common/request';
  * @param {*} params
  * @returns
  */
-export const projectAdd = (params: ObjectParams) => post('/project/add', params);
+export const addProject = (params: ObjectParams) => post('/project/add', params);
 
 /**
  * 项目列表
@@ -18,14 +18,14 @@ export const getProjectList = () => get<ProjectInfo[]>('/project/list');
  * @param {*} params
  * @returns
  */
-export const projectUpdate = (params: ObjectParams) => post('/project/update', params);
+export const updateProject = (params: ObjectParams) => post('/project/update', params);
 /**
  * 删除项目
  * @param {*} params
  * @returns
  */
 
-export const projectDelete = (id: string) => get('/project/delete', { id });
+export const delteProject = (id: string) => get('/project/delete', { id });
 
 /**
  * 项目明细

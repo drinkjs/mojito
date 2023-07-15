@@ -1,4 +1,4 @@
-import {get, post} from '../common/request';
+import {get, post, upload} from '../common/request';
 
 /**
  * 新增页面
@@ -40,7 +40,7 @@ export const updateLayer = (params: ObjectParams) =>
  * @param {*} params
  * @returns
  */
-export const screenDelete = (id: string) => get('/screen/delete', { id });
+export const deleteScreen = (id: string) => get('/screen/delete', { id });
 /**
  * 页面明细
  * @param {*} params

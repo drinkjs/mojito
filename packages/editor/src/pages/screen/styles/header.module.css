@@ -4,6 +4,7 @@
   background-color: var(--sub-color);
   display: flex;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .titleBox, .toolBox{

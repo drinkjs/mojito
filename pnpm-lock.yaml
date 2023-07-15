@@ -79,8 +79,8 @@ importers:
         specifier: ^2.3.2
         version: 2.3.2
       fertile:
-        specifier: ^1.4.4
-        version: 1.4.4
+        specifier: ^1.5.0
+        version: 1.5.0
       react-moveable:
         specifier: ^0.52.1
         version: 0.52.1
@@ -1513,8 +1513,8 @@ packages:
       reusify: 1.0.4
     dev: true
 
-  /fertile@1.4.4:
-    resolution: {integrity: sha512-OwQvzf392gs633GNeM00cXWp3huSK7O3LJH2IF1x+O99e0ESDFLWpcT3NNswKKHjWtbrp9vxvbDqdT5kTFIVzA==}
+  /fertile@1.5.0:
+    resolution: {integrity: sha512-Ra9ix/6l1I2zkllUub6DSQnstD+Ln+bzfSDCrbu8EfGl4A1kPFsqWjOlRuYr08CtByErB/+TKs5vorvR4E5RNQ==}
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0

@@ -88,8 +88,8 @@ export default function Header(props: HeaderProps) {
 			} else {
 				zoom = parseFloat(
 					pageLayout.width >= pageLayout.height
-						? (width / pageLayout.width).toFixed(2)
-						: (height / pageLayout.height).toFixed(2)
+						? (width / pageLayout.width * 0.85).toFixed(2)
+						: (height / pageLayout.height * 0.85).toFixed(2)
 				);
 			}
 			rootElement.style.transform = `scale(${zoom})`;

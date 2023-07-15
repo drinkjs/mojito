@@ -8,6 +8,7 @@ import {
 import { RcFile } from 'antd/lib/upload';
 import { UploadListType } from 'antd/lib/upload/interface';
 import styles from './index.module.css';
+import { localCache } from '@mojito/common/util';
 
 interface Props {
   onChange?: (filePath: string | undefined) => void;
@@ -113,6 +114,10 @@ const UploadImg = (props: Props) => {
       beforeUpload={beforeUpload}
       onChange={onUpload}
       data={data}
+      headers={{
+        // TODO 需要换成真实用户验证信息
+        "x-token": localCache.get("token")
+      }}
     >
       {showPre()}
       {children}

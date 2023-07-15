@@ -11,14 +11,13 @@
   height: 40px;
   display: flex;
   justify-content: space-between;
-  /* color: $textColor; */
+  margin-bottom: 12px;
 }
 
 .screenBox {
   flex-grow: 1;
   overflow: auto;
   height: 100%;
-  margin-top: 12px;
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(3, 1fr);

@@ -1,26 +1,17 @@
 import { CSSProperties } from 'react';
 
-export {};
+ {};
 
 declare global {
   
   type Callback = (...args)=>any
 
-  type ProjectInfo = {
-    id: string;
-    name: string;
-    createTime?: string;
-    createUser?: string;
-    deps?: string[];
-  }
-
   type ScreenInfo = {
     id: string;
     name: string;
     projectId: string;
-    createTime: string;
-    updateTime: string;
-    createUser?: string;
+    createAt: string;
+    updateAt: string;
     layout?: string;
     coverImg?: string;
   }
@@ -127,7 +118,7 @@ declare global {
 
   type ObjectParams = Record<string, any>;
 
-export interface ComponentStyle extends CSSProperties {
+ interface ComponentStyle extends CSSProperties {
   scale?: number;
   rotate?: string;
   z: number;
@@ -137,7 +128,7 @@ export interface ComponentStyle extends CSSProperties {
   y: number;
 }
 
-export interface ComponentProps {
+ interface ComponentProps {
   [propsName: string]: {
     type?: any;
     name?: string;
@@ -146,16 +137,16 @@ export interface ComponentProps {
   };
 }
 
-export interface ComponentEvents {
+ interface ComponentEvents {
   [eventName: string]: {
     name?: string;
     comment?: string;
   };
 }
 
-export type ComponentDevelopLib = 'React' | 'Vue2' | 'Vue3';
+ type ComponentDevelopLib = 'React' | 'Vue2' | 'Vue3';
 
-export interface ComponentInfo {
+ interface ComponentInfo {
   id?: string;
   title: string;
   name: string;
@@ -174,17 +165,17 @@ export interface ComponentInfo {
   dependencies?: string[];
 }
 
-export interface ComponentCategory {
+ interface ComponentCategory {
   id: string;
   name: string;
   value: string;
   img?: string;
 }
 
-export interface LayerEvents {
+ interface LayerEvents {
   [key: string]: { code: string; isSync: boolean };
 }
-export interface RelativePosition {
+ interface RelativePosition {
   layerId: string;
   offset: number;
   positionType: "left" | "right" | "top" | "bottom";
@@ -193,7 +184,7 @@ export interface RelativePosition {
 /**
  * 图层信息
  */
-export interface LayerInfo {
+ interface LayerInfo {
   id: string;
   name: string;
   // screenId: string;
@@ -241,7 +232,7 @@ export interface LayerInfo {
   } // 相对位置
 }
 
-export interface DatasourceInfo {
+ interface DatasourceInfo {
   id?: string
   type: string;
   host: string;
@@ -251,13 +242,13 @@ export interface DatasourceInfo {
   database?: string;
 }
 
-export interface ScreenStyle extends CSSProperties {
+ interface ScreenStyle extends CSSProperties {
   width: number;
   height: number;
 }
 
-export type LayerQuery = { [P in keyof LayerInfo]?: LayerInfo[P] };
-export type ComponentStyleQuery = {
+ type LayerQuery = { [P in keyof LayerInfo]?: LayerInfo[P] };
+ type ComponentStyleQuery = {
   [P in keyof ComponentStyle]?: ComponentStyle[P];
 };
 

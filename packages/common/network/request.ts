@@ -35,6 +35,16 @@ export class Request {
     return await this._req.post(url, {data, ...options});
   }
 
+  upload = async <T>(url: string, data:Record<string, any>, options?: RequestOptions):Promise<T | undefined> => {
+    const formData = new FormData();
+    for(const name in data){
+      formData.append(name, data[name]);
+    }
+    
+    return await this._req.post(url, {...options, requestType: "form", data: formData});
+  }
+
+
    list = async <T>(url: string, data?:Record<string, any>, options?: RequestOptions):Promise<{data: T[], total: number, success: boolean}> => {
     const rel = await this.post<{list:T[], total:number}>(url, data, options);
    if(rel){

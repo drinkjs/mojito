@@ -1,6 +1,6 @@
 .playground{
   flex-grow: 1;
-  overflow: auto;
+  overflow: hidden;
   padding: 0 2px 2px;
   background: linear-gradient(-90deg,rgba(0,0,0,.02) 1px,transparent 0),
   linear-gradient(rgba(0,0,0,.02) 1px,transparent 0),
