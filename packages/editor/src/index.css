@@ -26,7 +26,7 @@
   --main-color: #0f1724;
   --sub-color: #212c3d;
   --font-color: #92abcf;
-  --hover-color: #11ece5
+  --hover-color: #11ece5;
 }
 
 html{
@@ -39,6 +39,10 @@ body{
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   color: var(--font-color);
   overflow: hidden;
+}
+
+a{
+  color: var(--font-color);
 }
 
 a:hover{

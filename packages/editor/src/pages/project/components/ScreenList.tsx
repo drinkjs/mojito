@@ -1,4 +1,4 @@
-import { useStore } from "@/store";
+import { useGlobalStore } from "@/store";
 import {
 	PlusOutlined,
 	PictureOutlined,
@@ -19,7 +19,7 @@ interface ScreenListProps {
 }
 
 export default function ScreenList({ project }: ScreenListProps) {
-	const { screenStore } = useStore();
+	const { screenStore } = useGlobalStore();
 	const [visible, setVisible] = useState(false);
 	const [screenName, setScreenName] = useState("");
 	const [editScreen, setEditScreen] = useState<ScreenInfo>();
@@ -88,14 +88,14 @@ export default function ScreenList({ project }: ScreenListProps) {
 	/**
 	 * 输入框change
 	 */
-	const onInput = (e: React.ChangeEvent<any>) => {
+	const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setScreenName(e.target.value);
 	};
 
 	/**
 	 * 编辑页面
 	 */
-	const handleEdit = (e: React.MouseEvent<any>, data: ScreenInfo) => {
+	const handleEdit = (e: React.MouseEvent, data: ScreenInfo) => {
 		e.stopPropagation();
 		setScreenName(data.name);
 		setEditScreen(data);
@@ -105,7 +105,7 @@ export default function ScreenList({ project }: ScreenListProps) {
 	/**
 	 * 删除页面
 	 */
-	const handleRemove = (e: React.MouseEvent<any>, data: ScreenInfo) => {
+	const handleRemove = (e: React.MouseEvent, data: ScreenInfo) => {
 		e.stopPropagation();
 		if (!project) return;
 
@@ -124,12 +124,9 @@ export default function ScreenList({ project }: ScreenListProps) {
 	/**
 	 * 跳转到布局页面
 	 */
-	const gotoLayout = useCallback(
-		(e: React.MouseEvent<any>, data: ScreenInfo) => {
+	const gotoLayout = (data: ScreenInfo) => {
 			nav(`/screen/${data.id}`);
-		},
-		[]
-	);
+	};
 
 	/**
 	 * 上传
@@ -241,8 +238,8 @@ export default function ScreenList({ project }: ScreenListProps) {
 											</div>
 											<div
 												className={styles.itemPre}
-												onClick={(e) => {
-													gotoLayout(e, v);
+												onClick={() => {
+													gotoLayout(v);
 												}}
 											>
 												{uploading !== v.id ? (

@@ -28,8 +28,8 @@ request.interceptors.response.use(async (response)=>{
 
   if (rel.code === 0) {
     return rel.data;
-  }else if(rel.msg){
-    message.error(rel.msg);
+  }else if(rel.msg || rel.message){
+    message.error(rel.msg || rel.message);
     throw new Error(rel.msg)
   }
 })

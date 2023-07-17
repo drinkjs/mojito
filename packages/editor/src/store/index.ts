@@ -1,10 +1,10 @@
 import { createStore } from 'fertile';
-// import Component from './component';
+import Components from './Components';
 import Project from './Project';
 import Screen from './Screen';
 
-export const {useStore, stores} = createStore({
-  // componentStore: new Component(),
+export const {useStore: useGlobalStore, stores} = createStore({
   projectStore: new Project(),
-  screenStore: new Screen()
+  screenStore: new Screen(),
+  componentStore: new Components()
 });

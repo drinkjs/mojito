@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useStore } from "@/store";
+import { useGlobalStore } from "@/store";
 import { useMount } from "ahooks";
 import { Button, Input, message, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -9,7 +9,7 @@ import IconFont from "@/components/IconFont";
 import { dateFormat } from "@/common/util";
 
 export default function ProjectList({onSelect}: ProjectListProps){
-	const { projectStore } = useStore();
+	const { projectStore } = useGlobalStore();
 	const [selected, setSelected] = useState<ProjectInfo | undefined>();
   const [visible, setVisible] = useState(false);
   const [projectName, setProjectName] = useState<string | undefined>();

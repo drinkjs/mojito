@@ -1,15 +1,22 @@
-import { get, post } from '../common/network';
+import { get, post } from '../common/request';
 /**
  * 查询组件类型树
  * @returns
  */
-export const getTypeTree = () => get('/component/types', {});
+export const getTypeTree = () => get<ComponentTypeTree[]>('/component/types');
+
+/**
+ * 获取mojito-pack.json信息
+ * @param url 
+ * @returns 
+ */
+export const getPackInfo = (url:string) => get<ComponentPackInfo>('/component/pack/info', {url});
 /**
  * 新增组件
  * @param {*} params
  * @returns
  */
-export const addComponent = (params: any) => post('/component/add', params);
+export const addComponent = (params: ComponentPackInfo) => post('/component/add', params);
 
 /**
  * 根据类型查询组件
@@ -17,7 +24,7 @@ export const addComponent = (params: any) => post('/component/add', params);
  * @returns
  */
 export const getTypeComponent = (type: string) =>
-  get('/component/list', { type });
+  get<ComponentPackInfo[]>('/component/list', { type });
 /**
  * 组件明细信息
  * @param {*} params

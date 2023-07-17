@@ -1,18 +1,20 @@
-import { useDebounceFn, useDocumentVisibility, useMount, useUpdateEffect } from "ahooks";
+import {
+	useDebounceFn,
+	useDocumentVisibility,
+	useMount,
+	useUpdateEffect,
+} from "ahooks";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useDrop } from "react-dnd";
 import Moveable from "react-moveable";
-import { flushSync } from "react-dom";
+import { v4 as uuidv4 } from "uuid";
 import * as transformParser from "transform-parser";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
 import Layer from "./Layer";
+import { DefaultLayerSize } from "@/config";
+import Changer from "./Changer";
 
-const DefaultPageSize = { width: 1920, height: 1080 };
-
-interface FrameInfo {
-	layerId: string;
-	style: ComponentStyle;
-}
 
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
@@ -35,11 +37,11 @@ function formatTransform(
 }
 
 export default function Playground() {
+	const { canvasStore } = useCanvasStore();
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	const areaRef = useRef<HTMLDivElement | null>(null);
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const moveableRef = useRef<Moveable | null>(null);
-	const { canvasStore } = useCanvasStore();
 	// const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
 	const currNativeEvent = useRef<any>();
 	const [groupframes, setGroupFrames] = useState<FrameInfo[]>([]); // 图层组位置信息
@@ -53,22 +55,77 @@ export default function Playground() {
 	const { scale, screenInfo } = canvasStore;
 
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
-	console.log("===========================================", pageLayout)
+	console.log("===========================================", pageLayout);
 
 	const screenLayers = canvasStore.layers;
 	const currLayerIds = canvasStore.selectedLayerIds;
 
-	useLayoutEffect(()=>{
-		if(!canvasStore.rootElement){
+	const [, dropTarget] = useDrop(() => ({
+		accept: "ADD_COMPONENT",
+		drop: (item: any, monitor) => {
+			const { value } = item;
+			let x = 0;
+			let y = 0;
+
+			// 计算放下的位置
+			const offset = monitor.getClientOffset();
+			if (offset && rootRef.current) {
+				const dropTargetXy = rootRef.current.getBoundingClientRect();
+				x = (offset.x - dropTargetXy.left) / scale;
+				y = (offset.y - dropTargetXy.top) / scale;
+			}
+
+			if (!compCount[value.name]) {
+				compCount[value.name] = 1;
+			} else {
+				compCount[value.name] += 1;
+			}
+
+			const z =
+				canvasStore.layers && canvasStore.layers.length
+					? canvasStore.layers[0].style.z + 1
+					: 1;
+
+			x = Math.round(x - DefaultLayerSize.width / 2);
+			y = Math.round(y - DefaultLayerSize.height / 2);
+			// 新图层
+			if (canvasStore && canvasStore.screenInfo) {
+				const newLayer: LayerInfo = {
+					name: `${value.title}${compCount[value.name]}`,
+					component: value,
+					initSize: false,
+					eventLock: true,
+					style: {
+						x,
+						y,
+						z,
+						width: DefaultLayerSize.width,
+						height: DefaultLayerSize.height,
+					},
+					id: uuidv4(),
+				};
+
+				canvasStore.addLayer(newLayer);
+			}
+		},
+		collect: (monitor) => ({
+			isOver: monitor.isOver(),
+			canDrop: monitor.canDrop(),
+		}),
+	}));
+
+	useLayoutEffect(() => {
+		if (!canvasStore.rootElement) {
 			canvasStore.rootElement = rootRef.current;
 			canvasStore.areaElement = areaRef.current;
 			canvasStore.zoomElement = zoomRef.current;
+			dropTarget(rootRef)
 		}
-	}, [pageLayout])
+	}, [pageLayout, canvasStore, dropTarget]);
 
 	// 防抖
 	const debounceRect = useDebounceFn(() => {
-		if(moveableRef.current){
+		if (moveableRef.current) {
 			const rect = moveableRef.current.getRect();
 			canvasStore.moveableRect = {
 				x: Math.round(rect.left),
@@ -135,9 +192,7 @@ export default function Playground() {
 		console.log("======onEmptyClick====");
 	}, []);
 
-	const saveGroup = useCallback(() => {
-		console.log("saveGroup");
-	}, []);
+;
 
 	/**
 	 * 选中图层
@@ -183,9 +238,6 @@ export default function Playground() {
 	}, []);
 
 	compCount = {};
-	// 计算辅助线
-	const verLines = [0];
-	const horLines = [0];
 
 	return (
 		<main className={styles.playground} onMouseDown={onEmptyClick} tabIndex={0}>
@@ -234,169 +286,14 @@ export default function Playground() {
 										/>
 									);
 								})}
-							<Moveable
-								flushSync={flushSync}
-								rootContainer={document.body}
-								snappable
-								throttleDrag={0}
-								verticalGuidelines={verLines}
-								horizontalGuidelines={horLines}
-								keepRatio={false}
-								ref={moveableRef}
-								target={canvasStore.playing ? [] : groupElement}
-								draggable={!canvasStore.isLayerLock}
-								resizable={!canvasStore.isLayerLock}
-								onDragGroupStart={({ events }) => {
-									canvasStore.setResizeing(true);
-									events.forEach((ev, i) => {
-										const frame = groupframes[i];
-										ev.set([frame.style.x, frame.style.y]);
-									});
-								}}
-								onDragGroup={({ events }) => {
-									events.forEach(({ target, beforeTranslate }, i) => {
-										const frame = groupframes[i];
-										frame.style.x = Math.round(beforeTranslate[0]);
-										frame.style.y = Math.round(beforeTranslate[1]);
-
-										target.style.transform = formatTransform(
-											target.style.transform,
-											frame.style.x,
-											frame.style.y
-										);
-									});
-								}}
-								onDragGroupEnd={({ isDrag }) => {
-									currNativeEvent.current = null;
-									canvasStore.setResizeing(false);
-									if (!isDrag) return;
-									saveGroup();
-								}}
-								onResizeGroupStart={({ events }) => {
-									canvasStore.setResizeing(true);
-									events.forEach((ev, i) => {
-										const frame = groupframes[i];
-										// Set origin if transform-orgin use %.
-										ev.setOrigin(["%", "%"]);
-										// If cssSize and offsetSize are different, set cssSize.
-										const style = window.getComputedStyle(ev.target);
-										const cssWidth = parseFloat(style.width);
-										const cssHeight = parseFloat(style.height);
-										ev.set([cssWidth, cssHeight]);
-										// If a drag event has already occurred, there is no dragStart.
-										if (ev.dragStart) {
-											ev.dragStart.set([frame.style.x, frame.style.y]);
-										}
-									});
-								}}
-								onResizeGroup={({ events }) => {
-									events.forEach(({ target, width, height, drag }, i) => {
-										const frame = groupframes[i];
-										target.style.overflow = "hidden";
-										frame.style.width = Math.round(width);
-										frame.style.height = Math.round(height);
-										frame.style.x = Math.round(drag.beforeTranslate[0]);
-										frame.style.y = Math.round(drag.beforeTranslate[1]);
-
-										target.style.transform = formatTransform(
-											target.style.transform,
-											frame.style.x,
-											frame.style.y
-										);
-										target.style.width = `${width}px`;
-										target.style.height = `${height}px`;
-									});
-								}}
-								onResizeGroupEnd={({ isDrag, targets }) => {
-									targets.forEach((target, i) => {
-										target.style.overflow =
-											groupframes[i].style.overflow || "visible";
-									});
-									canvasStore.setResizeing(false);
-									if (!isDrag) return;
-									saveGroup();
-								}}
-								onDragStart={(e) => {
-									const { set } = e;
-									const layerFrame = groupframes[0];
-									set([layerFrame!.style.x, layerFrame!.style.y]);
-								}}
-								onDrag={(e) => {
-									const { target, beforeTranslate } = e;
-									const layerFrame = groupframes[0];
-									if (!layerFrame) return;
-
-									layerFrame.style.x = Math.round(beforeTranslate[0]);
-									layerFrame.style.y = Math.round(beforeTranslate[1]);
-
-									target.style.transform = formatTransform(
-										target.style.transform,
-										layerFrame.style.x,
-										layerFrame.style.y
-									);
-								}}
-								onDragEnd={({ lastEvent }) => {
-									const layerFrame = groupframes[0];
-									currNativeEvent.current = null;
-									if (lastEvent && layerFrame) {
-										canvasStore.updateLayer(layerFrame.layerId, {
-											style: {
-												...canvasStore.currLayer?.style,
-												...layerFrame.style,
-											},
-										});
-									}
-								}}
-								onResizeStart={({ setOrigin, dragStart }) => {
-									setOrigin(["%", "%"]);
-									const layerFrame = groupframes[0];
-									canvasStore.setResizeing(true);
-									if (dragStart && layerFrame) {
-										dragStart.set([layerFrame.style.x, layerFrame.style.y]);
-									}
-								}}
-								onResize={({ target, width, height, drag }) => {
-									const layerFrame = groupframes[0];
-									if (!layerFrame) return;
-									const { beforeTranslate } = drag;
-									layerFrame.style.x = Math.round(beforeTranslate[0]);
-									layerFrame.style.y = Math.round(beforeTranslate[1]);
-									layerFrame.style.width = Math.round(width);
-									layerFrame.style.height = Math.round(height);
-									target.style.width = `${layerFrame.style.width}px`;
-									target.style.height = `${layerFrame.style.height}px`;
-
-									target.style.transform = formatTransform(
-										target.style.transform,
-										layerFrame.style.x,
-										layerFrame.style.y
-									);
-								}}
-								onResizeEnd={({ lastEvent }) => {
-									const layerFrame = groupframes[0];
-									if (lastEvent && layerFrame) {
-										const { drag } = lastEvent;
-										layerFrame.style.x = Math.round(drag.beforeTranslate[0]);
-										layerFrame.style.y = Math.round(drag.beforeTranslate[1]);
-										layerFrame.style.width = Math.round(lastEvent.width);
-										layerFrame.style.height = Math.round(lastEvent.height);
-										// 更新图层
-										canvasStore.updateLayer(layerFrame.layerId, {
-											style: {
-												...canvasStore.currLayer!.style,
-												...layerFrame.style,
-											},
-										});
-									}
-									canvasStore.setResizeing(false);
-								}}
-							/>
+							
 						</div>
 					)}
 				</div>
 			</div>
 			{/* <ConnectedMenu /> */}
 			{/* {contextHolder} */}
+			<Changer moveableRef={moveableRef} />
 		</main>
 	);
 }

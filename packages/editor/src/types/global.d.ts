@@ -33,6 +33,17 @@ declare global {
     pid?: string;
   }
 
+  type ComponentPackInfo = {
+    id:string,
+    name:string,
+    version:string,
+    external?:Record<string, string>,
+    components:{export:string, name:string}[],
+    type:string,
+    packUrl:string,
+    createAt?:Date
+  }
+
   type ComponentInfo = {
     id?: string;
     title: string;
