@@ -63,6 +63,9 @@ importers:
       '@mojito/common':
         specifier: workspace:^
         version: link:../common
+      '@types/systemjs':
+        specifier: ^6.13.1
+        version: 6.13.1
       '@types/uuid':
         specifier: ^9.0.2
         version: 9.0.2
@@ -93,6 +96,9 @@ importers:
       react-router-dom:
         specifier: ^6.14.0
         version: 6.14.0
+      systemjs:
+        specifier: ^6.14.1
+        version: 6.14.1
       transform-parser:
         specifier: ^1.0.1
         version: 1.0.1
@@ -878,6 +884,10 @@ packages:
   /@types/semver@7.5.0:
     resolution: {integrity: sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==}
     dev: true
+
+  /@types/systemjs@6.13.1:
+    resolution: {integrity: sha512-Jxo2/uif1WpkabfyvWpFmPWFPDdwKUmyL7xWzjtxNALEu2pgce+eISjbf0Vr+SsK/D9savO5kTRcf+COLK5eiQ==}
+    dev: false
 
   /@types/uuid@9.0.2:
     resolution: {integrity: sha512-kNnC1GFBLuhImSnV7w4njQkUiJi0ZXUycu1rUaouPqiKlXkh77JKgdRnTAp1x5eBwcIwbtI+3otwzuIDEuDoxQ==}
@@ -2645,6 +2655,10 @@ packages:
     dependencies:
       has-flag: 4.0.0
     dev: true
+
+  /systemjs@6.14.1:
+    resolution: {integrity: sha512-8ftwWd+XnQtZ/aGbatrN4QFNGrKJzmbtixW+ODpci7pyoTajg4sonPP8aFLESAcuVxaC1FyDESt+SpfFCH9rZQ==}
+    dev: false
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}

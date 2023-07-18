@@ -45,22 +45,9 @@ declare global {
   }
 
   type ComponentInfo = {
-    id?: string;
-    title: string;
+    export: string;
     name: string;
-    coverImg?: string;
-    coverUrl?: string;
-    type: string;
-    createTime?: string;
-    updateTime?: string;
-    createUser?: string;
-    // path:string;
-    origin: number;
-    props?: ComponentProps;
-    events?: ComponentEvents;
-    version: string;
-    developLib: ComponentDevelopLib;
-    dependencies?: string[];
+    packId:string;
   }
 
   type LayerInfo = {
@@ -181,6 +168,21 @@ declare global {
   name: string;
   value: string;
   img?: string;
+}
+
+interface MojitoComponent {
+	framework?:{
+		name:"react"|"vue",
+		version:string
+	}
+  component:any,
+  componentInfo:ComponentInfo,
+  mount(container: Element | DocumentFragment, props?: any):void,
+  unmount():void
+  setProps(newProps:any):void
+	getProps():Record<string, any>
+	getComponentId():string
+	setEvent(eventName:string, callback:(...args:any[])=>any):any
 }
 
  interface LayerEvents {

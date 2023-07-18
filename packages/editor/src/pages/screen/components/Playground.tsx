@@ -1,69 +1,52 @@
 import {
 	useDebounceFn,
 	useDocumentVisibility,
-	useMount,
-	useUpdateEffect,
 } from "ahooks";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import Moveable from "react-moveable";
-import { v4 as uuidv4 } from "uuid";
-import * as transformParser from "transform-parser";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
 import Layer from "./Layer";
 import { DefaultLayerSize } from "@/config";
 import Changer from "./Changer";
 
-
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
-let compCount: { [key: string]: number } = {};
-
-function formatTransform(
-	transform: CSSStyleDeclaration["transform"],
-	x?: number,
-	y?: number
-) {
-	const transformObj = transformParser.parse(transform);
-	if (x !== undefined) {
-		transformObj.translateX = x;
-	}
-	if (y !== undefined) {
-		transformObj.translateY = y;
-	}
-
-	return transformParser.stringify(transformObj);
-}
 
 export default function Playground() {
 	const { canvasStore } = useCanvasStore();
+	// 相同组件的数量,主要为了新增图层时自动名称
+	const compCount = useRef<{ [key: string]: number }>({}).current
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	const areaRef = useRef<HTMLDivElement | null>(null);
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const moveableRef = useRef<Moveable | null>(null);
+	const [defaultLayerSize, setDefaultLayerSize] = useState({width:300, height:200});
 	// const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
 	const currNativeEvent = useRef<any>();
-	const [groupframes, setGroupFrames] = useState<FrameInfo[]>([]); // 图层组位置信息
-	const [groupElement, setGroupElement] = useState<HTMLElement[]>([]); // 图层组dom
 	const [areaOffset, setAreaOffset] = useState<{ x: number; y: number }>({
 		x: 0,
 		y: 0,
 	});
 
 	const documentVisibility = useDocumentVisibility();
-	const { scale, screenInfo } = canvasStore;
+	const { scale, screenInfo, layers } = canvasStore;
 
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
-	console.log("===========================================", pageLayout);
 
-	const screenLayers = canvasStore.layers;
-	const currLayerIds = canvasStore.selectedLayerIds;
+	useEffect(()=>{
+		if(pageLayout){
+			const width = Math.round(pageLayout.width * 0.1);
+			const height = Math.round(width * (2 / 3));
+			setDefaultLayerSize({width, height})
+		}
+	}, [pageLayout])
 
 	const [, dropTarget] = useDrop(() => ({
 		accept: "ADD_COMPONENT",
-		drop: (item: any, monitor) => {
-			const { value } = item;
+		drop: (item: {export:string, name:string, scriptUrl:string, external:any, packId:string}, monitor) => {
+			const { name, scriptUrl, external, packId } = item;
 			let x = 0;
 			let y = 0;
 
@@ -75,24 +58,29 @@ export default function Playground() {
 				y = (offset.y - dropTargetXy.top) / scale;
 			}
 
-			if (!compCount[value.name]) {
-				compCount[value.name] = 1;
+			if (!compCount[name]) {
+				compCount[name] = 1;
 			} else {
-				compCount[value.name] += 1;
+				compCount[name] += 1;
 			}
 
 			const z =
 				canvasStore.layers && canvasStore.layers.length
 					? canvasStore.layers[0].style.z + 1
 					: 1;
-
+			// 计算图层落下的位置
 			x = Math.round(x - DefaultLayerSize.width / 2);
 			y = Math.round(y - DefaultLayerSize.height / 2);
 			// 新图层
 			if (canvasStore && canvasStore.screenInfo) {
 				const newLayer: LayerInfo = {
-					name: `${value.title}${compCount[value.name]}`,
-					component: value,
+					id: Date.now().toString(36),
+					name: `${name}${compCount[name]}`,
+					component: {
+						export: item.export,
+						name,
+						packId,
+					},
 					initSize: false,
 					eventLock: true,
 					style: {
@@ -102,10 +90,9 @@ export default function Playground() {
 						width: DefaultLayerSize.width,
 						height: DefaultLayerSize.height,
 					},
-					id: uuidv4(),
 				};
 
-				canvasStore.addLayer(newLayer);
+				canvasStore.addLayer(newLayer, scriptUrl, external);
 			}
 		},
 		collect: (monitor) => ({
@@ -114,14 +101,14 @@ export default function Playground() {
 		}),
 	}));
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		if (!canvasStore.rootElement) {
 			canvasStore.rootElement = rootRef.current;
 			canvasStore.areaElement = areaRef.current;
 			canvasStore.zoomElement = zoomRef.current;
 			dropTarget(rootRef)
 		}
-	}, [pageLayout, canvasStore, dropTarget]);
+	}, [canvasStore, dropTarget]);
 
 	// 防抖
 	const debounceRect = useDebounceFn(() => {
@@ -137,45 +124,6 @@ export default function Playground() {
 	});
 
 	/**
-	 * 选中的图层
-	 */
-	useUpdateEffect(() => {
-		if (currLayerIds.size === 0) {
-			setGroupElement([]);
-			setGroupFrames([]);
-			canvasStore.setCurrLayer(undefined);
-		} else {
-			const layerGroups = canvasStore.layerGroup;
-
-			setGroupElement(layerGroups.map((v) => document.getElementById(v.id)!));
-			setGroupFrames(
-				layerGroups.map((layer) => {
-					return {
-						layerId: layer.id,
-						style: { ...layer.style },
-					};
-				})
-			);
-
-			if (currLayerIds.size > 1) {
-				canvasStore.setCurrLayer(undefined);
-				// 判断是否选中的图层是在同一个群组，主要用于右上角图标显示状态
-				// const groupSet = new Set<string>();
-				// layerGroups.forEach((v, index) => {
-				// 	groupSet.add(v.group || `${index}`);
-				// });
-			} else {
-				// 只选中了一个图层
-				if (layerGroups.length === 0) {
-					canvasStore.setCurrLayer(undefined);
-				} else {
-					canvasStore.setCurrLayer(layerGroups[0]);
-				}
-			}
-		}
-	}, [canvasStore.selectedLayerIds]);
-
-	/**
 	 * 更新moveable
 	 */
 	const updateRect = useCallback(() => {
@@ -183,7 +131,7 @@ export default function Playground() {
 			moveableRef.current.updateRect();
 			debounceRect.run();
 		}
-	}, []);
+	}, [debounceRect]);
 
 	/**
 	 * 取消所有选中
@@ -191,8 +139,6 @@ export default function Playground() {
 	const onEmptyClick = useCallback(() => {
 		console.log("======onEmptyClick====");
 	}, []);
-
-;
 
 	/**
 	 * 选中图层
@@ -223,7 +169,7 @@ export default function Playground() {
 			});
 			canvasStore.selectedLayerIds = new Set(ids);
 		},
-		[]
+		[canvasStore]
 	);
 
 	/**
@@ -235,9 +181,7 @@ export default function Playground() {
 			onSelectLayer(layer);
 			updateRect();
 		}
-	}, []);
-
-	compCount = {};
+	}, [canvasStore, onSelectLayer, updateRect]);
 
 	return (
 		<main className={styles.playground} onMouseDown={onEmptyClick} tabIndex={0}>
@@ -264,8 +208,8 @@ export default function Playground() {
 							}}
 							ref={rootRef}
 						>
-							{screenLayers &&
-								screenLayers.map((v) => {
+							{layers &&
+								layers.map((v) => {
 									if (!v.component) return null;
 
 									if (!compCount[v.component.name]) {
@@ -277,10 +221,10 @@ export default function Playground() {
 									return (
 										<Layer
 											enable
-											defaultWidth={300}
-											defaultHeight={200}
+											defaultWidth={defaultLayerSize.width}
+											defaultHeight={defaultLayerSize.height}
 											data={layerData}
-											key={`${layerData.id}_${layerData.reloadKey}`}
+											key={layerData.id}
 											onSelected={onSelectLayer}
 											onReady={onLayerInit}
 										/>

@@ -14,7 +14,9 @@ import Moveable, {
 	OnResizeStart,
 } from "react-moveable";
 import { flushSync } from "react-dom";
+import * as transformParser from "transform-parser";
 import { useCanvasStore } from "../hook";
+import { useUpdateEffect } from "ahooks";
 
 type FrameInfo = {
 	layerId: string;
@@ -22,15 +24,68 @@ type FrameInfo = {
 };
 
 interface ChangerProps {
-	moveableRef?: React.LegacyRef<Moveable>
+	moveableRef?: React.LegacyRef<Moveable>;
 }
 
-export default function Changer({moveableRef}:ChangerProps) {
+function formatTransform(
+	transform: CSSStyleDeclaration["transform"],
+	x?: number,
+	y?: number
+) {
+	const transformObj = transformParser.parse(transform);
+	if (x !== undefined) {
+		transformObj.translateX = x;
+	}
+	if (y !== undefined) {
+		transformObj.translateY = y;
+	}
+
+	return transformParser.stringify(transformObj);
+}
+
+export default function Changer({ moveableRef }: ChangerProps) {
 	// const moveableRef = useRef<Moveable | null>(null);
 	const currNativeEvent = useRef<any>();
 	const { canvasStore } = useCanvasStore();
 	const [groupframes, setGroupFrames] = useState<FrameInfo[]>([]); // 图层组位置信息
 	const [groupElement, setGroupElement] = useState<HTMLElement[]>([]); // 图层组dom
+	/**
+	 * 选中的图层
+	 */
+	useUpdateEffect(() => {
+		const { selectedLayerIds, layerGroup } = canvasStore;
+		if (selectedLayerIds.size === 0) {
+			setGroupElement([]);
+			setGroupFrames([]);
+			canvasStore.setCurrLayer(undefined);
+		} else {
+			setGroupElement(layerGroup.map((v) => document.getElementById(v.id)!));
+			setGroupFrames(
+				layerGroup.map((layer) => {
+					return {
+						layerId: layer.id,
+						style: { ...layer.style },
+					};
+				})
+			);
+
+			if (selectedLayerIds.size > 1) {
+				canvasStore.setCurrLayer(undefined);
+				// 判断是否选中的图层是在同一个群组，主要用于右上角图标显示状态
+				// const groupSet = new Set<string>();
+				// layerGroups.forEach((v, index) => {
+				// 	groupSet.add(v.group || `${index}`);
+				// });
+			} else {
+				// 只选中了一个图层
+				if (layerGroup.length === 0) {
+					canvasStore.setCurrLayer(undefined);
+				} else {
+					canvasStore.setCurrLayer(layerGroup[0]);
+				}
+			}
+		}
+	}, [canvasStore.selectedLayerIds]);
 
 	// 计算辅助线
 	const verLines = [0];
@@ -49,7 +104,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 			const frame = groupframes[i];
 			ev.set([frame.style.x, frame.style.y]);
 		});
-	}, []);
+	}, [canvasStore, groupframes]);
 
 	/**
 	 * 拖动群组结束
@@ -59,7 +114,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 		canvasStore.setResizeing(false);
 		if (!isDrag) return;
 		saveGroup();
-	}, []);
+	}, [canvasStore]);
 
 	/**
 	 * 正在拖动群组
@@ -76,7 +131,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 				frame.style.y
 			);
 		});
-	}, []);
+	}, [groupframes]);
 
 	/**
 	 * 开始改变组大小
@@ -97,7 +152,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 				ev.dragStart.set([frame.style.x, frame.style.y]);
 			}
 		});
-	}, []);
+	}, [canvasStore, groupframes]);
 
 	/**
 	 * 正在改变组大小
@@ -119,7 +174,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 			target.style.width = `${width}px`;
 			target.style.height = `${height}px`;
 		});
-	}, []);
+	}, [groupframes]);
 
 	/**
 	 * 改变组大小结束
@@ -133,7 +188,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 			if (!isDrag) return;
 			saveGroup();
 		},
-		[]
+		[canvasStore, groupframes]
 	);
 
 	/**
@@ -142,8 +197,8 @@ export default function Changer({moveableRef}:ChangerProps) {
 	const onDragStart = useCallback((e: OnDragStart) => {
 		const { set } = e;
 		const layerFrame = groupframes[0];
-		set([layerFrame!.style.x, layerFrame!.style.y]);
-	}, []);
+		set([layerFrame.style.x, layerFrame.style.y]);
+	}, [groupframes]);
 
 	/**
 	 * 正在拖动组件
@@ -161,7 +216,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 			layerFrame.style.x,
 			layerFrame.style.y
 		);
-	}, []);
+	}, [groupframes]);
 
 	/**
 	 * 拖动结束
@@ -177,7 +232,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 				},
 			});
 		}
-	}, []);
+	}, [canvasStore, groupframes]);
 
 	/**
 	 * 开始改变单个组件大小
@@ -191,7 +246,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 				dragStart.set([layerFrame.style.x, layerFrame.style.y]);
 			}
 		},
-		[]
+		[canvasStore, groupframes]
 	);
 
 	/**
@@ -213,11 +268,11 @@ export default function Changer({moveableRef}:ChangerProps) {
 			layerFrame.style.x,
 			layerFrame.style.y
 		);
-	}, []);
+	}, [groupframes]);
 
-  /**
-   * 改变大小结束
-   */
+	/**
+	 * 改变大小结束
+	 */
 	const onResizeEnd = useCallback(({ lastEvent }: OnResizeEnd) => {
 		const layerFrame = groupframes[0];
 		if (lastEvent && layerFrame) {
@@ -235,7 +290,7 @@ export default function Changer({moveableRef}:ChangerProps) {
 			});
 		}
 		canvasStore.setResizeing(false);
-	}, []);
+	}, [canvasStore, groupframes]);
 
 	return (
 		<Moveable

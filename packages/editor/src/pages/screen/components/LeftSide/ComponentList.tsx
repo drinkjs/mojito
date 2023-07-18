@@ -4,6 +4,7 @@ import ComponentListItem from "./ComponentListItem";
 import { CloseOutlined } from "@ant-design/icons";
 import styles from "./index.module.css";
 import { useGlobalStore } from "@/store";
+import { getPackScriptUrl } from "@/common/util";
 
 export function ComponentList({
 	componentType,
@@ -49,12 +50,8 @@ export function ComponentList({
 
 	useEffect(() => {
 		if (selectedPack) {
-			const path = selectedPack.packUrl.substring(
-				0,
-				selectedPack.packUrl.indexOf("mojito-pack.json")
-			);
 			// 设置组件库加载脚本
-			setPackScriptUrl(`${path}${selectedPack.name}.js`);
+			setPackScriptUrl(getPackScriptUrl(selectedPack.packUrl, selectedPack.name));
 		} else {
 			setPackScriptUrl(undefined);
 		}
@@ -101,6 +98,7 @@ export function ComponentList({
 										value={comp}
 										scriptUrl={packScriptUrl}
 										external={selectedPack.external}
+										packId={selectedPack.id}
 									/>
 								</Col>
 							);

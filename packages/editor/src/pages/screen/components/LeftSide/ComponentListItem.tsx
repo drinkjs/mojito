@@ -10,14 +10,15 @@ const { Text } = Typography;
 interface Props {
   value: {export:string, name:string, cover?:string};
   scriptUrl:string,
-  external?:Record<string, string>
+  external?:Record<string, string>,
+  packId:string
 }
 
-const ComponentListItem = memo(({ value, scriptUrl, external }: Props)=>{
+const ComponentListItem = memo(({ value, scriptUrl, external, packId }: Props)=>{
   const [{ opacity }, dragRef, preview] = useDrag(
     () => ({
       type: 'ADD_COMPONENT',
-      item: { export: value.export, name:value.name, scriptUrl, external  },
+      item: { export: value.export, name:value.name, scriptUrl, external, packId  },
       collect: (monitor) => ({
         opacity: monitor.isDragging() ? 0.5 : 1
       })
