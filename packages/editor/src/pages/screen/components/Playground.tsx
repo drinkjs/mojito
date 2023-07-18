@@ -1,6 +1,7 @@
 import {
 	useDebounceFn,
 	useDocumentVisibility,
+	useMount,
 } from "ahooks";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
@@ -18,7 +19,7 @@ export default function Playground() {
 	const { canvasStore } = useCanvasStore();
 	// 相同组件的数量,主要为了新增图层时自动名称
 	const compCount = useRef<{ [key: string]: number }>({}).current
-	const rootRef = useRef<HTMLDivElement | null>(null);
+	const layoutRef = useRef<HTMLDivElement | null>(null);
 	const areaRef = useRef<HTMLDivElement | null>(null);
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const moveableRef = useRef<Moveable | null>(null);
@@ -52,8 +53,8 @@ export default function Playground() {
 
 			// 计算放下的位置
 			const offset = monitor.getClientOffset();
-			if (offset && rootRef.current) {
-				const dropTargetXy = rootRef.current.getBoundingClientRect();
+			if (offset && layoutRef.current) {
+				const dropTargetXy = layoutRef.current.getBoundingClientRect();
 				x = (offset.x - dropTargetXy.left) / scale;
 				y = (offset.y - dropTargetXy.top) / scale;
 			}
@@ -99,16 +100,18 @@ export default function Playground() {
 			isOver: monitor.isOver(),
 			canDrop: monitor.canDrop(),
 		}),
-	}));
+	}), [scale]);
 
-	useEffect(() => {
-		if (!canvasStore.rootElement) {
-			canvasStore.rootElement = rootRef.current;
-			canvasStore.areaElement = areaRef.current;
-			canvasStore.zoomElement = zoomRef.current;
-			dropTarget(rootRef)
-		}
-	}, [canvasStore, dropTarget]);
+	/**
+	 * mount
+	 */
+	useMount(()=>{
+		canvasStore.layoutContainer = layoutRef.current;
+		canvasStore.areaElement = areaRef.current;
+		canvasStore.zoomElement = zoomRef.current;
+		canvasStore.zoomAuto();
+		dropTarget(layoutRef);
+	})
 
 	// 防抖
 	const debounceRect = useDebounceFn(() => {
@@ -206,7 +209,7 @@ export default function Playground() {
 								boxShadow: "3px 3px 15px rgb(0 0 0 / 15%)",
 								zIndex: 1,
 							}}
-							ref={rootRef}
+							ref={layoutRef}
 						>
 							{layers &&
 								layers.map((v) => {

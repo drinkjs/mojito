@@ -29,7 +29,7 @@ export default class Canvas {
 		| { x: number; y: number; width: number; height: number }
 		| undefined;
 
-	rootElement: HTMLDivElement | null = null;
+  layoutContainer: HTMLDivElement | null = null;
 	areaElement: HTMLDivElement | null = null;
 	zoomElement: HTMLDivElement | null = null;
 
@@ -43,6 +43,7 @@ export default class Canvas {
 
 	constructor() {
 		makeObservable(this, {
+      layoutContainer: false,
 			areaElement: false,
 			zoomElement: false,
 			packScript: false,
@@ -65,10 +66,8 @@ export default class Canvas {
 			.getScreenDetail(id)
 			.then((data) => {
 				this.screenInfo = data;
-				return data;
 			})
-			.catch((e) => {
-				console.error(e);
+			.finally(() => {
 				this.getDetailLoading = false;
 			});
 	}
@@ -142,6 +141,66 @@ export default class Canvas {
 
 	setCurrLayer(layer: LayerInfo | undefined) {
 		this.currLayer = layer;
+	}
+
+  /**
+   * 自适应大小
+   */
+   zoomAuto(){
+    const {areaElement, zoomElement, layoutContainer, screenInfo} = this;
+    const pageLayout = screenInfo ? screenInfo.style : undefined;
+
+    if(!pageLayout) return;
+
+		if (areaElement && zoomElement && layoutContainer) {
+			const { width, height } = areaElement.getBoundingClientRect();
+			let zoom = 0;
+			if (
+				pageLayout.width < areaElement.offsetWidth &&
+				pageLayout.height < areaElement.offsetHeight
+			) {
+				zoom = 1;
+			} else {
+				zoom = parseFloat(
+					pageLayout.width >= pageLayout.height
+						? (width / pageLayout.width * 0.85).toFixed(2)
+						: (height / pageLayout.height * 0.85).toFixed(2)
+				);
+			}
+			layoutContainer.style.transform = `scale(${zoom})`;
+			layoutContainer.style.transformOrigin = "0 0 0";
+			zoomElement.style.width = `${pageLayout.width * zoom}px`;
+			zoomElement.style.height = `${pageLayout.height * zoom}px`;
+			this.scale = zoom;
+		}
+	}
+
+  /**
+	 * 缩放
+	 * @param isUp
+	 * @returns
+	 */
+	zoom(isUp: boolean){
+    const {scale, layoutContainer, zoomElement, screenInfo} = this;
+    const pageLayout = screenInfo ? screenInfo.style : undefined;
+
+		if (!pageLayout || (!isUp && scale <= 0.1) || (isUp && scale >= 2)) return;
+
+		let scaleInt = 1;
+		if (isUp) {
+			scaleInt = Math.floor(scale * 10) + 1;
+		} else {
+			scaleInt = Math.ceil(scale * 10) - 1;
+		}
+
+		scaleInt = parseFloat((scaleInt / 10).toFixed(2));
+		if (layoutContainer && zoomElement && pageLayout) {
+			layoutContainer.style.transform = `scale(${scaleInt})`;
+			layoutContainer.style.transformOrigin = "0 0 0";
+			zoomElement.style.width = `${pageLayout.width * scaleInt}px`;
+			zoomElement.style.height = `${pageLayout.height * scaleInt}px`;
+			this.scale = scaleInt;
+		}
 	}
 
 	/**

@@ -20,94 +20,18 @@ interface HeaderProps {
 
 export default function Header(props: HeaderProps) {
 	const [saveing, setSaveing] = useState(false);
-	const [oldSize, setOldSize] = useState<{ width: number; height: number }>({
-		width: 0,
-		height: 0,
-	});
+
 	const { canvasStore } = useCanvasStore();
-	const { scale, screenInfo, areaElement, zoomElement, rootElement } =
-		canvasStore;
-
-	const pageLayout = screenInfo ? screenInfo.style : undefined;
-
-	/**
-	 * 页面初始化完成
-	 */
-	useEffect(() => {
-		onZoomReset(false);
-	}, [rootElement]);
-
-	/**
-	 * 缩放
-	 * @param isAdd
-	 * @returns
-	 */
-	const onZoom = (isAdd: boolean) => {
-		if ((!isAdd && scale <= 0.1) || (isAdd && scale >= 2)) return;
-		let scaleInt = 0;
-		if (isAdd) {
-			scaleInt = Math.floor(scale * 10) + 1;
-		} else {
-			scaleInt = Math.ceil(scale * 10) - 1;
-		}
-
-		scaleInt = parseFloat((scaleInt / 10).toFixed(2));
-		if (rootElement && zoomElement && pageLayout) {
-			rootElement.style.transform = `scale(${scaleInt})`;
-			rootElement.style.transformOrigin = "0 0 0";
-			zoomElement.style.width = `${pageLayout.width * scaleInt}px`;
-			zoomElement.style.height = `${pageLayout.height * scaleInt}px`;
-			canvasStore.scale = scaleInt;
-		}
-	};
-
-	/**
-	 * 自适应大小
-	 */
-	const onZoomReset = (flag: boolean) => {
-		if (
-			!pageLayout ||
-			(oldSize.width === pageLayout.width &&
-				oldSize.height === pageLayout.height &&
-				!flag)
-		) {
-			return;
-		}
-		setOldSize({
-			width: pageLayout.width,
-			height: pageLayout.height,
-		});
-		if (areaElement && zoomElement && rootElement) {
-			const { width, height } = areaElement.getBoundingClientRect();
-			let zoom = 0;
-			if (
-				pageLayout.width < areaElement.offsetWidth &&
-				pageLayout.height < areaElement.offsetHeight
-			) {
-				zoom = 1;
-			} else {
-				zoom = parseFloat(
-					pageLayout.width >= pageLayout.height
-						? (width / pageLayout.width * 0.85).toFixed(2)
-						: (height / pageLayout.height * 0.85).toFixed(2)
-				);
-			}
-			rootElement.style.transform = `scale(${zoom})`;
-			rootElement.style.transformOrigin = "0 0 0";
-			zoomElement.style.width = `${pageLayout.width * zoom}px`;
-			zoomElement.style.height = `${pageLayout.height * zoom}px`;
-			canvasStore.scale = zoom;
-		}
-	};
+	const { scale, screenInfo } = canvasStore;
 
 	const alignHandler = (align: string) => {
 		console.log("alignHandler");
 	};
 
 	const saveScreen = async () => {
-		setSaveing(true)
+		setSaveing(true);
 		await canvasStore.saveScreen();
-		setSaveing(false)
+		setSaveing(false);
 	};
 
 	const undo = () => {
@@ -140,7 +64,7 @@ export default function Header(props: HeaderProps) {
 				<div className={styles.zoomBox}>
 					<div
 						onClick={() => {
-							onZoom(false);
+							canvasStore.zoom(false);
 						}}
 						className={styles.zoomBtn}
 					>
@@ -148,7 +72,9 @@ export default function Header(props: HeaderProps) {
 					</div>
 					<Tooltip placement="bottom" title="自适应">
 						<div
-							onClick={() => onZoomReset(true)}
+							onClick={() => {
+								canvasStore.zoomAuto();
+							}}
 							style={{ width: "50px" }}
 							className={styles.zoomBtn}
 						>
@@ -157,7 +83,7 @@ export default function Header(props: HeaderProps) {
 					</Tooltip>
 					<div
 						onClick={() => {
-							onZoom(true);
+							canvasStore.zoom(true);
 						}}
 						className={styles.zoomBtn}
 					>

@@ -163,30 +163,9 @@ const Layer: React.FC<LayerProps> = ({
 
 	const history = useNavigate();
 
-	// 组件默认数据
-	const defaultProps: any = {};
-	const { component } = data;
-	if (component && component.props) {
-		Object.keys(component.props).forEach((key) => {
-			defaultProps[key] = component.props
-				? component.props[key].default
-				: undefined;
-		});
-	}
-
 	useEffect(() => {
 		// 事件处理
 		const allEvnet: any = parseEvents(data.events);
-
-		// 加载三方组件
-		if (component && component.origin === 2) {
-			setLibLoading(true);
-			// loadLib(component, (comp: any) => {
-			//   setLib(comp);
-			//   setLibLoading(false);
-			// });
-		}
-
 		// 组件加载完成事件回调
 		if (allEvnet[LayerEvent.onLoad]) {
 			runEventHandler(allEvnet[LayerEvent.onLoad]);
@@ -444,7 +423,6 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const mergeArgs = () => {
 		const mergeProps = {
-			...defaultProps,
 			...data.props, // 组件属性配置
 			...dataSource, // 数据源返回
 			...eventRel.props, // 事件处理返回
