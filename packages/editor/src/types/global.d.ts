@@ -56,7 +56,7 @@ declare global {
     // screenId: string;
     // componentId: string; // 新增时必填
     component: ComponentInfo; // 详情时返回
-    initSize: boolean;
+    isFirst?: boolean;
     api?: {
       url: string;
       method: string;
@@ -177,13 +177,15 @@ interface MojitoComponent {
 	}
   component:any,
   componentInfo:ComponentInfo,
-  mount(container: Element | DocumentFragment, props?: any):void,
+  mount(container: Element | DocumentFragment, props?: Record<string, any>, onMount?:(props?:Record<string, any>)=>void):void,
   unmount():void
   setProps(newProps:any):void
 	getProps():Record<string, any>
 	getComponentId():string
 	setEvent(eventName:string, callback:(...args:any[])=>any):any
 }
+
+export type Constructor<T = any> = new (...args: any[]) => T;
 
  interface LayerEvents {
   [key: string]: { code: string; isSync: boolean };

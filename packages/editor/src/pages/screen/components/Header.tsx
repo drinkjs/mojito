@@ -28,6 +28,8 @@ export default function Header(props: HeaderProps) {
 		console.log("alignHandler");
 	};
 
+	const isNoSelect = canvasStore.selectedLayers.size === 0;
+
 	const saveScreen = async () => {
 		setSaveing(true);
 		await canvasStore.saveScreen();
@@ -43,11 +45,11 @@ export default function Header(props: HeaderProps) {
 	};
 
 	const groupLayer = () => {
-		console.log("groupLayer");
+		canvasStore.groupLayer();
 	};
 
 	const disbandLayer = () => {
-		console.log("disbandLayer");
+		canvasStore.disbandGroup();
 	};
 
 	return (
@@ -127,7 +129,7 @@ export default function Header(props: HeaderProps) {
 						alignHandler("left");
 					}}
 					title="左对齐"
-					disabled={canvasStore.selectedLayerIds.size < 1}
+					disabled={isNoSelect}
 				/>
 				<IconLink
 					icon="icon-dingduanduiqi-"
@@ -136,7 +138,7 @@ export default function Header(props: HeaderProps) {
 						alignHandler("top");
 					}}
 					title="顶部对齐"
-					disabled={canvasStore.selectedLayerIds.size < 1}
+					disabled={isNoSelect}
 				/>
 				<IconLink
 					icon="icon-youduiqi-"
@@ -145,7 +147,7 @@ export default function Header(props: HeaderProps) {
 						alignHandler("right");
 					}}
 					title="右对齐"
-					disabled={canvasStore.selectedLayerIds.size < 1}
+					disabled={isNoSelect}
 				/>
 				<IconLink
 					icon="icon-dingduanduiqi--copy"
@@ -154,7 +156,7 @@ export default function Header(props: HeaderProps) {
 						alignHandler("bottom");
 					}}
 					title="底部对齐"
-					disabled={canvasStore.selectedLayerIds.size < 1}
+					disabled={isNoSelect}
 				/>
 				<IconLink
 					icon="icon-align-level"
@@ -163,7 +165,7 @@ export default function Header(props: HeaderProps) {
 						alignHandler("v-center");
 					}}
 					title="水平居中"
-					disabled={canvasStore.selectedLayerIds.size < 1}
+					disabled={isNoSelect}
 				/>
 				<IconLink
 					icon="icon-align-vertical"
@@ -172,39 +174,39 @@ export default function Header(props: HeaderProps) {
 						alignHandler("h-center");
 					}}
 					title="垂直居中"
-					disabled={canvasStore.selectedLayerIds.size < 1}
+					disabled={isNoSelect}
 				/>
 				<IconLink
 					icon="icon-shuaxin1"
 					style={toolStyles}
 					onClick={() => {
-						canvasStore.reloadLayer();
+						// canvasStore.reloadLayer();
 					}}
 					title="刷新组件"
-					disabled={canvasStore.selectedLayerIds.size !== 1}
+					disabled={canvasStore.selectedLayers.size !== 1}
 				/>
 				<IconLink
 					icon="icon-suoding"
-					className={canvasStore?.isLayerLock ? undefined : styles.noLockHide}
+					className={canvasStore.isAllLock ? undefined : styles.noLockHide}
 					style={toolStyles}
-					disabled={canvasStore.selectedLayerIds.size === 0}
+					disabled={canvasStore.selectedLayers.size === 0}
 					title={
-						canvasStore.isLayerLock ? "解锁组件(Ctrl+L)" : "锁定组件(Ctrl+L)"
+						canvasStore.isAllLock ? "解锁组件(Ctrl+L)" : "锁定组件(Ctrl+L)"
 					}
 					onClick={() => {
-						canvasStore?.lockLayer(!canvasStore.isLayerLock);
+						canvasStore.lockLayer(!canvasStore.isAllLock);
 					}}
 				/>
 				<IconLink
 					icon="icon-xianshi1"
-					className={canvasStore?.isLayerHide ? styles.noLockHide : undefined}
+					className={canvasStore.isAllHide ? styles.noLockHide : undefined}
 					style={toolStyles}
-					disabled={canvasStore.selectedLayerIds.size === 0}
+					disabled={isNoSelect}
 					onClick={() => {
-						canvasStore?.hideLayer(!canvasStore.isLayerHide);
+						canvasStore?.hideLayer(!canvasStore.isAllHide);
 					}}
 					title={
-						canvasStore?.isLayerHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"
+						canvasStore.isAllHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"
 					}
 				/>
 				<IconLink
@@ -212,7 +214,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-hebing"
 					onClick={groupLayer}
 					disabled={
-						canvasStore.isSelectedGroup || canvasStore.selectedLayerIds.size < 2
+						canvasStore.isAllGroup || canvasStore.selectedLayers.size < 2
 					}
 					style={toolStyles}
 				/>
@@ -221,7 +223,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-shoudongfenli"
 					onClick={disbandLayer}
 					disabled={
-						!canvasStore?.isSelectedGroup || canvasStore?.layerGroup.length < 2
+						!canvasStore.isAllGroup || canvasStore.selectedLayers.size < 2
 					}
 					style={toolStyles}
 				/>

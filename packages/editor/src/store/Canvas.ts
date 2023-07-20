@@ -1,20 +1,19 @@
 import * as service from "@/services/screen";
 import { makeObservable } from "fertile";
-import { v4 as uuidv4 } from "uuid";
+import _ from "lodash-es";
 import "systemjs";
 import { message } from "antd";
 import { getPackDetail } from "@/services/component";
-import { getPackScriptUrl } from "@/common/util";
+import { getPackScriptUrl, smallId } from "@/common/util";
 
 const MAX_UNDO = 100;
 
 export default class Canvas {
 	// 画面内容信息
 	screenInfo?: ScreenDetail;
-	// 当前选中的图层
-	currLayer?: LayerInfo;
+	layers: LayerInfo[] = [];
 	// 当前选中所有图层的id，可以多选
-	selectedLayerIds: Set<string> = new Set(); // 所有选中的图层id
+	selectedLayers: Set<LayerInfo> = new Set(); // 所有选中的图层id
 	// 是否正在保存
 	saveLoading = false;
 	getDetailLoading = false;
@@ -29,128 +28,143 @@ export default class Canvas {
 		| { x: number; y: number; width: number; height: number }
 		| undefined;
 
-  layoutContainer: HTMLDivElement | null = null;
+	layoutContainer: HTMLDivElement | null = null;
 	areaElement: HTMLDivElement | null = null;
 	zoomElement: HTMLDivElement | null = null;
 
-	// 通过组件库id快速获取组件库加载地址和依赖
+	mouseDownEvent?: React.MouseEvent<HTMLDivElement, MouseEvent>;
+
+	// 缓存组件库加载地址和依赖
 	packScript: Map<
 		string,
 		{ scriptUrl: string; external?: Record<string, string> }
 	> = new Map();
-  // 已经加载过的组件
-	loadedPackComponent: Map<string, Record<string, MojitoComponent>> = new Map();
+	// 已经加载过的组件
+	loadedPackComponent: Map<string, Record<string, Constructor<MojitoComponent>>> = new Map();
 
 	constructor() {
 		makeObservable(this, {
-      layoutContainer: false,
+			layoutContainer: false,
 			areaElement: false,
 			zoomElement: false,
 			packScript: false,
-      loadedPackComponent:false
+			loadedPackComponent: false,
+			mouseDownEvent: false,
 		});
 	}
+
+	get isAllLock() {
+		for (const layer of this.selectedLayers) {
+			if (!layer.lock) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	get isAllHide() {
+		for (const layer of this.selectedLayers) {
+			if (!layer.hide) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	get isAllGroup() {
+		const groups = new Set();
+		for (const layer of this.selectedLayers) {
+			if (layer.group) {
+				groups.add(layer.group);
+			} else {
+				return false;
+			}
+		}
+		return groups.size === 1;
+	}
+
 	/**
 	 * 页面布局详情
 	 * @param id
 	 */
 	async getDetail(id: string) {
 		this.getDetailLoading = true;
-		// 清空上一个页面数据
-		this.undoData = [];
-		this.redoData = [];
-		this.screenInfo = undefined;
-		this.selectedLayerIds = new Set();
-
 		return service
 			.getScreenDetail(id)
 			.then((data) => {
 				this.screenInfo = data;
+				if (this.screenInfo) {
+					this.layers = this.screenInfo.layers || [];
+				}
 			})
 			.finally(() => {
 				this.getDetailLoading = false;
 			});
 	}
 
-	get layers(): LayerInfo[] {
-		return this.screenInfo && this.screenInfo.layers
-			? this.screenInfo.layers
-			: [];
-	}
-
-	get layerStyle() {
-		return this.currLayer ? this.currLayer.style : undefined;
-	}
-
-	get layerGroup(): LayerInfo[] {
-		const layers = this.layers
-			? this.layers.filter((v) => v.id && this.selectedLayerIds.has(v.id))
-			: [];
-		return layers;
-	}
-
-	get isSelectedGroup() {
-		if (this.selectedLayerIds.size < 2) return false;
-		// 判断是否选中的图层是在同一个群组，主要用于右上角图标显示状态
-		const groupSet = new Set<string>();
-		this.layerGroup.forEach((v, index) => {
-			groupSet.add(v.group || `${index}`);
-		});
-		return groupSet.size === 1;
-	}
-
-	get isLayerLock() {
-		const layers = this.layerGroup;
-		if (layers.length === 0) {
-			return false;
-		} else if (layers.length === 1) {
-			// 只选中一个图层
-			return layers[0].lock;
-		} else if (layers.length > 1) {
-			if (this.isSelectedGroup) {
-				// 选中群组
-				return layers[0].groupLock;
-			}
-			// 多选
-			for (const v of layers) {
-				if (!v.lock) return false;
-			}
+	/**
+	 * 刷新图层
+	 * @param layerIds
+	 */
+	refreshLayer(layerIds?: string[]) {
+		if (layerIds) {
+			layerIds.forEach((layerId) => {
+				const layerIndex = this.layers.findIndex((v) => v.id === layerId);
+				if (layerIndex !== -1) {
+					const layer = this.layers[layerIndex];
+					this.layers[layerIndex] = { ...layer };
+				}
+				this.layers = [...this.layers];
+			});
+		} else {
+			this.layers = this.layers.map((v) => ({ ...v }));
 		}
-		return true;
-	}
 
-	get isLayerHide() {
-		const layers = this.layerGroup;
-		if (layers.length === 0) {
-			// 只选中一个图层
-			return false;
-		} else if (layers.length === 1) {
-			return layers[0].hide;
-		} else if (layers.length > 1) {
-			if (this.isSelectedGroup) {
-				// 选中群组
-				return layers[0].groupHide;
-			}
-			// 多选
-			for (const v of layers) {
-				if (!v.hide) return false;
-			}
+		if (this.selectedLayers.size > 0) {
+			const newSelect: Set<LayerInfo> = new Set();
+			this.selectedLayers.forEach((layer) => {
+				const selectLayer = this.layers.find((v) => v.id === layer.id);
+				if (selectLayer) {
+					newSelect.add(selectLayer);
+				}
+			});
+			this.selectedLayers = newSelect;
 		}
-		return true;
 	}
 
-	setCurrLayer(layer: LayerInfo | undefined) {
-		this.currLayer = layer;
+	/**
+	 * 选中图层
+	 * @param layer
+	 * @param isMultiple
+	 */
+	selectLayer(layer: LayerInfo, isMultiple?: boolean) {
+		if (this.selectedLayers.has(layer)) return;
+
+		if (!isMultiple) {
+			this.selectedLayers.clear();
+		}
+		this.selectedLayers.add(layer);
+		if (layer.group) {
+			// 存在群组
+			this.layers.forEach((v) => {
+				if (v.group === layer.group) {
+					// 同时选中同一个群组的图层
+					this.selectedLayers.add(v);
+				}
+			});
+		}
+		// 更新ui
+		this.selectedLayers = new Set(this.selectedLayers);
 	}
 
-  /**
-   * 自适应大小
-   */
-   zoomAuto(){
-    const {areaElement, zoomElement, layoutContainer, screenInfo} = this;
-    const pageLayout = screenInfo ? screenInfo.style : undefined;
+	/**
+	 * 自适应大小
+	 */
+	zoomAuto() {
+		const { areaElement, zoomElement, layoutContainer, screenInfo } = this;
+		const pageLayout = screenInfo ? screenInfo.style : undefined;
 
-    if(!pageLayout) return;
+		if (!pageLayout) return;
 
 		if (areaElement && zoomElement && layoutContainer) {
 			const { width, height } = areaElement.getBoundingClientRect();
@@ -163,8 +177,8 @@ export default class Canvas {
 			} else {
 				zoom = parseFloat(
 					pageLayout.width >= pageLayout.height
-						? (width / pageLayout.width * 0.85).toFixed(2)
-						: (height / pageLayout.height * 0.85).toFixed(2)
+						? ((width / pageLayout.width) * 0.85).toFixed(2)
+						: ((height / pageLayout.height) * 0.85).toFixed(2)
 				);
 			}
 			layoutContainer.style.transform = `scale(${zoom})`;
@@ -175,14 +189,14 @@ export default class Canvas {
 		}
 	}
 
-  /**
+	/**
 	 * 缩放
 	 * @param isUp
 	 * @returns
 	 */
-	zoom(isUp: boolean){
-    const {scale, layoutContainer, zoomElement, screenInfo} = this;
-    const pageLayout = screenInfo ? screenInfo.style : undefined;
+	zoom(isUp: boolean) {
+		const { scale, layoutContainer, zoomElement, screenInfo } = this;
+		const pageLayout = screenInfo ? screenInfo.style : undefined;
 
 		if (!pageLayout || (!isUp && scale <= 0.1) || (isUp && scale >= 2)) return;
 
@@ -235,46 +249,24 @@ export default class Canvas {
 	async saveScreen() {
 		if (!this.screenInfo || this.saveLoading) return;
 		this.saveLoading = true;
-		return service
-			.updateLayer({
-				id: this.screenInfo.id,
-				layers: this.screenInfo.layers?.map((layer) => ({
-					...layer,
-					component: layer?.component ? { id: layer.component?.id } : undefined,
-				})),
-				style: this.screenInfo.style,
-			})
-			.then(() => {
-				return true;
-			})
-			.finally(() => {
-				this.saveLoading = false;
-			})
-			.catch(() => {
-				this.reload();
-			});
-	}
-
-	async getDetailByName(projectName: string, screenName: string) {
-		this.getDetailLoading = true;
-		// 清空上一个页面数据
-		this.undoData = [];
-		this.redoData = [];
-		this.screenInfo = undefined;
-		this.selectedLayerIds = new Set();
-
-		return service
-			.getScreenDetailByName(projectName, screenName)
-			.then((data) => {
-				if (data) {
-					// this.loadScript(data);
-				}
-				return data;
-			})
-			.catch((e) => {
-				console.error(e);
-				this.getDetailLoading = false;
-			});
+		// return service
+		// 	.updateLayer({
+		// 		id: this.screenInfo.id,
+		// 		layers: this.screenInfo.layers?.map((layer) => ({
+		// 			...layer,
+		// 			component: layer?.component ? { id: layer.component?.id } : undefined,
+		// 		})),
+		// 		style: this.screenInfo.style,
+		// 	})
+		// 	.then(() => {
+		// 		return true;
+		// 	})
+		// 	.finally(() => {
+		// 		this.saveLoading = false;
+		// 	})
+		// 	.catch(() => {
+		// 		this.reload();
+		// 	});
 	}
 
 	/**
@@ -300,7 +292,7 @@ export default class Canvas {
 					});
 			}
 			this.screenInfo = data;
-			this.selectedLayerIds = new Set(this.selectedLayerIds);
+			this.selectedLayers = new Set(this.selectedLayers);
 			return data;
 		});
 	}
@@ -322,26 +314,25 @@ export default class Canvas {
 		scriptUrl: string,
 		external?: Record<string, string>
 	) {
-		if (!this.screenInfo) return;
-
-		if (!this.screenInfo.layers) {
-			this.screenInfo.layers = [];
-		}
-		this.screenInfo.layers.push(layer);
+		this.mouseDownEvent = undefined;
+		this.layers.push(layer);
 		// 缓存组件库加载信息
 		if (!this.packScript.has(layer.component.packId)) {
 			this.packScript.set(layer.component.packId, { scriptUrl, external });
 		}
 		// 更新ui
-		this.screenInfo = { ...this.screenInfo };
+		this.layers = [...this.layers];
 	}
 
 	/**
 	 * 加载组件
 	 * @param packId
-   * @param exportName
+	 * @param exportName
 	 */
-	async loadComponent(packId: string, exportName: string):Promise<MojitoComponent | undefined>{
+	async loadComponent(
+		packId: string,
+		exportName: string
+	): Promise<Constructor<MojitoComponent> | undefined> {
 		const loaded = this.loadedPackComponent.get(packId);
 		if (loaded && loaded[exportName]) {
 			return loaded[exportName];
@@ -350,85 +341,75 @@ export default class Canvas {
 		let packInfo = this.packScript.get(packId);
 		if (!packInfo) {
 			// 调用接口获取信息
-      const rel = await getPackDetail(packId);
-      if(!rel){
-        message.error("没有相关组件");
-        return;
-      }
-      // 获取组件库脚本地址
-      const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
-      packInfo = {
-        scriptUrl,
-        external: rel.external
-      }
-      // 缓存组件库信息
-      this.packScript.set(packId, packInfo);
+			const rel = await getPackDetail(packId);
+			if (!rel) {
+				message.error("没有相关组件");
+				return;
+			}
+			// 获取组件库脚本地址
+			const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
+			packInfo = {
+				scriptUrl,
+				external: rel.external,
+			};
+			// 缓存组件库信息
+			this.packScript.set(packId, packInfo);
 		}
 
 		if (packInfo?.external) {
-      // 加载依赖
+			// 加载依赖
 			System.addImportMap({
 				imports: packInfo.external,
 			});
 		}
 
 		if (packInfo?.scriptUrl) {
-      // 加载组件库脚本
-      const components = await System.import(packInfo.scriptUrl).catch((e:Error) => {
-        message.error(e.message);
-        console.error(e);
-      });
-      console.log("Load script", components);
-      if(components && components[exportName] && typeof components[exportName] === "function"){
-        // 获取组件
-        const comp = await components[exportName]().catch((e:Error) => {
-          message.error(e.message);
-          console.error(e);
-        });
-        console.log(`Load ${exportName}`, comp);
-        if(comp){
-          this.loadedPackComponent.set(packId, {...loaded, [exportName]: comp});
-          return comp;
-        }
-      }
+			// 加载组件库脚本
+			const components = await System.import(packInfo.scriptUrl).catch(
+				(e: Error) => {
+					message.error(e.message);
+					console.error(e);
+				}
+			);
+			console.log("Load script", components);
+			if (
+				components &&
+				components[exportName] &&
+				typeof components[exportName] === "function"
+			) {
+				// 获取组件
+				const comp = await components[exportName]().catch((e: Error) => {
+					message.error(e.message);
+					console.error(e);
+				});
+				console.log(`Load ${exportName}`, comp);
+				if (comp) {
+					this.loadedPackComponent.set(packId, {
+						...loaded,
+						[exportName]: comp,
+					});
+					return comp;
+				}
+			}
 		}
 	}
 
 	/**
-	 * 锁定图层或图层组
-	 * @param lock
+	 * 组件加载完成后自动设置图层大小为组件大小
+	 * @param width
+	 * @param height
 	 */
-	lockLayer(lock: boolean) {
-		if (this.selectedLayerIds.size === 1) {
-			// 锁定图层
-			this.updateLayer(Array.from(this.selectedLayerIds)[0], { lock });
-		} else if (this.selectedLayerIds.size > 1) {
-			// 锁定图层组
-			const isGroup = this.isSelectedGroup;
-			this.batchUpdateLayer(
-				Array.from(this.selectedLayerIds).map((id) =>
-					isGroup ? { id, groupLock: lock } : { id, lock }
-				)
-			);
-		}
-	}
-
-	/**
-	 * 隐藏图层或图层组
-	 * @param hide
-	 */
-	hideLayer(hide: boolean) {
-		if (this.selectedLayerIds.size === 1) {
-			// 隐藏图层
-			this.updateLayer(Array.from(this.selectedLayerIds)[0], { hide });
-		} else if (this.selectedLayerIds.size > 1) {
-			// 隐藏图层组
-			const isGroup = this.isSelectedGroup;
-			this.batchUpdateLayer(
-				Array.from(this.selectedLayerIds).map((id) =>
-					isGroup ? { id, groupHide: hide } : { id, hide }
-				)
-			);
+	initLayerSize(layerId: string, width: number, height: number) {
+		if (this.screenInfo && this.screenInfo.layers) {
+			const layer = this.screenInfo.layers.find((v) => v.id === layerId);
+			if (layer) {
+				layer.style.x = layer.style.x + layer.style.width / 2 - width / 2;
+				layer.style.y = layer.style.y + layer.style.height / 2 - height / 2;
+				(layer.style.width = width),
+					(layer.style.height = height),
+					(layer.style = { ...layer.style });
+				this.screenInfo = { ...this.screenInfo };
+			}
 		}
 	}
 
@@ -448,11 +429,6 @@ export default class Canvas {
 		if (layerIndex === -1 || !this.screenInfo || !this.screenInfo.layers) {
 			return;
 		}
-
-		if (!data.initSize) {
-			// 如果initSize为true说明是刚新增的组件初始化大小，这是一个非用户操作不需要保存
-			this.addUndoData(this.screenInfo);
-		}
 		// 修改本地数据
 		const layer: LayerInfo = this.screenInfo.layers[layerIndex];
 		layer.updateFlag = new Date().getTime();
@@ -467,10 +443,23 @@ export default class Canvas {
 		}
 
 		this.screenInfo.layers = [...this.screenInfo.layers];
-		this.selectedLayerIds = new Set(this.selectedLayerIds);
+		this.selectedLayers = new Set(this.selectedLayers);
 
 		if (opts?.saveNow) {
 			return this.saveScreen();
+		}
+	}
+
+	/**
+	 * 更新图层样式
+	 * @param layerId
+	 * @param style
+	 */
+	updateLayerStyle(layerId: string, style: ComponentStyle) {
+		const layer = this.layers.find((v) => v.id === layerId);
+		if (layer) {
+			layer.style = _.merge(layer.style, style);
+			this.refreshLayer([layerId]);
 		}
 	}
 
@@ -482,7 +471,7 @@ export default class Canvas {
 		if (!undoData) return;
 		this.addRedoData(this.screenInfo);
 		this.screenInfo = undoData;
-		this.selectedLayerIds = new Set(this.selectedLayerIds);
+		this.selectedLayers = new Set(this.selectedLayers);
 	}
 
 	/**
@@ -493,7 +482,7 @@ export default class Canvas {
 		if (!redoData) return;
 		this.addUndoData(this.screenInfo);
 		this.screenInfo = redoData;
-		this.selectedLayerIds = new Set(this.selectedLayerIds);
+		this.selectedLayers = new Set(this.selectedLayers);
 	}
 
 	/**
@@ -529,7 +518,7 @@ export default class Canvas {
 		}
 
 		this.screenInfo.layers = [...this.screenInfo.layers];
-		this.selectedLayerIds = new Set(this.selectedLayerIds);
+		this.selectedLayers = new Set(this.selectedLayers);
 		if (saveNow) {
 			this.saveScreen();
 		}
@@ -538,23 +527,52 @@ export default class Canvas {
 	/**
 	 * 群组图层
 	 */
-	async groupLayer(layerIds: string[]) {
-		const group = uuidv4();
-		const groups = layerIds.map((id) => {
-			return { id, group };
+	async groupLayer() {
+		const group = smallId();
+		const layerIds: string[] = [];
+		this.selectedLayers.forEach((layer) => {
+			layer.group = group;
+			layerIds.push(layer.id);
 		});
-
-		return this.batchUpdateLayer(groups);
+		this.refreshLayer(layerIds);
 	}
 
 	/**
 	 * 解除群组
 	 */
-	async disbandLayer(layerIds: string[]) {
-		const groups = layerIds.map((id) => {
-			return { id, group: "", groupLock: false, groupHide: false };
+	async disbandGroup() {
+		const layerIds: string[] = [];
+		this.selectedLayers.forEach((layer) => {
+			delete layer.group;
+			layerIds.push(layer.id);
 		});
-		return this.batchUpdateLayer(groups);
+		this.refreshLayer(layerIds);
+	}
+
+	/**
+	 * 锁定图层或图层组
+	 * @param lock
+	 */
+	lockLayer(lock: boolean) {
+		const layerIds: string[] = [];
+		this.selectedLayers.forEach((layer) => {
+			layer.lock = lock;
+			layerIds.push(layer.id);
+		});
+		this.refreshLayer(layerIds);
+	}
+
+	/**
+	 * 隐藏图层或图层组
+	 * @param hide
+	 */
+	hideLayer(hide: boolean) {
+		const layerIds: string[] = [];
+		this.selectedLayers.forEach((layer) => {
+			layer.hide = hide;
+			layerIds.push(layer.id);
+		});
+		this.refreshLayer(layerIds);
 	}
 
 	/**
@@ -571,63 +589,13 @@ export default class Canvas {
 	}
 
 	/**
-	 * 强制刷新图层
+	 * 删除选中图层
 	 */
-	reloadLayer() {
-		if (this.currLayer) {
-			this.updateLayer(this.currLayer.id, {}, { reload: true });
-		}
-	}
-
-	/**
-	 * 确定删除图层
-	 * @param layer
-	 */
-	// confirmDeleteLayer (layer: LayerInfo) {
-	//   Modal.confirm({
-	//     title: `确定删除${layer.name}?`,
-	//     onOk: () => {
-	//       this.setCurrLayer(undefined);
-	//       this.deleteLayer(layer.id);
-	//     },
-	//     onCancel: () => {}
-	//   });
-	// }
-
-	/**
-	 * 删除图层
-	 * @param layerId
-	 */
-	deleteLayer(layerId: string) {
+	deleteLayer() {
 		this.addUndoData(this.screenInfo);
-		if (this.screenInfo?.layers) {
-			this.screenInfo.layers = this.screenInfo.layers.filter(
-				(v) => v.id !== layerId
-			);
-		}
-	}
-
-	/**
-	 * 新增数据源连接
-	 * @param dto
-	 * @returns
-	 */
-	addDatasource(dto: DatasourceInfo) {
-		return service.addDatasource({
-			screenId: this.screenInfo!.id,
-			...dto,
-		});
-	}
-
-	/**
-	 * 新增数据源连接
-	 * @param dto
-	 * @returns
-	 */
-	delDatasource(id: string) {
-		return service.delDatasource({
-			screenId: this.screenInfo!.id,
-			id,
-		});
+		this.layers = this.layers.filter(
+			(layer) => !this.selectedLayers.has(layer)
+		);
+		this.selectedLayers = new Set();
 	}
 }

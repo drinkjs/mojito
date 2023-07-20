@@ -55,3 +55,7 @@
 .backIcon:hover{
   color: var(--height-color);
 }
+
+.noLockHide {
+  color: rgba(255, 255, 255, 0.2) !important;
+}

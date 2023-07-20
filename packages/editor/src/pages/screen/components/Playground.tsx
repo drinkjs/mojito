@@ -1,195 +1,306 @@
 import {
 	useDebounceFn,
 	useDocumentVisibility,
+	useInterval,
+	useKeyPress,
 	useMount,
+	useSize,
+	useUpdateEffect,
 } from "ahooks";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { useDrop } from "react-dnd";
-import Moveable from "react-moveable";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
 import Layer from "./Layer";
 import { DefaultLayerSize } from "@/config";
-import Changer from "./Changer";
+import Changer, { ChangerAction } from "./Changer";
+import { Modal } from "antd";
+import { smallId } from "@/common/util";
 
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
 
+const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
+const ActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
+const LayersKeys = ["ctrl.z", "ctrl.y", "ctrl.s"]
+
 export default function Playground() {
 	const { canvasStore } = useCanvasStore();
+	const [modal, contextHolder] = Modal.useModal();
 	// 相同组件的数量,主要为了新增图层时自动名称
-	const compCount = useRef<{ [key: string]: number }>({}).current
+	const compCount = useRef<{ [key: string]: number }>({}).current;
 	const layoutRef = useRef<HTMLDivElement | null>(null);
 	const areaRef = useRef<HTMLDivElement | null>(null);
 	const zoomRef = useRef<HTMLDivElement | null>(null);
-	const moveableRef = useRef<Moveable | null>(null);
-	const [defaultLayerSize, setDefaultLayerSize] = useState({width:300, height:200});
-	// const currLayerIds = useRef<Set<string>>(new Set()); // 选中的图层id
-	const currNativeEvent = useRef<any>();
+	const changerRef = useRef<ChangerAction>();
+	const [defaultLayerSize, setDefaultLayerSize] = useState({
+		width: 300,
+		height: 200,
+	});
 	const [areaOffset, setAreaOffset] = useState<{ x: number; y: number }>({
 		x: 0,
 		y: 0,
 	});
-
+	const [actioning, setActioning] = useState(false);
 	const documentVisibility = useDocumentVisibility();
-	const { scale, screenInfo, layers } = canvasStore;
 
+	const { scale, screenInfo, layers } = canvasStore;
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
 
-	useEffect(()=>{
-		if(pageLayout){
-			const width = Math.round(pageLayout.width * 0.1);
-			const height = Math.round(width * (2 / 3));
-			setDefaultLayerSize({width, height})
-		}
-	}, [pageLayout])
-
-	const [, dropTarget] = useDrop(() => ({
-		accept: "ADD_COMPONENT",
-		drop: (item: {export:string, name:string, scriptUrl:string, external:any, packId:string}, monitor) => {
-			const { name, scriptUrl, external, packId } = item;
-			let x = 0;
-			let y = 0;
-
-			// 计算放下的位置
-			const offset = monitor.getClientOffset();
-			if (offset && layoutRef.current) {
-				const dropTargetXy = layoutRef.current.getBoundingClientRect();
-				x = (offset.x - dropTargetXy.left) / scale;
-				y = (offset.y - dropTargetXy.top) / scale;
-			}
-
-			if (!compCount[name]) {
-				compCount[name] = 1;
-			} else {
-				compCount[name] += 1;
-			}
-
-			const z =
-				canvasStore.layers && canvasStore.layers.length
-					? canvasStore.layers[0].style.z + 1
-					: 1;
-			// 计算图层落下的位置
-			x = Math.round(x - DefaultLayerSize.width / 2);
-			y = Math.round(y - DefaultLayerSize.height / 2);
-			// 新图层
-			if (canvasStore && canvasStore.screenInfo) {
-				const newLayer: LayerInfo = {
-					id: Date.now().toString(36),
-					name: `${name}${compCount[name]}`,
-					component: {
-						export: item.export,
-						name,
-						packId,
-					},
-					initSize: false,
-					eventLock: true,
-					style: {
-						x,
-						y,
-						z,
-						width: DefaultLayerSize.width,
-						height: DefaultLayerSize.height,
-					},
+	const debounceRect = useDebounceFn(() => {
+		if (changerRef.current) {
+			const rect = changerRef.current.getRect();
+			if (rect) {
+				canvasStore.moveableRect = {
+					x: Math.round(rect.left),
+					y: Math.round(rect.top),
+					width: Math.round(rect.width),
+					height: Math.round(rect.height),
 				};
-
-				canvasStore.addLayer(newLayer, scriptUrl, external);
 			}
-		},
-		collect: (monitor) => ({
-			isOver: monitor.isOver(),
-			canDrop: monitor.canDrop(),
-		}),
-	}), [scale]);
+		}
+	});
+	
+	/**
+	 * 更新moveable
+	 */
+	const updateRect = useCallback(() => {
+		if (changerRef.current) {
+			changerRef.current.updateRect();
+			debounceRect.run();
+		}
+	}, [debounceRect]);
+
+
+	useUpdateEffect(() => {
+		updateRect();
+	}, [scale]);
 
 	/**
-	 * mount
+	 * 定时保存图层信息
 	 */
-	useMount(()=>{
+	useInterval(() => {
+		if (documentVisibility === "visible") {
+			canvasStore.saveScreen();
+		}
+	}, 5000);
+
+	/**
+	 * 根据页面大小设置默认图层大小
+	 */
+	useEffect(() => {
+		if (pageLayout) {
+			const width = Math.round(pageLayout.width * 0.1);
+			const height = Math.round(width * (2 / 3));
+			setDefaultLayerSize({ width, height });
+		}
+	}, [pageLayout]);
+
+	/**
+	 * 接受拖入
+	 */
+	const [, dropTarget] = useDrop(
+		() => ({
+			accept: "ADD_COMPONENT",
+			drop: (
+				item: {
+					export: string;
+					name: string;
+					scriptUrl: string;
+					external: any;
+					packId: string;
+				},
+				monitor
+			) => {
+				const { name, scriptUrl, external, packId } = item;
+				let x = 0;
+				let y = 0;
+
+				// 计算放下的位置
+				const offset = monitor.getClientOffset();
+				if (offset && layoutRef.current) {
+					const dropTargetXy = layoutRef.current.getBoundingClientRect();
+					x = (offset.x - dropTargetXy.left) / scale;
+					y = (offset.y - dropTargetXy.top) / scale;
+				}
+
+				if (!compCount[name]) {
+					compCount[name] = 1;
+				} else {
+					compCount[name] += 1;
+				}
+
+				const z =
+					canvasStore.layers && canvasStore.layers.length
+						? canvasStore.layers[canvasStore.layers.length - 1].style.z + 1
+						: 1;
+				// 计算图层落下的位置
+				x = Math.round(x - DefaultLayerSize.width / 2);
+				y = Math.round(y - DefaultLayerSize.height / 2);
+				// 新图层
+				if (canvasStore && canvasStore.screenInfo) {
+					const newLayer: LayerInfo = {
+						id: smallId(),
+						isFirst: true,
+						name: `${name}${compCount[name]}`,
+						component: {
+							export: item.export,
+							name,
+							packId,
+						},
+						eventLock: true,
+						style: {
+							x,
+							y,
+							z,
+							width: DefaultLayerSize.width,
+							height: DefaultLayerSize.height,
+						},
+					};
+
+					canvasStore.addLayer(newLayer, scriptUrl, external);
+				}
+			},
+			collect: (monitor) => ({
+				isOver: monitor.isOver(),
+				canDrop: monitor.canDrop(),
+			}),
+		}),
+		[scale]
+	);
+
+	/**
+	 * 页面构建完成
+	 */
+	useMount(() => {
 		canvasStore.layoutContainer = layoutRef.current;
 		canvasStore.areaElement = areaRef.current;
 		canvasStore.zoomElement = zoomRef.current;
 		canvasStore.zoomAuto();
 		dropTarget(layoutRef);
-	})
-
-	// 防抖
-	const debounceRect = useDebounceFn(() => {
-		if (moveableRef.current) {
-			const rect = moveableRef.current.getRect();
-			canvasStore.moveableRect = {
-				x: Math.round(rect.left),
-				y: Math.round(rect.top),
-				width: Math.round(rect.width),
-				height: Math.round(rect.height),
-			};
-		}
 	});
 
 	/**
-	 * 更新moveable
+	 * 页面大小改变时更新moveable位置
 	 */
-	const updateRect = useCallback(() => {
-		if (moveableRef.current) {
-			moveableRef.current.updateRect();
-			debounceRect.run();
-		}
-	}, [debounceRect]);
+	const size = useSize(areaRef);
+	useUpdateEffect(()=>{
+		updateRect()
+	}, [size, updateRect])
+
+	/**
+	 * 键盘移动图层
+	 */
+	useKeyPress(
+		MoveKeys,
+		(event) => {
+			if (canvasStore.selectedLayers.size === 0 || !changerRef.current) return;
+			event.preventDefault();
+			let valueX = 0;
+			let valueY = 0;
+			switch (event.key) {
+				case "ArrowUp":
+					valueY = -1;
+					break;
+				case "ArrowDown":
+					valueY = 1;
+					break;
+				case "ArrowLeft":
+					valueX = -1;
+					break;
+				case "ArrowRight":
+					valueX = 1;
+					break;
+			}
+			changerRef.current.move(valueX, valueY);
+		},
+		{ useCapture: true }
+	);
+
+	/**
+	 * 删除和取消选择
+	 */
+	useKeyPress(
+		ActionKeys,
+		(event) => {
+			if (canvasStore.selectedLayers.size === 0) return;
+
+			event.preventDefault();
+			console.log(event.key);
+			switch (event.key) {
+				case "Escape":
+					// 取消选中
+					canvasStore.selectedLayers = new Set();
+					break;
+				case "Delete":
+					setActioning(true);
+					modal.confirm({
+						title: "确定删除?",
+						onOk: () => {
+							canvasStore.deleteLayer();
+							setActioning(false);
+						},
+						onCancel: () => {
+							setActioning(false);
+						},
+					});
+					break;
+				case "g":
+					// 群组选中的图层
+					canvasStore.groupLayer();
+					break;
+				case "b":
+					// 取消群组
+					canvasStore.disbandGroup();
+					break;
+				case "l":
+					// 锁定图层
+					canvasStore.lockLayer(!canvasStore.isAllLock);
+					break;
+			}
+		},
+		{ useCapture: true, exactMatch: true }
+	);
+
+	useKeyPress(LayersKeys, (event)=>{
+		event.preventDefault();
+	}, { useCapture: true, exactMatch: true })
 
 	/**
 	 * 取消所有选中
 	 */
-	const onEmptyClick = useCallback(() => {
-		console.log("======onEmptyClick====");
-	}, []);
+	const clearAllSelected = useCallback(() => {
+		if (!actioning) canvasStore.selectedLayers = new Set();
+	}, [canvasStore, actioning]);
 
 	/**
 	 * 选中图层
 	 */
 	const onSelectLayer = useCallback(
 		(
-			layerData: LayerInfo,
+			layer: LayerInfo,
 			event?: React.MouseEvent<HTMLDivElement, MouseEvent>
 		) => {
-			console.log("onSelectLayer", layerData);
-			if (canvasStore.selectedLayerIds.has(layerData.id)) return;
-
-			currNativeEvent.current = event ? event.nativeEvent : null;
-			const ids = canvasStore.selectedLayerIds;
-			if (!event || !event.ctrlKey) {
-				ids.clear();
-			}
-			let currGroupLayers = [layerData];
-			if (layerData.group && canvasStore.layers) {
-				// 找出所有同组图层
-				currGroupLayers = canvasStore.layers.filter(
-					(v) => v.group === layerData.group
-				);
-			}
-			// 当前点击的图层及与之群组的图层
-			currGroupLayers.forEach((v) => {
-				ids.add(v.id);
-			});
-			canvasStore.selectedLayerIds = new Set(ids);
+			canvasStore.mouseDownEvent = event;
+			canvasStore.selectLayer(layer, event && event.ctrlKey);
 		},
 		[canvasStore]
 	);
 
-	/**
-	 * 图层初始化完成
-	 */
-	const onLayerInit = useCallback((layer: LayerInfo) => {
-		console.log("onLayerInit");
-		if (canvasStore.currLayer && canvasStore.currLayer.id === layer.id) {
-			onSelectLayer(layer);
-			updateRect();
-		}
-	}, [canvasStore, onSelectLayer, updateRect]);
-
 	return (
-		<main className={styles.playground} onMouseDown={onEmptyClick} tabIndex={0}>
+		<main
+			className={styles.playground}
+			// onMouseDown={clearAllSelected}
+			tabIndex={0}
+		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>
+					<Changer changerActionRef={changerRef} />
 					{pageLayout && (
 						<div
 							style={{
@@ -220,27 +331,24 @@ export default function Playground() {
 									} else {
 										compCount[v.component.name] += 1;
 									}
-									const layerData = v;
+
 									return (
 										<Layer
 											enable
 											defaultWidth={defaultLayerSize.width}
 											defaultHeight={defaultLayerSize.height}
-											data={layerData}
-											key={layerData.id}
+											data={v}
+											key={v.id}
 											onSelected={onSelectLayer}
-											onReady={onLayerInit}
 										/>
 									);
 								})}
-							
 						</div>
 					)}
 				</div>
 			</div>
 			{/* <ConnectedMenu /> */}
-			{/* {contextHolder} */}
-			<Changer moveableRef={moveableRef} />
+			{contextHolder}
 		</main>
 	);
 }

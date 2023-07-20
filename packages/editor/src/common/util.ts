@@ -14,3 +14,7 @@ export function getPackScriptUrl(packJsonUrl:string, packName:string){
   );
   return `${path}${packName}.js`
 }
+
+export function smallId(){
+  return Date.now().toString(36)
+}

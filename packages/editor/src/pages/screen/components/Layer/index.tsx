@@ -18,15 +18,10 @@ import { useNavigate } from "react-router-dom";
 import { Request } from "@mojito/common/network";
 import { buildCode, isEmpty } from "@mojito/common/util";
 import { sendDataToPage, useStateSync } from "@/common/stateTool";
-
-// import { loadLib, LoadingComponent } from '../../../../components/Loader';
 import Render from "./Render";
 import styles from "./index.module.css";
 import { useUpdateEffect } from "ahooks";
-import LoadingView from "../../../../components/LoadingView";
 import { useCanvasStore } from "../../hook";
-
-// const numeral = require('numeral');
 
 const request = new Request();
 const evener = new EventTarget();
@@ -104,7 +99,6 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 		data: LayerInfo,
 		e?: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
-	onReady?: (data: LayerInfo) => void;
 }
 
 interface EventValue {
@@ -122,19 +116,16 @@ const Layer: React.FC<LayerProps> = ({
 	data,
 	enable = false,
 	onSelected,
-	onReady,
 	defaultWidth,
 	defaultHeight,
 	...restProps
 }) => {
+	const history = useNavigate();
 	const { canvasStore } = useCanvasStore();
 	const targetRef = useRef<HTMLDivElement | null>(null);
 	// const currAnime = useRef<anime.AnimeInstance | undefined | null>();
 	const funThis = useRef<any>(); // 事件处理的this
-
-	const initSizeFlag = useRef<boolean>(data.initSize);
 	const dataSourceTimer = useRef<any>();
-	const initFlag = useRef<boolean>(false);
 
 	// 组件的事件处理方法
 	const [compEventHandlers, setCompEventHandlers] = useState<any>({}); // 组件事件
@@ -143,9 +134,6 @@ const Layer: React.FC<LayerProps> = ({
 	const [eventRel, setEventRel] = useState<EventValue>({});
 	// 数据源
 	const [dataSource, setDataSource] = useState<any>();
-	// 加载组件
-	const [lib, setLib] = useState<any>();
-	const [libLoading, setLibLoading] = useState(false);
 	const [hide, setHide] = useState(false);
 	const [dataloading, setDataloading] = useState(false);
 	// 事件同步处理 enable是否激活状态同步，enable改变时重新渲染组件
@@ -161,7 +149,7 @@ const Layer: React.FC<LayerProps> = ({
 				)
 		  ); // 项目名称_页面名称_图层名称组成唯一的同步key
 
-	const history = useNavigate();
+
 
 	useEffect(() => {
 		// 事件处理
@@ -211,10 +199,12 @@ const Layer: React.FC<LayerProps> = ({
 	}, []);
 
 	useEffect(() => {
-		if (data) {
-			setHide(!!data.hide);
-			// canvasStore.loadScript
-		}
+		// if (data) {
+		// 	setHide(!!data.hide);
+		// 	// canvasStore.loadScript
+		// }
+
+		console.log("layer data", data);
 	}, [data]);
 
 	/**
@@ -383,10 +373,7 @@ const Layer: React.FC<LayerProps> = ({
 				// router: history,
 				goto: (screenName: string) => {
 					history(
-						`/view/${canvasStore.screenInfo?.project.name.replace(
-							"%",
-							"%25"
-						)}/${screenName.replace("%", "%25")}`
+						`/view/${canvasStore.screenInfo?.id}`
 					);
 				},
 				goBack: () => {
@@ -421,7 +408,7 @@ const Layer: React.FC<LayerProps> = ({
 	/**
 	 * 合并props和style后的值
 	 */
-	const mergeArgs = () => {
+	const mergeArgs = useMemo(() => {
 		const mergeProps = {
 			...data.props, // 组件属性配置
 			...dataSource, // 数据源返回
@@ -434,7 +421,7 @@ const Layer: React.FC<LayerProps> = ({
 		};
 
 		return { props: mergeProps, styles: mergeStyle };
-	};
+	}, [data, dataSource, eventRel]);
 
 	/**
 	 * 选中组件
@@ -442,6 +429,7 @@ const Layer: React.FC<LayerProps> = ({
 	const onClick = useCallback(
 		(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 			e.stopPropagation();
+			e.preventDefault();
 			targetRef.current?.focus();
 			if (onSelected) {
 				onSelected(data, e);
@@ -453,96 +441,26 @@ const Layer: React.FC<LayerProps> = ({
 	/**
 	 * 组件初始化大小
 	 */
-	const onInitSize = useCallback(
-		(width: number, height: number) => {
-			if (onReady) {
-				onReady(data);
-			}
-
-			if (initSizeFlag.current || data.initSize || !enable) {
-				initSizeFlag.current = true;
-				return;
-			}
-
-			initSizeFlag.current = true;
-			// 获取组件大小并更新，组件没有固定大小时使用默认大小
-			const setWidth = width && height ? width : defaultWidth;
-			const setHeight = width && height ? height : defaultHeight;
-			if (data && data.style && data.style.x && data.style.y && data.id) {
-				const left = data.style.x + defaultWidth / 2 - setWidth / 2;
-				const top = data.style.y + defaultHeight / 2 - setHeight / 2;
-
-				targetRef.current!.style.width = `${setWidth}px`;
-				targetRef.current!.style.height = `${setHeight}px`;
-				targetRef.current!.style.transform = `translateX(${data.style.x}px) translateY(${data.style.y}px)`;
-
-				data.style.x = left;
-				data.style.y = top;
-				data.style.width = setWidth;
-				data.style.height = setHeight;
-
-				// 更新图层
-				canvasStore.updateLayer(data.id, {
-					style: { ...data.style },
-					initSize: true,
-				});
-			}
-		},
-		[data, allEventHandlers]
-	);
-
-	const onShow = () => {
-		if (!enable && data.anime) {
-			// 非编辑状态执行动画
-			if (
-				isEmpty(data.anime.translateX) &&
-				isEmpty(data.anime.translateY) &&
-				isEmpty(data.anime.scale) &&
-				isEmpty(data.anime.rotate) &&
-				isEmpty(data.anime.opacity)
-				// isEmpty(data.anime.width) &&
-				// isEmpty(data.anime.height)
-			) {
-				return;
-			}
-			const keys = Object.keys(data.anime);
-			// 动画参数
-			const params: any = {};
-			const animeParams: any = data.anime;
-			keys.forEach((key) => {
-				if (!isEmpty(animeParams[key])) {
-					params[key] = animeParams[key];
+	const onMount = useCallback(
+		(props?: Record<string, any>, size?: { width: number; height: number }) => {
+			if (size && data.isFirst) {
+				if (size.width !== defaultWidth || size.height !== defaultHeight) {
+					console.log("layer init size", size);
+					canvasStore.initLayerSize(data.id, size.width, size.height);
 				}
-			});
-			// 重复次数，0为无限
-			if (!isEmpty(params.loop) && params.loop === 0) {
-				params.loop = true;
 			}
-
-			if (isEmpty(params.autoplay)) {
-				params.auto = true;
-			}
-
-			// currAnime.current = anime({
-			//   ...params,
-			//   targets: targetRef.current
-			// });
-		}
-
-		// 组件完全显示
-		if (allEventHandlers[LayerEvent.onShow]) {
-			runEventHandler(allEventHandlers[LayerEvent.onShow]);
-		}
-	};
+			data.isFirst = undefined;
+		},
+		[data, canvasStore, defaultWidth, defaultHeight]
+	);
 
 	/**
 	 * 事件变化时绑定事件
 	 */
 	useMemo(() => {
-		initFlag.current && parseEvents(data.events);
+		parseEvents(data.events);
 	}, [JSON.stringify(data.events)]);
 
-	const mergeParms = mergeArgs();
 
 	const layerStyle = useMemo(() => {
 		const scale =
@@ -553,16 +471,11 @@ const Layer: React.FC<LayerProps> = ({
 			...data.style,
 			transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
 			zIndex: data.style.z,
-			display: !enable && (hide || data.groupHide) ? "none" : "block",
-			opacity: enable && (data.groupHide || hide) ? 0.2 : data.style.opacity,
-			overflow:
-				canvasStore.resizeing &&
-				canvasStore.currLayer &&
-				canvasStore.currLayer.id === data.id
-					? "hidden"
-					: data.style.overflow || "visible",
+			display: !enable && hide ? "none" : "block",
+			opacity: enable && hide ? 0.2 : data.style.opacity,
+			overflow: data.style.overflow || "hidden",
 		};
-	}, [data, canvasStore, hide, enable]);
+	}, [hide, enable, data.style]);
 
 	// const formatStyles = parseStyle(data.style);
 
@@ -577,42 +490,22 @@ const Layer: React.FC<LayerProps> = ({
 			tabIndex={enable ? 0 : undefined}
 		>
 			<Render
-				onInitSize={onInitSize}
-				onShow={onShow}
+				onMount={onMount}
 				component={data.component}
-				props={{ ...mergeParms.props, dataloading }}
-				componentStyle={{
-					...mergeParms.styles,
-					background: undefined,
-					opacity: undefined,
-					transform: undefined,
-					overflow: undefined,
-					borderStyle: undefined,
-					borderWidth: undefined,
-					borderColor: undefined,
-					borderRadius: undefined,
-				}}
+				props={{ ...mergeArgs.props, dataloading }}
+				componentStyle={mergeArgs.styles}
+				width={mergeArgs.styles.width}
+				height={mergeArgs.styles.height}
 				events={compEventHandlers}
 				style={{
-					// display: "flex",
 					width: "100%",
 					height: "100%",
-					// justifyContent: "center",
-					// alignItems: "center",
-					pointerEvents: enable && data.eventLock ? "none" : undefined,
+					pointerEvents: enable && data.eventLock ? "none" : "auto",
 				}}
 				componentName={data.component.name}
 			/>
-			{/* {libLoading && <LoadingView type="spin" />} */}
 		</div>
 	);
 };
-
-// export default React.memo(
-//   Layer,
-//   (prevProps: LayerProps, nextProps: LayerProps) => {
-//     return prevProps.data.updateFlag === nextProps.data.updateFlag;
-//   }
-// );
 
 export default Layer;
