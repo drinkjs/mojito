@@ -20,7 +20,7 @@ import { buildCode, isEmpty } from "@mojito/common/util";
 import { sendDataToPage, useStateSync } from "@/common/stateTool";
 import Render from "./Render";
 import styles from "./index.module.css";
-import { useUpdateEffect } from "ahooks";
+import { useMount, useUpdateEffect } from "ahooks";
 import { useCanvasStore } from "../../hook";
 
 const request = new Request();
@@ -126,7 +126,7 @@ const Layer: React.FC<LayerProps> = ({
 	// const currAnime = useRef<anime.AnimeInstance | undefined | null>();
 	const funThis = useRef<any>(); // 事件处理的this
 	const dataSourceTimer = useRef<any>();
-
+	const [renderKey, setRenderKey] = useState(1);
 	// 组件的事件处理方法
 	const [compEventHandlers, setCompEventHandlers] = useState<any>({}); // 组件事件
 	const [allEventHandlers, setAllEventHandlers] = useState<any>({}); // 所有事件
@@ -149,7 +149,17 @@ const Layer: React.FC<LayerProps> = ({
 				)
 		  ); // 项目名称_页面名称_图层名称组成唯一的同步key
 
+	useMount(() => {
+		if(targetRef.current)
+			canvasStore.cacheLayerDom(data.id, targetRef.current);
+	});
 
+	useUpdateEffect(()=>{
+		if(canvasStore.reloadLayerIds.includes(data.id)){
+			// 强制重新加载组件
+			setRenderKey((key)=> key + 1)
+		}
+	}, [data.id, canvasStore.reloadLayerIds])
 
 	useEffect(() => {
 		// 事件处理
@@ -199,11 +209,9 @@ const Layer: React.FC<LayerProps> = ({
 	}, []);
 
 	useEffect(() => {
-		// if (data) {
-		// 	setHide(!!data.hide);
-		// 	// canvasStore.loadScript
-		// }
-
+		if (data) {
+			setHide(!!data.hide);
+		}
 		console.log("layer data", data);
 	}, [data]);
 
@@ -372,9 +380,7 @@ const Layer: React.FC<LayerProps> = ({
 				setHide,
 				// router: history,
 				goto: (screenName: string) => {
-					history(
-						`/view/${canvasStore.screenInfo?.id}`
-					);
+					history(`/view/${canvasStore.screenInfo?.id}`);
 				},
 				goBack: () => {
 					history("-1");
@@ -461,7 +467,6 @@ const Layer: React.FC<LayerProps> = ({
 		parseEvents(data.events);
 	}, [JSON.stringify(data.events)]);
 
-
 	const layerStyle = useMemo(() => {
 		const scale =
 			data.style.scale !== undefined ? `scale(${data.style.scale})` : "";
@@ -474,10 +479,11 @@ const Layer: React.FC<LayerProps> = ({
 			display: !enable && hide ? "none" : "block",
 			opacity: enable && hide ? 0.2 : data.style.opacity,
 			overflow: data.style.overflow || "hidden",
+			x: undefined,
+			y: undefined,
+			z: undefined,
 		};
 	}, [hide, enable, data.style]);
-
-	// const formatStyles = parseStyle(data.style);
 
 	return (
 		<div
@@ -490,6 +496,7 @@ const Layer: React.FC<LayerProps> = ({
 			tabIndex={enable ? 0 : undefined}
 		>
 			<Render
+				key={renderKey}
 				onMount={onMount}
 				component={data.component}
 				props={{ ...mergeArgs.props, dataloading }}

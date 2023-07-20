@@ -9,8 +9,9 @@ import { getPackScriptUrl, smallId } from "@/common/util";
 const MAX_UNDO = 100;
 
 export default class Canvas {
-	// 画面内容信息
+	// 画布信息
 	screenInfo?: ScreenDetail;
+	// 图层
 	layers: LayerInfo[] = [];
 	// 当前选中所有图层的id，可以多选
 	selectedLayers: Set<LayerInfo> = new Set(); // 所有选中的图层id
@@ -24,6 +25,8 @@ export default class Canvas {
 	undoData: ScreenDetail[] = [];
 	redoData: ScreenDetail[] = [];
 	scale = 1;
+	// 强制刷新组件
+	reloadLayerIds:string[] = [];
 	moveableRect:
 		| { x: number; y: number; width: number; height: number }
 		| undefined;
@@ -41,6 +44,7 @@ export default class Canvas {
 	> = new Map();
 	// 已经加载过的组件
 	loadedPackComponent: Map<string, Record<string, Constructor<MojitoComponent>>> = new Map();
+	layerDomCache: Map<string, HTMLDivElement> = new Map;
 
 	constructor() {
 		makeObservable(this, {
@@ -50,6 +54,7 @@ export default class Canvas {
 			packScript: false,
 			loadedPackComponent: false,
 			mouseDownEvent: false,
+			layerDomCache: false,
 		});
 	}
 
@@ -81,6 +86,14 @@ export default class Canvas {
 			}
 		}
 		return groups.size === 1;
+	}
+
+	cacheLayerDom(layerId:string, element:HTMLDivElement){
+		this.layerDomCache.set(layerId, element)
+	}
+
+	getLayerDom(layerId:string){
+		return this.layerDomCache.get(layerId);
 	}
 
 	/**
@@ -280,21 +293,14 @@ export default class Canvas {
 	}
 
 	/**
-	 * 重新加载页面图层
+	 * 重新加载图层
 	 */
-	async reload() {
-		if (!this.screenInfo) return;
-		return service.getScreenDetail(this.screenInfo.id).then((data) => {
-			if (data) {
-				data.layers &&
-					data.layers.sort((a, b) => {
-						return b.style.z - a.style.z;
-					});
-			}
-			this.screenInfo = data;
-			this.selectedLayers = new Set(this.selectedLayers);
-			return data;
+	async reloadLayer() {
+		const ids:string[] = [];
+		this.selectedLayers.forEach(v =>{
+			ids.push(v.id);
 		});
+		this.reloadLayerIds = ids;
 	}
 
 	/**
@@ -594,7 +600,14 @@ export default class Canvas {
 	deleteLayer() {
 		this.addUndoData(this.screenInfo);
 		this.layers = this.layers.filter(
-			(layer) => !this.selectedLayers.has(layer)
+			(layer) => {
+				if(this.selectedLayers.has(layer)){
+					// 清除图层dom缓存
+					this.layerDomCache.delete(layer.id);
+					return false;
+				}
+				return true
+			}
 		);
 		this.selectedLayers = new Set();
 	}

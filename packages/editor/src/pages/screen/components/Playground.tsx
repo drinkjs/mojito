@@ -26,8 +26,8 @@ const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
 
 const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
-const ActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
-const LayersKeys = ["ctrl.z", "ctrl.y", "ctrl.s"]
+const LayerActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
+const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s"]
 
 export default function Playground() {
 	const { canvasStore } = useCanvasStore();
@@ -223,10 +223,10 @@ export default function Playground() {
 	);
 
 	/**
-	 * 删除和取消选择
+	 * 快捷键对图层的操作
 	 */
 	useKeyPress(
-		ActionKeys,
+		LayerActionKeys,
 		(event) => {
 			if (canvasStore.selectedLayers.size === 0) return;
 
@@ -259,15 +259,19 @@ export default function Playground() {
 					canvasStore.disbandGroup();
 					break;
 				case "l":
-					// 锁定图层
+					// 锁定/解销图层
 					canvasStore.lockLayer(!canvasStore.isAllLock);
+					break;
+				case "h":
+					// 显示/隐藏图层
+					canvasStore.hideLayer(!canvasStore.isAllHide);
 					break;
 			}
 		},
 		{ useCapture: true, exactMatch: true }
 	);
 
-	useKeyPress(LayersKeys, (event)=>{
+	useKeyPress(CanvasActionKeys, (event)=>{
 		event.preventDefault();
 	}, { useCapture: true, exactMatch: true })
 

@@ -180,10 +180,10 @@ export default function Header(props: HeaderProps) {
 					icon="icon-shuaxin1"
 					style={toolStyles}
 					onClick={() => {
-						// canvasStore.reloadLayer();
+						canvasStore.reloadLayer();
 					}}
 					title="刷新组件"
-					disabled={canvasStore.selectedLayers.size !== 1}
+					disabled={canvasStore.selectedLayers.size === 0}
 				/>
 				<IconLink
 					icon="icon-suoding"
@@ -203,7 +203,7 @@ export default function Header(props: HeaderProps) {
 					style={toolStyles}
 					disabled={isNoSelect}
 					onClick={() => {
-						canvasStore?.hideLayer(!canvasStore.isAllHide);
+						canvasStore.hideLayer(!canvasStore.isAllHide);
 					}}
 					title={
 						canvasStore.isAllHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"

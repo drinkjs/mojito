@@ -105,8 +105,10 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 			const elements: HTMLElement[] = [];
 			const frames: FrameInfo[] = [];
 			selectedLayers.forEach((layer) => {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				elements.push(document.getElementById(layer.id)!);
+				const layerElement = canvasStore.getLayerDom(layer.id);
+				if(!layerElement) return;
+
+				elements.push(layerElement);
 				frames.push({
 					layerId: layer.id,
 					style: { ...layer.style },

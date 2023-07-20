@@ -1,9 +1,9 @@
 import { Spin } from "antd";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
 import ErrorCatch from "@/components/ErrorCatch";
 import { useCanvasStore } from "../../hook";
-import { useMount, useUpdateEffect } from "ahooks";
+import { useMount, useUnmount, useUpdateEffect } from "ahooks";
 import styles from "./index.module.css";
 
 interface RenderProps {
@@ -13,7 +13,8 @@ interface RenderProps {
 	component: ComponentInfo;
 	componentName: string;
 	width?:number|string,
-	height?:number|string
+	height?:number|string,
+	reloadKey?:any,
 	onMount?: (
 		componentProps?: Record<string, any>,
 		size?: { width: number; height: number }
@@ -22,13 +23,13 @@ interface RenderProps {
 	style?: React.CSSProperties;
 }
 
-export default function Render({ component, onMount, style, width, height }: RenderProps) {
+export default function Render({ component, onMount, style, width, height, reloadKey }: RenderProps) {
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	const componentRef = useRef<MojitoComponent | null>(null);
 	const [loading, setLoading] = useState(false);
 	const { canvasStore } = useCanvasStore();
 
-	useMount(() => {
+	const loadComponent = useCallback(()=>{
 		setLoading(true);
 		canvasStore
 			.loadComponent(component.packId, component.export)
@@ -37,9 +38,15 @@ export default function Render({ component, onMount, style, width, height }: Ren
 					const comp = new Component()
 					componentRef.current = comp;
 					setLoading(false);
-					comp.mount(rootRef.current, undefined, (props) => {
+
+					const componentContainer = document.createElement("div");
+					componentContainer.style.width = "100%";
+					componentContainer.style.height = "100%";
+					rootRef.current.appendChild(componentContainer);
+
+					comp.mount(componentContainer, width && height ? {width, height} : undefined, (props) => {
 						if (onMount) {
-							const firstChild: HTMLElement = rootRef.current!.firstChild as HTMLElement;
+							const firstChild: HTMLElement = componentContainer.firstChild as HTMLElement;
 							let size: any = undefined;
 							if (firstChild && firstChild.getBoundingClientRect) {
 								const { width, height } = firstChild.getBoundingClientRect();
@@ -50,7 +57,18 @@ export default function Render({ component, onMount, style, width, height }: Ren
 					});
 				}
 			});
+	}, [width, height, onMount, canvasStore, component])
+	
+	useMount(() => {
+		loadComponent();
 	});
+
+	useUpdateEffect(()=>{
+		if(componentRef.current){
+			componentRef.current.unmount();
+			loadComponent();
+		}
+	}, [reloadKey]);
 
 	useUpdateEffect(()=>{
 		if(componentRef.current){
@@ -61,7 +79,7 @@ export default function Render({ component, onMount, style, width, height }: Ren
 				}
 			});
 		}
-	}, [width, height])
+	}, [width, height]);
 
 	return (
 		<ErrorCatch>
