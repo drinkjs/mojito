@@ -51,36 +51,7 @@ export default function Playground() {
 
 	const { scale, screenInfo, layers } = canvasStore;
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
-
-	const debounceRect = useDebounceFn(() => {
-		if (changerRef.current) {
-			const rect = changerRef.current.getRect();
-			if (rect) {
-				canvasStore.moveableRect = {
-					x: Math.round(rect.left),
-					y: Math.round(rect.top),
-					width: Math.round(rect.width),
-					height: Math.round(rect.height),
-				};
-			}
-		}
-	});
 	
-	/**
-	 * 更新moveable
-	 */
-	const updateRect = useCallback(() => {
-		if (changerRef.current) {
-			changerRef.current.updateRect();
-			debounceRect.run();
-		}
-	}, [debounceRect]);
-
-
-	useUpdateEffect(() => {
-		updateRect();
-	}, [scale]);
-
 	/**
 	 * 定时保存图层信息
 	 */
@@ -184,14 +155,6 @@ export default function Playground() {
 		canvasStore.zoomAuto();
 		dropTarget(layoutRef);
 	});
-
-	/**
-	 * 页面大小改变时更新moveable位置
-	 */
-	const size = useSize(areaRef);
-	useUpdateEffect(()=>{
-		updateRect()
-	}, [size, updateRect])
 
 	/**
 	 * 键盘移动图层
@@ -304,7 +267,6 @@ export default function Playground() {
 		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>
-					<Changer changerActionRef={changerRef} />
 					{pageLayout && (
 						<div
 							style={{
@@ -347,6 +309,7 @@ export default function Playground() {
 										/>
 									);
 								})}
+							<Changer changerActionRef={changerRef} />
 						</div>
 					)}
 				</div>

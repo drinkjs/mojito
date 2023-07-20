@@ -5,6 +5,7 @@ import "systemjs";
 import { message } from "antd";
 import { getPackDetail } from "@/services/component";
 import { getPackScriptUrl, smallId } from "@/common/util";
+import { RectInfo } from "react-moveable";
 
 const MAX_UNDO = 100;
 
@@ -27,9 +28,7 @@ export default class Canvas {
 	scale = 1;
 	// 强制刷新组件
 	reloadLayerIds:string[] = [];
-	moveableRect:
-		| { x: number; y: number; width: number; height: number }
-		| undefined;
+	moveableRect?:RectInfo
 
 	layoutContainer: HTMLDivElement | null = null;
 	areaElement: HTMLDivElement | null = null;
@@ -55,6 +54,7 @@ export default class Canvas {
 			loadedPackComponent: false,
 			mouseDownEvent: false,
 			layerDomCache: false,
+			moveableRect: false,
 		});
 	}
 
@@ -88,10 +88,20 @@ export default class Canvas {
 		return groups.size === 1;
 	}
 
+	/**
+	 * 缓存layer dom
+	 * @param layerId 
+	 * @param element 
+	 */
 	cacheLayerDom(layerId:string, element:HTMLDivElement){
 		this.layerDomCache.set(layerId, element)
 	}
 
+	/**
+	 * 在缓存里取出图层dom
+	 * @param layerId 
+	 * @returns 
+	 */
 	getLayerDom(layerId:string){
 		return this.layerDomCache.get(layerId);
 	}
@@ -610,5 +620,71 @@ export default class Canvas {
 			}
 		);
 		this.selectedLayers = new Set();
+	}
+
+	alignHandler(type: AlignType) {
+		const size = this.selectedLayers.size;
+		if (size < 1) return;
+
+		let aligns: { x?: number | undefined; y?: number | undefined }[] = [];
+		// const rect = moveableRef.current?.getRect()!;
+		const layers = Array.from(this.selectedLayers);
+		const isGroup = layers.length === 1 || this.isAllGroup;
+		const rect = this.moveableRect ? this.moveableRect : {width: 0, height: 0, left: 0, top: 0}
+		const width = this.screenInfo?.style.width || 0;
+		const height = this.screenInfo?.style.height || 0;
+		let offsetX = 0;
+		let offsetY = 0;
+
+		console.log("==============================----", width, rect);
+
+		switch (type) {
+			case "left":
+				offsetX = rect.left;
+				break;
+			case "right":
+				offsetX = isGroup ? width - (rect.left + rect.width) : rect.left + rect.width;
+				break;
+			case "top":
+				offsetY = rect.top;
+				break;
+			case "bottom":
+				offsetY = isGroup ? height - (rect.top + rect.height) : rect.top + rect.height;
+				break;
+			case "h-center":
+				offsetY = isGroup ? (height - rect.height) / 2 - rect.top  : rect.top + rect.height / 2; 
+				break;
+			case "v-center":
+				offsetX = isGroup ? (width - rect.width) / 2 - rect.left  : rect.left + rect.width / 2; 
+				break;
+		}
+
+		const ids:string[] = []
+		layers.forEach((v)=>{
+				ids.push(v.id);
+				if(type === "right"){
+					// 右对齐
+					v.style.x += isGroup ? offsetX : (offsetX - (v.style.x + v.style.width));
+				}else if(type === "left"){
+					// 左对齐
+					v.style.x -= isGroup ? offsetX : (v.style.x - offsetX);
+				}else if(type === "v-center"){
+					// 水平居中
+					v.style.x += isGroup ? offsetX : (offsetX - (v.style.x + v.style.width / 2));
+				}else if(type === "h-center"){
+					// 垂直居中
+					v.style.y += isGroup ? offsetY : (offsetY - (v.style.y + v.style.height / 2));
+				}else if(type === "top"){
+					// 顶部对齐
+					v.style.y -= isGroup ? offsetY : (v.style.y - offsetY);
+				}else if(type === "bottom"){
+					// 底部对齐
+					v.style.y += isGroup ? offsetY : (offsetY - (v.style.y + v.style.height));
+				}
+				
+				v.style = {...v.style};
+		});
+
+		this.refreshLayer(ids);
 	}
 }

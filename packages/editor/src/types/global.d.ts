@@ -187,6 +187,8 @@ interface MojitoComponent {
 
 export type Constructor<T = any> = new (...args: any[]) => T;
 
+type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
+
  interface LayerEvents {
   [key: string]: { code: string; isSync: boolean };
 }

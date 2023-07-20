@@ -126,7 +126,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-zuoduiqi-"
 					style={toolStyles}
 					onClick={() => {
-						alignHandler("left");
+						canvasStore.alignHandler("left");
 					}}
 					title="左对齐"
 					disabled={isNoSelect}
@@ -135,7 +135,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-dingduanduiqi-"
 					style={toolStyles}
 					onClick={() => {
-						alignHandler("top");
+						canvasStore.alignHandler("top");
 					}}
 					title="顶部对齐"
 					disabled={isNoSelect}
@@ -144,7 +144,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-youduiqi-"
 					style={toolStyles}
 					onClick={() => {
-						alignHandler("right");
+						canvasStore.alignHandler("right");
 					}}
 					title="右对齐"
 					disabled={isNoSelect}
@@ -153,7 +153,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-dingduanduiqi--copy"
 					style={toolStyles}
 					onClick={() => {
-						alignHandler("bottom");
+						canvasStore.alignHandler("bottom");
 					}}
 					title="底部对齐"
 					disabled={isNoSelect}
@@ -162,7 +162,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-align-level"
 					style={toolStyles}
 					onClick={() => {
-						alignHandler("v-center");
+						canvasStore.alignHandler("v-center");
 					}}
 					title="水平居中"
 					disabled={isNoSelect}
@@ -171,7 +171,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-align-vertical"
 					style={toolStyles}
 					onClick={() => {
-						alignHandler("h-center");
+						canvasStore.alignHandler("h-center");
 					}}
 					title="垂直居中"
 					disabled={isNoSelect}

@@ -25,8 +25,6 @@ import * as transformParser from "transform-parser";
 import { useCanvasStore } from "../hook";
 import { useUpdateEffect } from "ahooks";
 
-const app = document.getElementById("root")
-
 type FrameInfo = {
 	layerId: string;
 	style: ComponentStyle;
@@ -75,7 +73,7 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 				ref.current?.updateRect();
 			},
 			getRect: () => {
-				return ref.current?.getRect();
+				return ref.current!.getRect();
 			},
 			move: (x: number, y: number) => {
 				groupframes.forEach((v, index) => {
@@ -87,7 +85,7 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 						v.style.y
 					);
 				});
-				ref.current?.updateRect();
+				ref.current!.updateRect();
 			},
 		}),
 		[groupframes, groupElement]
@@ -120,7 +118,6 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 			setGroupElement(elements);
 			setGroupFrames(frames);
 		}
-		ref.current?.updateRect();
 	}, [canvasStore.selectedLayers]);
 
 	/**
@@ -131,6 +128,12 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 			ref.current.dragStart(canvasStore.mouseDownEvent.nativeEvent);
 		}
 		canvasStore.mouseDownEvent = undefined;
+		ref.current!.updateRect();
+		if(ref.current){
+			setTimeout(()=>{
+				canvasStore.moveableRect = ref.current!.getRect()
+			})
+		}
 	}, [groupElement]);
 
 	// 计算辅助线
@@ -378,7 +381,6 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	return (
 		<Moveable
 			flushSync={flushSync}
-			rootContainer={app}
 			snappable
 			throttleDrag={0}
 			verticalGuidelines={lines.verLines}
