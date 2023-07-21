@@ -645,4 +645,34 @@ export default class Canvas {
 
 		this.refreshLayer(ids);
 	}
+
+	copy(){
+		if(this.selectedLayers.size){
+			const select = Array.from(this.selectedLayers);
+			sessionStorage.setItem("MojitoCopy", JSON.stringify(select));
+		}
+	}
+
+	paste(){
+		const data = sessionStorage.getItem("MojitoCopy");
+		sessionStorage.removeItem("MojitoCopy")
+		if(data){
+			const copyLayers = JSON.parse(data) as LayerInfo[];
+			const newId = smallId();
+			const groupMap:any = {}
+			copyLayers.forEach((v, index) =>{
+				v.id = `${newId}${index}`;
+				v.name = `${v.name}_copy`;
+				v.style.x += 20;
+				if(v.group){
+					if(!groupMap[v.group]){
+						groupMap[v.group] = `g${newId}${index}`;
+					}
+					v.group = groupMap[v.group];
+				}
+			});
+			this.layers = [...this.layers, ...copyLayers];
+			this.screenInfo!.layers = this.layers;
+		}
+	}
 }

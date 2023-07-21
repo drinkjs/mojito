@@ -1,5 +1,7 @@
 import * as babel from '@babel/standalone';
-import * as typeis from './typeis';
+
+
+export * from "./typeis"
 
 export function formatJson (json: any) {
   if (json === undefined || typeof json === 'string') return json;
@@ -106,5 +108,3 @@ export const localCache = {
     }
   }
 }
-
-export { typeis };

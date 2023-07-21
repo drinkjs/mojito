@@ -17,7 +17,7 @@ import styles from "../styles/playground.module.css";
 import Layer from "./Layer";
 import { DefaultLayerSize } from "@/config";
 import Changer, { ChangerAction } from "./Changer";
-import { Modal } from "antd";
+import { message, Modal } from "antd";
 import { smallId } from "@/common/util";
 
 const DefaulBackgroundColor = "#FFF";
@@ -26,7 +26,7 @@ const DefaultFontColor = "#000";
 // 快捷键
 const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
 const SelectLayerActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
-const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s"]
+const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s", "ctrl.c", "ctrl.v"]
 
 export default function Playground() {
 	const { canvasStore } = useCanvasStore();
@@ -251,7 +251,17 @@ export default function Playground() {
 				break;
 			case "s":
 				// 保存
-				canvasStore.saveScreen()
+				canvasStore.saveScreen().then(()=>{
+					message.success("保存成功");
+				})
+				break;
+			case "c":
+				// 复制
+				canvasStore.copy();
+				break;
+			case "v":
+				// 粘贴
+				canvasStore.paste();
 				break;
 		}
 	}, { useCapture: true, exactMatch: true, target: document.body })

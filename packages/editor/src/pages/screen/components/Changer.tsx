@@ -63,7 +63,8 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	const { canvasStore } = useCanvasStore();
 	const [groupframes, setGroupFrames] = useState<FrameInfo[]>([]); // 图层组位置信息
 	const [groupElement, setGroupElement] = useState<HTMLElement[]>([]); // 图层组dom
-	const [isSelectLoading, setIsSelectLoading] = useState(false);
+	// 组件加裁中不可选
+	const [componentLoading, setComponentLoading] = useState(false);
 
 	const { screenInfo } = canvasStore;
 
@@ -111,7 +112,7 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	 */
 	useUpdateEffect(() => {
 		const { selectedLayers } = canvasStore;
-		setIsSelectLoading(false);
+		setComponentLoading(false);
 		if (selectedLayers.size === 0) {
 			setGroupElement([]);
 			setGroupFrames([]);
@@ -127,8 +128,10 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 					layerId: layer.id,
 					style: { ...layer.style },
 				});
+
 				if (layer.isFirst) {
-					setIsSelectLoading(true);
+					// 组件是首次加载加载需要获取组件大小，等待初始化完成才能开始做变换
+					setComponentLoading(true);
 				}
 			});
 			setGroupElement(elements);
@@ -395,8 +398,8 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 			keepRatio={false}
 			ref={ref}
 			target={groupElement}
-			draggable={!canvasStore.isAllLock && !isSelectLoading}
-			resizable={!canvasStore.isAllLock && !isSelectLoading}
+			draggable={!canvasStore.isAllLock && !componentLoading}
+			resizable={!canvasStore.isAllLock && !componentLoading}
 			// snapGap={true}
 			// snapDirections={{"top":true,"left":true,"bottom":true,"right":true,"center":true,"middle":true}}
 			// elementSnapDirections={{"top":true,"left":true,"bottom":true,"right":true,"center":true,"middle":true}}
