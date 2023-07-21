@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useGlobalStore } from "@/store";
-import { useMount } from "ahooks";
+import { useMount, useUpdateEffect } from "ahooks";
 import { Button, Input, message, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import classNames from "classnames";
@@ -22,18 +22,18 @@ export default function ProjectList({onSelect}: ProjectListProps){
   /**
    * 选中项目
    */
-  const selectHandler = useCallback((item?:ProjectInfo)=>{
+  const selectHandler = (item?:ProjectInfo)=>{
     setSelected(item);
-    onSelect(item)
-  }, [onSelect])
+    onSelect(item);
+  }
 
   
-  useEffect(()=>{
+  useUpdateEffect(()=>{
     if (projectStore.list) {
       // 默认选中第一个
       selectHandler(projectStore.list[0]);
     }
-  }, [projectStore.list, selectHandler])
+  }, [projectStore.list])
 
   /**
      * 新增项目

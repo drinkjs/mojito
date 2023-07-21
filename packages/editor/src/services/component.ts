@@ -18,8 +18,8 @@ export const getPackInfo = (url: string) =>
  * @param id
  * @returns
  */
-export const getPackDetail = (id: string) =>
-	get<ComponentPackInfo>("/component/pack/detail", { id });
+export const getPackDetail = (id: string | string[]) =>
+	post<ComponentPackInfo | ComponentPackInfo[]>("/component/pack/detail", { id });
 /**
  * 新增组件
  * @param {*} params

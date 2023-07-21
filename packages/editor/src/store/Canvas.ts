@@ -16,18 +16,17 @@ export default class Canvas {
 	layers: LayerInfo[] = [];
 	// 当前选中所有图层的id，可以多选
 	selectedLayers: Set<LayerInfo> = new Set(); // 所有选中的图层id
-	// 是否正在保存
+
 	saveLoading = false;
 	getDetailLoading = false;
-	detailLayersLoading = false;
 
 	undoData: ScreenDetail[] = [];
 	redoData: ScreenDetail[] = [];
 	scale = 1;
 	// 强制刷新组件
 	reloadLayerIds: string[] = [];
-	moveableRect?: RectInfo;
 
+	moveableRect?: RectInfo;
 	layoutContainer: HTMLDivElement | null = null;
 	areaElement: HTMLDivElement | null = null;
 	zoomElement: HTMLDivElement | null = null;
@@ -35,9 +34,9 @@ export default class Canvas {
 	mouseDownEvent?: React.MouseEvent<HTMLDivElement, MouseEvent>;
 
 	// 缓存组件库加载地址和依赖
-	packScript: Map<
+	packScriptMap: Map<
 		string,
-		{ scriptUrl: string; external?: Record<string, string> }
+		{ scriptUrl: string; external?: Record<string, string>} | Promise<ComponentPackInfo | undefined>
 	> = new Map();
 	// 已经加载过的组件
 	loadedPackComponent: Map<
@@ -52,11 +51,14 @@ export default class Canvas {
 			layoutContainer: false,
 			areaElement: false,
 			zoomElement: false,
-			packScript: false,
+			packScriptMap: false,
 			loadedPackComponent: false,
 			mouseDownEvent: false,
 			layerDomCache: false,
 			moveableRect: false,
+			saveLoading: false,
+			undoData: false,
+			redoData: false,
 		});
 	}
 
@@ -145,17 +147,28 @@ export default class Canvas {
 	 */
 	async getDetail(id: string) {
 		this.getDetailLoading = true;
-		return service
-			.getScreenDetail(id)
-			.then((data) => {
-				if (data) {
-					this.screenInfo = data;
-					this.layers = this.screenInfo.layers || [];
+		const data = await service.getScreenDetail(id);
+		if (data) {
+			this.screenInfo = data;
+			this.layers = this.screenInfo.layers || [];
+			let packIds = this.layers.map(v => v.component.packId);
+			packIds = Array.from(new Set(packIds));
+			if(packIds.length){
+				// 获取组件的依赖信息
+				const packs = (await getPackDetail(packIds)) as ComponentPackInfo[];
+				if(packs){
+					packs.forEach(rel =>{
+						// 缓存依赖信息
+						const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
+						this.packScriptMap.set(rel.id, {scriptUrl, external: rel.external})
+					});
 				}
-			})
-			.finally(() => {
-				this.getDetailLoading = false;
-			});
+			}
+		}else{
+			this.screenInfo = undefined;
+			this.layers = [];
+		}
+		this.getDetailLoading = false;
 	}
 
 	/**
@@ -320,13 +333,12 @@ export default class Canvas {
 		this.mouseDownEvent = undefined;
 		this.layers.push(layer);
 		// 缓存组件库加载信息
-		if (!this.packScript.has(layer.component.packId)) {
-			this.packScript.set(layer.component.packId, { scriptUrl, external });
+		if (!this.packScriptMap.has(layer.component.packId)) {
+			this.packScriptMap.set(layer.component.packId, { scriptUrl, external });
 		}
 		// 更新ui
 		this.layers = [...this.layers];
 		this.screenInfo!.layers = this.layers;
-		this.saveScreen();
 	}
 
 	/**
@@ -343,12 +355,16 @@ export default class Canvas {
 			return loaded[exportName];
 		}
 
-		let packInfo = this.packScript.get(packId);
+		let packInfo:any = this.packScriptMap.get(packId);
 		if (!packInfo) {
 			// 调用接口获取信息
-			const rel = await getPackDetail(packId);
+			const reqPackDetail = getPackDetail(packId) as Promise<ComponentPackInfo>;
+			this.packScriptMap.set(packId, reqPackDetail);
+
+			const rel = await reqPackDetail;
 			if (!rel) {
 				message.error("没有相关组件");
+				this.packScriptMap.delete(packId);
 				return;
 			}
 			// 获取组件库脚本地址
@@ -358,7 +374,18 @@ export default class Canvas {
 				external: rel.external,
 			};
 			// 缓存组件库信息
-			this.packScript.set(packId, packInfo);
+			this.packScriptMap.set(packId, packInfo);
+		}else if(packInfo.then){
+			// 其它图层正在请求，等待结果返回
+			const rel = await packInfo;
+			if (!rel) {
+				return;
+			}
+			const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
+			packInfo = {
+				scriptUrl,
+				external: rel.external,
+			};
 		}
 
 		if (packInfo?.external) {
@@ -376,7 +403,7 @@ export default class Canvas {
 					console.error(e);
 				}
 			);
-			console.log("Load script", components);
+	
 			if (
 				components &&
 				components[exportName] &&
@@ -534,6 +561,7 @@ export default class Canvas {
 			}
 			return true;
 		});
+		this.screenInfo!.layers = this.layers;
 		this.cancelSelect();
 	}
 
