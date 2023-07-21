@@ -664,6 +664,7 @@ export default class Canvas {
 				v.id = `${newId}${index}`;
 				v.name = `${v.name}_copy`;
 				v.style.x += 20;
+				v.style.z += 1;
 				if(v.group){
 					if(!groupMap[v.group]){
 						groupMap[v.group] = `g${newId}${index}`;
