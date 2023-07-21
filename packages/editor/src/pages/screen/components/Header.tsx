@@ -4,7 +4,7 @@ import {
 	MinusOutlined,
 	PlusOutlined,
 } from "@ant-design/icons";
-import { Switch, Tooltip } from "antd";
+import { message, Switch, Tooltip } from "antd";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCanvasStore } from "../hook";
@@ -21,11 +21,15 @@ export default function Header() {
 	const { scale, screenInfo } = canvasStore;
 
 	const isNoSelect = canvasStore.selectedLayers.size === 0;
-	
-	const saveScreen = async () => {
+
+	const saveScreen = () => {
 		setSaveing(true);
-		await canvasStore.saveScreen();
-		setSaveing(false);
+		canvasStore.saveScreen().then(()=>{
+			message.success("保存成功")
+		}).finally(()=>{
+			setSaveing(false);
+		})
+		
 	};
 
 	const undo = () => {

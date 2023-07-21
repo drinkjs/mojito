@@ -280,25 +280,10 @@ export default class Canvas {
 	 */
 	async saveScreen() {
 		if (!this.screenInfo || this.saveLoading) return;
+
 		this.saveLoading = true;
-		// return service
-		// 	.updateLayer({
-		// 		id: this.screenInfo.id,
-		// 		layers: this.screenInfo.layers?.map((layer) => ({
-		// 			...layer,
-		// 			component: layer?.component ? { id: layer.component?.id } : undefined,
-		// 		})),
-		// 		style: this.screenInfo.style,
-		// 	})
-		// 	.then(() => {
-		// 		return true;
-		// 	})
-		// 	.finally(() => {
-		// 		this.saveLoading = false;
-		// 	})
-		// 	.catch(() => {
-		// 		this.reload();
-		// 	});
+		await service.updateLayer({...this.screenInfo, projectId: undefined, createAt: undefined, updateAt: undefined});
+		this.saveLoading = false;
 	}
 
 	/**

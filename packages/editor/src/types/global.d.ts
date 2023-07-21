@@ -53,8 +53,6 @@ declare global {
   type LayerInfo = {
     id: string;
     name: string;
-    // screenId: string;
-    // componentId: string; // 新增时必填
     component: ComponentInfo; // 详情时返回
     isFirst?: boolean;
     api?: {
@@ -66,16 +64,13 @@ declare global {
       };
     } | null;
     props?: Record<string, any>;
-    events?: LayerEvents;
+    eventHandler?: LayerEvents;
     eventLock?: boolean; // 事件锁定，锁定后图层内组件不能交互
     data?: Record<string, any>;
     style: ComponentStyle;
     hide?: boolean;
     lock?: boolean;
-    updateFlag?: string | number; // 组件更新标识，用于优化组件渲染，组件更新后值会变
     group?: string;
-    groupLock?: boolean;
-    groupHide?: boolean;
     anime?: {
       translateX?: number;
       translateY?: number;
@@ -91,11 +86,6 @@ declare global {
       direction?: string;
       autoplay?: boolean;
     };
-    reloadKey?: number; // 强制刷新
-    relativePosition?: {
-      x?: RelativePosition,
-      y?: RelativePosition
-    } // 相对位置
   }
 
   type LayerQuery = { [P in keyof LayerInfo]?: LayerInfo[P] }
@@ -207,7 +197,7 @@ type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
   // screenId: string;
   // componentId: string; // 新增时必填
   component: ComponentInfo; // 详情时返回
-  initSize: boolean;
+  isFirst?: boolean;
   api?: {
     url: string;
     method: string;
@@ -217,16 +207,13 @@ type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
     };
   } | null;
   props?: { [key: string]: any };
-  events?: LayerEvents;
+  eventHandler?: LayerEvents;
   eventLock?: boolean; // 事件锁定，锁定后图层内组件不能交互
   data?: Record;
   style: ComponentStyle;
   hide?: boolean;
   lock?: boolean;
-  updateFlag?: string | number; // 组件更新标识，用于优化组件渲染，组件更新后值会变
   group?: string;
-  groupLock?: boolean;
-  groupHide?: boolean;
   anime?: {
     translateX?: number;
     translateY?: number;
@@ -242,11 +229,6 @@ type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
     direction?: string;
     autoplay?: boolean;
   };
-  reloadKey?: number; // 强制刷新
-  relativePosition?: {
-    x?: RelativePosition,
-    y?: RelativePosition
-  } // 相对位置
 }
 
  interface DatasourceInfo {

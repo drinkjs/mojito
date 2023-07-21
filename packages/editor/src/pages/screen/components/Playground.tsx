@@ -1,11 +1,9 @@
 import {
-	useDebounceFn,
 	useDocumentVisibility,
 	useInterval,
 	useKeyPress,
 	useMount,
-	useSize,
-	useUpdateEffect,
+	useUnmount,
 } from "ahooks";
 import {
 	useCallback,
@@ -25,6 +23,7 @@ import { smallId } from "@/common/util";
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
 
+// 快捷键
 const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
 const SelectLayerActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
 const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s"]
@@ -46,7 +45,6 @@ export default function Playground() {
 		x: 0,
 		y: 0,
 	});
-	const [actioning, setActioning] = useState(false);
 	const documentVisibility = useDocumentVisibility();
 
 	const { scale, screenInfo, layers } = canvasStore;
@@ -60,6 +58,13 @@ export default function Playground() {
 			canvasStore.saveScreen();
 		}
 	}, 5000);
+
+	/**
+	 * 退出编辑时保存数据
+	 */
+	useUnmount(()=>{
+		canvasStore.saveScreen();
+	})
 
 	/**
 	 * 根据页面大小设置默认图层大小
@@ -201,16 +206,12 @@ export default function Playground() {
 					canvasStore.cancelSelect();
 					break;
 				case "Delete":
-					setActioning(true);
 					modal.confirm({
 						title: "确定删除?",
 						onOk: () => {
 							canvasStore.deleteLayer();
-							setActioning(false);
 						},
-						onCancel: () => {
-							setActioning(false);
-						},
+						// onCancel: () => {},
 					});
 					break;
 				case "g":
@@ -258,9 +259,9 @@ export default function Playground() {
 	/**
 	 * 取消所有选中
 	 */
-	const clearAllSelected = useCallback(() => {
-		if (!actioning) canvasStore.cancelSelect();
-	}, [canvasStore, actioning]);
+	// const clearAllSelected = useCallback(() => {
+	// 	if (!actioning) canvasStore.cancelSelect();
+	// }, [canvasStore, actioning]);
 
 	/**
 	 * 选中图层

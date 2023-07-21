@@ -388,6 +388,7 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 		<Moveable
 			flushSync={flushSync}
 			snappable
+			stopPropagation
 			throttleDrag={0}
 			verticalGuidelines={lines.verLines}
 			horizontalGuidelines={lines.horLines}
