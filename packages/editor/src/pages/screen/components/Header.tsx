@@ -5,7 +5,7 @@ import {
 	PlusOutlined,
 } from "@ant-design/icons";
 import { Switch, Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/header.module.css";
@@ -14,22 +14,14 @@ const toolStyles = {
 	margin: "0 6px",
 };
 
-interface HeaderProps {
-	// canvasStore:Canvas
-}
-
-export default function Header(props: HeaderProps) {
+export default function Header() {
 	const [saveing, setSaveing] = useState(false);
 
 	const { canvasStore } = useCanvasStore();
 	const { scale, screenInfo } = canvasStore;
 
-	const alignHandler = (align: string) => {
-		console.log("alignHandler");
-	};
-
 	const isNoSelect = canvasStore.selectedLayers.size === 0;
-
+	
 	const saveScreen = async () => {
 		setSaveing(true);
 		await canvasStore.saveScreen();
@@ -37,11 +29,11 @@ export default function Header(props: HeaderProps) {
 	};
 
 	const undo = () => {
-		console.log("undo");
+		canvasStore.undo()
 	};
 
 	const redo = () => {
-		console.log("redo");
+		canvasStore.redo()
 	};
 
 	const groupLayer = () => {
@@ -52,6 +44,10 @@ export default function Header(props: HeaderProps) {
 		canvasStore.disbandGroup();
 	};
 
+	const isAllGroup = useMemo(() =>canvasStore.isAllGroup , [canvasStore.selectedLayers]);
+	const isAllHide = useMemo(() =>canvasStore.isAllHide , [canvasStore.selectedLayers]);
+	const isAllLock = useMemo(() =>canvasStore.isAllLock , [canvasStore.selectedLayers]);
+
 	return (
 		<header className={styles.header}>
 			<section className={styles.titleBox}>
@@ -59,9 +55,7 @@ export default function Header(props: HeaderProps) {
 					<Link to="..">
 						<IconFont type="icon-fanhui1" className={styles.backIcon} />
 					</Link>
-					{screenInfo?.name && (
-						<strong className={styles.title}>{screenInfo.name}</strong>
-					)}
+					<strong className={styles.title}>{screenInfo?.name}</strong>
 				</div>
 				<div className={styles.zoomBox}>
 					<div
@@ -187,26 +181,26 @@ export default function Header(props: HeaderProps) {
 				/>
 				<IconLink
 					icon="icon-suoding"
-					className={canvasStore.isAllLock ? undefined : styles.noLockHide}
+					className={isAllLock ? undefined : styles.noLockHide}
 					style={toolStyles}
 					disabled={canvasStore.selectedLayers.size === 0}
 					title={
-						canvasStore.isAllLock ? "解锁组件(Ctrl+L)" : "锁定组件(Ctrl+L)"
+						isAllLock ? "解锁组件(Ctrl+L)" : "锁定组件(Ctrl+L)"
 					}
 					onClick={() => {
-						canvasStore.lockLayer(!canvasStore.isAllLock);
+						canvasStore.lockLayer(!isAllLock);
 					}}
 				/>
 				<IconLink
 					icon="icon-xianshi1"
-					className={canvasStore.isAllHide ? styles.noLockHide : undefined}
+					className={isAllHide ? styles.noLockHide : undefined}
 					style={toolStyles}
 					disabled={isNoSelect}
 					onClick={() => {
-						canvasStore.hideLayer(!canvasStore.isAllHide);
+						canvasStore.hideLayer(!isAllHide);
 					}}
 					title={
-						canvasStore.isAllHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"
+						isAllHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"
 					}
 				/>
 				<IconLink
@@ -214,7 +208,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-hebing"
 					onClick={groupLayer}
 					disabled={
-						canvasStore.isAllGroup || canvasStore.selectedLayers.size < 2
+						isAllGroup || canvasStore.selectedLayers.size < 2
 					}
 					style={toolStyles}
 				/>
@@ -223,7 +217,7 @@ export default function Header(props: HeaderProps) {
 					icon="icon-shoudongfenli"
 					onClick={disbandLayer}
 					disabled={
-						!canvasStore.isAllGroup || canvasStore.selectedLayers.size < 2
+						!isAllGroup || canvasStore.selectedLayers.size < 2
 					}
 					style={toolStyles}
 				/>

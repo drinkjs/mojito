@@ -26,7 +26,7 @@ const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
 
 const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
-const LayerActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
+const SelectLayerActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
 const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s"]
 
 export default function Playground() {
@@ -182,23 +182,23 @@ export default function Playground() {
 			}
 			changerRef.current.move(valueX, valueY);
 		},
-		{ useCapture: true }
+		{ useCapture: true, target: document.body }
 	);
 
 	/**
 	 * 快捷键对图层的操作
 	 */
 	useKeyPress(
-		LayerActionKeys,
+		SelectLayerActionKeys,
 		(event) => {
+			event.preventDefault();
 			if (canvasStore.selectedLayers.size === 0) return;
 
-			event.preventDefault();
 			console.log(event.key);
 			switch (event.key) {
 				case "Escape":
 					// 取消选中
-					canvasStore.selectedLayers = new Set();
+					canvasStore.cancelSelect();
 					break;
 				case "Delete":
 					setActioning(true);
@@ -231,18 +231,35 @@ export default function Playground() {
 					break;
 			}
 		},
-		{ useCapture: true, exactMatch: true }
+		{ useCapture: true, exactMatch: true, target: document.body }
 	);
 
+	/**
+	 * 撤销/重做/保存
+	 */
 	useKeyPress(CanvasActionKeys, (event)=>{
 		event.preventDefault();
-	}, { useCapture: true, exactMatch: true })
+		switch (event.key) {
+			case "z":
+				// 撤销
+				canvasStore.undo()
+				break;
+			case "y":
+				// 重做
+				canvasStore.redo()
+				break;
+			case "s":
+				// 保存
+				canvasStore.saveScreen()
+				break;
+		}
+	}, { useCapture: true, exactMatch: true, target: document.body })
 
 	/**
 	 * 取消所有选中
 	 */
 	const clearAllSelected = useCallback(() => {
-		if (!actioning) canvasStore.selectedLayers = new Set();
+		if (!actioning) canvasStore.cancelSelect();
 	}, [canvasStore, actioning]);
 
 	/**

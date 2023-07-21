@@ -20,15 +20,13 @@ export default class Canvas {
 	saveLoading = false;
 	getDetailLoading = false;
 	detailLayersLoading = false;
-	resizeing = false;
-	// 图层在执行动画
-	playing = false;
+
 	undoData: ScreenDetail[] = [];
 	redoData: ScreenDetail[] = [];
 	scale = 1;
 	// 强制刷新组件
-	reloadLayerIds:string[] = [];
-	moveableRect?:RectInfo
+	reloadLayerIds: string[] = [];
+	moveableRect?: RectInfo;
 
 	layoutContainer: HTMLDivElement | null = null;
 	areaElement: HTMLDivElement | null = null;
@@ -42,8 +40,12 @@ export default class Canvas {
 		{ scriptUrl: string; external?: Record<string, string> }
 	> = new Map();
 	// 已经加载过的组件
-	loadedPackComponent: Map<string, Record<string, Constructor<MojitoComponent>>> = new Map();
-	layerDomCache: Map<string, HTMLDivElement> = new Map;
+	loadedPackComponent: Map<
+		string,
+		Record<string, Constructor<MojitoComponent>>
+	> = new Map();
+	// 图层应该的dom节点
+	layerDomCache: Map<string, HTMLDivElement> = new Map();
 
 	constructor() {
 		makeObservable(this, {
@@ -89,20 +91,51 @@ export default class Canvas {
 	}
 
 	/**
-	 * 缓存layer dom
-	 * @param layerId 
-	 * @param element 
+	 * undo数据
+	 * @param data
+	 * @returns
 	 */
-	cacheLayerDom(layerId:string, element:HTMLDivElement){
-		this.layerDomCache.set(layerId, element)
+	private addUndoData(data?: ScreenDetail) {
+		this.undoData.push(_.cloneDeep(data || this.screenInfo! ));
+		if (this.undoData.length >= MAX_UNDO) {
+			this.undoData.shift();
+		}
+	}
+
+	/**
+	 * redo数据
+	 * @param data
+	 * @returns
+	 */
+	private addRedoData(data?: ScreenDetail) {
+		this.redoData.push(_.cloneDeep(data || this.screenInfo!));
+		if (this.redoData.length >= MAX_UNDO) {
+			this.redoData.shift();
+		}
+	}
+
+	/**
+	 * 取消选中图层
+	 */
+	cancelSelect(){
+		this.selectedLayers = new Set()
+	}
+
+	/**
+	 * 缓存layer dom
+	 * @param layerId
+	 * @param element
+	 */
+	cacheLayerDom(layerId: string, element: HTMLDivElement) {
+		this.layerDomCache.set(layerId, element);
 	}
 
 	/**
 	 * 在缓存里取出图层dom
-	 * @param layerId 
-	 * @returns 
+	 * @param layerId
+	 * @returns
 	 */
-	getLayerDom(layerId:string){
+	getLayerDom(layerId: string) {
 		return this.layerDomCache.get(layerId);
 	}
 
@@ -115,8 +148,8 @@ export default class Canvas {
 		return service
 			.getScreenDetail(id)
 			.then((data) => {
-				this.screenInfo = data;
-				if (this.screenInfo) {
+				if (data) {
+					this.screenInfo = data;
 					this.layers = this.screenInfo.layers || [];
 				}
 			})
@@ -126,7 +159,7 @@ export default class Canvas {
 	}
 
 	/**
-	 * 刷新图层
+	 * 刷新图层数据，强制刷新ui
 	 * @param layerIds
 	 */
 	refreshLayer(layerIds?: string[]) {
@@ -142,6 +175,8 @@ export default class Canvas {
 		} else {
 			this.layers = this.layers.map((v) => ({ ...v }));
 		}
+
+		this.screenInfo!.layers = this.layers;
 
 		if (this.selectedLayers.size > 0) {
 			const newSelect: Set<LayerInfo> = new Set();
@@ -181,7 +216,7 @@ export default class Canvas {
 	}
 
 	/**
-	 * 自适应大小
+	 * 画布自适应大小
 	 */
 	zoomAuto() {
 		const { areaElement, zoomElement, layoutContainer, screenInfo } = this;
@@ -213,7 +248,7 @@ export default class Canvas {
 	}
 
 	/**
-	 * 缩放
+	 * 缩放画布
 	 * @param isUp
 	 * @returns
 	 */
@@ -237,32 +272,6 @@ export default class Canvas {
 			zoomElement.style.width = `${pageLayout.width * scaleInt}px`;
 			zoomElement.style.height = `${pageLayout.height * scaleInt}px`;
 			this.scale = scaleInt;
-		}
-	}
-
-	/**
-	 * undo数据
-	 * @param data
-	 * @returns
-	 */
-	addUndoData(data?: ScreenDetail) {
-		if (!data) return;
-		this.undoData.push(data);
-		if (this.undoData.length >= MAX_UNDO) {
-			this.undoData.shift();
-		}
-	}
-
-	/**
-	 * redo数据
-	 * @param data
-	 * @returns
-	 */
-	addRedoData(data?: ScreenDetail) {
-		if (!data) return;
-		this.redoData.push(data);
-		if (this.redoData.length >= MAX_UNDO) {
-			this.redoData.shift();
 		}
 	}
 
@@ -306,19 +315,11 @@ export default class Canvas {
 	 * 重新加载图层
 	 */
 	async reloadLayer() {
-		const ids:string[] = [];
-		this.selectedLayers.forEach(v =>{
+		const ids: string[] = [];
+		this.selectedLayers.forEach((v) => {
 			ids.push(v.id);
 		});
 		this.reloadLayerIds = ids;
-	}
-
-	/**
-	 * 组件是否正在操作
-	 * @param value
-	 */
-	setResizeing(value: boolean) {
-		this.resizeing = value;
 	}
 
 	/**
@@ -330,6 +331,7 @@ export default class Canvas {
 		scriptUrl: string,
 		external?: Record<string, string>
 	) {
+		this.addUndoData();
 		this.mouseDownEvent = undefined;
 		this.layers.push(layer);
 		// 缓存组件库加载信息
@@ -338,6 +340,8 @@ export default class Canvas {
 		}
 		// 更新ui
 		this.layers = [...this.layers];
+		this.screenInfo!.layers = this.layers;
+		this.saveScreen();
 	}
 
 	/**
@@ -430,53 +434,27 @@ export default class Canvas {
 	}
 
 	/**
-	 * 更新图层
-	 * @param layerId
-	 * @param data
-	 */
-	async updateLayer(
-		layerId: string,
-		data: LayerQuery,
-		opts?: { reload?: boolean; saveNow?: boolean }
-	) {
-		const keys = Object.keys(data);
-		const dataAny: any = data;
-		const layerIndex = this.layers.findIndex((v) => v.id === layerId);
-		if (layerIndex === -1 || !this.screenInfo || !this.screenInfo.layers) {
-			return;
-		}
-		// 修改本地数据
-		const layer: LayerInfo = this.screenInfo.layers[layerIndex];
-		layer.updateFlag = new Date().getTime();
-
-		keys.forEach((key) => {
-			const layerAny: any = layer;
-			layerAny[key] = dataAny[key];
-		});
-
-		if (opts?.reload) {
-			layer.reloadKey = layer.reloadKey === 1 ? 0 : 1;
-		}
-
-		this.screenInfo.layers = [...this.screenInfo.layers];
-		this.selectedLayers = new Set(this.selectedLayers);
-
-		if (opts?.saveNow) {
-			return this.saveScreen();
-		}
-	}
-
-	/**
 	 * 更新图层样式
 	 * @param layerId
 	 * @param style
 	 */
-	updateLayerStyle(layerId: string, style: ComponentStyle) {
-		const layer = this.layers.find((v) => v.id === layerId);
-		if (layer) {
-			layer.style = _.merge(layer.style, style);
-			this.refreshLayer([layerId]);
+	updateLayerStyle(layerId: string | string[], style: ComponentStyle | ComponentStyle[]) {
+		this.addUndoData();
+		let layerIds:string[] = [];
+		if(typeof layerId === "string"){
+			layerIds.push(layerId);
+		}else{
+			layerIds = layerId;
 		}
+
+		const isArr = Array.isArray(style);
+		layerIds.forEach((id, index) =>{
+			const layer = this.layers.find((v) => v.id === id);
+			if (layer) {
+				layer.style = _.merge(layer.style, isArr ? style[index] : style);
+			}
+		});
+		this.refreshLayer(layerIds);
 	}
 
 	/**
@@ -485,9 +463,10 @@ export default class Canvas {
 	undo() {
 		const undoData = this.undoData.pop();
 		if (!undoData) return;
-		this.addRedoData(this.screenInfo);
+		this.addRedoData();
 		this.screenInfo = undoData;
-		this.selectedLayers = new Set(this.selectedLayers);
+		this.layers = this.screenInfo.layers || [];
+		this.refreshLayer();
 	}
 
 	/**
@@ -496,54 +475,17 @@ export default class Canvas {
 	redo() {
 		const redoData = this.redoData.pop();
 		if (!redoData) return;
-		this.addUndoData(this.screenInfo);
+		this.addUndoData();
 		this.screenInfo = redoData;
-		this.selectedLayers = new Set(this.selectedLayers);
-	}
-
-	/**
-	 * 批量更新图层
-	 * @param data
-	 * @param reload
-	 */
-	async batchUpdateLayer(data: LayerQuery[], saveNow?: boolean) {
-		if (!this.screenInfo || !this.screenInfo.layers) return;
-
-		this.addUndoData(this.screenInfo);
-
-		let isSort = false;
-		data.forEach((v: any) => {
-			const currLayer = this.screenInfo?.layers?.find(
-				(layer) => layer.id === v.id
-			);
-			if (currLayer) {
-				currLayer.updateFlag = new Date().getTime();
-				const currLayerAny: any = currLayer;
-				Object.keys(v).forEach((key) => {
-					if (key === "style" && v.style.z !== currLayer.style.z) isSort = true;
-					currLayerAny[key] = v[key];
-				});
-			}
-		});
-
-		if (isSort) {
-			// 改变z后重新排序
-			this.screenInfo.layers.sort((a, b) => {
-				return b.style.z - a.style.z;
-			});
-		}
-
-		this.screenInfo.layers = [...this.screenInfo.layers];
-		this.selectedLayers = new Set(this.selectedLayers);
-		if (saveNow) {
-			this.saveScreen();
-		}
+		this.layers = this.screenInfo.layers || [];
+		this.refreshLayer();
 	}
 
 	/**
 	 * 群组图层
 	 */
 	async groupLayer() {
+		this.addUndoData();
 		const group = smallId();
 		const layerIds: string[] = [];
 		this.selectedLayers.forEach((layer) => {
@@ -557,6 +499,7 @@ export default class Canvas {
 	 * 解除群组
 	 */
 	async disbandGroup() {
+		this.addUndoData();
 		const layerIds: string[] = [];
 		this.selectedLayers.forEach((layer) => {
 			delete layer.group;
@@ -570,6 +513,7 @@ export default class Canvas {
 	 * @param lock
 	 */
 	lockLayer(lock: boolean) {
+		this.addUndoData();
 		const layerIds: string[] = [];
 		this.selectedLayers.forEach((layer) => {
 			layer.lock = lock;
@@ -583,6 +527,7 @@ export default class Canvas {
 	 * @param hide
 	 */
 	hideLayer(hide: boolean) {
+		this.addUndoData();
 		const layerIds: string[] = [];
 		this.selectedLayers.forEach((layer) => {
 			layer.hide = hide;
@@ -592,97 +537,97 @@ export default class Canvas {
 	}
 
 	/**
-	 * 当前组件样式
-	 * @param style
-	 */
-	saveLayerStyle(layerId: string, style: ComponentStyleQuery) {
-		const layer = this.layers.find((v) => v.id === layerId);
-		if (!layer) return;
-		const newStyle: any = { ...this.layerStyle, ...style };
-		this.updateLayer(layerId, {
-			style: newStyle,
-		});
-	}
-
-	/**
 	 * 删除选中图层
 	 */
 	deleteLayer() {
-		this.addUndoData(this.screenInfo);
-		this.layers = this.layers.filter(
-			(layer) => {
-				if(this.selectedLayers.has(layer)){
-					// 清除图层dom缓存
-					this.layerDomCache.delete(layer.id);
-					return false;
-				}
-				return true
+		this.addUndoData();
+		this.layers = this.layers.filter((layer) => {
+			if (this.selectedLayers.has(layer)) {
+				// 清除图层dom缓存
+				this.layerDomCache.delete(layer.id);
+				return false;
 			}
-		);
-		this.selectedLayers = new Set();
+			return true;
+		});
+		this.cancelSelect();
 	}
 
+	/**
+	 * 对齐图层
+	 * @param type
+	 * @returns
+	 */
 	alignHandler(type: AlignType) {
-		const size = this.selectedLayers.size;
-		if (size < 1) return;
+		if (this.selectedLayers.size < 1) return;
 
-		let aligns: { x?: number | undefined; y?: number | undefined }[] = [];
-		// const rect = moveableRef.current?.getRect()!;
+		this.addUndoData();
 		const layers = Array.from(this.selectedLayers);
 		const isGroup = layers.length === 1 || this.isAllGroup;
-		const rect = this.moveableRect ? this.moveableRect : {width: 0, height: 0, left: 0, top: 0}
+		const rect = this.moveableRect
+			? this.moveableRect
+			: { width: 0, height: 0, left: 0, top: 0 };
 		const width = this.screenInfo?.style.width || 0;
 		const height = this.screenInfo?.style.height || 0;
 		let offsetX = 0;
 		let offsetY = 0;
-
-		console.log("==============================----", width, rect);
 
 		switch (type) {
 			case "left":
 				offsetX = rect.left;
 				break;
 			case "right":
-				offsetX = isGroup ? width - (rect.left + rect.width) : rect.left + rect.width;
+				offsetX = isGroup
+					? width - (rect.left + rect.width)
+					: rect.left + rect.width;
 				break;
 			case "top":
 				offsetY = rect.top;
 				break;
 			case "bottom":
-				offsetY = isGroup ? height - (rect.top + rect.height) : rect.top + rect.height;
+				offsetY = isGroup
+					? height - (rect.top + rect.height)
+					: rect.top + rect.height;
 				break;
 			case "h-center":
-				offsetY = isGroup ? (height - rect.height) / 2 - rect.top  : rect.top + rect.height / 2; 
+				offsetY = isGroup
+					? (height - rect.height) / 2 - rect.top
+					: rect.top + rect.height / 2;
 				break;
 			case "v-center":
-				offsetX = isGroup ? (width - rect.width) / 2 - rect.left  : rect.left + rect.width / 2; 
+				offsetX = isGroup
+					? (width - rect.width) / 2 - rect.left
+					: rect.left + rect.width / 2;
 				break;
 		}
 
-		const ids:string[] = []
-		layers.forEach((v)=>{
-				ids.push(v.id);
-				if(type === "right"){
-					// 右对齐
-					v.style.x += isGroup ? offsetX : (offsetX - (v.style.x + v.style.width));
-				}else if(type === "left"){
-					// 左对齐
-					v.style.x -= isGroup ? offsetX : (v.style.x - offsetX);
-				}else if(type === "v-center"){
-					// 水平居中
-					v.style.x += isGroup ? offsetX : (offsetX - (v.style.x + v.style.width / 2));
-				}else if(type === "h-center"){
-					// 垂直居中
-					v.style.y += isGroup ? offsetY : (offsetY - (v.style.y + v.style.height / 2));
-				}else if(type === "top"){
-					// 顶部对齐
-					v.style.y -= isGroup ? offsetY : (v.style.y - offsetY);
-				}else if(type === "bottom"){
-					// 底部对齐
-					v.style.y += isGroup ? offsetY : (offsetY - (v.style.y + v.style.height));
-				}
-				
-				v.style = {...v.style};
+		const ids: string[] = [];
+		layers.forEach((v) => {
+			ids.push(v.id);
+			if (type === "right") {
+				// 右对齐
+				v.style.x += isGroup ? offsetX : offsetX - (v.style.x + v.style.width);
+			} else if (type === "left") {
+				// 左对齐
+				v.style.x -= isGroup ? offsetX : v.style.x - offsetX;
+			} else if (type === "v-center") {
+				// 水平居中
+				v.style.x += isGroup
+					? offsetX
+					: offsetX - (v.style.x + v.style.width / 2);
+			} else if (type === "h-center") {
+				// 垂直居中
+				v.style.y += isGroup
+					? offsetY
+					: offsetY - (v.style.y + v.style.height / 2);
+			} else if (type === "top") {
+				// 顶部对齐
+				v.style.y -= isGroup ? offsetY : v.style.y - offsetY;
+			} else if (type === "bottom") {
+				// 底部对齐
+				v.style.y += isGroup ? offsetY : offsetY - (v.style.y + v.style.height);
+			}
+
+			v.style = { ...v.style };
 		});
 
 		this.refreshLayer(ids);

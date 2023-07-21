@@ -33,7 +33,7 @@ type FrameInfo = {
 export type ChangerAction = {
 	updateRect: () => void;
 	getRect: () => RectInfo | undefined;
-	move: (x:number, y:number)=>void
+	move: (x: number, y: number) => void;
 };
 
 interface ChangerProps {
@@ -56,9 +56,10 @@ function formatTransform(
 	return transformParser.stringify(transformObj);
 }
 
+let timer:any
+
 export default function Changer({ changerActionRef }: ChangerProps) {
 	const ref = useRef<Moveable | null>(null);
-	const currNativeEvent = useRef<any>();
 	const { canvasStore } = useCanvasStore();
 	const [groupframes, setGroupFrames] = useState<FrameInfo[]>([]); // 图层组位置信息
 	const [groupElement, setGroupElement] = useState<HTMLElement[]>([]); // 图层组dom
@@ -66,11 +67,22 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 
 	const { screenInfo } = canvasStore;
 
+	const updateAll = useCallback(() => {
+		const ids: string[] = [];
+		const styles: ComponentStyle[] = [];
+		groupframes.forEach((layerFrame) => {
+			ids.push(layerFrame.layerId);
+			styles.push(layerFrame.style);
+		});
+		// 更新图层
+		canvasStore.updateLayerStyle(ids, styles);
+	}, [groupframes, canvasStore]);
+
 	useImperativeHandle(
 		changerActionRef,
 		() => ({
 			updateRect: () => {
-				ref.current?.updateRect();
+				ref.current!.updateRect();
 			},
 			getRect: () => {
 				return ref.current!.getRect();
@@ -86,9 +98,13 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 					);
 				});
 				ref.current!.updateRect();
+				if(timer){
+					clearTimeout(timer);
+				}
+				timer = setTimeout(updateAll, 1000)
 			},
 		}),
-		[groupframes, groupElement]
+		[groupframes, groupElement, updateAll]
 	);
 	/**
 	 * 选中的图层
@@ -104,14 +120,14 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 			const frames: FrameInfo[] = [];
 			selectedLayers.forEach((layer) => {
 				const layerElement = canvasStore.getLayerDom(layer.id);
-				if(!layerElement) return;
+				if (!layerElement) return;
 
 				elements.push(layerElement);
 				frames.push({
 					layerId: layer.id,
 					style: { ...layer.style },
 				});
-				if(layer.isFirst){
+				if (layer.isFirst) {
 					setIsSelectLoading(true);
 				}
 			});
@@ -124,15 +140,17 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	 * 触发moveable拖动事件
 	 */
 	useUpdateEffect(() => {
-		if (ref.current && canvasStore.mouseDownEvent) {
+		if (!ref.current) return;
+
+		if (canvasStore.mouseDownEvent) {
 			ref.current.dragStart(canvasStore.mouseDownEvent.nativeEvent);
 		}
 		canvasStore.mouseDownEvent = undefined;
-		ref.current!.updateRect();
-		if(ref.current){
-			setTimeout(()=>{
-				canvasStore.moveableRect = ref.current!.getRect()
-			})
+		ref.current.updateRect();
+		if (ref.current) {
+			setTimeout(() => {
+				canvasStore.moveableRect = ref.current!.getRect();
+			});
 		}
 	}, [groupElement]);
 
@@ -160,13 +178,12 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	 */
 	const onDragGroupStart = useCallback(
 		({ events }: OnDragGroupStart) => {
-			canvasStore.setResizeing(true);
 			events.forEach((ev, i) => {
 				const frame = groupframes[i];
 				ev.set([frame.style.x, frame.style.y]);
 			});
 		},
-		[canvasStore, groupframes]
+		[groupframes]
 	);
 
 	/**
@@ -175,14 +192,10 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	const onDragGroupEnd = useCallback(
 		({ isDrag }: OnDragGroupEnd) => {
 			canvasStore.mouseDownEvent = undefined;
-			canvasStore.setResizeing(false);
 			if (!isDrag) return;
-			groupframes.forEach((layerFrame) =>{
-				// 更新图层
-				canvasStore.updateLayerStyle(layerFrame.layerId, layerFrame.style);
-			});
+			updateAll()
 		},
-		[canvasStore, groupframes]
+		[canvasStore, updateAll]
 	);
 
 	/**
@@ -210,7 +223,6 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	 */
 	const onResizeGroupStart = useCallback(
 		({ events }: OnResizeGroupStart) => {
-			canvasStore.setResizeing(true);
 			events.forEach((ev, i) => {
 				const frame = groupframes[i];
 				// Set origin if transform-orgin use %.
@@ -226,7 +238,7 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 				}
 			});
 		},
-		[canvasStore, groupframes]
+		[groupframes]
 	);
 
 	/**
@@ -262,14 +274,10 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 			targets.forEach((target, i) => {
 				target.style.overflow = groupframes[i].style.overflow || "visible";
 			});
-			canvasStore.setResizeing(false);
 			if (!isDrag) return;
-			groupframes.forEach((layerFrame) =>{
-				// 更新图层
-				canvasStore.updateLayerStyle(layerFrame.layerId, layerFrame.style);
-			});
+			updateAll();
 		},
-		[canvasStore, groupframes]
+		[groupframes, updateAll]
 	);
 
 	/**
@@ -326,12 +334,11 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 		({ setOrigin, dragStart }: OnResizeStart) => {
 			setOrigin(["%", "%"]);
 			const layerFrame = groupframes[0];
-			canvasStore.setResizeing(true);
 			if (dragStart && layerFrame) {
 				dragStart.set([layerFrame.style.x, layerFrame.style.y]);
 			}
 		},
-		[canvasStore, groupframes]
+		[groupframes]
 	);
 
 	/**
@@ -373,7 +380,6 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 				// 更新图层
 				canvasStore.updateLayerStyle(layerFrame.layerId, layerFrame.style);
 			}
-			canvasStore.setResizeing(false);
 		},
 		[canvasStore, groupframes]
 	);
