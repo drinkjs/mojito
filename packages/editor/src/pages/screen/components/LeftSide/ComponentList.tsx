@@ -1,4 +1,4 @@
-import { Col, Empty, Row, Select, Skeleton } from "antd";
+import { Col, Empty, Row, Select, Skeleton, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import ComponentListItem from "./ComponentListItem";
 import { CloseOutlined } from "@ant-design/icons";
@@ -51,7 +51,9 @@ export function ComponentList({
 	useEffect(() => {
 		if (selectedPack) {
 			// 设置组件库加载脚本
-			setPackScriptUrl(getPackScriptUrl(selectedPack.packUrl, selectedPack.name));
+			setPackScriptUrl(
+				getPackScriptUrl(selectedPack.packUrl, selectedPack.name)
+			);
 		} else {
 			setPackScriptUrl(undefined);
 		}
@@ -74,53 +76,52 @@ export function ComponentList({
 			style={{ display: visible ? "flex" : "none" }}
 		>
 			<div className={styles.componentListTitle}>
-				{/* 当前分类所有组件库 */}
-				<div className={styles.libs}>
-					<Select
-						options={options}
-						style={{ width: "100%" }}
-						onChange={onSelect}
-						value={selectedPack?.id}
-					></Select>
-				</div>
-				{/* 关闭列表按钮 */}
+				<div className={styles.name}>{componentType?.name}</div>
 				<a className={styles.close} href={void 0} onClick={onClose}>
 					<CloseOutlined />
 				</a>
 			</div>
-			<Skeleton loading={loading}>
-				<Row className={styles.componentBox}>
-					{selectedPack && packScriptUrl ? (
-						selectedPack.components.map((comp) => {
-							return (
-								<Col span={12} key={comp.export} style={{ padding: "6px" }}>
-									<ComponentListItem
-										value={comp}
-										scriptUrl={packScriptUrl}
-										external={selectedPack.external}
-										packId={selectedPack.id}
-									/>
-								</Col>
-							);
-						})
-					) : (
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								width: "100%",
-								height: "100%",
-							}}
-						>
-							<Empty
-								image={Empty.PRESENTED_IMAGE_SIMPLE}
-								description="暂无组件"
-							/>
-						</div>
-					)}
-				</Row>
-			</Skeleton>
+			<div className={styles.componentListBox}>
+				<Select
+					options={options}
+					onChange={onSelect}
+					value={selectedPack?.id}
+					style={{width:"100%", border:"none"}}
+				></Select>
+				<Skeleton loading={loading}>
+					<Row className={styles.componentBox} gutter={[12, 12]}>
+						{selectedPack && packScriptUrl ? (
+							selectedPack.components.map((comp) => {
+								return (
+									<Col span={12} key={comp.export}>
+										<ComponentListItem
+											value={comp}
+											scriptUrl={packScriptUrl}
+											external={selectedPack.external}
+											packId={selectedPack.id}
+										/>
+									</Col>
+								);
+							})
+						) : (
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									width: "100%",
+									height: "100%",
+								}}
+							>
+								<Empty
+									image={Empty.PRESENTED_IMAGE_SIMPLE}
+									description="暂无组件"
+								/>
+							</div>
+						)}
+					</Row>
+				</Skeleton>
+			</div>
 		</div>
 	);
 }

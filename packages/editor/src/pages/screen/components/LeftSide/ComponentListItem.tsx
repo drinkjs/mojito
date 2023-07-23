@@ -1,6 +1,5 @@
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 import { useDrag } from 'react-dnd';
-import { getEmptyImage } from 'react-dnd-html5-backend';
 import { Typography } from 'antd';
 import Image from '@/components/Image';
 // import styles from '../../styles/left.module.css';

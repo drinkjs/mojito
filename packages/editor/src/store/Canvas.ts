@@ -6,6 +6,7 @@ import { message } from "antd";
 import { getPackDetail } from "@/services/component";
 import { getPackScriptUrl, smallId } from "@/common/util";
 import { RectInfo } from "react-moveable";
+import { CSSProperties } from "react";
 
 const MAX_UNDO = 100;
 
@@ -303,10 +304,18 @@ export default class Canvas {
 	 * 页面样式
 	 * @param styles
 	 */
-	async saveStyle(styles: ScreenStyle) {
+	async setPageStyle(styles: CSSProperties) {
 		if (!this.screenInfo) return;
-		this.addUndoData(this.screenInfo);
-		this.screenInfo.style = { ...styles };
+		this.addUndoData();
+		let {width, height} = this.screenInfo.style;
+		if(styles.width){
+			width = styles.width as number
+		}
+		if(styles.height){
+			height = styles.height as number
+		}
+		this.screenInfo.style = { ...this.screenInfo.style, ...styles, width, height };
+		this.screenInfo = {...this.screenInfo}
 	}
 
 	/**

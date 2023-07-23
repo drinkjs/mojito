@@ -1,9 +1,9 @@
 import { Image as AntImage, ImageProps } from 'antd';
-import noImg from '@/assets/noImg.png';
+import empty from '@/assets/empty.png';
 
 const Image = (props: ImageProps) => {
   return (
-    <AntImage preview={false} placeholder={false} fallback={noImg} {...props} />
+    <AntImage preview={false} placeholder={false} fallback={empty} {...props} />
   );
 };
 

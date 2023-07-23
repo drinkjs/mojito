@@ -11,6 +11,7 @@ import styles from "./index.module.css";
 export default function LeftSide() {
 	const { componentStore } = useGlobalStore();
 	const [showList, setShowList] = useState(false);
+	// 已选中的类型
 	const [currRoot, setCurrRoot] = useState<ComponentTypeTree>();
 	const [showAdd, setShowAdd] = useState(false);
 	const [showComponent, setShowComponent] = useState(false);
@@ -81,7 +82,7 @@ export default function LeftSide() {
 									[styles.iconSelected]: currRoot && currRoot.id === v.id,
 								})}
 								onClick={() => {
-									onCateClick(v, true);
+									onCateClick(v);
 								}}
 							>
 								<IconFont type={v.icon || ""} />

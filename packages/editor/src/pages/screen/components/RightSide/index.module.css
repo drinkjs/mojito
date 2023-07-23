@@ -1,6 +1,76 @@
-.right{
-  width: 40px;
+.root{
   height: 100%;
   background-color: var(--sub-color);
   flex-shrink: 0;
+  display: flex;
+}
+
+.tabBox {
+  width: 40px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border-color);
+}
+
+.tab {
+  height: 30px;
+  font-size: 18px;
+  text-align: center;
+  /* color: var(); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 0;
+  margin: 10px 5px;
+  cursor: pointer;
+}
+
+.tabSelected {
+  color: var(--sub-color);
+  background-color: var(--hover-color);
+  border-radius: 4px;
+}
+
+.content {
+  width: 300px;
+  height: 100%;
+  background: var(--sub-color);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.styleSetting .itemBox{
+  display: flex;
+  width: 50%;
+  margin: 3px 0;
+  align-items: center;
+}
+
+.styleSetting .itemBox > label {
+  text-align: right;
+  width: 50px;
+  font-size: 12px;
+}
+
+.attrItem {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.attrItem h4 {
+  font-weight: 600;
+  margin-bottom: 1em;
+}
+
+.attrItem .icons {
+  font-size: 18px;
+  margin: 0 3px;
+  cursor: pointer;
+  color: #444;
+}
+
+.attrItem .icon:hover {
+  color: #fff;
 }

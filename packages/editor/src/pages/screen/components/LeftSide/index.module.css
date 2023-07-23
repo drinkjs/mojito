@@ -36,18 +36,19 @@
   flex-basis: 0;
   overflow: auto;
   align-content: flex-start;
+  padding-top: 6px;
 }
 
 .components {
   height: 100%;
   width: 240px;
   background: var(--sub-color);
-  border-left: #121212 1px solid;
+  border-left: var(--border-color) 1px solid;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding: 10px;
+  /* padding: 10px; */
 }
 
 .close {
@@ -57,11 +58,20 @@
   flex-shrink: 0;
 }
 
-.libs{
-  width: 90%;
+.name{
+  flex-grow: 1;
+  text-align: center;
+  font-weight: 600;
 }
 
 .componentListTitle{
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 5px 12px;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.componentListBox{
+  padding: 8px;
 }
