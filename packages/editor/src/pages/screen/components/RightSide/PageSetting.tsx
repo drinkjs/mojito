@@ -33,7 +33,7 @@ export default function PageSetting() {
 	);
 
 	return (
-		<section className={styles.styleSetting}>
+		<section className={styles.settingRoot}>
 			<div className={styles.attrItem}>
 				<h4>页面尺寸</h4>
 				<div style={{ display: "flex", justifyContent: "space-between" }}>

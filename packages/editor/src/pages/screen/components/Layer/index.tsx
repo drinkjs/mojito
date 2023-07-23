@@ -493,7 +493,7 @@ const Layer: React.FC<LayerProps> = ({
 			style={layerStyle}
 			onMouseDown={onClick}
 			id={data.id}
-			tabIndex={enable ? 0 : undefined}
+			// tabIndex={enable ? 0 : undefined}
 		>
 			<Render
 				key={renderKey}

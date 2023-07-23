@@ -533,13 +533,19 @@ export default class Canvas {
 	 * 锁定图层或图层组
 	 * @param lock
 	 */
-	lockLayer(lock: boolean) {
+	lockLayer(lock: boolean, layer?:LayerInfo) {
 		this.addUndoData();
 		const layerIds: string[] = [];
-		this.selectedLayers.forEach((layer) => {
+		if(layer){
 			layer.lock = lock;
 			layerIds.push(layer.id);
-		});
+		}else{
+			this.selectedLayers.forEach((layer) => {
+				layer.lock = lock;
+				layerIds.push(layer.id);
+			});
+		}
+		
 		this.refreshLayer(layerIds);
 	}
 
@@ -547,31 +553,47 @@ export default class Canvas {
 	 * 隐藏图层或图层组
 	 * @param hide
 	 */
-	hideLayer(hide: boolean) {
+	hideLayer(hide: boolean, layer?:LayerInfo) {
 		this.addUndoData();
 		const layerIds: string[] = [];
-		this.selectedLayers.forEach((layer) => {
+		if(layer){
 			layer.hide = hide;
 			layerIds.push(layer.id);
-		});
+		}else{
+			this.selectedLayers.forEach((layer) => {
+				layer.hide = hide;
+				layerIds.push(layer.id);
+			});
+		}
 		this.refreshLayer(layerIds);
 	}
 
 	/**
 	 * 删除选中图层
 	 */
-	deleteLayer() {
+	deleteLayer(delLayer?:LayerInfo) {
 		this.addUndoData();
 		this.layers = this.layers.filter((layer) => {
-			if (this.selectedLayers.has(layer)) {
-				// 清除图层dom缓存
-				this.layerDomCache.delete(layer.id);
-				return false;
+			if(delLayer){
+				return delLayer.id !== layer.id;
+			}else{
+				// 没有指定图层，删除选中图层
+				if (this.selectedLayers.has(layer)) {
+					// 清除图层dom缓存
+					this.layerDomCache.delete(layer.id);
+					return false;
+				}
 			}
+			
 			return true;
 		});
+		if(delLayer){
+			this.selectedLayers.delete(delLayer);
+		}else{
+			this.cancelSelect();
+		}
 		this.screenInfo!.layers = this.layers;
-		this.cancelSelect();
+		
 	}
 
 	/**

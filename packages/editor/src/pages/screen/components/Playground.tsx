@@ -291,7 +291,7 @@ export default function Playground() {
 		<main
 			className={styles.playground}
 			// onMouseDown={clearAllSelected}
-			tabIndex={0}
+			// tabIndex={0}
 		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>
