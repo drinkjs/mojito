@@ -1,6 +1,6 @@
 import IconFont from "@/components/IconFont";
 import { Modal, Typography } from "antd";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
 import { DndProvider, DropTargetMonitor, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -8,13 +8,16 @@ import { useCanvasStore } from "../../hook";
 import styles from "./index.module.css";
 import { useDebounceFn } from "ahooks";
 
+const ACCEPT = "LAYER_LIST_ITEM";
+
 export default function LayerList() {
 	const { canvasStore } = useCanvasStore();
 	const [modal, contextHolder] = Modal.useModal();
-	const [layers, setLayers] = useState(canvasStore.layers);
+	const [layers, setLayers] = useState(()=>([...canvasStore.layers]));
+	// const [, drop] = useDrop(() => ({ accept: ACCEPT }));
 
 	useEffect(() => {
-		setLayers(canvasStore.layers);
+		setLayers([...canvasStore.layers]);
 	}, [canvasStore.layers]);
 	/**
 	 * 隐藏图层
@@ -67,9 +70,9 @@ export default function LayerList() {
 	 * 正在拖动
 	 */
 	const moveCard = useCallback(
-		(dragItem: DragItem, dropItem: DragItem) => {
-			const { index: dragIndex } = dragItem;
-			const { index: hoverIndex } = dropItem;
+		(dragItem: DragItem, hoverItem: DragItem) => {
+			const dragIndex = layers.findIndex((layer) => layer.id === dragItem.id);
+			const hoverIndex = layers.findIndex((layer) => layer.id === hoverItem.id);
 			const layer = layers[dragIndex];
 			layers.splice(dragIndex, 1);
 			layers.splice(hoverIndex, 0, layer);
@@ -83,12 +86,15 @@ export default function LayerList() {
 	 */
 	const onDragEnd = useCallback(
 		(didDrop: boolean) => {
-			let maxZ = layers.length + 1;
-			layers.forEach((layer) => {
-				layer.style.z = maxZ;
-				maxZ--;
-			});
-			canvasStore.refreshLayer();
+			if (didDrop) {
+				let maxZ = layers.length + 1;
+				layers.forEach((layer) => {
+					layer.style.z = maxZ;
+					maxZ--;
+				});
+				canvasStore.layers = layers;
+				canvasStore.refreshLayer();
+			}
 		},
 		[layers, canvasStore]
 	);
@@ -138,7 +144,7 @@ interface LayerItemProps {
 		layer: LayerInfo,
 		event: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
-	onMove: (dragIndex: DragItem, hoverIndex: DragItem) => void;
+	onMove: (drag: DragItem, hover: DragItem) => void;
 	dragEnd: (didDrop: boolean) => void;
 	onChangeName: (layer: LayerInfo, newName: string) => void;
 	selected: boolean;
@@ -148,10 +154,7 @@ interface LayerItemProps {
 interface DragItem {
 	index: number;
 	id: string;
-	type: string;
 }
-
-const ACCEPT = "DragLayerItem";
 
 const LayerItem = ({
 	value,
@@ -165,102 +168,46 @@ const LayerItem = ({
 	selected,
 	index,
 }: LayerItemProps) => {
-	const ref = useRef<HTMLDivElement>(null);
-
-	const [, drop] = useDrop({
-		accept: ACCEPT,
-		// drop: (item: DragItem) => {
-		//   if (item.index === index) return;
-		//   moveCard(item, {index, id:value.id, type: ACCEPT});
-		// },
-		hover: (item: DragItem, monitor: DropTargetMonitor) => {
-			if (!ref.current) {
-				return;
-			}
-			const dragIndex = item.index;
-			const hoverIndex = index;
-
-			// Don't replace items with themselves
-			if (dragIndex === hoverIndex) {
-				return;
-			}
-
-			// Determine rectangle on screen
-			const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-			// Get vertical middle
-			const hoverMiddleY =
-				(hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-			// Determine mouse position
-			const clientOffset = monitor.getClientOffset();
-
-			if (!clientOffset) return;
-
-			// Get pixels to the top
-			const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-			// Only perform the move when the mouse has crossed half of the items height
-			// When dragging downwards, only move when the cursor is below 50%
-			// When dragging upwards, only move when the cursor is above 50%
-
-			// Dragging downwards
-			if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-				return;
-			}
-
-			// Dragging upwards
-			if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-				return;
-			}
-
-			// Time to actually perform the action
-			onMove(item, { id: value.id || "", index, type: ACCEPT });
-
-			// Note: we're mutating the monitor item here!
-			// Generally it's better to avoid mutations,
-			// but it's good here for the sake of performance
-			// to avoid expensive index searches.
-			// eslint-disable-next-line no-param-reassign
-			item.index = hoverIndex;
-		},
-		// collect: (monitor: any) => {
-		//   return {
-		//     isOver: monitor.isOver({ shallow: true }),
-		//   };
-		// },
-	});
-
+	// 可拖动
 	const [{ isDragging }, drag] = useDrag(
 		() => ({
-			type: "LAYER_LIST_ITEM",
-			item: {
-				type: ACCEPT,
-				index,
-				layerId: value.id,
-			},
+			type: ACCEPT,
+			item: { id: value.id, index },
 			collect: (monitor) => ({
 				isDragging: monitor.isDragging(),
 			}),
-			end: (dropResult, monitor) => {
-				// const { id: droppedId, originalIndex } = monitor.getItem()
+			end: (_, monitor) => {
 				const didDrop = monitor.didDrop();
 				dragEnd(didDrop);
 			},
 		}),
-		[value]
+		[value, index, onMove, dragEnd]
+	);
+	// 可拖入
+	const [, drop] = useDrop(
+		() => ({
+			accept: ACCEPT,
+			hover(item: DragItem) {
+				if (item.id !== value.id) {
+					onMove(item, { index, id: value.id });
+				}
+			},
+		}),
+		[index, onMove, value]
 	);
 
 	const opacity = isDragging ? 0 : 1;
-	drag(drop(ref));
 
 	return (
 		<div
 			className={classNames(styles.layerListItem, {
 				[styles.layerListItemSelected]: selected,
 			})}
-			ref={ref}
+			ref={(ref) => drag(drop(ref))}
 			style={{ opacity }}
+			onClick={(e) => {
+				onClick(value, e);
+			}}
 		>
 			<IconFont
 				type="icon-suoding"
@@ -286,18 +233,14 @@ const LayerItem = ({
 					onHide(value);
 				}}
 			/>
-			<div
-				className={styles.layerListName}
-				onClick={(e) => {
-					onClick(value, e);
-				}}
-			>
+			<div className={styles.layerListName}>
 				<Typography.Text
 					style={{ width: "95%" }}
 					ellipsis
+					// editable
 					editable={{
 						maxLength: 100,
-						enterIcon: null,
+						// enterIcon: null,
 						autoSize: { maxRows: 1, minRows: 1 },
 						onChange: (text: string) => onChangeName(value, text),
 					}}

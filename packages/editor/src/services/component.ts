@@ -11,7 +11,7 @@ export const getTypeTree = () => get<ComponentTypeTree[]>("/component/types");
  * @returns
  */
 export const getPackInfo = (url: string) =>
-	get<ComponentPackInfo>("/component/pack/info", { url });
+	get<ComponentPackInfo>(url);
 
 /**
  * 组件库明细

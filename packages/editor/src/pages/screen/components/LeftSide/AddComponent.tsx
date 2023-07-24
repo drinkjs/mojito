@@ -1,16 +1,12 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
 	Modal,
 	Form,
 	Input,
 	Cascader,
-	Upload,
-	Button,
-	Select,
 	message,
 } from "antd";
 import { ModalFuncProps } from "antd/lib/modal";
-import { getTreeAllParent } from "@mojito/common/util";
 import { useGlobalStore } from "@/store";
 import { getPackInfo } from "@/services/component";
 
@@ -105,13 +101,6 @@ export default function AddComponent({value, onCancel, ...restProps}: Props) {
 					label="组件库类型"
 					name="type"
 					rules={[{ required: true, message: "此项不能为空" }]}
-					initialValue={
-						value && value.type
-							? getTreeAllParent(componentStore.typeTree, value.type).map(
-									(v) => v.id
-							)
-							: undefined
-					}
 				>
 					<Cascader
 						fieldNames={{ label: "name", value: "id" }}

@@ -32,7 +32,6 @@ export default function Playground() {
 	const { canvasStore } = useCanvasStore();
 	const [modal, contextHolder] = Modal.useModal();
 	// 相同组件的数量,主要为了新增图层时自动名称
-	const compCount = useRef<{ [key: string]: number }>({}).current;
 	const layoutRef = useRef<HTMLDivElement | null>(null);
 	const areaRef = useRef<HTMLDivElement | null>(null);
 	const zoomRef = useRef<HTMLDivElement | null>(null);
@@ -105,12 +104,6 @@ export default function Playground() {
 					y = (offset.y - dropTargetXy.top) / scale;
 				}
 
-				if (!compCount[name]) {
-					compCount[name] = 1;
-				} else {
-					compCount[name] += 1;
-				}
-
 				const z =
 					canvasStore.layers && canvasStore.layers.length
 						? canvasStore.layers[canvasStore.layers.length - 1].style.z + 1
@@ -120,10 +113,16 @@ export default function Playground() {
 				y = Math.round(y - DefaultLayerSize.height / 2);
 				// 新图层
 				if (canvasStore && canvasStore.screenInfo) {
+					const id = smallId();
+					let newName = `图层${canvasStore.layers.length + 1}`;
+					const isNameExist = canvasStore.layers.find(lay => lay.name === newName);
+					if(isNameExist){
+						newName = `图层${id}`
+					}
 					const newLayer: LayerInfo = {
-						id: smallId(),
+						id,
 						isFirst: true,
-						name: `${name}${compCount[name]}`,
+						name: newName,
 						component: {
 							export: item.export,
 							name,
@@ -318,14 +317,7 @@ export default function Playground() {
 						>
 							{layers &&
 								layers.map((v) => {
-									if (!v.component) return null;
-
-									if (!compCount[v.component.name]) {
-										compCount[v.component.name] = 1;
-									} else {
-										compCount[v.component.name] += 1;
-									}
-
+									if (!v || !v.component) return null;
 									return (
 										<Layer
 											enable

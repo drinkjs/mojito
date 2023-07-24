@@ -46,7 +46,7 @@ export const deleteScreen = (id: string) => get('/screen/delete', { id });
  * @param {*} params
  * @returns
  */
-export const getScreenDetail = (id: string) => get<ScreenDetail>('/screen/detail', { id });
+export const getScreenDetail = (id: string) => get<{screenInfo: ScreenDetail, packInfo?:ComponentPackInfo[]}>('/screen/detail', { id });
 
 /**
  * 更新封面

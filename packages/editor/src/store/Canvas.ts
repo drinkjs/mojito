@@ -150,20 +150,15 @@ export default class Canvas {
 		this.getDetailLoading = true;
 		const data = await service.getScreenDetail(id);
 		if (data) {
-			this.screenInfo = data;
+			this.screenInfo = data.screenInfo;
 			this.layers = this.screenInfo.layers || [];
-			let packIds = this.layers.map(v => v.component.packId);
-			packIds = Array.from(new Set(packIds));
-			if(packIds.length){
+			if(data.packInfo){
 				// 获取组件的依赖信息
-				const packs = (await getPackDetail(packIds)) as ComponentPackInfo[];
-				if(packs){
-					packs.forEach(rel =>{
-						// 缓存依赖信息
-						const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
-						this.packScriptMap.set(rel.id, {scriptUrl, external: rel.external})
-					});
-				}
+				data.packInfo.forEach(rel =>{
+					// 缓存依赖信息
+					const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
+					this.packScriptMap.set(rel.id, {scriptUrl, external: rel.external})
+				});
 			}
 		}else{
 			this.screenInfo = undefined;
@@ -589,6 +584,7 @@ export default class Canvas {
 		});
 		if(delLayer){
 			this.selectedLayers.delete(delLayer);
+			this.selectedLayers = new Set(this.selectedLayers)
 		}else{
 			this.cancelSelect();
 		}

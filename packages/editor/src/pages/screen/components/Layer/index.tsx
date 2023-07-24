@@ -483,7 +483,7 @@ const Layer: React.FC<LayerProps> = ({
 			y: undefined,
 			z: undefined,
 		};
-	}, [hide, enable, data.style]);
+	}, [hide, enable, data]);
 
 	return (
 		<div
