@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 
- {};
+ export {};
 
 declare global {
   
@@ -48,6 +48,17 @@ declare global {
     export: string;
     name: string;
     packId:string;
+  }
+
+  type ComponentOptions = {
+    name: string,
+    cover?:string,
+    version?: string;
+    props?: Record<string, ComponentProps>
+    events?:Record<string, {
+      name?:string,
+      description?:string
+    }>,
   }
 
   type LayerInfo = {
@@ -117,12 +128,15 @@ declare global {
 }
 
  interface ComponentProps {
-  [propsName: string]: {
-    type?: any;
-    name?: string;
-    comment?: string;
-    default?: any;
-  };
+  name: string;
+	type: "string" | "number" | "boolean" | "object" | "array";
+	description?: string;
+	default?: any;
+}
+
+interface ComponentPropsOptions extends ComponentProps{
+  layerId:string
+  key: string
 }
 
  interface ComponentEvents {
@@ -131,26 +145,10 @@ declare global {
     comment?: string;
   };
 }
-
- type ComponentDevelopLib = 'React' | 'Vue2' | 'Vue3';
-
  interface ComponentInfo {
   id?: string;
-  title: string;
   name: string;
-  coverImg?: string;
-  coverUrl?: string;
   type: string;
-  createTime?: string;
-  updateTime?: string;
-  createUser?: string;
-  // path:string;
-  origin: number;
-  props?: ComponentProps;
-  events?: ComponentEvents;
-  version: string;
-  developLib: ComponentDevelopLib;
-  dependencies?: string[];
 }
 
  interface ComponentCategory {
@@ -194,8 +192,6 @@ type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
  interface LayerInfo {
   id: string;
   name: string;
-  // screenId: string;
-  // componentId: string; // 新增时必填
   component: ComponentInfo; // 详情时返回
   isFirst?: boolean;
   api?: {
@@ -214,21 +210,21 @@ type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
   hide?: boolean;
   lock?: boolean;
   group?: string;
-  anime?: {
-    translateX?: number;
-    translateY?: number;
-    width?: number;
-    height?: number;
-    rotate?: number;
-    scale?: number;
-    opacity?: number;
-    loop?: number;
-    duration?: number;
-    delay?: number;
-    easing?: string;
-    direction?: string;
-    autoplay?: boolean;
-  };
+  // anime?: {
+  //   translateX?: number;
+  //   translateY?: number;
+  //   width?: number;
+  //   height?: number;
+  //   rotate?: number;
+  //   scale?: number;
+  //   opacity?: number;
+  //   loop?: number;
+  //   duration?: number;
+  //   delay?: number;
+  //   easing?: string;
+  //   direction?: string;
+  //   autoplay?: boolean;
+  // };
 }
 
  interface DatasourceInfo {

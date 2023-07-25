@@ -47,6 +47,8 @@ export default class Canvas {
 	// 图层应该的dom节点
 	layerDomCache: Map<string, HTMLDivElement> = new Map();
 
+	layerComponentOptions: Map<string, ComponentOptions> = new Map()
+
 	constructor() {
 		makeObservable(this, {
 			layoutContainer: false,
@@ -60,6 +62,7 @@ export default class Canvas {
 			saveLoading: false,
 			undoData: false,
 			redoData: false,
+			layerComponentOptions: false
 		});
 	}
 

@@ -56,7 +56,7 @@ export default function PageSetting() {
 				<div style={{ display: "flex", justifyContent: "space-between" }}>
 					<ColorSetting
 						label="背景颜色"
-						// defaultColor={DefaulBackgroundColor}
+						defaultColor="#fff"
 						value={pageStyle?.backgroundColor}
 						onChange={(color: string | undefined) => {
 							onStyleChange("backgroundColor", color);

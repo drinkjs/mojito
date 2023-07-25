@@ -14,11 +14,11 @@ import React, {
 import { Md5 } from "ts-md5";
 import { useNavigate } from "react-router-dom";
 // import anime from 'animejs';
-// import { merge } from "lodash";
+import _ from "lodash-es";
 import { Request } from "@mojito/common/network";
 import { buildCode, isEmpty } from "@mojito/common/util";
 import { sendDataToPage, useStateSync } from "@/common/stateTool";
-import Render from "./Render";
+import Render, { ComponentMountEvent } from "./Render";
 import styles from "./index.module.css";
 import { useMount, useUpdateEffect } from "ahooks";
 import { useCanvasStore } from "../../hook";
@@ -415,19 +415,10 @@ const Layer: React.FC<LayerProps> = ({
 	 * 合并props和style后的值
 	 */
 	const mergeArgs = useMemo(() => {
-		const mergeProps = {
-			...data.props, // 组件属性配置
-			...dataSource, // 数据源返回
-			...eventRel.props, // 事件处理返回
-		};
-
-		const mergeStyle = {
-			...data.style, // 样式设置
-			...eventRel.styles, // 事件返回改变样式
-		};
-
+		const mergeProps = _.merge(data.props, dataSource, eventRel.props)
+		const mergeStyle = _.merge(data.style, eventRel.styles)
 		return { props: mergeProps, styles: mergeStyle };
-	}, [data, dataSource, eventRel]);
+	}, [data.props, data.style, dataSource, eventRel]);
 
 	/**
 	 * 选中组件
@@ -448,7 +439,10 @@ const Layer: React.FC<LayerProps> = ({
 	 * 组件初始化大小
 	 */
 	const onMount = useCallback(
-		(props?: Record<string, any>, size?: { width: number; height: number }) => {
+		({size, componentOptions}:ComponentMountEvent) => {
+			if(componentOptions)
+				canvasStore.layerComponentOptions.set(data.id, componentOptions);
+				
 			if (size && data.isFirst) {
 				if (size.width !== defaultWidth || size.height !== defaultHeight) {
 					console.log("layer init size", size);
@@ -499,7 +493,7 @@ const Layer: React.FC<LayerProps> = ({
 				key={renderKey}
 				onMount={onMount}
 				component={data.component}
-				props={{ ...mergeArgs.props, dataloading }}
+				props={mergeArgs.props}
 				componentStyle={mergeArgs.styles}
 				width={mergeArgs.styles.width}
 				height={mergeArgs.styles.height}

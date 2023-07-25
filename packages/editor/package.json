@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
     "@mojito/common": "workspace:^",
+    "@monaco-editor/react": "^4.5.1",
     "@types/systemjs": "^6.13.1",
     "@types/uuid": "^9.0.2",
     "@vitejs/plugin-react": "^4.0.1",

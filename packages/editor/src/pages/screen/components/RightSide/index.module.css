@@ -31,7 +31,7 @@
 }
 
 .content {
-  width: 300px;
+  width: 500px;
   height: 100%;
   background: var(--sub-color);
   display: flex;
@@ -103,4 +103,14 @@
 
 .layerListItemSelected {
   background: rgba(111, 111, 245, 0.2);
+}
+
+.settingTitle{
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 5px 12px;
+  text-align: center;
+}
+
+.propsRoot :global(.ant-collapse){
+  border: 0
 }
