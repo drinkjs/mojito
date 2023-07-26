@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
+    "@babel/standalone": "^7.22.5",
     "@mojito/common": "workspace:^",
     "@monaco-editor/react": "^4.5.1",
     "@types/systemjs": "^6.13.1",
@@ -33,6 +34,7 @@
     "vite": "^4.3.9"
   },
   "devDependencies": {
+    "@types/babel__standalone": "^7.1.4",
     "@types/lodash-es": "^4.17.8",
     "@types/node": "20.3.2",
     "env-cmd": "^10.1.0"

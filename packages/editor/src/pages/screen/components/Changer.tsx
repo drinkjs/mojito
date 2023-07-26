@@ -145,7 +145,9 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 	useUpdateEffect(() => {
 		if (!ref.current) return;
 
+		ref.current.stopDrag();
 		if (canvasStore.mouseDownEvent) {
+			// 点击图层时触发拖动
 			ref.current.dragStart(canvasStore.mouseDownEvent.nativeEvent);
 		}
 		canvasStore.mouseDownEvent = undefined;

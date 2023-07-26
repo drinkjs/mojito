@@ -175,6 +175,8 @@ export default class Canvas {
 	 * @param layerIds
 	 */
 	refreshLayer(layerIds?: string[]) {
+		// 清空之前的点击事件，防止图层跟随鼠标移动
+		this.mouseDownEvent = undefined
 		if (layerIds) {
 			layerIds.forEach((layerId) => {
 				const layerIndex = this.layers.findIndex((v) => v.id === layerId);

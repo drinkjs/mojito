@@ -1,6 +1,3 @@
-import * as babel from '@babel/standalone';
-
-
 export * from "./typeis"
 
 export function formatJson (json: any) {
@@ -60,21 +57,6 @@ export function getTreeItem (tree: any[], id: any) {
   };
   forFn(tree);
   return rel;
-}
-
-type DynamicFunction = (...args:any)=>any;
-
-export function buildCode (code: string): DynamicFunction | null {
-  if (!code) return null;
-  const result = babel.transform(code, {
-    presets: ['env'],
-    sourceType: 'unambiguous'
-  });
-  // eslint-disable-next-line no-unused-vars
-  const exports = {}; // fix exports is not defined
-  // eslint-disable-next-line no-eval
-  const fun: DynamicFunction = result.code ? eval(result.code) : null;
-  return fun;
 }
 
 export function isEmpty (str: any): boolean {

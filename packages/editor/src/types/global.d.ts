@@ -75,7 +75,7 @@ declare global {
       };
     } | null;
     props?: Record<string, any>;
-    eventHandler?: LayerEvents;
+    eventHandler?: LayerEvent;
     eventLock?: boolean; // 事件锁定，锁定后图层内组件不能交互
     data?: Record<string, any>;
     style: ComponentStyle;
@@ -177,8 +177,8 @@ export type Constructor<T = any> = new (...args: any[]) => T;
 
 type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
 
- interface LayerEvents {
-  [key: string]: { code: string; isSync: boolean };
+ interface LayerEvent {
+  [key: string]: { sourceCode?: string, buildCode?:string, isSync?: boolean };
 }
  interface RelativePosition {
   layerId: string;
@@ -203,7 +203,7 @@ type AlignType = "left" | "right" | "top" | "bottom" | "v-center" | "h-center";
     };
   } | null;
   props?: { [key: string]: any };
-  eventHandler?: LayerEvents;
+  eventHandler?: LayerEvent;
   eventLock?: boolean; // 事件锁定，锁定后图层内组件不能交互
   data?: Record;
   style: ComponentStyle;

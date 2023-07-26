@@ -238,7 +238,7 @@ export default function Playground() {
 	 * 撤销/重做/保存
 	 */
 	useKeyPress(CanvasActionKeys, (event)=>{
-		event.preventDefault();
+		// event.preventDefault();
 		switch (event.key) {
 			case "z":
 				// 撤销
@@ -263,7 +263,7 @@ export default function Playground() {
 				canvasStore.paste();
 				break;
 		}
-	}, { useCapture: true, exactMatch: true, target: document.body })
+	}, { useCapture: true, exactMatch: true })
 
 	/**
 	 * 取消所有选中

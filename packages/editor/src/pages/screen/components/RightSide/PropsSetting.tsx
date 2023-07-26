@@ -64,12 +64,14 @@ export default function PropsSetting() {
 	useEffect(() => {
 		if (canvasStore.selectedLayers.size > 1) {
 			setComponentPropsOptions([]);
+			setCurrLayer(undefined)
 		} else {
 			const layer = Array.from(canvasStore.selectedLayers)[0];
 			setCurrLayer(layer);
 			// 获取选中图层组件的props信息
 			const componentInfo = canvasStore.layerComponentOptions.get(layer.id);
 			const propsOptions: ComponentPropsOptions[] = [];
+			
 			if (componentInfo && componentInfo.props) {
 				// 转换成数组方便展示
 				Object.keys(componentInfo.props).map((key) => {
