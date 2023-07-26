@@ -29,12 +29,12 @@ export default function ScreenList({ project }: ScreenListProps) {
 	const [modal, contextHolder] = Modal.useModal();
 
 	useEffect(() => {
-		if (project) {
+		if (project?.id) {
 			screenStore.getList(project.id);
 		} else {
 			screenStore.list = [];
 		}
-	}, [project, screenStore]);
+	}, [project?.id, screenStore]);
 
 	/**
 	 * 新增页面

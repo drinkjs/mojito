@@ -9,6 +9,8 @@ export default class Project {
 
   addLoading = false;
 
+  currProject?: ProjectInfo
+
   async getList () {
     this.getListLoading = true;
     const list = await service.getProjectList();
@@ -60,11 +62,8 @@ export default class Project {
    * @returns 
    */
   async remove (id: string) {
-    this.addLoading = true;
-    return service.delteProject(id).finally(() => {
-      this.addLoading = false;
-      this.getList();
-    });
+    await service.delteProject(id);
+    await this.getList();
   }
 
   /**

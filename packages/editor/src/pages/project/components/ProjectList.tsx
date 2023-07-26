@@ -16,7 +16,13 @@ export default function ProjectList({onSelect}: ProjectListProps){
   const [editProject, setEditProject] = useState<ProjectInfo | undefined>()
 
 	useMount(() => {
-		projectStore.getList();
+    if(projectStore.list.length === 0){
+      projectStore.getList();
+    }
+    const item = localStorage.getItem("selectedProject");
+    if(item){
+      selectHandler(JSON.parse(item))
+    }
 	});
 
   /**
@@ -25,6 +31,11 @@ export default function ProjectList({onSelect}: ProjectListProps){
   const selectHandler = (item?:ProjectInfo)=>{
     setSelected(item);
     onSelect(item);
+    if(item){
+      localStorage.setItem("selectedProject", JSON.stringify(item));
+    }else{
+      localStorage.removeItem("selectedProject");
+    }
   }
 
   
@@ -94,6 +105,9 @@ export default function ProjectList({onSelect}: ProjectListProps){
       cancelText: '取消',
       onOk: () => {
         projectStore.remove(data.id).then(()=>{
+          if(data.id === selected?.id){
+            selectHandler(projectStore.list[0])
+          }
           message.success("删除成功");
         })
       }
@@ -119,7 +133,7 @@ export default function ProjectList({onSelect}: ProjectListProps){
           return (
             <div
               className={classNames(styles.projectItem, {
-                [styles.projectItemSelected]: selected === item
+                [styles.projectItemSelected]: selected?.id === item.id
               })}
               key={item.name}
               onClick={() => {

@@ -16,6 +16,7 @@ import { message, Modal } from "antd";
 import { smallId } from "@/common/util";
 import { SyncData, syncHelper } from "@/common/syncHelper";
 import { MojitoEvent } from "@/common/eventer";
+import { RenderAction } from "./Layer/Render";
 
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
@@ -44,7 +45,7 @@ export default function Playground() {
 		width: 300,
 		height: 200,
 	});
-	const [syncData, setSyncData] = useState<Record<string, any>>({});
+	const layerRenders = useRef<Map<string, RenderAction>>(new Map).current
 	const documentVisibility = useDocumentVisibility();
 
 	const { scale, screenInfo, layers } = canvasStore;
@@ -64,12 +65,10 @@ export default function Playground() {
 	 */
 	const syncCallback = useCallback((event: MojitoEvent<SyncData>) => {
 		if(event.data){
-			const { receiver, data } = event.data;
-			const datas:any = {}
-			receiver.forEach((key) => {
-				datas[key] = data;
+			const { to, data } = event.data;
+			to.forEach((key) => {
+				layerRenders.get(key)?.sync(data);
 			});
-			setSyncData(datas);
 		}
 	}, []);
 
@@ -310,6 +309,10 @@ export default function Playground() {
 		[canvasStore]
 	);
 
+	const onRender = useCallback((layerId:string, renderRef: RenderAction)=>{
+		layerRenders.set(layerId, renderRef)
+	}, [layerRenders])
+
 	return (
 		<main
 			className={styles.playground}
@@ -350,7 +353,7 @@ export default function Playground() {
 											data={v}
 											key={v.id}
 											onSelected={onSelectLayer}
-											syncData={syncData[v.id]}
+											onRender={onRender}
 										/>
 									);
 								})}

@@ -8,7 +8,8 @@ const WebsocketEnable = true;
 const syncEventer = eventer;
 
 export interface SyncData {
-  receiver: string[];
+  // 接收数据的图层id
+  to: string[];
   data: Record<string, any>;
 }
 
@@ -63,6 +64,10 @@ class SyncHelper {
    */
   join (pageId: string) {
     this.send('join', { pageId });
+  }
+
+  leave () {
+    this.send('leave');
   }
 
   /**

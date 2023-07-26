@@ -89,7 +89,7 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 		data: LayerInfo,
 		e?: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
-	syncData?:Record<string, any>
+	onRender?:(id:string, renderRef:RenderAction)=>void
 }
 
 interface EventValue {
@@ -109,7 +109,7 @@ const Layer: React.FC<LayerProps> = ({
 	onSelected,
 	defaultWidth,
 	defaultHeight,
-	syncData,
+	onRender,
 	...restProps
 }) => {
 	const { canvasStore } = useCanvasStore();
@@ -132,15 +132,6 @@ const Layer: React.FC<LayerProps> = ({
 			renderRef.current.reload();
 		}
 	}, [data.id, canvasStore.reloadLayerIds]);
-
-	/**
-	 * 更新同步数据
-	 */
-	useUpdateEffect(()=>{
-		if(renderRef.current){
-			renderRef.current.sync(syncData)
-		}
-	}, [syncData])
 
 	useEffect(() => {
 		if (data) {
@@ -227,7 +218,7 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const selectHandler = useCallback(
 		(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-			if(!enable) return;
+			if (!enable) return;
 
 			e.stopPropagation();
 			e.preventDefault();
@@ -242,9 +233,9 @@ const Layer: React.FC<LayerProps> = ({
 	/**
 	 * 清空鼠标事件，防止图层粘住鼠标
 	 */
-	const clearMouseEvent = useCallback(()=>{
+	const clearMouseEvent = useCallback(() => {
 		canvasStore.mouseDownEvent = undefined;
-	}, [canvasStore])
+	}, [canvasStore]);
 
 	/**
 	 * 组件初始化大小
@@ -261,22 +252,27 @@ const Layer: React.FC<LayerProps> = ({
 				}
 			}
 			data.isFirst = undefined;
+			if(onRender && renderRef.current){
+				onRender(data.id, renderRef.current);
+			}
 		},
-		[data, canvasStore, defaultWidth, defaultHeight]
+		[data, canvasStore, defaultWidth, defaultHeight, onRender]
 	);
 
-	const callbackThis = useMemo(()=>({
-		name: data.name, 
-		id: data.id, 
-		getProps: (key?:string)=> key && data.props ? data.props[key] : data.props,
-		setProps: (props: Record<string, any>)=>{
-			data.props = { ...data.props, ...props };
+	const callbackThis = useMemo(
+		() => ({
+			name: data.name,
+			id: data.id,
+			getProps: (key?: string) =>
+				key && data.props ? data.props[key] : data.props,
+			setProps: (props: Record<string, any>) => {
+				data.props = { ...data.props, ...props };
 				canvasStore.refreshLayer([data.id]);
-		},
-		sendMessag:(layerNames:string[], pageName?:string)=>{
-
-		}
-	}), [data, canvasStore])
+			},
+			sendMessag: (layerNames: string[], pageName?: string) => {},
+		}),
+		[data, canvasStore]
+	);
 
 	/**
 	 * 事件处理
@@ -287,20 +283,20 @@ const Layer: React.FC<LayerProps> = ({
 			for (const key in data.eventHandler) {
 				const { buildCode, isSync } = data.eventHandler[key];
 				if (buildCode) {
-					const callback:(...args:any[])=>any = runCode(buildCode);
-					if(typeof callback === "function"){
+					const callback: (...args: any[]) => any = runCode(buildCode);
+					if (typeof callback === "function") {
 						handlers[key] = async (...values: any[]) => {
 							// 调用事件处理函数, values是组件事件回调结果
-							try{
-								const rel = callback.call(callbackThis, ...values);
-								if(isSync){
+							try {
+								const returns = await callback.call(callbackThis, ...values);
+								if (isSync) {
 									// 同步执行结果到远程的同一个页面的同一个组件
 									syncHelper.sync({
-										receiver: [data.id],
-										data: {[key]: rel},
+										to: [data.id],
+										data: { [key]: { args: values, returns } },
 									});
 								}
-							}catch(e){
+							} catch (e) {
 								console.error(e);
 							}
 						};

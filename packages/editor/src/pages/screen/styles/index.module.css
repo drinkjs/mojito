@@ -8,7 +8,7 @@
 
 .area{
   margin-top: 3px;
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   overflow: hidden;
 }
