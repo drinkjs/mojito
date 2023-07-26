@@ -5,12 +5,7 @@ import {
 	useMount,
 	useUnmount,
 } from "ahooks";
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
@@ -19,14 +14,23 @@ import { DefaultLayerSize } from "@/config";
 import Changer, { ChangerAction } from "./Changer";
 import { message, Modal } from "antd";
 import { smallId } from "@/common/util";
+import { SyncData, syncHelper } from "@/common/syncHelper";
+import { MojitoEvent } from "@/common/eventer";
 
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
 
 // 快捷键
 const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
-const SelectLayerActionKeys = ["esc", "delete", "ctrl.h", "ctrl.l", "ctrl.g", "ctrl.b"];
-const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s", "ctrl.c", "ctrl.v"]
+const SelectLayerActionKeys = [
+	"esc",
+	"delete",
+	"ctrl.h",
+	"ctrl.l",
+	"ctrl.g",
+	"ctrl.b",
+];
+const CanvasActionKeys = ["ctrl.z", "ctrl.y", "ctrl.s", "ctrl.c", "ctrl.v"];
 
 export default function Playground() {
 	const { canvasStore } = useCanvasStore();
@@ -40,15 +44,12 @@ export default function Playground() {
 		width: 300,
 		height: 200,
 	});
-	const [areaOffset, setAreaOffset] = useState<{ x: number; y: number }>({
-		x: 0,
-		y: 0,
-	});
+	const [syncData, setSyncData] = useState<Record<string, any>>({});
 	const documentVisibility = useDocumentVisibility();
 
 	const { scale, screenInfo, layers } = canvasStore;
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
-	
+
 	/**
 	 * 定时保存图层信息
 	 */
@@ -59,11 +60,39 @@ export default function Playground() {
 	}, 5000);
 
 	/**
+	 * 组件事件同步回调
+	 */
+	const syncCallback = useCallback((event: MojitoEvent<SyncData>) => {
+		if(event.data){
+			const { receiver, data } = event.data;
+			const datas:any = {}
+			receiver.forEach((key) => {
+				datas[key] = data;
+			});
+			setSyncData(datas);
+		}
+	}, []);
+
+	/**
+	 * 页面构建完成
+	 */
+	useMount(() => {
+		canvasStore.layoutContainer = layoutRef.current;
+		canvasStore.areaElement = areaRef.current;
+		canvasStore.zoomElement = zoomRef.current;
+		canvasStore.zoomAuto();
+		dropTarget(layoutRef);
+
+		syncHelper.on("sync", syncCallback);
+	});
+
+	/**
 	 * 退出编辑时保存数据
 	 */
-	useUnmount(()=>{
+	useUnmount(() => {
+		syncHelper.off("sync", syncCallback);
 		canvasStore.saveScreen();
-	})
+	});
 
 	/**
 	 * 根据页面大小设置默认图层大小
@@ -115,9 +144,11 @@ export default function Playground() {
 				if (canvasStore && canvasStore.screenInfo) {
 					const id = smallId();
 					let newName = `图层${canvasStore.layers.length + 1}`;
-					const isNameExist = canvasStore.layers.find(lay => lay.name === newName);
-					if(isNameExist){
-						newName = `图层${id}`
+					const isNameExist = canvasStore.layers.find(
+						(lay) => lay.name === newName
+					);
+					if (isNameExist) {
+						newName = `图层${id}`;
 					}
 					const newLayer: LayerInfo = {
 						id,
@@ -148,17 +179,6 @@ export default function Playground() {
 		}),
 		[scale]
 	);
-
-	/**
-	 * 页面构建完成
-	 */
-	useMount(() => {
-		canvasStore.layoutContainer = layoutRef.current;
-		canvasStore.areaElement = areaRef.current;
-		canvasStore.zoomElement = zoomRef.current;
-		canvasStore.zoomAuto();
-		dropTarget(layoutRef);
-	});
 
 	/**
 	 * 键盘移动图层
@@ -237,33 +257,37 @@ export default function Playground() {
 	/**
 	 * 撤销/重做/保存
 	 */
-	useKeyPress(CanvasActionKeys, (event)=>{
-		// event.preventDefault();
-		switch (event.key) {
-			case "z":
-				// 撤销
-				canvasStore.undo()
-				break;
-			case "y":
-				// 重做
-				canvasStore.redo()
-				break;
-			case "s":
-				// 保存
-				canvasStore.saveScreen().then(()=>{
-					message.success("保存成功");
-				})
-				break;
-			case "c":
-				// 复制
-				canvasStore.copy();
-				break;
-			case "v":
-				// 粘贴
-				canvasStore.paste();
-				break;
-		}
-	}, { useCapture: true, exactMatch: true })
+	useKeyPress(
+		CanvasActionKeys,
+		(event) => {
+			// event.preventDefault();
+			switch (event.key) {
+				case "z":
+					// 撤销
+					canvasStore.undo();
+					break;
+				case "y":
+					// 重做
+					canvasStore.redo();
+					break;
+				case "s":
+					// 保存
+					canvasStore.saveScreen().then(() => {
+						message.success("保存成功");
+					});
+					break;
+				case "c":
+					// 复制
+					canvasStore.copy();
+					break;
+				case "v":
+					// 粘贴
+					canvasStore.paste();
+					break;
+			}
+		},
+		{ useCapture: true, exactMatch: true }
+	);
 
 	/**
 	 * 取消所有选中
@@ -326,6 +350,7 @@ export default function Playground() {
 											data={v}
 											key={v.id}
 											onSelected={onSelectLayer}
+											syncData={syncData[v.id]}
 										/>
 									);
 								})}

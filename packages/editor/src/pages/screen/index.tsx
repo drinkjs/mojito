@@ -1,5 +1,7 @@
+import { syncHelper } from "@/common/syncHelper";
 import { useMount, useUnmount } from "ahooks";
 import { Skeleton } from "antd";
+import { useCallback } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Header from "./components/Header";
@@ -12,8 +14,11 @@ import styles from "./styles/index.module.css";
 export default function Screen() {
 	const { id, canvasStore, destroyStore } = useCanvasStore();
 
+
 	useMount(() => {
-		canvasStore.getDetail(id);
+		canvasStore.getDetail(id).then(()=>{
+			syncHelper.join(id);
+		});
 	});
 
 	useUnmount(() => {

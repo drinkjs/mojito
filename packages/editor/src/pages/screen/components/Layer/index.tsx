@@ -10,25 +10,16 @@ import React, {
 	useCallback,
 	useMemo,
 } from "react";
-import { Md5 } from "ts-md5";
-import { useNavigate } from "react-router-dom";
-// import anime from 'animejs';
 import _ from "lodash-es";
 import { Request } from "@mojito/common/network";
-import { sendDataToPage, useStateSync } from "@/common/stateTool";
-import Render, { ComponentMountEvent } from "./Render";
+import Render, { ComponentMountEvent, RenderAction } from "./Render";
 import styles from "./index.module.css";
 import { useMount, useUpdateEffect } from "ahooks";
 import { useCanvasStore } from "../../hook";
 import { runCode } from "@/common/util";
+import { syncHelper } from "@/common/syncHelper";
 
 const request = new Request();
-const evener = new EventTarget();
-const eventemitter = {
-	emit: (event: string) => evener.dispatchEvent(new Event(event)),
-	on: evener.addEventListener.bind(this),
-	off: evener.removeEventListener.bind(this),
-};
 
 function showHandlerError(layerName: string, error: any) {
 	// Message.error(`${layerName}事件处理错误:${error.message}`);
@@ -98,6 +89,7 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 		data: LayerInfo,
 		e?: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
+	syncData?:Record<string, any>
 }
 
 interface EventValue {
@@ -117,24 +109,17 @@ const Layer: React.FC<LayerProps> = ({
 	onSelected,
 	defaultWidth,
 	defaultHeight,
+	syncData,
 	...restProps
 }) => {
-	const history = useNavigate();
 	const { canvasStore } = useCanvasStore();
 	const targetRef = useRef<HTMLDivElement | null>(null);
-	// const currAnime = useRef<anime.AnimeInstance | undefined | null>();
-	const funThis = useRef<any>(); // 事件处理的this
-	const dataSourceTimer = useRef<any>();
-	const [renderKey, setRenderKey] = useState(1);
-	// 组件的事件处理方法
-	// const [compEventHandlers, setCompEventHandlers] = useState<any>({}); // 组件事件
-	const [allEventHandlers, setAllEventHandlers] = useState<any>({}); // 所有事件
+	const renderRef = useRef<RenderAction>();
 	// 事件设置的props和styles
 	const [eventRel, setEventRel] = useState<EventValue>({});
 	// 数据源
 	const [dataSource, setDataSource] = useState<any>();
 	const [hide, setHide] = useState(false);
-	const [dataloading, setDataloading] = useState(false);
 
 	useMount(() => {
 		if (targetRef.current)
@@ -142,11 +127,20 @@ const Layer: React.FC<LayerProps> = ({
 	});
 
 	useUpdateEffect(() => {
-		if (canvasStore.reloadLayerIds.includes(data.id)) {
+		if (canvasStore.reloadLayerIds.includes(data.id) && renderRef.current) {
 			// 强制重新加载组件
-			setRenderKey((key) => key + 1);
+			renderRef.current.reload();
 		}
 	}, [data.id, canvasStore.reloadLayerIds]);
+
+	/**
+	 * 更新同步数据
+	 */
+	useUpdateEffect(()=>{
+		if(renderRef.current){
+			renderRef.current.sync(syncData)
+		}
+	}, [syncData])
 
 	useEffect(() => {
 		if (data) {
@@ -154,50 +148,6 @@ const Layer: React.FC<LayerProps> = ({
 		}
 		console.log("layer data", data);
 	}, [data]);
-
-	/**
-	 * 解释组件事件
-	 */
-	// const parseEvents = useCallback((events: LayerEvent | undefined) => {
-	// 	// 事件处理
-	// 	const allEvnet: any = {};
-	// 	const compEvent: any = {};
-	// 	// const { events } = data;
-	// 	if (events) {
-	// 		Object.keys(events).forEach((key) => {
-	// 			let callFun: Callback | null = null;
-	// 			try {
-	// 				callFun = events[key].code ? buildCode(events[key].code) : null;
-	// 			} catch (e) {
-	// 				showHandlerError(data.name, e);
-	// 			}
-
-	// 			if (!callFun || typeof callFun !== "function") return;
-
-	// 			allEvnet[key] = callFun;
-	// 			const eventValues = Object.keys(LayerEvent).map(
-	// 				(key) => LayerEvent[key]
-	// 			);
-	// 			if (eventValues.indexOf(key) !== -1) {
-	// 				// 系统事件
-	// 				//  allEvnet[key] = callFun;
-	// 			} else {
-	// 				compEvent[key] = (...args: any[]) => {
-	// 					// 同步事件 编辑状态下不做同步
-	// 					if (events[key].isSync && setEventSync) {
-	// 						setEventSync({ event: key, args });
-	// 						return;
-	// 					}
-	// 					// 调用组件的事件处理
-	// 					callFun && componentEventsHandler(callFun, ...args);
-	// 				};
-	// 			}
-	// 		});
-	// 		setCompEventHandlers(compEvent);
-	// 		setAllEventHandlers(allEvnet);
-	// 	}
-	// 	return allEvnet;
-	// }, []);
 
 	/**
 	 * 请求数据源
@@ -235,23 +185,6 @@ const Layer: React.FC<LayerProps> = ({
 			showHandlerError(data.name, e);
 		}
 	};
-
-	/**
-	 * 组件事件处理
-	 * @param callback
-	 */
-	const componentEventsHandler = useCallback(
-		async (callback: Callback, ...args: any[]) => {
-			try {
-				const self = createThis();
-				callback.call(self, ...args);
-			} catch (e) {
-				showHandlerError(data.name, e);
-			}
-		},
-		[eventRel, data]
-	);
-
 	/**
 	 * 事件处理设置props
 	 */
@@ -281,57 +214,6 @@ const Layer: React.FC<LayerProps> = ({
 	);
 
 	/**
-	 * 创建事件处理方法this
-	 */
-	const createThis = () => {
-		const currArgs = mergeArgs();
-		if (funThis.current) {
-			funThis.current.props = currArgs.props;
-			funThis.current.styles = currArgs.styles;
-		} else {
-			funThis.current = {
-				...currArgs,
-				// currAnime: enable ? anime({}) : currAnime.current,
-				evener: eventemitter,
-				request: eventRequest,
-				// merge,
-				setProps,
-				setStyles,
-				setHide,
-				// router: history,
-				goto: (screenName: string) => {
-					history(`/view/${canvasStore.screenInfo?.id}`);
-				},
-				goBack: () => {
-					history("-1");
-				},
-				sync: (params: { screen: string; layer?: string; data: any }) => {
-					sendDataToPage(
-						`/view/${canvasStore.screenInfo?.project.id}/${params.screen}`,
-						{ args: [params.data] },
-						params.layer
-							? Md5.hashStr(
-									`${canvasStore.screenInfo!.project.name}_${params.screen}_${
-										params.layer
-									}`
-							  )
-							: ""
-					);
-				},
-				// anime: (animeParams: anime.AnimeParams) => {
-				//   return anime({
-				//     ...animeParams,
-				//     targets: targetRef.current
-				//   });
-				// },
-				layer: targetRef.current,
-				layerId: data.id,
-			};
-		}
-		return funThis.current;
-	};
-
-	/**
 	 * 合并props和style后的值
 	 */
 	const mergeArgs = useMemo(() => {
@@ -345,6 +227,8 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const selectHandler = useCallback(
 		(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+			if(!enable) return;
+
 			e.stopPropagation();
 			e.preventDefault();
 			targetRef.current?.focus();
@@ -352,7 +236,7 @@ const Layer: React.FC<LayerProps> = ({
 				onSelected(data, e);
 			}
 		},
-		[data, onSelected]
+		[data, enable, onSelected]
 	);
 
 	/**
@@ -405,13 +289,16 @@ const Layer: React.FC<LayerProps> = ({
 				if (buildCode) {
 					const callback:(...args:any[])=>any = runCode(buildCode);
 					if(typeof callback === "function"){
-						handlers[key] = (...values: any[]) => {
+						handlers[key] = async (...values: any[]) => {
 							// 调用事件处理函数, values是组件事件回调结果
 							try{
 								const rel = callback.call(callbackThis, ...values);
 								if(isSync){
-									// 同步到远程的同一个页面的同一个组件
-									const syncdata = {[key]: rel}
+									// 同步执行结果到远程的同一个页面的同一个组件
+									syncHelper.sync({
+										receiver: [data.id],
+										data: {[key]: rel},
+									});
 								}
 							}catch(e){
 								console.error(e);
@@ -422,7 +309,7 @@ const Layer: React.FC<LayerProps> = ({
 			}
 		}
 		return handlers;
-	}, [data.eventHandler, callbackThis]);
+	}, [data.eventHandler, callbackThis, data.id]);
 
 	/**
 	 * 图层样式
@@ -457,7 +344,7 @@ const Layer: React.FC<LayerProps> = ({
 			// tabIndex={enable ? 0 : undefined}
 		>
 			<Render
-				key={renderKey}
+				actionRef={renderRef}
 				onMount={onMount}
 				component={data.component}
 				props={mergeArgs.props}

@@ -9,8 +9,8 @@ export class MojitoEvent<T> extends Event{
 const evener = new EventTarget();
 const eventemitter = {
   emit: (event:string, data?:any)=> evener.dispatchEvent(new MojitoEvent(event, data)),
-  on: evener.addEventListener.bind(this),
-  off: evener.removeEventListener.bind(this)
+  on: evener.addEventListener.bind(evener),
+  off: evener.removeEventListener.bind(evener)
 }
 
 export default eventemitter

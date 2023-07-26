@@ -1,5 +1,5 @@
 import { Spin } from "antd";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useImperativeHandle, useRef, useState } from "react";
 
 import ErrorCatch from "@/components/ErrorCatch";
 import { useCanvasStore } from "../../hook";
@@ -10,6 +10,11 @@ export type ComponentMountEvent = {
 	componentProps?: Record<string, any>;
 	size?: { width: number; height: number };
 	componentOptions?: ComponentOptions;
+};
+
+export type RenderAction = {
+	reload: ()=> void,
+	sync: (data?:Record<string, any>)=>void
 };
 
 interface RenderProps {
@@ -24,6 +29,7 @@ interface RenderProps {
 	onMount?: (event: ComponentMountEvent) => void;
 	children?: any;
 	style?: React.CSSProperties;
+	actionRef?: React.MutableRefObject<RenderAction | undefined>;
 }
 
 export default function Render({
@@ -35,9 +41,11 @@ export default function Render({
 	reloadKey,
 	props,
 	events,
+	actionRef,
 }: RenderProps) {
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	const componentRef = useRef<MojitoComponent | null>(null);
+	const shadowRef = useRef<ShadowRoot>()
 	const [loading, setLoading] = useState(false);
 	const { canvasStore } = useCanvasStore();
 
@@ -51,11 +59,18 @@ export default function Render({
 					componentRef.current = comp;
 					setLoading(false);
 
-					const shadow = rootRef.current.attachShadow({ mode: "open" });
-					const componentContainer = document.createElement("div");
-					componentContainer.style.width = "100%";
-					componentContainer.style.height = "100%";
-					shadow.appendChild(componentContainer);
+					let componentContainer:HTMLDivElement;
+					if(shadowRef.current){
+						componentContainer = shadowRef.current.firstChild as HTMLDivElement;
+					}else{
+						// 创建组件主容器
+						const shadow  = rootRef.current.attachShadow({ mode: "open" });
+						componentContainer = document.createElement("div");
+						componentContainer.style.width = "100%";
+						componentContainer.style.height = "100%";
+						shadow.appendChild(componentContainer);
+						shadowRef.current = shadow;
+					}
 
 					const compProps: any = { ...props, ...events };
 					if (!compProps.style) {
@@ -91,6 +106,24 @@ export default function Render({
 				}
 			});
 	}, [width, height, onMount, canvasStore, component, props, events]);
+
+	useImperativeHandle(
+		actionRef,
+		() => ({
+			reload: ()=>{
+				if (componentRef.current) {
+					componentRef.current.unmount();
+					loadComponent();
+				}
+			},
+			sync: (data)=>{
+				if (componentRef.current) {
+					componentRef.current.setProps({$syncData: data});
+				}
+			}
+		}),
+		[loadComponent]
+	);
 
 	useMount(() => {
 		loadComponent();
