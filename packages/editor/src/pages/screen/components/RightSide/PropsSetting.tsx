@@ -73,15 +73,15 @@ export default function PropsSetting() {
 			const propsOptions: ComponentPropsOptions[] = [];
 			
 			if (componentInfo && componentInfo.props) {
-				// 转换成数组方便展示
-				Object.keys(componentInfo.props).map((key) => {
+				// 组件的所有props
+				for(const key in  componentInfo.props){
 					console.log(componentInfo.props![key]);
 					propsOptions.push({
 						layerId: layer.id,
 						key,
 						...componentInfo.props![key],
 					});
-				});
+				}
 			}
 			setComponentPropsOptions(propsOptions);
 		}

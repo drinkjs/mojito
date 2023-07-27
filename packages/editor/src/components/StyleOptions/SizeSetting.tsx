@@ -3,6 +3,7 @@ import {
   InputNumberProps,
   Space
 } from "antd";
+import React from "react";
 import ItemLabel from "./ItemLabel";
 
 export const SizeSetting = (props: {
@@ -10,11 +11,12 @@ export const SizeSetting = (props: {
   value: number;
   onChange: (value: number | string | undefined | null) => void;
   inputNumberProps?: InputNumberProps;
+  labelStyle?:React.CSSProperties
 }) => {
-  const { label, onChange, value, inputNumberProps } = props;
+  const { label, onChange, value, inputNumberProps, labelStyle } = props;
   return (
     <Space>
-      <ItemLabel>{label}</ItemLabel>
+      <ItemLabel style={labelStyle}>{label}</ItemLabel>
       <span>
         <InputNumber
           {...inputNumberProps}

@@ -129,18 +129,6 @@ const Layer: React.FC<LayerProps> = ({
 	// 事件处理
 	const eventHandlers = useRef<Record<string, (...args: any[]) => any>>({})
 
-	// useImperativeHandle(
-	// 	actionRef,
-	// 	() => ({
-	// 		eventSync: (data)=>{
-	// 			// if (componentRef.current) {
-	// 			// 	componentRef.current.setProps({$syncData: data});
-	// 			// }
-	// 		}
-	// 	}),
-	// 	[]
-	// );
-
 	useMount(() => {
 		if (targetRef.current)
 			canvasStore.cacheLayerDom(data.id, targetRef.current);
@@ -158,7 +146,7 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const actionRef = useMemo<LayerAction>(() => ({
 		eventSync: (data) => {
-			// 接收到组件的事件同步数据
+			// 接收组件事件同步
 			for(const key in data){
 				if(eventHandlers.current[key]){
 					eventHandlers.current[key](...[...data[key].args, EventSyncCallFlag]);
