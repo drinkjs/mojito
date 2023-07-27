@@ -9,14 +9,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
-import Layer from "./Layer";
+import Layer, { LayerAction } from "./Layer";
 import { DefaultLayerSize } from "@/config";
 import Changer, { ChangerAction } from "./Changer";
 import { message, Modal } from "antd";
 import { smallId } from "@/common/util";
 import { SyncData, syncHelper } from "@/common/syncHelper";
 import { MojitoEvent } from "@/common/eventer";
-import { RenderAction } from "./Layer/Render";
 
 const DefaulBackgroundColor = "#FFF";
 const DefaultFontColor = "#000";
@@ -45,7 +44,7 @@ export default function Playground() {
 		width: 300,
 		height: 200,
 	});
-	const layerRenders = useRef<Map<string, RenderAction>>(new Map).current
+	const layerActionRefs = useRef<Map<string, LayerAction>>(new Map).current
 	const documentVisibility = useDocumentVisibility();
 
 	const { scale, screenInfo, layers } = canvasStore;
@@ -67,10 +66,10 @@ export default function Playground() {
 		if(event.data){
 			const { to, data } = event.data;
 			to.forEach((key) => {
-				layerRenders.get(key)?.sync(data);
+				layerActionRefs.get(key)?.eventSync(data);
 			});
 		}
-	}, []);
+	}, [layerActionRefs]);
 
 	/**
 	 * 页面构建完成
@@ -309,9 +308,9 @@ export default function Playground() {
 		[canvasStore]
 	);
 
-	const onRender = useCallback((layerId:string, renderRef: RenderAction)=>{
-		layerRenders.set(layerId, renderRef)
-	}, [layerRenders])
+	const onRef = useCallback((layerId:string, ref:LayerAction)=>{
+		layerActionRefs.set(layerId, ref);
+	}, [layerActionRefs])
 
 	return (
 		<main
@@ -353,7 +352,7 @@ export default function Playground() {
 											data={v}
 											key={v.id}
 											onSelected={onSelectLayer}
-											onRender={onRender}
+											onRef={onRef}
 										/>
 									);
 								})}

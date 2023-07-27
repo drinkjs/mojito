@@ -14,7 +14,7 @@ export type ComponentMountEvent = {
 
 export type RenderAction = {
 	reload: ()=> void,
-	sync: (data?:Record<string, any>)=>void
+	updateProps: (data:Record<string, any>)=>void
 };
 
 interface RenderProps {
@@ -116,9 +116,9 @@ export default function Render({
 					loadComponent();
 				}
 			},
-			sync: (data)=>{
+			updateProps: (data)=>{
 				if (componentRef.current) {
-					componentRef.current.setProps({$syncData: data});
+					componentRef.current.setProps(data);
 				}
 			}
 		}),

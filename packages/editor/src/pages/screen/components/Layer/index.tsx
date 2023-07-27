@@ -19,6 +19,8 @@ import { useCanvasStore } from "../../hook";
 import { runCode } from "@/common/util";
 import { syncHelper } from "@/common/syncHelper";
 
+const EventSyncCallFlag = Symbol.for("EventSyncCallFlag")
+
 const request = new Request();
 
 function showHandlerError(layerName: string, error: any) {
@@ -79,6 +81,10 @@ export const LayerEvent: { [key: string]: string } = {
 	onSync: "__onSync__",
 };
 
+export type LayerAction = {
+	eventSync: (event?: Record<string, {args:any[], retruns?:any}>) => void;
+};
+
 interface LayerProps extends React.HTMLAttributes<Element> {
 	data: LayerInfo;
 	defaultWidth: number;
@@ -89,7 +95,7 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 		data: LayerInfo,
 		e?: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
-	onRender?:(id:string, renderRef:RenderAction)=>void
+	onRef?: (id: string, actionRef: LayerAction) => void;
 }
 
 interface EventValue {
@@ -109,7 +115,7 @@ const Layer: React.FC<LayerProps> = ({
 	onSelected,
 	defaultWidth,
 	defaultHeight,
-	onRender,
+	onRef,
 	...restProps
 }) => {
 	const { canvasStore } = useCanvasStore();
@@ -120,6 +126,20 @@ const Layer: React.FC<LayerProps> = ({
 	// 数据源
 	const [dataSource, setDataSource] = useState<any>();
 	const [hide, setHide] = useState(false);
+	// 事件处理
+	const eventHandlers = useRef<Record<string, (...args: any[]) => any>>({})
+
+	// useImperativeHandle(
+	// 	actionRef,
+	// 	() => ({
+	// 		eventSync: (data)=>{
+	// 			// if (componentRef.current) {
+	// 			// 	componentRef.current.setProps({$syncData: data});
+	// 			// }
+	// 		}
+	// 	}),
+	// 	[]
+	// );
 
 	useMount(() => {
 		if (targetRef.current)
@@ -133,12 +153,32 @@ const Layer: React.FC<LayerProps> = ({
 		}
 	}, [data.id, canvasStore.reloadLayerIds]);
 
+	/**
+	 * 给playground调用
+	 */
+	const actionRef = useMemo<LayerAction>(() => ({
+		eventSync: (data) => {
+			// 接收到组件的事件同步数据
+			for(const key in data){
+				if(eventHandlers.current[key]){
+					eventHandlers.current[key](...[...data[key].args, EventSyncCallFlag]);
+				}
+			}
+		},
+	}), []);
+
+	/**
+	 * 设置隐藏
+	 */
 	useEffect(() => {
 		if (data) {
 			setHide(!!data.hide);
 		}
+		if (onRef) {
+			onRef(data.id, actionRef);
+		}
 		console.log("layer data", data);
-	}, [data]);
+	}, [data, onRef, actionRef]);
 
 	/**
 	 * 请求数据源
@@ -252,11 +292,8 @@ const Layer: React.FC<LayerProps> = ({
 				}
 			}
 			data.isFirst = undefined;
-			if(onRender && renderRef.current){
-				onRender(data.id, renderRef.current);
-			}
 		},
-		[data, canvasStore, defaultWidth, defaultHeight, onRender]
+		[data, canvasStore, defaultWidth, defaultHeight]
 	);
 
 	const callbackThis = useMemo(
@@ -266,12 +303,14 @@ const Layer: React.FC<LayerProps> = ({
 			getProps: (key?: string) =>
 				key && data.props ? data.props[key] : data.props,
 			setProps: (props: Record<string, any>) => {
-				data.props = { ...data.props, ...props };
-				canvasStore.refreshLayer([data.id]);
+				if(renderRef.current){
+					// 更新组件props
+					renderRef.current.updateProps(props);
+				}
 			},
 			sendMessag: (layerNames: string[], pageName?: string) => {},
 		}),
-		[data, canvasStore]
+		[data]
 	);
 
 	/**
@@ -285,12 +324,18 @@ const Layer: React.FC<LayerProps> = ({
 				if (buildCode) {
 					const callback: (...args: any[]) => any = runCode(buildCode);
 					if (typeof callback === "function") {
+						// 调用事件处理函数, values是组件事件回调结果
 						handlers[key] = async (...values: any[]) => {
-							// 调用事件处理函数, values是组件事件回调结果
+							// 是否通过同步事件调用，防止双向同步
+							const isSyncCall = values.length > 0 && values[values.length - 1] === EventSyncCallFlag;
+							if(isSyncCall){
+								// 删除最后的标识参数
+								values.pop();
+							}
 							try {
 								const returns = await callback.call(callbackThis, ...values);
-								if (isSync) {
-									// 同步执行结果到远程的同一个页面的同一个组件
+								if (!isSyncCall && isSync) {
+									// 执行事件同步
 									syncHelper.sync({
 										to: [data.id],
 										data: { [key]: { args: values, returns } },
@@ -304,6 +349,7 @@ const Layer: React.FC<LayerProps> = ({
 				}
 			}
 		}
+		eventHandlers.current = handlers;
 		return handlers;
 	}, [data.eventHandler, callbackThis, data.id]);
 
