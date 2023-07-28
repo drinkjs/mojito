@@ -62,10 +62,7 @@ export default function PropsSetting() {
 	const [currLayer, setCurrLayer] = useState<LayerInfo | undefined>();
 
 	useEffect(() => {
-		if (canvasStore.selectedLayers.size > 1) {
-			setComponentPropsOptions([]);
-			setCurrLayer(undefined)
-		} else {
+		if(canvasStore.selectedLayers.size === 1){
 			const layer = Array.from(canvasStore.selectedLayers)[0];
 			setCurrLayer(layer);
 			// 获取选中图层组件的props信息
@@ -84,6 +81,9 @@ export default function PropsSetting() {
 				}
 			}
 			setComponentPropsOptions(propsOptions);
+		}else{
+			setComponentPropsOptions([]);
+			setCurrLayer(undefined)
 		}
 	}, [canvasStore, canvasStore.selectedLayers]);
 

@@ -13,14 +13,16 @@ import styles from "./styles/index.module.css";
 export default function Screen() {
 	const { id, canvasStore, destroyStore } = useCanvasStore();
 
-
 	useMount(() => {
-		canvasStore.getDetail(id).then(()=>{
+		document.title = ""
+		canvasStore.getDetail(id).then((data)=>{
 			syncHelper.join(id);
+			document.title = data?.screenInfo.name ||  ""
 		});
 	});
 
 	useUnmount(() => {
+		document.title = "";
 		destroyStore();
 		syncHelper.leave();
 	});

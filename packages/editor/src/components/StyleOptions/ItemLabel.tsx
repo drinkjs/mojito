@@ -8,7 +8,7 @@ export default function ItemLabel({
 	style?: React.CSSProperties;
 }) {
 	return (
-		<div style={{ fontSize:"12px", ...style }}>
+		<div style={{ fontSize:"12px", color:"rgba(255, 255, 255, 0.7)", ...style }}>
 			{children}
 		</div>
 	);

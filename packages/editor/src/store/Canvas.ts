@@ -168,6 +168,7 @@ export default class Canvas {
 			this.layers = [];
 		}
 		this.getDetailLoading = false;
+		return data;
 	}
 
 	/**
@@ -267,10 +268,10 @@ export default class Canvas {
 	 * @returns
 	 */
 	zoom(isUp: boolean) {
-		const { scale, layoutContainer, zoomElement, screenInfo } = this;
+		const { scale, screenInfo } = this;
 		const pageLayout = screenInfo ? screenInfo.style : undefined;
 
-		if (!pageLayout || (!isUp && scale <= 0.1) || (isUp && scale >= 2)) return;
+		if (!pageLayout || (!isUp && scale <= 0.1) || (isUp && scale >= 3)) return;
 
 		let scaleInt = 1;
 		if (isUp) {
@@ -280,6 +281,12 @@ export default class Canvas {
 		}
 
 		scaleInt = parseFloat((scaleInt / 10).toFixed(2));
+		this.zoomTo(scaleInt)
+	}
+
+	zoomTo(scaleInt:number){
+		const { layoutContainer, zoomElement, screenInfo } = this;
+		const pageLayout = screenInfo ? screenInfo.style : undefined;
 		if (layoutContainer && zoomElement && pageLayout) {
 			layoutContainer.style.transform = `scale(${scaleInt})`;
 			layoutContainer.style.transformOrigin = "0 0 0";

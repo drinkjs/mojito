@@ -317,6 +317,7 @@ const Layer: React.FC<LayerProps> = ({
 			display: !enable && hide ? "none" : "block",
 			opacity: enable && hide ? 0.1 : data.style.opacity,
 			overflow: data.style.overflow || "hidden",
+			...data.customStyle,
 			x: undefined,
 			y: undefined,
 			z: undefined,
@@ -334,7 +335,6 @@ const Layer: React.FC<LayerProps> = ({
 			onMouseDown={selectHandler}
 			onMouseOut={clearMouseEvent}
 			id={data.id}
-			// tabIndex={enable ? 0 : undefined}
 		>
 			<Render
 				actionRef={renderRef}

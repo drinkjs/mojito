@@ -10,7 +10,6 @@ import { useDrop } from "react-dnd";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
 import Layer, { LayerAction } from "./Layer";
-import { DefaultLayerSize } from "@/config";
 import Changer, { ChangerAction } from "./Changer";
 import { message, Modal } from "antd";
 import { smallId } from "@/common/util";
@@ -57,7 +56,7 @@ export default function Playground() {
 		if (documentVisibility === "visible") {
 			canvasStore.saveScreen();
 		}
-	}, 5000);
+	}, 3000);
 
 	/**
 	 * 组件事件同步回调
@@ -97,11 +96,12 @@ export default function Playground() {
 	 */
 	useEffect(() => {
 		if (pageLayout) {
-			const width = Math.round(pageLayout.width * 0.1);
+			const width = Math.round(pageLayout.width * 0.2);
 			const height = Math.round(width * (2 / 3));
 			setDefaultLayerSize({ width, height });
+			canvasStore.zoomTo(canvasStore.scale);
 		}
-	}, [pageLayout]);
+	}, [pageLayout, canvasStore]);
 
 	/**
 	 * 接受拖入
@@ -136,8 +136,8 @@ export default function Playground() {
 						? canvasStore.layers[canvasStore.layers.length - 1].style.z + 1
 						: 1;
 				// 计算图层落下的位置
-				x = Math.round(x - DefaultLayerSize.width / 2);
-				y = Math.round(y - DefaultLayerSize.height / 2);
+				x = Math.round(x - defaultLayerSize.width / 2);
+				y = Math.round(y - defaultLayerSize.height / 2);
 				// 新图层
 				if (canvasStore && canvasStore.screenInfo) {
 					const id = smallId();
@@ -162,8 +162,8 @@ export default function Playground() {
 							x,
 							y,
 							z,
-							width: DefaultLayerSize.width,
-							height: DefaultLayerSize.height,
+							width: defaultLayerSize.width,
+							height: defaultLayerSize.height,
 						},
 					};
 
@@ -175,7 +175,7 @@ export default function Playground() {
 				canDrop: monitor.canDrop(),
 			}),
 		}),
-		[scale]
+		[scale, defaultLayerSize]
 	);
 
 	/**
@@ -318,7 +318,6 @@ export default function Playground() {
 		<main
 			className={styles.playground}
 			// onMouseDown={clearAllSelected}
-			// tabIndex={0}
 		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>

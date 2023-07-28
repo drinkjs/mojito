@@ -1,3 +1,4 @@
+import CodeEditor from "@/components/CodeEditor";
 import {
 	BorderSetting,
 	FontSetting,
@@ -110,26 +111,34 @@ export default function StyleSetting() {
 					min={0}
 					max={100}
 					label="透明度"
-          formatter="%"
+					formatter="%"
 					value={
 						currStyle.opacity !== undefined ? (1 - currStyle.opacity) * 100 : 0
 					}
 					onChange={(value) => {
-						onStyleChange({"opacity": parseFloat((1-(value ?? 0) / 100).toFixed(2))});
+						onStyleChange({
+							opacity: parseFloat((1 - (value ?? 0) / 100).toFixed(2)),
+						});
 					}}
 				/>
 			</div>
 			<div className={styles.attrItem}>
-				<StyleSlider
-					min={0}
-					max={300}
-					label="缩放比例"
-          formatter="%"
+				<h4>CSS</h4>
+				<CodeEditor
+					height={300}
+					language="json"
 					value={
-						currStyle.scale !== undefined ? currStyle.scale * 100 : 100
+						currLayer && currLayer.customStyle ? JSON.stringify(currLayer.customStyle, undefined, "  ") : undefined
 					}
 					onChange={(value) => {
-						onStyleChange({"scale": parseFloat(((value ?? 0) / 100).toFixed(2))});
+						if (currLayer) {
+							try{
+								currLayer.customStyle = value ? JSON.parse(value) : value;
+								canvasStore.refreshLayer([currLayer.id]);
+							}catch(e){
+								console.error(e)
+							}
+						}
 					}}
 				/>
 			</div>

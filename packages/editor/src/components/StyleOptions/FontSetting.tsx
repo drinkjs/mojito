@@ -123,7 +123,7 @@ export const FontSetting = (props: {
 						allowClear
 					>
 						{
-							fontFaces.map(v => <Option value={v}>{v}</Option>)
+							fontFaces.map(v => <Option key={v} value={v}>{v}</Option>)
 						}
 					</Select>
 				</Col>

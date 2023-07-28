@@ -79,6 +79,7 @@ declare global {
     eventLock?: boolean; // 事件锁定，锁定后图层内组件不能交互
     data?: Record<string, any>;
     style: ComponentStyle;
+    customStyle?:CSSProperties
     hide?: boolean;
     lock?: boolean;
     group?: string;
