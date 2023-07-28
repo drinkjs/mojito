@@ -1,78 +1,179 @@
+import { useUpdateEffect } from "ahooks";
 import { Col, InputNumber, Row, Select } from "antd";
+import { useEffect, useState } from "react";
+import { ColorSetting } from "./ColorSetting";
 import ItemLabel from "./ItemLabel";
 
 const { Option } = Select;
 
-const FontSetting = (props: {
-	value?: any;
-	onChange: (type: string, value: any) => void;
-}) => {
-	const { onChange, value } = props;
-
-	return (
-		<Row gutter={[6, 6]}>
-			<Col span={12}>
-				<ItemLabel>字体</ItemLabel>
-				<Select
-					style={{ width: "100%", marginTop: "6px" }}
-					defaultValue="auto"
-					value={value && value.fontFamily ? value.fontFamily : "auto"}
-					onChange={(val) => {
-						onChange("fontFamily", val);
-					}}
-				>
-					<Option value="auto">auto</Option>
-					<Option value="微软雅黑">微软雅黑</Option>
-					<Option value="宋体">宋体</Option>
-					<Option value="黑体">黑体</Option>
-				</Select>
-			</Col>
-
-			<Col span={12}>
-				<ItemLabel>大小</ItemLabel>
-				<InputNumber
-					value={value && value.fontSize ? value.fontSize : 14}
-					style={{ width: "100%", marginTop: "6px" }}
-					onChange={(val) => {
-						onChange("fontSize", val);
-					}}
-				/>
-			</Col>
-			<Col span={12}>
-				<ItemLabel>加粗</ItemLabel>
-				<Select
-					style={{ width: "100%", marginTop: "6px" }}
-					value={value && value.fontWeight ? value.fontWeigh : "normal"}
-					onChange={(val) => {
-						onChange("fontWeight", val);
-					}}
-				>
-					<Option value="normal">normal</Option>
-					<Option value="bold">bold</Option>
-					<Option value={100}>100</Option>
-					<Option value={200}>200</Option>
-					<Option value={300}>300</Option>
-					<Option value={500}>500</Option>
-					<Option value={600}>600</Option>
-				</Select>
-			</Col>
-
-			<Col span={12}>
-				<ItemLabel>对齐</ItemLabel>
-				<Select
-					style={{ width: "100%", marginTop: "6px" }}
-					value={value && value.textAlign ? value.textAlign : "left"}
-					onChange={(val) => {
-						onChange("textAlign", val);
-					}}
-				>
-					<Option value="left">left</Option>
-					<Option value="center">center</Option>
-					<Option value="right">right</Option>
-				</Select>
-			</Col>
-		</Row>
-	);
+type Font = {
+	fontFamily?: string;
+	fontWeight?: number;
+	textAlign?: string;
+	fontSize?: number;
+	color?: string;
 };
 
-export default FontSetting;
+const fontFaces: string[] = [
+	"Arial",
+	"Arial Black",
+	"Bahnschrift",
+	"Calibri",
+	"Cambria",
+	"Cambria Math",
+	"Candara",
+	"Comic Sans MS",
+	"Consolas",
+	"Constantia",
+	"Corbel",
+	"Courier New",
+	"Ebrima",
+	"Franklin Gothic Medium",
+	"Gabriola",
+	"Gadugi",
+	"Georgia",
+	"HoloLens MDL2 Assets",
+	"Impact",
+	"Ink Free",
+	"Javanese Text",
+	"Leelawadee UI",
+	"Lucida Console",
+	"Lucida Sans Unicode",
+	"Malgun Gothic",
+	"Marlett",
+	"Microsoft Himalaya",
+	"Microsoft JhengHei",
+	"Microsoft New Tai Lue",
+	"Microsoft PhagsPa",
+	"Microsoft Sans Serif",
+	"Microsoft Tai Le",
+	"Microsoft YaHei",
+	"Microsoft Yi Baiti",
+	"MingLiU-ExtB",
+	"Mongolian Baiti",
+	"MS Gothic",
+	"MV Boli",
+	"Myanmar Text",
+	"Nirmala UI",
+	"Palatino Linotype",
+	"Segoe MDL2 Assets",
+	"Segoe Print",
+	"Segoe Script",
+	"Segoe UI",
+	"Segoe UI Historic",
+	"Segoe UI Emoji",
+	"Segoe UI Symbol",
+	"SimSun",
+	"Sitka",
+	"Sylfaen",
+	"Symbol",
+	"Tahoma",
+	"Times New Roman",
+	"Trebuchet MS",
+	"Verdana",
+	"Webdings",
+	"Wingdings",
+	"Yu Gothic",
+];
+
+export const FontSetting = (props: {
+	value?: Font;
+	onChange: (value?: Font) => void;
+	labelStyle?: React.CSSProperties;
+}) => {
+	const { onChange, labelStyle, value } = props;
+	const [font, setFont] = useState<Font | undefined>(value);
+
+	useUpdateEffect(() => {
+		if (value !== font) {
+			setFont(value);
+		}
+	}, [value]);
+
+	useUpdateEffect(() => {
+		onChange(font);
+	}, [font]);
+
+	return (
+		<>
+			<h4
+				style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "1em",
+				}}
+			>
+				<span>文字</span>
+				<ColorSetting
+					value={value ? value.color : undefined}
+					onChange={(color?: string) => {
+						setFont({ ...font, color });
+					}}
+				/>
+			</h4>
+			<Row gutter={[6, 6]}>
+				<Col span={12}>
+					<ItemLabel style={labelStyle}>字体</ItemLabel>
+					<Select
+						style={{ width: "100%", marginTop: "6px" }}
+						value={value ? value.fontFamily : undefined}
+						onChange={(val) => {
+							setFont({ ...font, fontFamily: val });
+						}}
+						allowClear
+					>
+						{
+							fontFaces.map(v => <Option value={v}>{v}</Option>)
+						}
+					</Select>
+				</Col>
+
+				<Col span={12}>
+					<ItemLabel style={labelStyle}>大小</ItemLabel>
+					<InputNumber
+						value={value && value.fontSize ? value.fontSize : 14}
+						style={{ width: "100%", marginTop: "6px" }}
+						onChange={(val) => {
+							setFont({ ...font, fontSize: val ?? undefined });
+						}}
+					/>
+				</Col>
+				<Col span={12}>
+					<ItemLabel style={labelStyle}>加粗</ItemLabel>
+					<Select
+						style={{ width: "100%", marginTop: "6px" }}
+						value={value ? value.fontWeight : undefined}
+						onChange={(val) => {
+							setFont({ ...font, fontWeight: val });
+						}}
+						allowClear
+					>
+						<Option value={100}>100</Option>
+						<Option value={200}>200</Option>
+						<Option value={300}>300</Option>
+						<Option value={400}>400</Option>
+						<Option value={500}>500</Option>
+						<Option value={600}>600</Option>
+						<Option value={700}>700</Option>
+						<Option value={800}>800</Option>
+					</Select>
+				</Col>
+
+				<Col span={12}>
+					<ItemLabel style={labelStyle}>对齐</ItemLabel>
+					<Select
+						style={{ width: "100%", marginTop: "6px" }}
+						value={value ? value.textAlign : undefined}
+						onChange={(val) => {
+							setFont({ ...font, textAlign: val });
+						}}
+					>
+						<Option value="left">left</Option>
+						<Option value="center">center</Option>
+						<Option value="right">right</Option>
+					</Select>
+				</Col>
+			</Row>
+		</>
+	);
+};

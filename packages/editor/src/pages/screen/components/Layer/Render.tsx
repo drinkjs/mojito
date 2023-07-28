@@ -18,11 +18,9 @@ export type RenderAction = {
 };
 
 interface RenderProps {
-	props: object;
-	componentStyle: ComponentStyle;
+	props?: Record<string, any>;
 	events?: Record<string, (...args: any[]) => any>;
 	component: ComponentInfo;
-	componentName: string;
 	width?: number | string;
 	height?: number | string;
 	reloadKey?: any;
@@ -36,8 +34,6 @@ export default function Render({
 	component,
 	onMount,
 	style,
-	width,
-	height,
 	reloadKey,
 	props,
 	events,
@@ -73,16 +69,6 @@ export default function Render({
 					}
 
 					const compProps: any = { ...props, ...events };
-					if (!compProps.style) {
-						compProps.style = {};
-					}
-					if (width !== undefined) {
-						compProps.style.width = width;
-					}
-					if (height !== undefined) {
-						compProps.style.height = height;
-					}
-
 					comp.mount(componentContainer, compProps, (props) => {
 						if (onMount) {
 							const firstChild: HTMLElement =
@@ -105,7 +91,7 @@ export default function Render({
 					});
 				}
 			});
-	}, [width, height, onMount, canvasStore, component, props, events]);
+	}, [onMount, canvasStore, component, props, events]);
 
 	useImperativeHandle(
 		actionRef,
@@ -156,17 +142,6 @@ export default function Render({
 			componentRef.current.setProps(events);
 		}
 	}, [events]);
-
-	useUpdateEffect(() => {
-		if (componentRef.current) {
-			componentRef.current.setProps({
-				style: {
-					width,
-					height,
-				},
-			});
-		}
-	}, [width, height]);
 
 	return (
 		<ErrorCatch>

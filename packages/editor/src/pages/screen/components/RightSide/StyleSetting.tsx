@@ -1,8 +1,10 @@
-import { ColorSetting, SizeSetting } from "@/components/StyleOptions";
-import BorderSetting from "@/components/StyleOptions/BorderSetting";
-import FontSetting from "@/components/StyleOptions/FontSetting";
+import {
+	BorderSetting,
+	FontSetting,
+	SizeSetting,
+} from "@/components/StyleOptions";
 import StyleSlider from "@/components/StyleOptions/StyleSlider";
-import { Col, Radio, Row } from "antd";
+import { Col, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useCanvasStore } from "../../hook";
 import styles from "./index.module.css";
@@ -28,34 +30,43 @@ const sizeItems = [
 
 export default function StyleSetting() {
 	const { canvasStore } = useCanvasStore();
-  const [currLayer, setCurrLayer] = useState<LayerInfo | undefined>();
+	const [currLayer, setCurrLayer] = useState<LayerInfo | undefined>();
+	const [currStyle, setCurrStyle] = useState<any>({});
 
-  useEffect(() => {
-		if (canvasStore.selectedLayers.size > 1) {
-			setCurrLayer(undefined)
-		} else {
+	useEffect(() => {
+		if (canvasStore.selectedLayers.size === 1) {
 			const layer = Array.from(canvasStore.selectedLayers)[0];
 			setCurrLayer(layer);
+			setCurrStyle(layer.style);
+		} else {
+			setCurrLayer(undefined);
+			setCurrStyle({});
 		}
 	}, [canvasStore, canvasStore.selectedLayers]);
 
+	const onStyleChange = (value: Record<string, any>) => {
+		if (currLayer) {
+			currLayer.style = { ...currLayer.style, ...value };
+			canvasStore.refreshLayer([currLayer.id]);
+		}
+	};
+
 	return (
 		<section className={styles.settingRoot}>
-      <div className={styles.settingTitle}>{currLayer?.name}</div>
+			<div className={styles.settingTitle}>{currLayer?.name}</div>
 			<div className={styles.attrItem}>
 				<h4>位置与尺寸</h4>
 				<Row gutter={[0, 6]}>
 					{sizeItems.map((v) => {
-						// const defaultStyleValue: any = defaultStyle;
 						return (
-							<Col span={12}>
+							<Col span={12} key={v.key}>
 								<SizeSetting
 									key={v.key}
 									label={v.label}
-									onChange={(value: any) => {
-										// onStyleChange(v.key, value);
+									onChange={(value?: any) => {
+										onStyleChange({ [v.key]: value ?? 0 });
 									}}
-									value={0}
+									value={currStyle[v.key]}
 									labelStyle={{ width: "1em" }}
 								/>
 							</Col>
@@ -64,100 +75,64 @@ export default function StyleSetting() {
 				</Row>
 			</div>
 			<div className={styles.attrItem}>
-				<h4>颜色</h4>
-				<Row>
-					<Col span={12}>
-						<ColorSetting
-							label="背景颜色"
-							// value={
-							// 	defaultStyle && defaultStyle.backgroundColor
-							// 		? defaultStyle.backgroundColor.toString()
-							// 		: undefined
-							// }
-							onChange={(color: string | undefined) => {
-								// onStyleChange("backgroundColor", color);
-							}}
-						/>
-					</Col>
-					<Col span={12}>
-						<ColorSetting
-							label="字体颜色"
-							defaultColor="#000"
-							// value={defaultStyle ? defaultStyle.color : undefined}
-							onChange={(color: string | undefined) => {
-								// onStyleChange("color", color);
-							}}
-						/>
-					</Col>
-				</Row>
-			</div>
-			{/* <div className={styles.title}>
-				<p>文字</p>
-				<div style={{ marginTop: "12px" }}>
-					<FontSetting onChange={onStyleChange} value={defaultStyle} />
-				</div>
-			</div>
-			<div className={styles.title}>
-				<p>边框</p>
-				<div style={{ marginTop: "12px" }}>
-					<BorderSetting onChange={onStyleChange} value={defaultStyle} />
-				</div>
-			</div>
-			<div className={styles.title}>
-				<StyleSlider
-					min={1}
-					max={100}
-					label="不透明度"
-					formatter="%"
-					value={
-						defaultStyle && defaultStyle.opacity !== undefined
-							? parseFloat(defaultStyle.opacity.toString()) * 100
-							: 100
-					}
-					onChange={(value: number) => {
-						onStyleChange("opacity", (value / 100).toFixed(2));
+				<FontSetting
+					value={currStyle.font}
+					onChange={(font) => {
+						onStyleChange({ font });
 					}}
 				/>
 			</div>
-			<div className={styles.title}>
-				<StyleSlider
-					min={0}
-					max={200}
-					label="缩放比例"
-					formatter="%"
-					value={
-						defaultStyle && defaultStyle.scale !== undefined
-							? defaultStyle.scale * 100
-							: 100
-					}
-					onChange={(value: number) => {
-						onStyleChange("scale", `${(value / 100).toFixed(2)}`);
+			<div className={styles.attrItem}>
+				<BorderSetting
+					value={currStyle.border}
+					onChange={(border) => {
+						onStyleChange({ border });
 					}}
 				/>
-			</div>*/}
-      <div className={styles.attrItem}>
-        <h4>文字</h4>
-        <FontSetting onChange={()=>{}} />
-      </div>
-      <div className={styles.attrItem}>
-        <h4>边框</h4>
-        <BorderSetting onChange={()=>{}} />
-      </div>
+			</div>
 			<div className={styles.attrItem}>
 				<StyleSlider
 					min={0}
 					max={360}
 					label="旋转角度"
-					// value={
-					// 	defaultStyle && defaultStyle.rotate !== undefined
-					// 		? parseInt(defaultStyle.rotate.replace("deg", ""))
-					// 		: 0
-					// }
+					value={
+						currStyle.rotate !== undefined
+							? parseInt(currStyle.rotate.replace("deg", ""), 10)
+							: 0
+					}
 					onChange={(value) => {
-						// onStyleChange("rotate", `${value}deg`);
+						onStyleChange({ rotate: `${value ?? 0}deg` });
 					}}
 				/>
-			</div> 
+			</div>
+			<div className={styles.attrItem}>
+				<StyleSlider
+					min={0}
+					max={100}
+					label="透明度"
+          formatter="%"
+					value={
+						currStyle.opacity !== undefined ? (1 - currStyle.opacity) * 100 : 0
+					}
+					onChange={(value) => {
+						onStyleChange({"opacity": parseFloat((1-(value ?? 0) / 100).toFixed(2))});
+					}}
+				/>
+			</div>
+			<div className={styles.attrItem}>
+				<StyleSlider
+					min={0}
+					max={300}
+					label="缩放比例"
+          formatter="%"
+					value={
+						currStyle.scale !== undefined ? currStyle.scale * 100 : 100
+					}
+					onChange={(value) => {
+						onStyleChange({"scale": parseFloat(((value ?? 0) / 100).toFixed(2))});
+					}}
+				/>
+			</div>
 		</section>
 	);
 }

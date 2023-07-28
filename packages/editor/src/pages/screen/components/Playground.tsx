@@ -184,7 +184,7 @@ export default function Playground() {
 	useKeyPress(
 		MoveKeys,
 		(event) => {
-			if (canvasStore.selectedLayers.size === 0 || !changerRef.current) return;
+			if (canvasStore.selectedLayers.size === 0 || !changerRef.current || document.activeElement !== document.body) return;
 			event.preventDefault();
 			let valueX = 0;
 			let valueY = 0;
@@ -213,9 +213,9 @@ export default function Playground() {
 	useKeyPress(
 		SelectLayerActionKeys,
 		(event) => {
+			if (canvasStore.selectedLayers.size === 0 || document.activeElement !== document.body) return;
+			
 			event.preventDefault();
-			if (canvasStore.selectedLayers.size === 0) return;
-
 			console.log(event.key);
 			switch (event.key) {
 				case "Escape":
@@ -258,7 +258,9 @@ export default function Playground() {
 	useKeyPress(
 		CanvasActionKeys,
 		(event) => {
-			// event.preventDefault();
+			if(document.activeElement !== document.body) return;
+
+			event.preventDefault();
 			switch (event.key) {
 				case "z":
 					// 撤销

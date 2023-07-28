@@ -3,24 +3,25 @@ import { Button, ColorPicker, Space } from "antd";
 import ItemLabel from "./ItemLabel";
 
 export function ColorSetting(props: {
-	label: string;
+	label?: string;
 	value?: string;
   defaultColor?:string
-	onChange: (color: string) => void;
+  labelStyle?:React.CSSProperties
+	onChange: (color?: string) => void;
 }) {
-  const {value, label, defaultColor, onChange} = props;
+  const {value, label, defaultColor, labelStyle, onChange} = props;
 	return (
 		<Space>
-      <ItemLabel>{label}</ItemLabel>
+      {label && <ItemLabel style={labelStyle}>{label}</ItemLabel>}
       <Space.Compact block>
         <ColorPicker
           size="small"
-          value={value || defaultColor}
+          value={value || defaultColor || "#000"}
           onChangeComplete={(color)=>{
             onChange(color.toHexString())
           }}
         />
-        <Button icon={<ClearOutlined />} size="small" onClick={()=>onChange(defaultColor || "#fff")} />
+        <Button icon={<ClearOutlined />} size="small" onClick={()=>onChange(undefined)} />
       </Space.Compact>
 		</Space>
 	);

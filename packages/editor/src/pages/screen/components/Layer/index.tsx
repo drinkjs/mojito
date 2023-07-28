@@ -18,8 +18,9 @@ import { useMount, useUpdateEffect } from "ahooks";
 import { useCanvasStore } from "../../hook";
 import { runCode } from "@/common/util";
 import { syncHelper } from "@/common/syncHelper";
+import { Border } from "@/components/StyleOptions";
 
-const EventSyncCallFlag = Symbol.for("EventSyncCallFlag")
+const EventSyncCallFlag = Symbol.for("EventSyncCallFlag");
 
 const request = new Request();
 
@@ -82,7 +83,7 @@ export const LayerEvent: { [key: string]: string } = {
 };
 
 export type LayerAction = {
-	eventSync: (event?: Record<string, {args:any[], retruns?:any}>) => void;
+	eventSync: (event?: Record<string, { args: any[]; retruns?: any }>) => void;
 };
 
 interface LayerProps extends React.HTMLAttributes<Element> {
@@ -121,15 +122,13 @@ const Layer: React.FC<LayerProps> = ({
 	const { canvasStore } = useCanvasStore();
 	const targetRef = useRef<HTMLDivElement | null>(null);
 	const renderRef = useRef<RenderAction>();
-	// 事件设置的props和styles
-	const [eventRel, setEventRel] = useState<EventValue>({});
-	// 数据源
-	const [dataSource, setDataSource] = useState<any>();
+	// 图层是否隐藏
 	const [hide, setHide] = useState(false);
 	// 事件处理
-	const eventHandlers = useRef<Record<string, (...args: any[]) => any>>({})
+	const eventHandlers = useRef<Record<string, (...args: any[]) => any>>({});
 
 	useMount(() => {
+		// 缓存图层dom节点
 		if (targetRef.current)
 			canvasStore.cacheLayerDom(data.id, targetRef.current);
 	});
@@ -144,16 +143,21 @@ const Layer: React.FC<LayerProps> = ({
 	/**
 	 * 给playground调用
 	 */
-	const actionRef = useMemo<LayerAction>(() => ({
-		eventSync: (data) => {
-			// 接收组件事件同步
-			for(const key in data){
-				if(eventHandlers.current[key]){
-					eventHandlers.current[key](...[...data[key].args, EventSyncCallFlag]);
+	const actionRef = useMemo<LayerAction>(
+		() => ({
+			eventSync: (data) => {
+				// 接收组件事件同步
+				for (const key in data) {
+					if (eventHandlers.current[key]) {
+						eventHandlers.current[key](
+							...[...data[key].args, EventSyncCallFlag]
+						);
+					}
 				}
-			}
-		},
-	}), []);
+			},
+		}),
+		[]
+	);
 
 	/**
 	 * 设置隐藏
@@ -169,77 +173,12 @@ const Layer: React.FC<LayerProps> = ({
 	}, [data, onRef, actionRef]);
 
 	/**
-	 * 请求数据源
+	 * 合并props
 	 */
-	const requestDataSource = (
-		api: string,
-		method: string,
-		params?: any,
-		onLayerData?: Callback
-	) => {
-		const newParams = params || {};
-		setDataloading(true);
-		eventRequest(api, method, newParams)
-			.then((res) => {
-				setDataSource(res);
-				// 数据加载完成事件处理
-				if (onLayerData) {
-					runEventHandler(onLayerData, res);
-				}
-			})
-			.finally(() => {
-				setDataloading(false);
-			});
-	};
-
-	/**
-	 * 执行事件处理方法
-	 * @param callback
-	 * @param args
-	 */
-	const runEventHandler = (callback: Callback, ...args: any[]) => {
-		try {
-			callback.call(createThis(), ...args);
-		} catch (e) {
-			showHandlerError(data.name, e);
-		}
-	};
-	/**
-	 * 事件处理设置props
-	 */
-	const setProps = useCallback(
-		(props: any) => {
-			eventRel.props = {
-				...eventRel.props,
-				...props,
-			};
-			setEventRel({ ...eventRel });
-		},
-		[eventRel]
-	);
-
-	/**
-	 * 事件处理设置style
-	 */
-	const setStyles = useCallback(
-		(styles: any) => {
-			eventRel.styles = {
-				...eventRel.styles,
-				...styles,
-			};
-			setEventRel({ ...eventRel });
-		},
-		[eventRel]
-	);
-
-	/**
-	 * 合并props和style后的值
-	 */
-	const mergeArgs = useMemo(() => {
-		const mergeProps = _.merge(data.props, dataSource, eventRel.props);
-		const mergeStyle = _.merge(data.style, eventRel.styles);
-		return { props: mergeProps, styles: mergeStyle };
-	}, [data.props, data.style, dataSource, eventRel]);
+	const componentProps = useMemo(() => {
+		const mergeProps = _.merge(data.props, { $style: data.style });
+		return mergeProps;
+	}, [data.props, data.style]);
 
 	/**
 	 * 选中组件
@@ -291,7 +230,7 @@ const Layer: React.FC<LayerProps> = ({
 			getProps: (key?: string) =>
 				key && data.props ? data.props[key] : data.props,
 			setProps: (props: Record<string, any>) => {
-				if(renderRef.current){
+				if (renderRef.current) {
 					// 更新组件props
 					renderRef.current.updateProps(props);
 				}
@@ -315,8 +254,10 @@ const Layer: React.FC<LayerProps> = ({
 						// 调用事件处理函数, values是组件事件回调结果
 						handlers[key] = async (...values: any[]) => {
 							// 是否通过同步事件调用，防止双向同步
-							const isSyncCall = values.length > 0 && values[values.length - 1] === EventSyncCallFlag;
-							if(isSyncCall){
+							const isSyncCall =
+								values.length > 0 &&
+								values[values.length - 1] === EventSyncCallFlag;
+							if (isSyncCall) {
 								// 删除最后的标识参数
 								values.pop();
 							}
@@ -349,16 +290,38 @@ const Layer: React.FC<LayerProps> = ({
 			data.style.scale !== undefined ? `scale(${data.style.scale})` : "";
 		const rotate =
 			data.style.rotate !== undefined ? `rotate(${data.style.rotate})` : "";
+		
+		// 处理边框	
+		const borderObj: any = {};
+		const border:Border = data.style.border as any || {};
+		const borderCss = `${border.borderWidth ?? 0}px ${border.borderStyle ?? "none"} ${border.borderColor || ""}`
+		if (border && border.borderPosition && border.borderPosition.length !== 0 && border.borderPosition.length < 4 ) {
+			border.borderPosition.forEach(pos =>{
+				borderObj[`border${pos}`] = borderCss;
+			});
+		}else{
+			borderObj[`border`] = borderCss;
+		}
+		borderObj["borderRadius"] = border.borderRadius ?? 0;
+
+		const font = data.style.font as any;
+
 		return {
 			...data.style,
+			border: undefined,
+			font: undefined,
+			...borderObj,
+			...font,
 			transform: `translateX(${data.style.x}px) translateY(${data.style.y}px) ${scale} ${rotate}`,
 			zIndex: data.style.z,
 			display: !enable && hide ? "none" : "block",
-			opacity: enable && hide ? 0.2 : data.style.opacity,
+			opacity: enable && hide ? 0.1 : data.style.opacity,
 			overflow: data.style.overflow || "hidden",
 			x: undefined,
 			y: undefined,
 			z: undefined,
+			scale: undefined,
+			rotate: undefined,
 		};
 	}, [hide, enable, data]);
 
@@ -377,17 +340,13 @@ const Layer: React.FC<LayerProps> = ({
 				actionRef={renderRef}
 				onMount={onMount}
 				component={data.component}
-				props={mergeArgs.props}
-				componentStyle={mergeArgs.styles}
-				width={mergeArgs.styles.width}
-				height={mergeArgs.styles.height}
+				props={componentProps}
 				events={eventHandler}
 				style={{
 					width: "100%",
 					height: "100%",
 					pointerEvents: enable && data.eventLock ? "none" : "auto",
 				}}
-				componentName={data.component.name}
 			/>
 		</div>
 	);
