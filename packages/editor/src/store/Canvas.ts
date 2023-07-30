@@ -4,7 +4,7 @@ import _ from "lodash-es";
 import "systemjs";
 import { message } from "antd";
 import { getPackDetail } from "@/services/component";
-import { getPackScriptUrl, smallId } from "@/common/util";
+import { formatPackScriptUrl, smallId } from "@/common/util";
 import { RectInfo } from "react-moveable";
 import { CSSProperties } from "react";
 
@@ -34,10 +34,10 @@ export default class Canvas {
 
 	mouseDownEvent?: React.MouseEvent<HTMLDivElement, MouseEvent>;
 
-	// 缓存组件库加载地址和依赖
+	// 缓存组件库信息
 	packScriptMap: Map<
 		string,
-		{ scriptUrl: string; external?: Record<string, string>} | Promise<ComponentPackInfo | undefined>
+		{ scriptUrl: string; external?: Record<string, string>, name:string, version:string} | Promise<ComponentPackInfo | undefined>
 	> = new Map();
 	// 已经加载过的组件
 	loadedPackComponent: Map<
@@ -159,8 +159,13 @@ export default class Canvas {
 				// 获取组件的依赖信息
 				data.packInfo.forEach(rel =>{
 					// 缓存依赖信息
-					const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
-					this.packScriptMap.set(rel.id, {scriptUrl, external: rel.external})
+					const scriptUrl = formatPackScriptUrl(rel.packJson, rel.name);
+					this.packScriptMap.set(rel.id, {
+						scriptUrl, 
+						external: rel.external,
+						name: rel.name,
+						version: rel.version,
+					})
 				});
 			}
 		}else{
@@ -342,15 +347,15 @@ export default class Canvas {
 	 */
 	async addLayer(
 		layer: LayerInfo,
-		scriptUrl: string,
-		external?: Record<string, string>
+		packInfo: {scriptUrl:string, external?:any, name:string, version:string}
 	) {
+		const {scriptUrl, external, name, version} = packInfo;
 		this.addUndoData();
 		this.mouseDownEvent = undefined;
 		this.layers.push(layer);
 		// 缓存组件库加载信息
 		if (!this.packScriptMap.has(layer.component.packId)) {
-			this.packScriptMap.set(layer.component.packId, { scriptUrl, external });
+			this.packScriptMap.set(layer.component.packId, { scriptUrl, external, name, version });
 		}
 		// 更新ui
 		this.layers = [...this.layers];
@@ -372,7 +377,18 @@ export default class Canvas {
 		}
 
 		let packInfo:any = this.packScriptMap.get(packId);
-		if (!packInfo) {
+		if(packInfo.then){
+			// 其它图层正在请求，等待结果返回
+			const rel = await packInfo;
+			if (!rel) {
+				return;
+			}
+			const scriptUrl = formatPackScriptUrl(rel.packJson, rel.name);
+			packInfo = {
+				scriptUrl,
+				external: rel.external,
+			};
+		}else if (!packInfo || !packInfo.name) {
 			// 调用接口获取信息
 			const reqPackDetail = getPackDetail(packId) as Promise<ComponentPackInfo>;
 			this.packScriptMap.set(packId, reqPackDetail);
@@ -384,24 +400,13 @@ export default class Canvas {
 				return;
 			}
 			// 获取组件库脚本地址
-			const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
+			const scriptUrl = formatPackScriptUrl(rel.packJson, rel.name);
 			packInfo = {
 				scriptUrl,
 				external: rel.external,
 			};
 			// 缓存组件库信息
 			this.packScriptMap.set(packId, packInfo);
-		}else if(packInfo.then){
-			// 其它图层正在请求，等待结果返回
-			const rel = await packInfo;
-			if (!rel) {
-				return;
-			}
-			const scriptUrl = getPackScriptUrl(rel.packUrl, rel.name);
-			packInfo = {
-				scriptUrl,
-				external: rel.external,
-			};
 		}
 
 		if (packInfo?.external) {

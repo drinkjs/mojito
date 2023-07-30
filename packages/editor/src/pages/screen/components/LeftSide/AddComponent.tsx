@@ -8,7 +8,8 @@ import {
 } from "antd";
 import { ModalFuncProps } from "antd/lib/modal";
 import { useGlobalStore } from "@/store";
-import { getPackInfo } from "@/services/component";
+import { Request } from '@mojito/common/network';
+import { get as reqGet } from "@/common/request";
 
 const layout = {
 	labelCol: { span: 6 },
@@ -48,22 +49,20 @@ export default function AddComponent({value, onCancel, ...restProps}: Props) {
 	const getMojitoPack = (e: React.FocusEvent<HTMLInputElement>) => {
 		if (loading) return;
 
-		const value = e.target.value;
-		if (value) {
+		const url = e.target.value;
+		if (url) {
 			setLoading(true);
 			setPackInfo(undefined);
-			getPackInfo(value)
-				.then((data) => {
-					if (data?.components.length === 0) {
-						message.error("No Components Export");
-						return;
-					}
+			reqGet<ComponentPackInfo>(url).then((data)=>{
+				if (data && data.components && data.components.length) {
 					setPackInfo(data);
-					form.setFieldValue("name", data?.name);
-				})
-				.finally(() => {
-					setLoading(false);
-				});
+				}else{
+					message.error("No Components Export");
+				}
+				form.setFieldValue("name", data?.name);
+			}).finally(() => {
+				setLoading(false);
+			});
 		}
 	};
 
@@ -82,7 +81,7 @@ export default function AddComponent({value, onCancel, ...restProps}: Props) {
 			<Form id="addModalForm" {...layout} form={form} preserve={false}>
 				<Form.Item
 					label="组件库地址"
-					name="packUrl"
+					name="packJson"
 					rules={[{ required: true, message: "此项不能为空" }]}
 				>
 					<Input placeholder="mojito-pack.json" onBlur={getMojitoPack} />

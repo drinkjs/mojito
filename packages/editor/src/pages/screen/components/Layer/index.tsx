@@ -173,12 +173,26 @@ const Layer: React.FC<LayerProps> = ({
 	}, [data, onRef, actionRef]);
 
 	/**
+	 * 组件通过__updateProps方法修改props
+	 */
+	const callUpdateProps = useCallback(
+		(props: Record<string, any>) => {
+			data.props = _.merge(data.props, props);
+			canvasStore.refreshLayer([data.id]);
+		},
+		[data, canvasStore]
+	);
+
+	/**
 	 * 合并props
 	 */
 	const componentProps = useMemo(() => {
-		const mergeProps = _.merge(data.props, { $style: data.style });
-		return mergeProps;
-	}, [data.props, data.style]);
+		return _.merge(data.props, {
+			__style: data.style,
+			__display: enable ? "editor" : "viewer",
+			__updateProps: callUpdateProps,
+		});
+	}, [data, enable, callUpdateProps]);
 
 	/**
 	 * 选中组件
@@ -290,16 +304,23 @@ const Layer: React.FC<LayerProps> = ({
 			data.style.scale !== undefined ? `scale(${data.style.scale})` : "";
 		const rotate =
 			data.style.rotate !== undefined ? `rotate(${data.style.rotate})` : "";
-		
-		// 处理边框	
+
+		// 处理边框
 		const borderObj: any = {};
-		const border:Border = data.style.border as any || {};
-		const borderCss = `${border.borderWidth ?? 0}px ${border.borderStyle ?? "none"} ${border.borderColor || ""}`
-		if (border && border.borderPosition && border.borderPosition.length !== 0 && border.borderPosition.length < 4 ) {
-			border.borderPosition.forEach(pos =>{
+		const border: Border = (data.style.border as any) || {};
+		const borderCss = `${border.borderWidth ?? 0}px ${
+			border.borderStyle ?? "none"
+		} ${border.borderColor || ""}`;
+		if (
+			border &&
+			border.borderPosition &&
+			border.borderPosition.length !== 0 &&
+			border.borderPosition.length < 4
+		) {
+			border.borderPosition.forEach((pos) => {
 				borderObj[`border${pos}`] = borderCss;
 			});
-		}else{
+		} else {
 			borderObj[`border`] = borderCss;
 		}
 		borderObj["borderRadius"] = border.borderRadius ?? 0;
@@ -342,6 +363,7 @@ const Layer: React.FC<LayerProps> = ({
 				component={data.component}
 				props={componentProps}
 				events={eventHandler}
+				layerId={data.id}
 				style={{
 					width: "100%",
 					height: "100%",

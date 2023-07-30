@@ -1,10 +1,10 @@
-import { Col, Empty, Row, Select, Skeleton, Space } from "antd";
+import { Col, Empty, Row, Select, Skeleton } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import ComponentListItem from "./ComponentListItem";
 import { CloseOutlined } from "@ant-design/icons";
 import styles from "./index.module.css";
 import { useGlobalStore } from "@/store";
-import { getPackScriptUrl } from "@/common/util";
+import { formatPackScriptUrl } from "@/common/util";
 
 export function ComponentList({
 	componentType,
@@ -52,7 +52,7 @@ export function ComponentList({
 		if (selectedPack) {
 			// 设置组件库加载脚本
 			setPackScriptUrl(
-				getPackScriptUrl(selectedPack.packUrl, selectedPack.name)
+				formatPackScriptUrl(selectedPack.packJson, selectedPack.name)
 			);
 		} else {
 			setPackScriptUrl(undefined);
@@ -99,6 +99,8 @@ export function ComponentList({
 											scriptUrl={packScriptUrl}
 											external={selectedPack.external}
 											packId={selectedPack.id}
+											packName={selectedPack.name}
+											packVersion={selectedPack.version}
 										/>
 									</Col>
 								);

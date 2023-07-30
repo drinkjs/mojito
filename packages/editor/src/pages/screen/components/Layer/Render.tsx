@@ -1,5 +1,13 @@
 import { Spin } from "antd";
-import React, { useCallback, useImperativeHandle, useRef, useState } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 
 import ErrorCatch from "@/components/ErrorCatch";
 import { useCanvasStore } from "../../hook";
@@ -13,8 +21,8 @@ export type ComponentMountEvent = {
 };
 
 export type RenderAction = {
-	reload: ()=> void,
-	updateProps: (data:Record<string, any>)=>void
+	reload: () => void;
+	updateProps: (data: Record<string, any>) => void;
 };
 
 interface RenderProps {
@@ -28,6 +36,7 @@ interface RenderProps {
 	children?: any;
 	style?: React.CSSProperties;
 	actionRef?: React.MutableRefObject<RenderAction | undefined>;
+	layerId: string;
 }
 
 export default function Render({
@@ -37,39 +46,48 @@ export default function Render({
 	reloadKey,
 	props,
 	events,
+	layerId,
 	actionRef,
 }: RenderProps) {
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	const componentRef = useRef<MojitoComponent | null>(null);
-	const shadowRef = useRef<ShadowRoot>()
+	const shadowRef = useRef<ShadowRoot>();
 	const [loading, setLoading] = useState(false);
 	const { canvasStore } = useCanvasStore();
 
+	useMount(() => {
+		// 创建组件主容器
+		const shadow = rootRef.current!.attachShadow({ mode: "open" });
+		const componentContainer = document.createElement("div");
+		componentContainer.style.width = "100%";
+		componentContainer.style.height = "100%";
+		shadow.appendChild(componentContainer);
+		shadowRef.current = shadow;
+		loadComponent();
+	});
+
 	const loadComponent = useCallback(() => {
+		if (!shadowRef.current) return;
+		const shadowRoot = shadowRef.current;
+
 		setLoading(true);
 		canvasStore
 			.loadComponent(component.packId, component.export)
 			.then((Component) => {
 				if (Component && rootRef.current) {
+					const event = new CustomEvent<{ layerId: string }>(
+						`mojito-render-${component.packName}@${component.packVersion}`,
+						{ detail: { layerId } }
+					);
+					document.dispatchEvent(event);
+
 					const comp = new Component();
 					componentRef.current = comp;
-					setLoading(false);
 
-					let componentContainer:HTMLDivElement;
-					if(shadowRef.current){
-						componentContainer = shadowRef.current.firstChild as HTMLDivElement;
-					}else{
-						// 创建组件主容器
-						const shadow  = rootRef.current.attachShadow({ mode: "open" });
-						componentContainer = document.createElement("div");
-						componentContainer.style.width = "100%";
-						componentContainer.style.height = "100%";
-						shadow.appendChild(componentContainer);
-						shadowRef.current = shadow;
-					}
-
+					const componentContainer = shadowRoot.firstChild as HTMLDivElement;
 					const compProps: any = { ...props, ...events };
 					comp.mount(componentContainer, compProps, (props) => {
+						setLoading(false);
 						if (onMount) {
 							const firstChild: HTMLElement =
 								componentContainer.firstChild as HTMLElement;
@@ -96,24 +114,20 @@ export default function Render({
 	useImperativeHandle(
 		actionRef,
 		() => ({
-			reload: ()=>{
+			reload: () => {
 				if (componentRef.current) {
 					componentRef.current.unmount();
 					loadComponent();
 				}
 			},
-			updateProps: (data)=>{
+			updateProps: (data) => {
 				if (componentRef.current) {
 					componentRef.current.setProps(data);
 				}
-			}
+			},
 		}),
 		[loadComponent]
 	);
-
-	useMount(() => {
-		loadComponent();
-	});
 
 	/**
 	 * 重新加载组件
@@ -145,7 +159,11 @@ export default function Render({
 
 	return (
 		<ErrorCatch>
-			<div ref={rootRef} style={style}>
+			<div
+				ref={rootRef}
+				style={style}
+				id={`${component.packName}@${component.packVersion}-${layerId}`}
+			>
 				{loading && (
 					<div className={styles.loading}>
 						<Spin />

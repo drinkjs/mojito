@@ -6,14 +6,6 @@ import { get, post } from "../common/request";
 export const getTypeTree = () => get<ComponentTypeTree[]>("/component/types");
 
 /**
- * 获取mojito-pack.json信息
- * @param url
- * @returns
- */
-export const getPackInfo = (url: string) =>
-	get<ComponentPackInfo>(url);
-
-/**
  * 组件库明细
  * @param id
  * @returns

@@ -111,15 +111,17 @@ export default function Playground() {
 			accept: "ADD_COMPONENT",
 			drop: (
 				item: {
-					export: string;
-					name: string;
-					scriptUrl: string;
-					external: any;
-					packId: string;
+					export: string,
+					name: string,
+					scriptUrl: string,
+					external: any,
+					packId: string,
+					packName:string,
+					packVersion:string
 				},
 				monitor
 			) => {
-				const { name, scriptUrl, external, packId } = item;
+				const { name, scriptUrl, external, packId, packName, packVersion } = item;
 				let x = 0;
 				let y = 0;
 
@@ -156,6 +158,8 @@ export default function Playground() {
 							export: item.export,
 							name,
 							packId,
+							packName,
+							packVersion
 						},
 						eventLock: true,
 						style: {
@@ -167,7 +171,7 @@ export default function Playground() {
 						},
 					};
 
-					canvasStore.addLayer(newLayer, scriptUrl, external);
+					canvasStore.addLayer(newLayer, {scriptUrl, external, name: packName, version: packVersion});
 				}
 			},
 			collect: (monitor) => ({

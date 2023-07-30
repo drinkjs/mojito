@@ -22,8 +22,8 @@ request.interceptors.request.use((_, options) => {
 
 request.interceptors.response.use(async (response)=>{
   const rel = await response.clone().json();
-  if(!rel){
-    return;
+  if(!rel || rel.code === undefined || rel.code === null){
+    return rel;
   }
 
   if (rel.code === 0) {

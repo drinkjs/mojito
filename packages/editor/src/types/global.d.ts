@@ -40,7 +40,7 @@ declare global {
     external?:Record<string, string>,
     components:{export:string, name:string}[],
     type:string,
-    packUrl:string,
+    packJson:string,
     createAt?:Date
   }
 
@@ -48,6 +48,8 @@ declare global {
     export: string;
     name: string;
     packId:string;
+    packName:string,
+    packVersion:string
   }
 
   type ComponentOptions = {

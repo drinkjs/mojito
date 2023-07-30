@@ -11,13 +11,15 @@ interface Props {
   scriptUrl:string,
   external?:Record<string, string>,
   packId:string
+  packName:string,
+  packVersion:string
 }
 
-const ComponentListItem = memo(({ value, scriptUrl, external, packId }: Props)=>{
+const ComponentListItem = memo(({ value, scriptUrl, external, packId, packName, packVersion }: Props)=>{
   const [{ opacity }, dragRef, preview] = useDrag(
     () => ({
       type: 'ADD_COMPONENT',
-      item: { export: value.export, name:value.name, scriptUrl, external, packId  },
+      item: { export: value.export, name:value.name, scriptUrl, external, packId, packName, packVersion  },
       collect: (monitor) => ({
         opacity: monitor.isDragging() ? 0.5 : 1
       })
