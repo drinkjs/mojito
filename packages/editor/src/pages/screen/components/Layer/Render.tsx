@@ -109,7 +109,7 @@ export default function Render({
 					});
 				}
 			});
-	}, [onMount, canvasStore, component, props, events]);
+	}, [onMount, canvasStore, component, props, events, layerId]);
 
 	useImperativeHandle(
 		actionRef,
@@ -159,11 +159,12 @@ export default function Render({
 
 	return (
 		<ErrorCatch>
-			<div
-				ref={rootRef}
-				style={style}
-				id={`${component.packName}@${component.packVersion}-${layerId}`}
-			>
+			<div className={styles.render}>
+				<div
+					ref={rootRef}
+					style={style}
+					id={`${component.packName}@${component.packVersion}-${layerId}`}
+				></div>
 				{loading && (
 					<div className={styles.loading}>
 						<Spin />
