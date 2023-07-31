@@ -3,21 +3,36 @@ import { useMount, useUnmount } from "ahooks";
 import { Skeleton } from "antd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useGlobalStore } from "@/store";
 import Header from "./components/Header";
 import LeftSide from "./components/LeftSide";
 import Playground from "./components/Playground";
 import RightSide from "./components/RightSide";
 import { useCanvasStore } from "./hook";
 import styles from "./styles/index.module.css";
+import { useCallback } from "react";
 
 export default function Screen() {
 	const { id, canvasStore, destroyStore } = useCanvasStore();
+	const { screenStore } = useGlobalStore();
+
+	// console.log("====", params)
+
+	const onStyleLoader = useCallback(
+		(e: any) => {
+			if (e.detail) {
+				screenStore.receiveMojitoStyle(e.detail);
+			}
+		},
+		[screenStore]
+	);
 
 	useMount(() => {
-		document.title = ""
-		canvasStore.getDetail(id).then((data)=>{
+		document.title = "";
+		document.addEventListener("__MojitoStyleLoader__", onStyleLoader);
+		canvasStore.getDetail(id).then((data) => {
 			syncHelper.join(id);
-			document.title = data?.screenInfo.name ||  ""
+			document.title = data?.screenInfo.name || "";
 		});
 	});
 
@@ -25,6 +40,7 @@ export default function Screen() {
 		document.title = "";
 		destroyStore();
 		syncHelper.leave();
+		document.removeEventListener("__MojitoStyleLoader__", onStyleLoader);
 	});
 
 	return (

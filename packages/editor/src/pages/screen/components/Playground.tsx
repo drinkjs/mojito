@@ -158,8 +158,6 @@ export default function Playground() {
 							export: item.export,
 							name,
 							packId,
-							packName,
-							packVersion
 						},
 						eventLock: true,
 						style: {

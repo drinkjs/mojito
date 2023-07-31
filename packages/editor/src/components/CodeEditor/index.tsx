@@ -1,6 +1,6 @@
 import Editor, { loader } from "@monaco-editor/react";
-import { useDebounceFn } from "ahooks";
-import { useCallback, useState } from "react";
+import { useDebounceFn, useUpdateEffect } from "ahooks";
+import { useCallback, useEffect, useState } from "react";
 
 loader.config({ paths: { vs: 'http://cdn.staticfile.org/monaco-editor/0.40.0/min/vs' } });
 
@@ -25,6 +25,10 @@ export default function CodeEditor({
 }: CodeEditorProps) {
 	
 	const [code, setCode] = useState(value);
+
+	useUpdateEffect(()=>{
+		setCode(value)
+	}, [value])
 
 	const { run } = useDebounceFn(
     (code?:string) => {

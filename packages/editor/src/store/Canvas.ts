@@ -1,7 +1,6 @@
 import * as service from "@/services/screen";
 import { makeObservable } from "fertile";
 import _ from "lodash-es";
-import "systemjs";
 import { message } from "antd";
 import { getPackDetail } from "@/services/component";
 import { formatPackScriptUrl, smallId } from "@/common/util";
@@ -35,26 +34,20 @@ export default class Canvas {
 	mouseDownEvent?: React.MouseEvent<HTMLDivElement, MouseEvent>;
 
 	// 缓存组件库信息
-	packScriptMap: Map<
-		string,
-		{ scriptUrl: string; external?: Record<string, string>, name:string, version:string} | Promise<ComponentPackInfo | undefined>
-	> = new Map();
+	packLoadedMap: Map<string, PackLoadInfo | Promise<ComponentPackInfo | undefined>> = new Map();
 	// 已经加载过的组件
-	loadedPackComponent: Map<
-		string,
-		Record<string, Constructor<MojitoComponent>>
-	> = new Map();
-	// 图层应该的dom节点
+	loadedPackComponent: Map<string,Record<string, Constructor<MojitoComponent>>> = new Map();
+	// 图层的dom节点
 	layerDomCache: Map<string, HTMLDivElement> = new Map();
-
-	layerComponentOptions: Map<string, ComponentOptions> = new Map()
+	// 组件的配置信息，用于右侧属性和事件配置
+	layerComponentOptions: Map<string, ComponentOptions> = new Map();
 
 	constructor() {
 		makeObservable(this, {
 			layoutContainer: false,
 			areaElement: false,
 			zoomElement: false,
-			packScriptMap: false,
+			packLoadedMap: false,
 			loadedPackComponent: false,
 			mouseDownEvent: false,
 			layerDomCache: false,
@@ -62,7 +55,7 @@ export default class Canvas {
 			saveLoading: false,
 			undoData: false,
 			redoData: false,
-			layerComponentOptions: false
+			layerComponentOptions: false,
 		});
 	}
 
@@ -102,7 +95,7 @@ export default class Canvas {
 	 * @returns
 	 */
 	private addUndoData(data?: ScreenDetail) {
-		this.undoData.push(_.cloneDeep(data || this.screenInfo! ));
+		this.undoData.push(_.cloneDeep(data || this.screenInfo!));
 		if (this.undoData.length >= MAX_UNDO) {
 			this.undoData.shift();
 		}
@@ -123,8 +116,8 @@ export default class Canvas {
 	/**
 	 * 取消选中图层
 	 */
-	cancelSelect(){
-		this.selectedLayers = new Set()
+	cancelSelect() {
+		this.selectedLayers = new Set();
 	}
 
 	/**
@@ -155,20 +148,20 @@ export default class Canvas {
 		if (data) {
 			this.screenInfo = data.screenInfo;
 			this.layers = this.screenInfo.layers || [];
-			if(data.packInfo){
+			if (data.packInfo) {
 				// 获取组件的依赖信息
-				data.packInfo.forEach(rel =>{
+				data.packInfo.forEach((rel) => {
 					// 缓存依赖信息
 					const scriptUrl = formatPackScriptUrl(rel.packJson, rel.name);
-					this.packScriptMap.set(rel.id, {
-						scriptUrl, 
+					this.packLoadedMap.set(rel.id, {
+						scriptUrl,
 						external: rel.external,
 						name: rel.name,
 						version: rel.version,
-					})
+					});
 				});
 			}
-		}else{
+		} else {
 			this.screenInfo = undefined;
 			this.layers = [];
 		}
@@ -182,7 +175,7 @@ export default class Canvas {
 	 */
 	refreshLayer(layerIds?: string[]) {
 		// 清空之前的点击事件，防止图层跟随鼠标移动
-		this.mouseDownEvent = undefined
+		this.mouseDownEvent = undefined;
 		if (layerIds) {
 			layerIds.forEach((layerId) => {
 				const layerIndex = this.layers.findIndex((v) => v.id === layerId);
@@ -286,10 +279,10 @@ export default class Canvas {
 		}
 
 		scaleInt = parseFloat((scaleInt / 10).toFixed(2));
-		this.zoomTo(scaleInt)
+		this.zoomTo(scaleInt);
 	}
 
-	zoomTo(scaleInt:number){
+	zoomTo(scaleInt: number) {
 		const { layoutContainer, zoomElement, screenInfo } = this;
 		const pageLayout = screenInfo ? screenInfo.style : undefined;
 		if (layoutContainer && zoomElement && pageLayout) {
@@ -308,7 +301,12 @@ export default class Canvas {
 		if (!this.screenInfo || this.saveLoading) return;
 
 		this.saveLoading = true;
-		await service.updateLayer({...this.screenInfo, projectId: undefined, createAt: undefined, updateAt: undefined});
+		await service.updateLayer({
+			...this.screenInfo,
+			projectId: undefined,
+			createAt: undefined,
+			updateAt: undefined,
+		});
 		this.saveLoading = false;
 	}
 
@@ -319,15 +317,20 @@ export default class Canvas {
 	async setPageStyle(styles: CSSProperties) {
 		if (!this.screenInfo) return;
 		this.addUndoData();
-		let {width, height} = this.screenInfo.style;
-		if(styles.width){
-			width = styles.width as number
+		let { width, height } = this.screenInfo.style;
+		if (styles.width) {
+			width = styles.width as number;
 		}
-		if(styles.height){
-			height = styles.height as number
+		if (styles.height) {
+			height = styles.height as number;
 		}
-		this.screenInfo.style = { ...this.screenInfo.style, ...styles, width, height };
-		this.screenInfo = {...this.screenInfo}
+		this.screenInfo.style = {
+			...this.screenInfo.style,
+			...styles,
+			width,
+			height,
+		};
+		this.screenInfo = { ...this.screenInfo };
 	}
 
 	/**
@@ -347,19 +350,20 @@ export default class Canvas {
 	 */
 	async addLayer(
 		layer: LayerInfo,
-		packInfo: {scriptUrl:string, external?:any, name:string, version:string}
+		packInfo: PackLoadInfo
 	) {
-		const {scriptUrl, external, name, version} = packInfo;
+		if(!this.screenInfo) return;
+
 		this.addUndoData();
 		this.mouseDownEvent = undefined;
 		this.layers.push(layer);
 		// 缓存组件库加载信息
-		if (!this.packScriptMap.has(layer.component.packId)) {
-			this.packScriptMap.set(layer.component.packId, { scriptUrl, external, name, version });
+		if (!this.packLoadedMap.has(layer.component.packId)) {
+			this.packLoadedMap.set(layer.component.packId, packInfo);
 		}
 		// 更新ui
 		this.layers = [...this.layers];
-		this.screenInfo!.layers = this.layers;
+		this.screenInfo.layers = this.layers;
 	}
 
 	/**
@@ -376,8 +380,8 @@ export default class Canvas {
 			return loaded[exportName];
 		}
 
-		let packInfo:any = this.packScriptMap.get(packId);
-		if(packInfo.then){
+		let packInfo: any = this.packLoadedMap.get(packId);
+		if (packInfo.then) {
 			// 其它图层正在请求，等待结果返回
 			const rel = await packInfo;
 			if (!rel) {
@@ -388,15 +392,15 @@ export default class Canvas {
 				scriptUrl,
 				external: rel.external,
 			};
-		}else if (!packInfo || !packInfo.name) {
+		} else if (!packInfo || !packInfo.name) {
 			// 调用接口获取信息
 			const reqPackDetail = getPackDetail(packId) as Promise<ComponentPackInfo>;
-			this.packScriptMap.set(packId, reqPackDetail);
+			this.packLoadedMap.set(packId, reqPackDetail);
 
 			const rel = await reqPackDetail;
 			if (!rel) {
 				message.error("没有相关组件");
-				this.packScriptMap.delete(packId);
+				this.packLoadedMap.delete(packId);
 				return;
 			}
 			// 获取组件库脚本地址
@@ -406,7 +410,7 @@ export default class Canvas {
 				external: rel.external,
 			};
 			// 缓存组件库信息
-			this.packScriptMap.set(packId, packInfo);
+			this.packLoadedMap.set(packId, packInfo);
 		}
 
 		if (packInfo?.external) {
@@ -424,7 +428,7 @@ export default class Canvas {
 					console.error(e);
 				}
 			);
-	
+
 			if (
 				components &&
 				components[exportName] &&
@@ -471,17 +475,20 @@ export default class Canvas {
 	 * @param layerId
 	 * @param style
 	 */
-	updateLayerStyle(layerId: string | string[], style: ComponentStyle | ComponentStyle[]) {
+	updateLayerStyle(
+		layerId: string | string[],
+		style: ComponentStyle | ComponentStyle[]
+	) {
 		this.addUndoData();
-		let layerIds:string[] = [];
-		if(typeof layerId === "string"){
+		let layerIds: string[] = [];
+		if (typeof layerId === "string") {
 			layerIds.push(layerId);
-		}else{
+		} else {
 			layerIds = layerId;
 		}
 
 		const isArr = Array.isArray(style);
-		layerIds.forEach((id, index) =>{
+		layerIds.forEach((id, index) => {
 			const layer = this.layers.find((v) => v.id === id);
 			if (layer) {
 				layer.style = _.merge(layer.style, isArr ? style[index] : style);
@@ -545,19 +552,19 @@ export default class Canvas {
 	 * 锁定图层或图层组
 	 * @param lock
 	 */
-	lockLayer(lock: boolean, layer?:LayerInfo) {
+	lockLayer(lock: boolean, layer?: LayerInfo) {
 		this.addUndoData();
 		const layerIds: string[] = [];
-		if(layer){
+		if (layer) {
 			layer.lock = lock;
 			layerIds.push(layer.id);
-		}else{
+		} else {
 			this.selectedLayers.forEach((layer) => {
 				layer.lock = lock;
 				layerIds.push(layer.id);
 			});
 		}
-		
+
 		this.refreshLayer(layerIds);
 	}
 
@@ -565,13 +572,13 @@ export default class Canvas {
 	 * 隐藏图层或图层组
 	 * @param hide
 	 */
-	hideLayer(hide: boolean, layer?:LayerInfo) {
+	hideLayer(hide: boolean, layer?: LayerInfo) {
 		this.addUndoData();
 		const layerIds: string[] = [];
-		if(layer){
+		if (layer) {
 			layer.hide = hide;
 			layerIds.push(layer.id);
-		}else{
+		} else {
 			this.selectedLayers.forEach((layer) => {
 				layer.hide = hide;
 				layerIds.push(layer.id);
@@ -583,12 +590,12 @@ export default class Canvas {
 	/**
 	 * 删除选中图层
 	 */
-	deleteLayer(delLayer?:LayerInfo) {
+	deleteLayer(delLayer?: LayerInfo) {
 		this.addUndoData();
 		this.layers = this.layers.filter((layer) => {
-			if(delLayer){
+			if (delLayer) {
 				return delLayer.id !== layer.id;
-			}else{
+			} else {
 				// 没有指定图层，删除选中图层
 				if (this.selectedLayers.has(layer)) {
 					// 清除图层dom缓存
@@ -596,17 +603,16 @@ export default class Canvas {
 					return false;
 				}
 			}
-			
+
 			return true;
 		});
-		if(delLayer){
+		if (delLayer) {
 			this.selectedLayers.delete(delLayer);
-			this.selectedLayers = new Set(this.selectedLayers)
-		}else{
+			this.selectedLayers = new Set(this.selectedLayers);
+		} else {
 			this.cancelSelect();
 		}
 		this.screenInfo!.layers = this.layers;
-		
 	}
 
 	/**
@@ -690,27 +696,27 @@ export default class Canvas {
 		this.refreshLayer(ids);
 	}
 
-	copy(){
-		if(this.selectedLayers.size){
+	copy() {
+		if (this.selectedLayers.size) {
 			const select = Array.from(this.selectedLayers);
 			sessionStorage.setItem("MojitoCopy", JSON.stringify(select));
 		}
 	}
 
-	paste(){
+	paste() {
 		const data = sessionStorage.getItem("MojitoCopy");
-		sessionStorage.removeItem("MojitoCopy")
-		if(data){
+		sessionStorage.removeItem("MojitoCopy");
+		if (data) {
 			const copyLayers = JSON.parse(data) as LayerInfo[];
 			const newId = smallId();
-			const groupMap:any = {}
-			copyLayers.forEach((v, index) =>{
+			const groupMap: any = {};
+			copyLayers.forEach((v, index) => {
 				v.id = `${newId}${index}`;
 				v.name = `${v.name}_copy`;
 				v.style.x += 20;
 				v.style.z += 1;
-				if(v.group){
-					if(!groupMap[v.group]){
+				if (v.group) {
+					if (!groupMap[v.group]) {
 						groupMap[v.group] = `g${newId}${index}`;
 					}
 					v.group = groupMap[v.group];

@@ -13,6 +13,7 @@ import ErrorCatch from "@/components/ErrorCatch";
 import { useCanvasStore } from "../../hook";
 import { useMount, useUpdateEffect } from "ahooks";
 import styles from "./index.module.css";
+import { useGlobalStore } from "@/store";
 
 export type ComponentMountEvent = {
 	componentProps?: Record<string, any>;
@@ -54,6 +55,7 @@ export default function Render({
 	const shadowRef = useRef<ShadowRoot>();
 	const [loading, setLoading] = useState(false);
 	const { canvasStore } = useCanvasStore();
+	const { screenStore } = useGlobalStore();
 
 	useMount(() => {
 		// 创建组件主容器
@@ -67,19 +69,18 @@ export default function Render({
 	});
 
 	const loadComponent = useCallback(() => {
-		if (!shadowRef.current) return;
-		const shadowRoot = shadowRef.current;
-
 		setLoading(true);
+
 		canvasStore
 			.loadComponent(component.packId, component.export)
 			.then((Component) => {
-				if (Component && rootRef.current) {
-					const event = new CustomEvent<{ layerId: string }>(
-						`mojito-render-${component.packName}@${component.packVersion}`,
-						{ detail: { layerId } }
-					);
-					document.dispatchEvent(event);
+				const shadowRoot = shadowRef.current;
+				if (Component && rootRef.current && shadowRoot) {
+
+					const packInfo = canvasStore.packLoadedMap.get(component.packId) as PackLoadInfo;
+					if(packInfo.name && packInfo.version){
+						screenStore.addMojitoStyle(packInfo.name, packInfo.version, shadowRoot);
+					}
 
 					const comp = new Component();
 					componentRef.current = comp;
@@ -109,7 +110,7 @@ export default function Render({
 					});
 				}
 			});
-	}, [onMount, canvasStore, component, props, events, layerId]);
+	}, [onMount, canvasStore, screenStore, component, props, events]);
 
 	useImperativeHandle(
 		actionRef,
@@ -163,7 +164,6 @@ export default function Render({
 				<div
 					ref={rootRef}
 					style={style}
-					id={`${component.packName}@${component.packVersion}-${layerId}`}
 				></div>
 				{loading && (
 					<div className={styles.loading}>

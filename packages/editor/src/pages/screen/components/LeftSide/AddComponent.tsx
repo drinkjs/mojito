@@ -8,7 +8,6 @@ import {
 } from "antd";
 import { ModalFuncProps } from "antd/lib/modal";
 import { useGlobalStore } from "@/store";
-import { Request } from '@mojito/common/network';
 import { get as reqGet } from "@/common/request";
 
 const layout = {

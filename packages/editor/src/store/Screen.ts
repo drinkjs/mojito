@@ -1,4 +1,7 @@
+import "systemjs";
+import { addStyles } from "@/common/styleLoader";
 import * as service from "@/services/screen";
+import { makeObservable } from "fertile";
 import { CSSProperties } from "react";
 
 export default class Screen {
@@ -6,15 +9,13 @@ export default class Screen {
 	addLoading = false;
 	list: ScreenInfo[] = [];
 
+	// mojito-vue-style-loader传过来的样式
+	mojitoStylesMap: Map<string, MojitoStyle[]> = new Map();
+
 	constructor() {
-		// makeAutoObservable(this, {
-		//   layers: computed,
-		//   layerStyle: computed,
-		//   layerGroup: computed,
-		//   isSelectedGroup: computed,
-		//   isLayerLock: computed,
-		//   isLayerHide: computed
-		// });
+		makeObservable(this, {
+			mojitoStylesMap: false,
+		});
 	}
 
 	/**
@@ -81,7 +82,7 @@ export default class Screen {
 	 * 删除页面
 	 * @param id
 	 */
-	async remove(params:ScreenInfo) {
+	async remove(params: ScreenInfo) {
 		this.addLoading = true;
 		return service
 			.deleteScreen(params.id)
@@ -91,5 +92,41 @@ export default class Screen {
 			.finally(() => {
 				this.addLoading = false;
 			});
+	}
+
+	/**
+	 * 接收mojito-vue-style-loader发过来的的样式
+	 * @param params
+	 */
+	receiveMojitoStyle(params: {
+		pkgName: string;
+		pkgVersion: string;
+		styles: MojitoStyle[];
+	}) {
+		const key = `${params.pkgName}@${params.pkgVersion}`;
+		let styles = this.mojitoStylesMap.get(key);
+		if (!styles) {
+			styles = [...params.styles];
+			this.mojitoStylesMap.set(key, styles);
+		} else {
+			for (const style of params.styles) {
+				if (styles.find((curr) => style.id !== curr.id)) {
+					styles.push(style);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 添加样式到shadowRoot
+	 * @param pkgName
+	 * @param pkgVersion
+	 * @param shadowRoot
+	 */
+	addMojitoStyle(pkgName: string, pkgVersion: string, shadowRoot: ShadowRoot) {
+		const styles = this.mojitoStylesMap.get(`${pkgName}@${pkgVersion}`);
+		if (styles) {
+			addStyles(styles, shadowRoot);
+		}
 	}
 }
