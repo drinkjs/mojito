@@ -1,77 +1,100 @@
-.left{
-  /* width: 40px; */
-  height: 100%;
-  background-color: var(--sub-color);
-  flex-shrink: 0;
-  display: flex;
+.left {
+	/* width: 40px; */
+	height: 100%;
+	background-color: var(--sub-color);
+	flex-shrink: 0;
+	display: flex;
 }
 
-.category{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.category {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .icon {
-  font-size: 16px;
-  padding: 5px 0;
-  margin: 5px;
-  text-align: center;
-  height: 30px;
-  width: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+	font-size: 16px;
+	padding: 5px 0;
+	margin: 5px;
+	text-align: center;
+	height: 30px;
+	width: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
 }
 
 .iconSelected {
-  color: var(--sub-color);
-  background-color: var(--hover-color);
-  border-radius: 4px;
+	color: var(--sub-color);
+	background-color: var(--hover-color);
+	border-radius: 4px;
 }
 
-.componentBox{
-  flex-grow: 1;
-  flex-basis: 0;
-  overflow: auto;
-  align-content: flex-start;
-  padding-top: 6px;
+.componentBox {
+	flex-grow: 1;
+	flex-basis: 0;
+	overflow: auto;
+	align-content: flex-start;
+	padding-top: 6px;
 }
 
 .components {
-  height: 100%;
-  width: 240px;
-  background: var(--sub-color);
-  border-left: var(--border-color) 1px solid;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  /* padding: 10px; */
+	height: 100%;
+	width: 240px;
+	background: var(--sub-color);
+	border-left: var(--border-color) 1px solid;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 
 .close {
-  /* position: absolute; */
-  /* right: 10px; */
-  cursor: pointer;
-  flex-shrink: 0;
+	cursor: pointer;
+	flex-shrink: 0;
 }
 
-.name{
-  flex-grow: 1;
-  text-align: center;
-  font-weight: 600;
+.name {
+	flex-grow: 1;
+	text-align: center;
+	font-weight: 600;
 }
 
-.componentListTitle{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 12px;
-  background-color: rgba(0, 0, 0, 0.15);
+.componentListTitle {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px 12px;
+	background-color: rgba(0, 0, 0, 0.2);
 }
 
-.componentListBox{
-  padding: 8px;
+.componentSelect {
+	padding: 6px;
+}
+
+.componentCategory {
+	background-color: rgba(0, 0, 0, 0.15);
+	padding: 6px;
+}
+
+.componentListBox {
+	/* padding: 8px; */
+	overflow: hidden;
+  scrollbar-gutter: stable both-edges;
+}
+
+.componentListBox:hover{
+  overflow-y: auto;
+}
+
+.compoentCover{
+  width: 100%;
+  height: 86px;
+  overflow: hidden;
+}
+
+.compoentItemText {
+	text-align: center;
+	padding: 3px 0;
+	width: 100%;
 }

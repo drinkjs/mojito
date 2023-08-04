@@ -72,14 +72,14 @@ export default function Render({
 		setLoading(true);
 
 		canvasStore
-			.loadComponent(component.packId, component.export)
+			.loadComponent(component.packId, component.exportName)
 			.then((Component) => {
 				const shadowRoot = shadowRef.current;
 				if (Component && rootRef.current && shadowRoot) {
 
 					const packInfo = canvasStore.packLoadedMap.get(component.packId) as PackLoadInfo;
 					if(packInfo.name && packInfo.version){
-						screenStore.addMojitoStyle(packInfo.name, packInfo.version, shadowRoot);
+						screenStore.addMojitoStyle(`${packInfo.name}@${packInfo.version}`, shadowRoot);
 					}
 
 					const comp = new Component();

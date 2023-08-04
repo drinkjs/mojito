@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 
-export {};
+export { };
 
 declare global {
 	type Callback = (...args) => any;
@@ -37,22 +37,22 @@ declare global {
 		name: string;
 		version: string;
 		external?: Record<string, string>;
-		components: { export: string; name: string }[];
+		components: ComponentInfo[];
 		type: string;
 		packJson: string;
 		createAt?: Date;
 	};
 
 	type ComponentInfo = {
-		export: string;
-		name: string;
-		packId: string;
+		exportName: string,
+		name: string,
+		category?: string,
+		cover?: string
+		packId: string,
 	};
 
 	type ComponentOptions = {
 		name: string;
-		cover?: string;
-		version?: string;
 		props?: Record<string, ComponentProps>;
 		events?: Record<
 			string,
@@ -132,7 +132,7 @@ declare global {
 
 	interface ComponentProps {
 		name: string;
-		type: "string" | "number" | "boolean" | "object" | "array";
+		type: "string" | "number" | "boolean" | "object" | "array" | "image" | Array<string | number>;
 		description?: string;
 		default?: any;
 	}
@@ -263,17 +263,6 @@ declare global {
 	type ComponentStyleQuery = {
 		[P in keyof ComponentStyle]?: ComponentStyle[P];
 	};
-
-	type MojitoStyle = {
-		id: number;
-		parts: StyleObjectPart[];
-	};
-	
-	type StyleObjectPart = {
-		css: string;
-		media: string;
-		sourceMap?: string
-	}
 
 	type PackLoadInfo = {
 		scriptUrl: string;

@@ -1,6 +1,4 @@
 import {
-	useDocumentVisibility,
-	useInterval,
 	useKeyPress,
 	useMount,
 	useUnmount,
@@ -44,19 +42,8 @@ export default function Playground() {
 		height: 200,
 	});
 	const layerActionRefs = useRef<Map<string, LayerAction>>(new Map).current
-	const documentVisibility = useDocumentVisibility();
-
 	const { scale, screenInfo, layers } = canvasStore;
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
-
-	/**
-	 * 定时保存图层信息
-	 */
-	useInterval(() => {
-		if (documentVisibility === "visible") {
-			canvasStore.saveScreen();
-		}
-	}, 3000);
 
 	/**
 	 * 组件事件同步回调
@@ -111,7 +98,7 @@ export default function Playground() {
 			accept: "ADD_COMPONENT",
 			drop: (
 				item: {
-					export: string,
+					exportName: string,
 					name: string,
 					scriptUrl: string,
 					external: any,
@@ -121,7 +108,7 @@ export default function Playground() {
 				},
 				monitor
 			) => {
-				const { name, scriptUrl, external, packId, packName, packVersion } = item;
+				const { name, scriptUrl, external, packId, packName, packVersion, exportName } = item;
 				let x = 0;
 				let y = 0;
 
@@ -155,7 +142,7 @@ export default function Playground() {
 						isFirst: true,
 						name: newName,
 						component: {
-							export: item.export,
+							exportName,
 							name,
 							packId,
 						},
@@ -218,13 +205,13 @@ export default function Playground() {
 			if (canvasStore.selectedLayers.size === 0 || document.activeElement !== document.body) return;
 			
 			event.preventDefault();
-			console.log(event.key);
 			switch (event.key) {
 				case "Escape":
 					// 取消选中
 					canvasStore.cancelSelect();
 					break;
 				case "Delete":
+					canvasStore.mouseDownEvent = undefined;
 					modal.confirm({
 						title: "确定删除?",
 						onOk: () => {

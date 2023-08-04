@@ -1,5 +1,5 @@
 import { syncHelper } from "@/common/syncHelper";
-import { useMount, useUnmount } from "ahooks";
+import { useDocumentVisibility, useInterval, useMount, useUnmount } from "ahooks";
 import { Skeleton } from "antd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -15,8 +15,7 @@ import { useCallback } from "react";
 export default function Screen() {
 	const { id, canvasStore, destroyStore } = useCanvasStore();
 	const { screenStore } = useGlobalStore();
-
-	// console.log("====", params)
+	const documentVisibility = useDocumentVisibility();
 
 	const onStyleLoader = useCallback(
 		(e: any) => {
@@ -42,6 +41,15 @@ export default function Screen() {
 		syncHelper.leave();
 		document.removeEventListener("__MojitoStyleLoader__", onStyleLoader);
 	});
+
+/**
+ * 定时保存画布信息
+ */
+	useInterval(() => {
+		if (documentVisibility === "visible") {
+			canvasStore.saveScreen();
+		}
+	}, 3000);
 
 	return (
 		<div className={styles.root}>

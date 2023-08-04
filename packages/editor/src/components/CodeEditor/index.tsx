@@ -26,10 +26,6 @@ export default function CodeEditor({
 	
 	const [code, setCode] = useState(value);
 
-	useUpdateEffect(()=>{
-		setCode(value)
-	}, [value])
-
 	const { run } = useDebounceFn(
     (code?:string) => {
 			if(onChange) onChange(code);

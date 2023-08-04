@@ -1,5 +1,6 @@
 import "systemjs";
-import { addStyles } from "@/common/styleLoader";
+// import { addStyles } from "@/common/styleLoader";
+import { addStyles, StyleObject } from "shadow-style-loader/lib/addStylesShadow"
 import * as service from "@/services/screen";
 import { makeObservable } from "fertile";
 import { CSSProperties } from "react";
@@ -10,7 +11,7 @@ export default class Screen {
 	list: ScreenInfo[] = [];
 
 	// mojito-vue-style-loader传过来的样式
-	mojitoStylesMap: Map<string, MojitoStyle[]> = new Map();
+	mojitoStylesMap: Map<string, StyleObject[]> = new Map();
 
 	constructor() {
 		makeObservable(this, {
@@ -99,15 +100,13 @@ export default class Screen {
 	 * @param params
 	 */
 	receiveMojitoStyle(params: {
-		pkgName: string;
-		pkgVersion: string;
-		styles: MojitoStyle[];
+		flag:string
+		styles: StyleObject[];
 	}) {
-		const key = `${params.pkgName}@${params.pkgVersion}`;
-		let styles = this.mojitoStylesMap.get(key);
+		let styles = this.mojitoStylesMap.get(params.flag);
 		if (!styles) {
 			styles = [...params.styles];
-			this.mojitoStylesMap.set(key, styles);
+			this.mojitoStylesMap.set(params.flag, styles);
 		} else {
 			for (const style of params.styles) {
 				if (styles.find((curr) => style.id !== curr.id)) {
@@ -119,12 +118,11 @@ export default class Screen {
 
 	/**
 	 * 添加样式到shadowRoot
-	 * @param pkgName
-	 * @param pkgVersion
+	 * @param flag
 	 * @param shadowRoot
 	 */
-	addMojitoStyle(pkgName: string, pkgVersion: string, shadowRoot: ShadowRoot) {
-		const styles = this.mojitoStylesMap.get(`${pkgName}@${pkgVersion}`);
+	addMojitoStyle(flag:string, shadowRoot: ShadowRoot) {
+		const styles = this.mojitoStylesMap.get(flag);
 		if (styles) {
 			addStyles(styles, shadowRoot);
 		}

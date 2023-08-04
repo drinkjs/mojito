@@ -726,4 +726,28 @@ export default class Canvas {
 			this.screenInfo!.layers = this.layers;
 		}
 	}
+
+	updateProps(layer:LayerInfo, props:Record<string, any>){
+		this.addUndoData();
+		layer.props = { ...layer.props, ...props };
+		this.refreshLayer([layer.id]);
+	}
+
+	updateStyle(layer:LayerInfo, styles:Record<string, any>){
+		this.addUndoData();
+		layer.style = { ...layer.style, ...styles };
+		this.refreshLayer([layer.id]);
+	}
+
+	updateEventHandler(layer:LayerInfo, event:LayerEvent){
+		// this.addUndoData();
+		layer.eventHandler = { ...layer.eventHandler, ...event };
+		this.refreshLayer([layer.id]);
+	}
+
+	eventLock(layer:LayerInfo, isLock:boolean){
+		this.addUndoData();
+		layer.eventLock = isLock;
+		this.refreshLayer([layer.id]);
+	}
 }

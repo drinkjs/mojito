@@ -24,12 +24,12 @@ export default function Header() {
 
 	const saveScreen = () => {
 		setSaveing(true);
-		canvasStore.saveScreen().then(()=>{
+		canvasStore.saveScreen().then(() => {
 			message.success("保存成功")
-		}).finally(()=>{
+		}).finally(() => {
 			setSaveing(false);
 		})
-		
+
 	};
 
 	const undo = () => {
@@ -48,9 +48,14 @@ export default function Header() {
 		canvasStore.disbandGroup();
 	};
 
-	const isAllGroup = useMemo(() =>canvasStore.isAllGroup , [canvasStore.selectedLayers]);
-	const isAllHide = useMemo(() =>canvasStore.isAllHide , [canvasStore.selectedLayers]);
-	const isAllLock = useMemo(() =>canvasStore.isAllLock , [canvasStore.selectedLayers]);
+	const { isAllGroup, isAllHide, isAllLock, currLayer } = useMemo(() => {
+		return {
+			isAllGroup: canvasStore.isAllGroup,
+			isAllHide: canvasStore.isAllHide,
+			isAllLock: canvasStore.isAllLock,
+			currLayer: canvasStore.selectedLayers.size === 1 ? Array.from(canvasStore.selectedLayers)[0] : undefined
+		}
+	}, [canvasStore, canvasStore.selectedLayers])
 
 	return (
 		<header className={styles.header}>
@@ -92,21 +97,17 @@ export default function Header() {
 				</div>
 			</section>
 			<section className={styles.toolBox}>
-				<span style={{ ...toolStyles, fontSize: "12px" }}>
+				{currLayer && <Tooltip title="锁定后图层内组件将不会响应事件"><span style={{ ...toolStyles, fontSize: "12px" }}>
 					事件锁定
 					<Switch
 						size="small"
 						style={toolStyles}
-						checked={canvasStore.currLayer && canvasStore.currLayer.eventLock}
+						checked={currLayer.eventLock}
 						onChange={(checked) => {
-							canvasStore.currLayer &&
-								canvasStore.updateLayer(canvasStore.currLayer.id, {
-									eventLock: checked,
-								});
+							canvasStore.eventLock(currLayer, checked);
 						}}
-						disabled={!canvasStore.currLayer}
 					/>
-				</span>
+				</span></Tooltip>}
 
 				{saveing ? (
 					<LoadingOutlined style={toolStyles} />

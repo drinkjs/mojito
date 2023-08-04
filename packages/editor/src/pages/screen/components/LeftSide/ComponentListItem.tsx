@@ -2,12 +2,12 @@ import { memo } from 'react';
 import { useDrag } from 'react-dnd';
 import { Typography } from 'antd';
 import Image from '@/components/Image';
-// import styles from '../../styles/left.module.css';
+import styles from './index.module.css';
 
 const { Text } = Typography;
 
 interface Props {
-  value: {export:string, name:string, cover?:string};
+  value: ComponentInfo;
   scriptUrl:string,
   external?:Record<string, string>,
   packId:string
@@ -19,7 +19,7 @@ const ComponentListItem = memo(({ value, scriptUrl, external, packId, packName, 
   const [{ opacity }, dragRef, preview] = useDrag(
     () => ({
       type: 'ADD_COMPONENT',
-      item: { export: value.export, name:value.name, scriptUrl, external, packId, packName, packVersion  },
+      item: { exportName: value.exportName, name:value.name, scriptUrl, external, packId, packName, packVersion  },
       collect: (monitor) => ({
         opacity: monitor.isDragging() ? 0.5 : 1
       })
@@ -33,11 +33,11 @@ const ComponentListItem = memo(({ value, scriptUrl, external, packId, packName, 
 
   return (
     <div ref={dragRef}>
-      <div>
+      <div className={styles.compoentCover}>
         <Image src={value.cover} />
       </div>
-      <div style={{ textAlign: 'center', padding: '3px 0', width: '100%' }}>
-        <Text ellipsis>
+      <div className={styles.compoentItemText}>
+        <Text ellipsis style={{fontSize:"12px"}}>
           {value.name}
         </Text>
       </div>

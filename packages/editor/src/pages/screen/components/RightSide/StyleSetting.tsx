@@ -47,8 +47,7 @@ export default function StyleSetting() {
 
 	const onStyleChange = (value: Record<string, any>) => {
 		if (currLayer) {
-			currLayer.style = { ...currLayer.style, ...value };
-			canvasStore.refreshLayer([currLayer.id]);
+			canvasStore.updateStyle(currLayer, value);
 		}
 	};
 

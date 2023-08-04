@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import CodeEditor from "@/components/CodeEditor";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import {
@@ -6,26 +5,29 @@ import {
 	CollapseProps,
 	Input,
 	InputNumber,
+	Select,
 	Switch,
 	Tooltip,
 } from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useCanvasStore } from "../../hook";
 import styles from "./index.module.css";
 
 type EditorCallback = (value?: any) => void;
 
-const EditorComponent = {
+const EditorComponent: Record<string, (...args: any[]) => React.ReactNode> = {
 	string: (onChange: EditorCallback, defaultValue?: string) => (
 		<Input.TextArea
+			key={defaultValue} 
 			defaultValue={defaultValue}
 			onChange={(e) => onChange(e.target.value)}
 		/>
 	),
-	object: (onChange: EditorCallback, defaultValue?: any) => (
+	object: (onChange: EditorCallback, defaultValue?: string) => (
 		<CodeEditor
 			height={300}
 			language="json"
+			key={defaultValue} 
 			defaultValue={
 				defaultValue && JSON.stringify(defaultValue, undefined, "  ")
 			}
@@ -34,10 +36,11 @@ const EditorComponent = {
 			}}
 		/>
 	),
-	array: (onChange: EditorCallback, defaultValue?: any) => (
+	array: (onChange: EditorCallback, defaultValue?: string) => (
 		<CodeEditor
 			height={300}
 			language="json"
+			key={defaultValue} 
 			defaultValue={
 				defaultValue && JSON.stringify(defaultValue, undefined, "  ")
 			}
@@ -47,11 +50,14 @@ const EditorComponent = {
 		/>
 	),
 	number: (onChange: EditorCallback, defaultValue?: number) => (
-		<InputNumber defaultValue={defaultValue} onChange={onChange} />
+		<InputNumber key={defaultValue} defaultValue={defaultValue} onChange={onChange} />
 	),
 	boolean: (onChange: EditorCallback, defaultValue?: boolean) => (
-		<Switch defaultChecked={defaultValue} onChange={onChange} />
+		<Switch key={`${defaultValue}`} defaultChecked={defaultValue} onChange={onChange} />
 	),
+	select: (onChange: EditorCallback, data: Array<string | number>, defaultValue?: string | number) => {
+		return <Select key={defaultValue} style={{ width: "100%" }} allowClear options={data.map(v => ({ label: v, value: v }))} onChange={onChange} defaultValue={defaultValue}></Select>
+	}
 };
 
 export default function PropsSetting() {
@@ -62,16 +68,16 @@ export default function PropsSetting() {
 	const [currLayer, setCurrLayer] = useState<LayerInfo | undefined>();
 
 	useEffect(() => {
-		if(canvasStore.selectedLayers.size === 1){
+		if (canvasStore.selectedLayers.size === 1) {
 			const layer = Array.from(canvasStore.selectedLayers)[0];
 			setCurrLayer(layer);
 			// 获取选中图层组件的props信息
 			const componentInfo = canvasStore.layerComponentOptions.get(layer.id);
 			const propsOptions: ComponentPropsOptions[] = [];
-			
+
 			if (componentInfo && componentInfo.props) {
 				// 组件的所有props
-				for(const key in  componentInfo.props){
+				for (const key in componentInfo.props) {
 					console.log(componentInfo.props![key]);
 					propsOptions.push({
 						layerId: layer.id,
@@ -81,7 +87,7 @@ export default function PropsSetting() {
 				}
 			}
 			setComponentPropsOptions(propsOptions);
-		}else{
+		} else {
 			setComponentPropsOptions([]);
 			setCurrLayer(undefined)
 		}
@@ -94,8 +100,7 @@ export default function PropsSetting() {
 		(key: string, value?: any) => {
 			console.log(key, value);
 			if (currLayer) {
-				currLayer.props = { ...currLayer.props, [key]: value };
-				canvasStore.refreshLayer([currLayer.id]);
+				canvasStore.updateProps(currLayer, { [key]: value });
 			}
 		},
 		[currLayer, canvasStore]
@@ -103,9 +108,10 @@ export default function PropsSetting() {
 
 	const items: CollapseProps["items"] = useMemo(() => {
 		return componentPropsOptions.map((v) => {
-      const defaultValue = currLayer?.props && currLayer.props[v.key] !== undefined
-						? currLayer.props[v.key]
-						: v.default
+			const editType = (Array.isArray(v.type) ? "select" : v.type) as string;
+			const defaultValue = currLayer?.props && currLayer.props[v.key] !== undefined
+				? currLayer.props[v.key]
+				: v.default
 			return {
 				key: `${v.layerId}${v.key}`,
 				label: v.description ? (
@@ -118,11 +124,12 @@ export default function PropsSetting() {
 				) : (
 					v.name
 				),
-				children: EditorComponent[v.type] ? (
-					EditorComponent[v.type](
-						onChange.bind(null, v.key), defaultValue)
+				children: EditorComponent[editType] ? (
+					EditorComponent[editType](
+						onChange.bind(null, v.key), editType === "select" ? v.type : defaultValue, defaultValue)
 				) : (
 					<Input.TextArea
+						key={defaultValue}
 						defaultValue={defaultValue}
 						onChange={(e) => {
 							onChange(v.key, e.target.value);

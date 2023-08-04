@@ -115,18 +115,7 @@ export default function EventSetting() {
 	useUpdateEffect(() => {
 		const { currLayer, selectedEvent, callback } = eventState;
 		if (currLayer && selectedEvent && callback) {
-			if (!currLayer.eventHandler) {
-				currLayer.eventHandler = {};
-				currLayer.eventHandler[selectedEvent.value] = {
-					isSync: callback.isSync,
-					sourceCode: callback.sourceCode,
-				};
-			} else {
-				currLayer.eventHandler[selectedEvent.value] = { ...callback };
-			}
-			// 刷新ui
-			currLayer.eventHandler = { ...currLayer.eventHandler };
-			canvasStore.refreshLayer([currLayer.id]);
+			canvasStore.updateEventHandler(currLayer, {[selectedEvent.value]: callback})
 		}
 	}, [eventState]);
 
@@ -225,9 +214,10 @@ export default function EventSetting() {
 				</div>
 				<div style={{ flexGrow: 1, paddingTop: "0.5em" }}>
 					<CodeEditor
+						key={`${eventState.currLayer?.id}@${eventState.selectedEvent?.value}`}
 						readOnly={!selectedEvent}
 						language="javascript"
-						value={callback?.sourceCode || ""}
+						value={callback?.sourceCode}
 						onChange={(code) => {
 							dispatch({
 								type: ReducerType.ChangeCode,

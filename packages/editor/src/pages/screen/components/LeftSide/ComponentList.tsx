@@ -25,6 +25,8 @@ export function ComponentList({
 		ComponentPackInfo | undefined
 	>();
 	const [packScriptUrl, setPackScriptUrl] = useState<string | undefined>();
+	// 类型：组件[]
+	const [components, setComponents] = useState<Record<string, ComponentInfo[]> | undefined>()
 
 	useEffect(() => {
 		if (componentType) {
@@ -60,6 +62,26 @@ export function ComponentList({
 	}, [selectedPack]);
 
 	/**
+	 * 
+	 */
+	useEffect(() => {
+		if (selectedPack?.components) {
+			const compMap: Record<string, ComponentInfo[]> = {};
+			selectedPack.components.forEach((comp) => {
+				const category = comp.category ?? "default"
+				if (!compMap[category]) {
+					compMap[category] = [comp]
+				} else {
+					compMap[category].push(comp)
+				}
+			});
+			setComponents(compMap);
+		} else {
+			setComponents(undefined)
+		}
+	}, [selectedPack?.components])
+
+	/**
 	 * 选中组件库
 	 */
 	const onSelect = useCallback(
@@ -69,6 +91,10 @@ export function ComponentList({
 		},
 		[typeComponentPacks]
 	);
+
+	console.log(components)
+
+	const categorys = components ? Object.keys(components) : undefined
 
 	return (
 		<div
@@ -81,47 +107,55 @@ export function ComponentList({
 					<CloseOutlined />
 				</a>
 			</div>
-			<div className={styles.componentListBox}>
-				<Select
+			<div className={styles.componentSelect}>
+				{options.length > 0 && <Select
 					options={options}
 					onChange={onSelect}
 					value={selectedPack?.id}
-					style={{width:"100%", border:"none"}}
-				></Select>
+					style={{ width: "100%", border: "none" }}
+				></Select>}
+			</div>
+			<div className={styles.componentListBox}>
 				<Skeleton loading={loading}>
-					<Row className={styles.componentBox} gutter={[12, 12]}>
-						{selectedPack && packScriptUrl ? (
-							selectedPack.components.map((comp) => {
-								return (
-									<Col span={12} key={comp.export}>
-										<ComponentListItem
-											value={comp}
-											scriptUrl={packScriptUrl}
-											external={selectedPack.external}
-											packId={selectedPack.id}
-											packName={selectedPack.name}
-											packVersion={selectedPack.version}
-										/>
-									</Col>
-								);
-							})
-						) : (
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									width: "100%",
-									height: "100%",
-								}}
-							>
-								<Empty
-									image={Empty.PRESENTED_IMAGE_SIMPLE}
-									description="暂无组件"
-								/>
-							</div>
-						)}
-					</Row>
+					{selectedPack && categorys && components && packScriptUrl ? (
+						categorys.map((category) => {
+							const comps = components[category];
+							return (
+								<Row key={category} gutter={[6, 6]}>
+									<Col span={24} style={{ paddingLeft: "14px" }} className={styles.componentCategory}><strong>{category}</strong></Col>
+									{comps.map(comp => {
+										return (
+											<Col span={12} key={comp.exportName}>
+												<ComponentListItem
+													value={comp}
+													scriptUrl={packScriptUrl}
+													external={selectedPack.external}
+													packId={selectedPack.id}
+													packName={selectedPack.name}
+													packVersion={selectedPack.version}
+												/>
+											</Col>
+										);
+									})}
+								</Row>
+							)
+						})
+					) : (
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								width: "100%",
+								height: "100%",
+							}}
+						>
+							<Empty
+								image={Empty.PRESENTED_IMAGE_SIMPLE}
+								description="暂无组件"
+							/>
+						</div>
+					)}
 				</Skeleton>
 			</div>
 		</div>
