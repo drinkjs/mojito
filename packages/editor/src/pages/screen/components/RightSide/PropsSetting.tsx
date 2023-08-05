@@ -18,8 +18,7 @@ type EditorCallback = (value?: any) => void;
 const EditorComponent: Record<string, (...args: any[]) => React.ReactNode> = {
 	string: (onChange: EditorCallback, defaultValue?: string) => (
 		<Input.TextArea
-			key={defaultValue} 
-			defaultValue={defaultValue}
+			value={defaultValue}
 			onChange={(e) => onChange(e.target.value)}
 		/>
 	),
@@ -27,10 +26,7 @@ const EditorComponent: Record<string, (...args: any[]) => React.ReactNode> = {
 		<CodeEditor
 			height={300}
 			language="json"
-			key={defaultValue} 
-			defaultValue={
-				defaultValue && JSON.stringify(defaultValue, undefined, "  ")
-			}
+			value={defaultValue && JSON.stringify(defaultValue, undefined, "  ")}
 			onChange={(value) => {
 				onChange(value ? JSON.parse(value) : value);
 			}}
@@ -40,24 +36,33 @@ const EditorComponent: Record<string, (...args: any[]) => React.ReactNode> = {
 		<CodeEditor
 			height={300}
 			language="json"
-			key={defaultValue} 
-			defaultValue={
-				defaultValue && JSON.stringify(defaultValue, undefined, "  ")
-			}
+			value={defaultValue && JSON.stringify(defaultValue, undefined, "  ")}
 			onChange={(value) => {
 				onChange(value ? JSON.parse(value) : value);
 			}}
 		/>
 	),
 	number: (onChange: EditorCallback, defaultValue?: number) => (
-		<InputNumber key={defaultValue} defaultValue={defaultValue} onChange={onChange} />
+		<InputNumber value={defaultValue} onChange={onChange} />
 	),
 	boolean: (onChange: EditorCallback, defaultValue?: boolean) => (
-		<Switch key={`${defaultValue}`} defaultChecked={defaultValue} onChange={onChange} />
+		<Switch checked={defaultValue} onChange={onChange} />
 	),
-	select: (onChange: EditorCallback, data: Array<string | number>, defaultValue?: string | number) => {
-		return <Select key={defaultValue} style={{ width: "100%" }} allowClear options={data.map(v => ({ label: v, value: v }))} onChange={onChange} defaultValue={defaultValue}></Select>
-	}
+	select: (
+		onChange: EditorCallback,
+		data: Array<string | number>,
+		defaultValue?: string | number
+	) => {
+		return (
+			<Select
+				style={{ width: "100%" }}
+				allowClear
+				options={data.map((v) => ({ label: v, value: v }))}
+				onChange={onChange}
+				value={defaultValue}
+			></Select>
+		);
+	},
 };
 
 export default function PropsSetting() {
@@ -89,7 +94,7 @@ export default function PropsSetting() {
 			setComponentPropsOptions(propsOptions);
 		} else {
 			setComponentPropsOptions([]);
-			setCurrLayer(undefined)
+			setCurrLayer(undefined);
 		}
 	}, [canvasStore, canvasStore.selectedLayers]);
 
@@ -109,9 +114,10 @@ export default function PropsSetting() {
 	const items: CollapseProps["items"] = useMemo(() => {
 		return componentPropsOptions.map((v) => {
 			const editType = (Array.isArray(v.type) ? "select" : v.type) as string;
-			const defaultValue = currLayer?.props && currLayer.props[v.key] !== undefined
-				? currLayer.props[v.key]
-				: v.default
+			const defaultValue =
+				currLayer?.props && currLayer.props[v.key] !== undefined
+					? currLayer.props[v.key]
+					: v.default;
 			return {
 				key: `${v.layerId}${v.key}`,
 				label: v.description ? (
@@ -126,10 +132,12 @@ export default function PropsSetting() {
 				),
 				children: EditorComponent[editType] ? (
 					EditorComponent[editType](
-						onChange.bind(null, v.key), editType === "select" ? v.type : defaultValue, defaultValue)
+						onChange.bind(null, v.key),
+						editType === "select" ? v.type : defaultValue,
+						defaultValue
+					)
 				) : (
 					<Input.TextArea
-						key={defaultValue}
 						defaultValue={defaultValue}
 						onChange={(e) => {
 							onChange(v.key, e.target.value);

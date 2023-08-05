@@ -1,10 +1,7 @@
 import { Spin } from "antd";
 import React, {
 	useCallback,
-	useEffect,
 	useImperativeHandle,
-	useLayoutEffect,
-	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -37,7 +34,6 @@ interface RenderProps {
 	children?: any;
 	style?: React.CSSProperties;
 	actionRef?: React.MutableRefObject<RenderAction | undefined>;
-	layerId: string;
 }
 
 export default function Render({
@@ -47,7 +43,6 @@ export default function Render({
 	reloadKey,
 	props,
 	events,
-	layerId,
 	actionRef,
 }: RenderProps) {
 	const rootRef = useRef<HTMLDivElement | null>(null);
@@ -86,7 +81,7 @@ export default function Render({
 					componentRef.current = comp;
 
 					const componentContainer = shadowRoot.firstChild as HTMLDivElement;
-					const compProps: any = { ...props, ...events };
+					const compProps: any = { ...props, ...events, __root: shadowRoot };
 					comp.mount(componentContainer, compProps, (props) => {
 						setLoading(false);
 						if (onMount) {
@@ -101,6 +96,7 @@ export default function Render({
 									height: Math.round(height / canvasStore.scale),
 								};
 							}
+							
 							onMount({
 								componentProps: props,
 								size,

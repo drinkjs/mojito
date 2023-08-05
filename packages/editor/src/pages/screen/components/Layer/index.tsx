@@ -11,14 +11,16 @@ import React, {
 	useMemo,
 } from "react";
 import _ from "lodash-es";
+import { useNavigate } from "react-router-dom";
 import { Request } from "@mojito/common/network";
 import Render, { ComponentMountEvent, RenderAction } from "./Render";
 import styles from "./index.module.css";
-import { useMount, useUpdateEffect } from "ahooks";
+import { useMount, useUnmount, useUpdateEffect } from "ahooks";
 import { useCanvasStore } from "../../hook";
 import { runCode } from "@/common/util";
 import { syncHelper } from "@/common/syncHelper";
 import { Border } from "@/components/StyleOptions";
+import { MojitoLayerEvent } from "@/config";
 
 const EventSyncCallFlag = Symbol.for("EventSyncCallFlag");
 
@@ -126,11 +128,21 @@ const Layer: React.FC<LayerProps> = ({
 	const [hide, setHide] = useState(false);
 	// 事件处理
 	const eventHandlers = useRef<Record<string, (...args: any[]) => any>>({});
+	// 是否设置了onMessage事件
+	const [onMessageFlag, setOnMessageFlag] = useState(false);
+	const navigate = useNavigate();
 
 	useMount(() => {
 		// 缓存图层dom节点
 		if (targetRef.current)
 			canvasStore.cacheLayerDom(data.id, targetRef.current);
+	});
+
+	useUnmount(() => {
+		if (eventHandlers.current[MojitoLayerEvent.onUnmount]) {
+			// 调用onUnmount事件
+			eventHandlers.current[MojitoLayerEvent.onUnmount]();
+		}
 	});
 
 	useUpdateEffect(() => {
@@ -141,7 +153,29 @@ const Layer: React.FC<LayerProps> = ({
 	}, [data.id, canvasStore.reloadLayerIds]);
 
 	/**
-	 * 给playground调用
+	 * onMessage消息处理
+	 */
+	const messageHandler = useCallback((e: any) => {
+		const { layerNames, args, target } = e.detail;
+		if(layerNames.includes(data.name) && eventHandlers.current[MojitoLayerEvent.onMessage]){
+			// 调用事件处理函数
+			eventHandlers.current[MojitoLayerEvent.onMessage](...args, target);
+		}
+		console.log(e.detail);
+	}, [data])
+
+	/**
+	 * 如果组件设置了onMessage则监听事件
+	 */
+	useEffect(() => {
+		if (onMessageFlag) {
+			document.addEventListener(MojitoLayerEvent.sendMessage, messageHandler);
+		}
+		return ()=> document.removeEventListener(MojitoLayerEvent.sendMessage, messageHandler);
+	}, [onMessageFlag, messageHandler])
+
+	/**
+	 * 给playground调用,处理同步事件
 	 */
 	const actionRef = useMemo<LayerAction>(
 		() => ({
@@ -223,20 +257,33 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const onMount = useCallback(
 		({ size, componentOptions }: ComponentMountEvent) => {
-			if (componentOptions)
-				canvasStore.layerComponentOptions.set(data.id, componentOptions);
-
-			if (size && data.isFirst) {
-				if (size.width !== defaultWidth || size.height !== defaultHeight) {
-					console.log("layer init size", size);
-					canvasStore.initLayerSize(data.id, size.width, size.height);
+			if (enable) {
+				// 编辑状态
+				if (componentOptions) {
+					canvasStore.layerComponentOptions.set(data.id, componentOptions);
 				}
+
+				if (size && data.isFirst) {
+					if (size.width !== defaultWidth || size.height !== defaultHeight) {
+						console.log("layer init size", size);
+						canvasStore.initLayerSize(data.id, size.width, size.height);
+					}
+				}
+				data.isFirst = undefined;
 			}
-			data.isFirst = undefined;
+
+			if (eventHandlers.current[MojitoLayerEvent.onMount]) {
+				// 调用onMount事件
+				eventHandlers.current[MojitoLayerEvent.onMount]();
+			}
+
 		},
-		[data, canvasStore, defaultWidth, defaultHeight]
+		[data, canvasStore, enable, defaultWidth, defaultHeight]
 	);
 
+	/**
+	 * 创建事件调用的this
+	 */
 	const callbackThis = useMemo(
 		() => ({
 			name: data.name,
@@ -249,9 +296,22 @@ const Layer: React.FC<LayerProps> = ({
 					renderRef.current.updateProps(props);
 				}
 			},
-			sendMessag: (layerNames: string[], pageName?: string) => {},
+			// 路由
+			navigate: (to:string)=>{
+				navigate(to)
+			},
+			// 向其他组件发送消息
+			sendMessage: (layerNames: string | string[], ...args: any[]) => {
+				document.dispatchEvent(new CustomEvent(MojitoLayerEvent.sendMessage, {
+					detail: {
+						layerNames: typeof layerNames === "string" ? [layerNames] : layerNames,
+						target: { name: data.name, id: data.id },
+						args
+					}
+				}));
+			},
 		}),
-		[data]
+		[data, navigate]
 	);
 
 	/**
@@ -293,6 +353,7 @@ const Layer: React.FC<LayerProps> = ({
 			}
 		}
 		eventHandlers.current = handlers;
+		setOnMessageFlag(!!handlers[MojitoLayerEvent.onMessage]);
 		return handlers;
 	}, [data.eventHandler, callbackThis, data.id]);
 
@@ -308,9 +369,8 @@ const Layer: React.FC<LayerProps> = ({
 		// 处理边框
 		const borderObj: any = {};
 		const border: Border = (data.style.border as any) || {};
-		const borderCss = `${border.borderWidth ?? 0}px ${
-			border.borderStyle ?? "none"
-		} ${border.borderColor || ""}`;
+		const borderCss = `${border.borderWidth ?? 0}px ${border.borderStyle ?? "none"
+			} ${border.borderColor || ""}`;
 		if (
 			border &&
 			border.borderPosition &&
@@ -363,7 +423,6 @@ const Layer: React.FC<LayerProps> = ({
 				component={data.component}
 				props={componentProps}
 				events={eventHandler}
-				layerId={data.id}
 				style={{
 					width: "100%",
 					height: "100%",

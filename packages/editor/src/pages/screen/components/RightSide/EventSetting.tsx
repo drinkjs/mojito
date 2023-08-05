@@ -1,9 +1,10 @@
 import { compileCode, runCode } from "@/common/util";
 import CodeEditor from "@/components/CodeEditor";
+import { MojitoLayerEvent, MojitoLayerEventInfo } from "@/config";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { useUpdateEffect } from "ahooks";
 import { Button, message, Select, Space, Switch, Tooltip } from "antd";
-import { Reducer, useEffect, useMemo, useReducer, useState } from "react";
+import { Reducer, useEffect, useReducer, useState } from "react";
 import { useCanvasStore } from "../../hook";
 import styles from "./index.module.css";
 
@@ -17,7 +18,7 @@ type EventCallback = {
 type ReducerState = {
 	selectedEvent?: EventOptions;
 	currLayer?: LayerInfo;
-	callback?: EventCallback;
+	callbackCode?: EventCallback;
 };
 
 type ReducerAction =
@@ -37,19 +38,21 @@ function evnetReducer(state: ReducerState, action: ReducerAction) {
 	switch (type) {
 		case ReducerType.ChangeLayer:
 			if (payload && state.currLayer && state.currLayer.id === payload.id) {
+				// 原图层没变
 				state.currLayer = payload;
 				return state;
 			}
+			// 图层已改变
 			return {
 				selectedEvent: undefined,
-				callback: undefined,
+				callbackCode: undefined,
 				currLayer: payload,
 			};
 		case ReducerType.ChangeEvent:
 			return {
 				...state,
 				selectedEvent: payload,
-				callback:
+				callbackCode:
 					currLayer && currLayer.eventHandler && payload
 						? currLayer.eventHandler[payload.value]
 						: undefined,
@@ -57,7 +60,7 @@ function evnetReducer(state: ReducerState, action: ReducerAction) {
 		case ReducerType.ChangeCode:
 			return {
 				...state,
-				callback: payload,
+				callbackCode: payload,
 			};
 		default:
 			return state;
@@ -72,50 +75,64 @@ export default function EventSetting() {
 	>(evnetReducer, {
 		selectedEvent: undefined,
 		currLayer: undefined,
-		callback: undefined,
+		callbackCode: undefined,
 	});
 
-	const { selectedEvent, currLayer, callback } = eventState;
+	const { selectedEvent, currLayer, callbackCode } = eventState;
 
 	useEffect(() => {
 		if (
-			canvasStore.selectedLayers.size > 1 ||
-			canvasStore.selectedLayers.size === 0
+			canvasStore.selectedLayers.size !== 1
 		) {
 			dispatch({ type: ReducerType.ChangeLayer });
 		} else {
 			const layer = Array.from(canvasStore.selectedLayers)[0];
-			if (eventState.currLayer && eventState.currLayer.id === layer.id) {
-				eventState.currLayer = layer;
-				return;
-			}
 			// 选中图层发生改变
 			dispatch({ type: ReducerType.ChangeLayer, payload: layer });
-			// 获取选中图层组件的event信息
-			const eventArr: { label: string; value: string; description?: string }[] =
-				[];
-			const componentInfo = canvasStore.layerComponentOptions.get(layer.id);
-			if (componentInfo && componentInfo.events) {
-				// 遍历组件事件
-				for (const key in componentInfo.events) {
-					eventArr.push({
-						label: key,
-						value: key,
-						description: componentInfo.events[key].description,
-					});
-				}
-			}
-			setEvents(eventArr);
 		}
-	}, [canvasStore, eventState, canvasStore.selectedLayers]);
+	}, [canvasStore, canvasStore.selectedLayers]);
+
+	/**
+	 * 图层改变
+	 */
+	useEffect(() => {
+		if(!eventState.currLayer){
+			setEvents([]);
+			return;
+		}
+		// 获取选中图层组件的event信息
+		const eventArr: { label: string; value: string; description?: string }[] =
+			[];
+
+		// 图层自带事件
+		MojitoLayerEventInfo.forEach(event =>{
+			eventArr.push({
+				label: event.name,
+				value: event.eventName,
+			})
+		});
+
+		const componentInfo = canvasStore.layerComponentOptions.get(eventState.currLayer.id);
+		if (componentInfo && componentInfo.events) {
+			// 遍历组件事件
+			for (const key in componentInfo.events) {
+				eventArr.push({
+					label: key,
+					value: key,
+					description: componentInfo.events[key].description,
+				});
+			}
+		}
+		setEvents(eventArr);
+	}, [eventState.currLayer, canvasStore.layerComponentOptions])
 
 	/**
 	 * 更新事件处理函数源码
 	 */
 	useUpdateEffect(() => {
-		const { currLayer, selectedEvent, callback } = eventState;
-		if (currLayer && selectedEvent && callback) {
-			canvasStore.updateEventHandler(currLayer, {[selectedEvent.value]: callback})
+		const { currLayer, selectedEvent, callbackCode } = eventState;
+		if (currLayer && selectedEvent && callbackCode) {
+			canvasStore.updateEventHandler(currLayer, { [selectedEvent.value]: callbackCode })
 		}
 	}, [eventState]);
 
@@ -135,11 +152,11 @@ export default function EventSetting() {
 	 * @returns
 	 */
 	const build = () => {
-		if (callback && callback.sourceCode) {
+		if (callbackCode && callbackCode.sourceCode) {
 			try {
 				// 编译代码
 				const { code } = compileCode(
-					callback.sourceCode.replace(/[\n\r]+/g, "")
+					callbackCode.sourceCode.replace(/[\n\r]+/g, "")
 				);
 				const runRel = code ? runCode(code) : null;
 				if (runRel !== null && typeof runRel !== "function") {
@@ -148,7 +165,7 @@ export default function EventSetting() {
 				}
 				dispatch({
 					type: ReducerType.ChangeCode,
-					payload: { ...callback, buildCode: code || undefined },
+					payload: { ...callbackCode, buildCode: code || undefined },
 				});
 				message.success("编译成功");
 			} catch (e) {
@@ -158,7 +175,7 @@ export default function EventSetting() {
 		} else {
 			dispatch({
 				type: ReducerType.ChangeCode,
-				payload: { ...callback, buildCode: undefined },
+				payload: { ...callbackCode, buildCode: undefined },
 			});
 			message.success("编译成功");
 		}
@@ -186,16 +203,16 @@ export default function EventSetting() {
 								<InfoCircleOutlined />
 							</Tooltip>
 						)}
-						{selectedEvent && (
+						{selectedEvent &&  !([MojitoLayerEvent.onMount, MojitoLayerEvent.onUnmount, MojitoLayerEvent.onMessage].includes(selectedEvent.value)) && (
 							<Switch
 								checkedChildren="同步"
 								unCheckedChildren="同步"
 								size="small"
-								checked={callback?.isSync}
+								checked={callbackCode?.isSync}
 								onChange={(checked) => {
 									dispatch({
 										type: ReducerType.ChangeCode,
-										payload: { ...callback, isSync: checked },
+										payload: { ...callbackCode, isSync: checked },
 									});
 								}}
 							/>
@@ -205,7 +222,7 @@ export default function EventSetting() {
 						<Button
 							size="small"
 							type="primary"
-							disabled={!callback?.sourceCode}
+							disabled={!callbackCode?.sourceCode}
 							onClick={build}
 						>
 							编译
@@ -214,14 +231,15 @@ export default function EventSetting() {
 				</div>
 				<div style={{ flexGrow: 1, paddingTop: "0.5em" }}>
 					<CodeEditor
-						key={`${eventState.currLayer?.id}@${eventState.selectedEvent?.value}`}
+						// key={`${eventState.currLayer?.id}@${eventState.selectedEvent?.value}`}
 						readOnly={!selectedEvent}
 						language="javascript"
-						value={callback?.sourceCode}
+						value={callbackCode?.sourceCode}
 						onChange={(code) => {
+							console.log("event code", code);
 							dispatch({
 								type: ReducerType.ChangeCode,
-								payload: { ...callback, sourceCode: code },
+								payload: { ...callbackCode, sourceCode: code },
 							});
 						}}
 					/>

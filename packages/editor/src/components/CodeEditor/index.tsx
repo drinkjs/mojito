@@ -1,6 +1,7 @@
-import Editor, { loader } from "@monaco-editor/react";
+import Editor, { loader, Monaco } from "@monaco-editor/react";
+import _ from "lodash-es";
 import { useDebounceFn, useUpdateEffect } from "ahooks";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 loader.config({ paths: { vs: 'http://cdn.staticfile.org/monaco-editor/0.40.0/min/vs' } });
 
@@ -23,8 +24,31 @@ export default function CodeEditor({
 	readOnly,
 	onChange,
 }: CodeEditorProps) {
+	const monacoRef = useRef<Monaco | null>(null);
+	const [code, setCode] = useState(value || defaultValue);
+
+	const handleEditorDidMount = (_: any, monaco: Monaco)=>{
+		monacoRef.current = monaco;
+	}
 	
-	const [code, setCode] = useState(value);
+	useUpdateEffect(()=>{
+		if(value && language === "json"){
+			try{
+				setCode((oldValue) =>{
+					if(!oldValue){
+						return value;
+					}else if(!_.isEqual(JSON.parse(value), JSON.parse(oldValue))){
+						return value;
+					}
+					return oldValue;
+				})
+			}catch(e){
+				console.error(e);
+			}
+		}else{
+			setCode(value ?? "")
+		}
+	}, [value, language])
 
 	const { run } = useDebounceFn(
     (code?:string) => {
@@ -54,6 +78,7 @@ export default function CodeEditor({
 			defaultValue={defaultValue}
 			value={code}
 			onChange={changeHandler}
+			onMount={handleEditorDidMount}
 		/>
 	);
 }
