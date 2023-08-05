@@ -304,7 +304,7 @@ export default function Playground() {
 	}, [layerActionRefs])
 
 	return (
-		<main
+		<div
 			className={styles.playground}
 			// onMouseDown={clearAllSelected}
 		>
@@ -353,6 +353,6 @@ export default function Playground() {
 			</div>
 			{/* <ConnectedMenu /> */}
 			{contextHolder}
-		</main>
+		</div>
 	);
 }

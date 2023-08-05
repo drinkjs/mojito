@@ -68,7 +68,7 @@ export function ComponentList({
 		if (selectedPack?.components) {
 			const compMap: Record<string, ComponentInfo[]> = {};
 			selectedPack.components.forEach((comp) => {
-				const category = comp.category ?? "default"
+				const category = comp.category ?? "默认"
 				if (!compMap[category]) {
 					compMap[category] = [comp]
 				} else {

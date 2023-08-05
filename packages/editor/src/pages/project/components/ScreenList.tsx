@@ -155,9 +155,9 @@ export default function ScreenList({ project }: ScreenListProps) {
 		<div className={styles.root}>
 			<header className={styles.header}>
 				<div>
-					<span style={{ marginLeft: "6px" }}>
-						【{project ? project.name : ""}】
-					</span>
+					<h2 style={{ marginLeft: "6px" }}>
+						{project ? project.name : ""}
+					</h2>
 				</div>
 				<Button
 					type="primary"

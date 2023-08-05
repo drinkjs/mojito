@@ -1,13 +1,18 @@
 import { syncHelper } from "@/common/syncHelper";
-import { useDocumentVisibility, useInterval, useMount, useUnmount } from "ahooks";
-import { Skeleton } from "antd";
+import {
+	useDocumentVisibility,
+	useInterval,
+	useMount,
+	useUnmount,
+} from "ahooks";
+import { Spin } from "antd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGlobalStore } from "@/store";
-import Header from "./components/Header";
-import LeftSide from "./components/LeftSide";
-import Playground from "./components/Playground";
-import RightSide from "./components/RightSide";
+import Header from "./layout/Header";
+import LeftSide from "./layout/LeftSide";
+import Playground from "./layout/Playground";
+import RightSide from "./layout/RightSide";
 import { useCanvasStore } from "./hook";
 import styles from "./styles/index.module.css";
 import { useCallback } from "react";
@@ -42,9 +47,9 @@ export default function Screen() {
 		document.removeEventListener("__MojitoStyleLoader__", onStyleLoader);
 	});
 
-/**
- * 定时保存画布信息
- */
+	/**
+	 * 定时保存画布信息
+	 */
 	useInterval(() => {
 		if (documentVisibility === "visible") {
 			canvasStore.saveScreen();
@@ -57,9 +62,20 @@ export default function Screen() {
 			<div className={styles.area}>
 				<DndProvider backend={HTML5Backend}>
 					<LeftSide />
-					<Skeleton loading={canvasStore.getDetailLoading}>
+					{canvasStore.getDetailLoading ? (
+						<div
+							style={{
+								flex: 1,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<Spin tip="Loading..." />
+						</div>
+					) : (
 						<Playground />
-					</Skeleton>
+					)}
 				</DndProvider>
 				<RightSide />
 			</div>

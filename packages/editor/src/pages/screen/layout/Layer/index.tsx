@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * 图层类，负责生成组件，控制组件的大小位置，请求数据
- */
-
 import React, {
 	useState,
 	useRef,
@@ -12,7 +7,6 @@ import React, {
 } from "react";
 import _ from "lodash-es";
 import { useNavigate } from "react-router-dom";
-import { Request } from "@mojito/common/network";
 import Render, { ComponentMountEvent, RenderAction } from "./Render";
 import styles from "./index.module.css";
 import { useMount, useUnmount, useUpdateEffect } from "ahooks";
@@ -23,66 +17,6 @@ import { Border } from "@/components/StyleOptions";
 import { MojitoLayerEvent } from "@/config";
 
 const EventSyncCallFlag = Symbol.for("EventSyncCallFlag");
-
-const request = new Request();
-
-function showHandlerError(layerName: string, error: any) {
-	// Message.error(`${layerName}事件处理错误:${error.message}`);
-	console.error(`${layerName}事件处理错误:${error.message}`);
-}
-/**
- * 解释数源中的参数
- * @param params
- */
-export function parseParams(params: string) {
-	if (!params) return {};
-	// 替换${xxx}变量，变量会对应映射global的值 {"a":"${myname}"}会替换会{"a":global["myname"]}
-	const globalObj: any = window;
-	try {
-		const regx = /"\${[\d\w_]+}"/g;
-		const newParams = params.replace(regx, (match: string) => {
-			const val = match.substring(3, match.length - 2);
-			if (
-				typeof globalObj[val] === "object" ||
-				typeof globalObj[val] === "string"
-			) {
-				return JSON.stringify(globalObj[val]);
-			}
-			return globalObj[val] === undefined ? null : globalObj[val];
-		});
-		return JSON.parse(newParams);
-	} catch (e) {
-		// Message.error('参数解释错误');
-		console.error("参数解释错误");
-		return {};
-	}
-}
-
-/**
- * 事件里的网络请求
- */
-export function eventRequest(
-	originUrl: string,
-	method: string,
-	params?: any,
-	options?: any
-) {
-	// return request(originUrl, method, params || {}, {
-	//   prefix: '/',
-	//   checkCode: false,
-	//   ...options
-	// });
-
-	return request.req(originUrl, { method, ...options });
-}
-
-export const LayerEvent: { [key: string]: string } = {
-	onLoad: "__onLayerLoad__",
-	onDataSource: "__onLayerData__",
-	onShow: "__onLayerShow__",
-	onUnload: "__onLayerUnload__",
-	onSync: "__onSync__",
-};
 
 export type LayerAction = {
 	eventSync: (event?: Record<string, { args: any[]; retruns?: any }>) => void;
@@ -99,17 +33,6 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 		e?: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
 	onRef?: (id: string, actionRef: LayerAction) => void;
-}
-
-interface EventValue {
-	styles?: ComponentStyleQuery;
-	props?: { [key: string]: any };
-}
-
-interface EventSync {
-	event: string;
-	args: any;
-	syncPage: boolean;
 }
 
 const Layer: React.FC<LayerProps> = ({
@@ -161,11 +84,10 @@ const Layer: React.FC<LayerProps> = ({
 			// 调用事件处理函数
 			eventHandlers.current[MojitoLayerEvent.onMessage](...args, target);
 		}
-		console.log(e.detail);
 	}, [data])
 
 	/**
-	 * 如果组件设置了onMessage则监听事件
+	 * 如果组件设置了onMessage才监听事件
 	 */
 	useEffect(() => {
 		if (onMessageFlag) {

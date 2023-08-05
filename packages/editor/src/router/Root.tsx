@@ -25,7 +25,13 @@ export default function Root() {
 				// algorithm: themeDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
 				// token: themeDark ? dark : light,
 				algorithm: theme.darkAlgorithm,
-				token: dark,
+				token: {
+					colorPrimary: '#378cb7',
+					borderRadius: 4,
+					colorBgContainer: "#212c3d",
+					colorBgElevated:"#212c3d",
+					controlOutlineWidth:0
+				},
 			}}
 		>
 			<Outlet />
