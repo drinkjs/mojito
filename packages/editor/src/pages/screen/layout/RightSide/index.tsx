@@ -6,7 +6,7 @@ import PageSetting from "./PageSetting";
 import PropsSetting from "./PropsSetting";
 import StyleSetting from "./StyleSetting";
 import { useCanvasStore } from "../../hook";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Tooltip } from "antd";
 import classNames from "classnames";
 import IconFont from "@/components/IconFont";
@@ -71,6 +71,7 @@ const GlobalTabs = ["page", "layers"]
 export default function RightSide() {
 	const { canvasStore } = useCanvasStore();
 	const [selectedTab, setSelectedTab] = useState<AttributeTab | undefined>();
+	const resizableRef = useRef<Resizable | null>(null)
 
 	const { isGroup, isSelected } = useMemo(() => {
 		const val = {
@@ -94,55 +95,59 @@ export default function RightSide() {
 	const onTab = (tab: AttributeTab) => {
 		if (selectedTab === tab) {
 			setSelectedTab(undefined);
+			if (resizableRef.current) {
+				resizableRef.current.updateSize({ width: 40, height: "100%" })
+			}
 		} else {
 			setSelectedTab(tab);
 		}
 	};
 
 	return (
-		// <Resizable
-		//   defaultSize={{ width: 340, height: '100%' }}
-		//   minWidth={340}
-		//   maxWidth="50%"
-		//   enable={{
-		//     bottom: false,
-		//     bottomLeft: false,
-		//     bottomRight: false,
-		//     right: false,
-		//     top: false,
-		//     topLeft: false,
-		//     topRight: false,
-		//     left: true
-		//   }}
-		// >
-		<aside className={styles.root}>
-			{selectedTab && (
-				<div className={styles.content}>{selectedTab.render()}</div>
-			)}
-			<div className={styles.tabBox}>
-				{Tabs.map((v) => {
-					if ((isGroup || !isSelected) && CompoentSettingKeys.includes(v.key)) {
-						return null;
-					} else if (!isGroup && v.key === "group") {
-						return null;
-					}
-					return (
-						<Tooltip key={v.key} title={v.label} placement="left">
-							<div
-								key={v.key}
-								className={classNames(styles.tab, {
-									[styles.tabSelected]:
-										selectedTab && v.key === selectedTab.key,
-								})}
-								onClick={() => onTab(v)}
-							>
-								<IconFont type={v.icon} />
-							</div>
-						</Tooltip>
-					);
-				})}
-			</div>
-		</aside>
-		// </Resizable>
+		<Resizable
+			ref={resizableRef}
+			defaultSize={{ width: 40, height: '100%' }}
+			minWidth={selectedTab ? 380 : 40}
+			maxWidth="70%"
+			enable={{
+				bottom: false,
+				bottomLeft: false,
+				bottomRight: false,
+				right: false,
+				top: false,
+				topLeft: false,
+				topRight: false,
+				left: !!selectedTab
+			}}
+		>
+			<aside className={styles.root}>
+				{selectedTab && (
+					<div className={styles.content}>{selectedTab.render()}</div>
+				)}
+				<div className={styles.tabBox}>
+					{Tabs.map((v) => {
+						if ((isGroup || !isSelected) && CompoentSettingKeys.includes(v.key)) {
+							return null;
+						} else if (!isGroup && v.key === "group") {
+							return null;
+						}
+						return (
+							<Tooltip key={v.key} title={v.label} placement="left">
+								<div
+									key={v.key}
+									className={classNames(styles.tab, {
+										[styles.tabSelected]:
+											selectedTab && v.key === selectedTab.key,
+									})}
+									onClick={() => onTab(v)}
+								>
+									<IconFont type={v.icon} />
+								</div>
+							</Tooltip>
+						);
+					})}
+				</div>
+			</aside>
+		</Resizable>
 	);
 }

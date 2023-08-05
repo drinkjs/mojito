@@ -236,9 +236,8 @@ const LayerItem = ({
 			<div className={styles.layerListName}>
 				<Typography.Text
 					style={{ width: "95%" }}
-					copyable
-					ellipsis
 					// copyable
+					ellipsis
 					editable={{
 						maxLength: 100,
 						// enterIcon: null,
