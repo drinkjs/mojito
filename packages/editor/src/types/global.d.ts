@@ -30,6 +30,7 @@ declare global {
 		icon: string;
 		children?: ComponentTypeTree[];
 		pid?: string;
+		origin:number
 	};
 
 	type ComponentPackInfo = {
@@ -41,6 +42,7 @@ declare global {
 		type: string;
 		packJson: string;
 		createAt?: Date;
+		origin:number
 	};
 
 	type ComponentInfo = {

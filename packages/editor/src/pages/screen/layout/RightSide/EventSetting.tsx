@@ -21,18 +21,18 @@ type ReducerState = {
 	callbackCode?: EventCallback;
 };
 
-type ReducerAction =
-	| { type: ReducerType.ChangeLayer; payload?: LayerInfo }
-	| { type: ReducerType.ChangeEvent; payload?: EventOptions }
-	| { type: ReducerType.ChangeCode; payload?: EventCallback };
-
 enum ReducerType {
 	ChangeLayer,
 	ChangeEvent,
 	ChangeCode,
 }
 
-function evnetReducer(state: ReducerState, action: ReducerAction) {
+type ReducerAction =
+	| { type: ReducerType.ChangeLayer; payload?: LayerInfo }
+	| { type: ReducerType.ChangeEvent; payload?: EventOptions }
+	| { type: ReducerType.ChangeCode; payload?: EventCallback };
+
+const  evnetReducer = (state: ReducerState, action: ReducerAction)=> {
 	const { type, payload } = action;
 	const { currLayer } = state;
 	switch (type) {

@@ -1,32 +1,39 @@
+import { Table, Button, Space, Modal, Form, Input, message } from "antd";
+import { useState, useMemo } from "react";
 import {
-	Table,
-	Button,
-	Space,
-	Modal,
-	Form,
-	Cascader,
-	Input,
-  message,
-} from "antd";
-import { useState } from "react";
-import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import IconFont from "@/components/IconFont";
+	PlusOutlined,
+	EditOutlined,
+	DeleteOutlined,
+	CloseOutlined,
+	SettingOutlined,
+} from "@ant-design/icons";
+// import IconFont from "@/components/IconFont";
 import { useGlobalStore } from "@/store";
 import { getTreeAllParent, getTreeItem } from "@mojito/common/util";
+import styles from "./index.module.css";
+import AddType from "./AddType";
+import AddIconFont from "./AddIconFont";
 
-const layout = {
-	labelCol: { span: 4 },
-	wrapperCol: { span: 20 },
-};
-
-export default function ComponentTypeList(){
-  const { componentStore } = useGlobalStore();
+export default function ComponentTypeList({
+	visible,
+	onClose,
+	IconFont
+}: {
+	visible: boolean;
+	onClose: () => void;
+	IconFont: any
+}) {
+	const { componentStore } = useGlobalStore();
 	const [form] = Form.useForm();
-	// eslint-disable-next-line no-unused-vars
 	const [value, setValue] = useState<ComponentTypeTree>();
 	const [parentValue, setParentValue] = useState<string[]>();
 	const [showAdd, setShowAdd] = useState(false);
+	const [showAddIconFont, setShowAddIconFont] = useState(false);
 	const [modal, contextHolder] = Modal.useModal();
+
+	const userTypes = useMemo(() => {
+		return componentStore.typeTree.filter((v) => v.origin !== 999);
+	}, [componentStore.typeTree]);
 
 	const columns = [
 		{
@@ -36,7 +43,7 @@ export default function ComponentTypeList(){
 			render: (text: string, recond: ComponentTypeTree) => {
 				return (
 					<div>
-						<IconFont type={recond.icon || "icon-zidingyi"} />
+						<IconFont type={recond.icon || "icon-zujian-"} />
 						<span style={{ marginLeft: "12px" }}>{text}</span>
 					</div>
 				);
@@ -46,8 +53,8 @@ export default function ComponentTypeList(){
 			title: "操作",
 			dataIndex: "id",
 			key: "id",
-			width: 100,
-			render: (text: string, recond: ComponentTypeTree) => {
+			width: 80,
+			render: (_: string, recond: ComponentTypeTree) => {
 				return (
 					<Space>
 						<Button
@@ -74,27 +81,9 @@ export default function ComponentTypeList(){
 
 	const onCancel = () => {
 		setShowAdd(false);
+		setShowAddIconFont(false);
 		setValue(undefined);
 		setParentValue(undefined);
-	};
-
-	const onSave = () => {
-		form.validateFields().then((values) => {
-			const newValues = {
-				...values,
-				pid: values.pid ? values.pid[values.pid.length - 1] : undefined,
-				id: value ? value.id : undefined,
-			};
-			if (value && value.id) {
-				componentStore.updateType(newValues).then(() => {
-					onCancel();
-				});
-			} else {
-				componentStore.addType(newValues).then(() => {
-					onCancel();
-				});
-			}
-		});
 	};
 
 	const onRemove = (recond: ComponentTypeTree) => {
@@ -114,11 +103,7 @@ export default function ComponentTypeList(){
 	const onEdit = (recond: ComponentTypeTree) => {
 		setValue(recond);
 		setShowAdd(true);
-		const pv = getTreeAllParent(
-			componentStore.typeTree,
-			recond.id,
-			true
-		);
+		const pv = getTreeAllParent(componentStore.typeTree, recond.id, true);
 		if (pv.length > 0) {
 			setParentValue(pv.map((v) => v.id));
 		} else {
@@ -126,94 +111,69 @@ export default function ComponentTypeList(){
 		}
 	};
 
-	const filterOpts = () => {
-		const tree = componentStore.typeTree;
-		if (!value?.pid) {
-			return tree.filter((v) => v.id !== value?.id);
-		}
-		const pItem = getTreeItem(tree, value?.pid);
-		if (pItem && pItem.children) {
-			// 过滤自身节点
-			pItem.children = pItem.children.filter((v: any) => v.id !== value?.id);
-		}
-		return tree;
-	};
+	// const filterOpts = () => {
+	// 	const tree = componentStore.typeTree;
+	// 	if (!value?.pid) {
+	// 		return tree.filter((v) => v.id !== value?.id);
+	// 	}
+	// 	const pItem = getTreeItem(tree, value?.pid);
+	// 	if (pItem && pItem.children) {
+	// 		// 过滤自身节点
+	// 		pItem.children = pItem.children.filter((v: any) => v.id !== value?.id);
+	// 	}
+	// 	return tree;
+	// };
 
 	return (
 		<div
+			className={styles.components}
 			style={{
-				width: "650px",
-				maxHeight: "500px",
-				overflow: "auto",
-				display: "flex",
-				flexDirection: "column",
-        marginTop:"-24px"
+				display: visible ? "flex" : "none",
 			}}
 		>
-			<div style={{ paddingBottom: "12px", textAlign: "right" }}>
-				<Button
-					type="primary"
-					size="small"
-					onClick={() => {
-						setShowAdd(true);
-					}}
-					icon={<PlusOutlined />}
-				></Button>
+			<div className={styles.componentListTitle}>
+				<div className={styles.name}>分类管理</div>
+				<a className={styles.close} href={void 0} onClick={onClose}>
+					<CloseOutlined />
+				</a>
 			</div>
 			<div style={{ overflow: "auto" }}>
 				<Table
 					columns={columns}
-					dataSource={componentStore?.typeTree}
+					dataSource={userTypes}
 					pagination={false}
 					showHeader={false}
 					rowKey="id"
 				/>
 			</div>
-			<Modal
-				open={showAdd}
+			<div style={{ padding: "12px" }}>
+				<Button
+					block
+					type="primary"
+					onClick={() => {
+						setShowAdd(true);
+					}}
+					icon={<PlusOutlined />}
+				>
+					新增分类
+				</Button>
+				<Button
+					style={{ marginTop: "12px" }}
+					block
+					onClick={() => {
+						setShowAddIconFont(true);
+					}}
+					icon={<SettingOutlined />}
+				>
+					设置图标库
+				</Button>
+			</div>
+			<AddType open={showAdd} onCancel={onCancel} value={value} />
+			<AddIconFont
+				open={showAddIconFont}
 				onCancel={onCancel}
-				onOk={onSave}
-				title={value ? "编辑分类" : "新增分类"}
-				destroyOnClose
-				zIndex={9988}
-				confirmLoading={componentStore?.addTypeLoading}
-			>
-				<Form id="addComponentTypes" {...layout} form={form} preserve={false}>
-					<Form.Item
-						label="分类名称"
-						name="name"
-						rules={[{ required: true, message: "此项不能为空" }]}
-						initialValue={value?.name}
-					>
-						<Input placeholder="请输入分类名称" />
-					</Form.Item>
-					<Form.Item
-						label="父级类型"
-						name="pid"
-						rules={[{ required: false, message: "" }]}
-						initialValue={parentValue}
-					>
-						<Cascader
-							fieldNames={{ label: "name", value: "id" }}
-							options={value ? filterOpts() : componentStore.typeTree}
-							placeholder="请选择父级类型"
-							getPopupContainer={(target) =>
-								document.getElementById("addComponentTypes") || target
-							}
-							allowClear
-							changeOnSelect
-						/>
-					</Form.Item>
-					<Form.Item
-						label="图标"
-						name="icon"
-						rules={[{ required: false, message: "此项不能为空" }]}
-						initialValue={value?.icon}
-					>
-						<Input placeholder="请输入图标" />
-					</Form.Item>
-				</Form>
-			</Modal>
+				value={componentStore.iconfont}
+			/>
 			{contextHolder}
 		</div>
 	);

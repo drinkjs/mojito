@@ -2,9 +2,9 @@ import { Col, Empty, Row, Select, Skeleton } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import ComponentListItem from "./ComponentListItem";
 import { CloseOutlined } from "@ant-design/icons";
-import styles from "./index.module.css";
 import { useGlobalStore } from "@/store";
 import { formatPackScriptUrl } from "@/common/util";
+import styles from "./index.module.css";
 
 export function ComponentList({
 	componentType,
@@ -22,11 +22,11 @@ export function ComponentList({
 		[]
 	);
 	const [selectedPack, setSelectedPack] = useState<
-		ComponentPackInfo | undefined
+		ComponentPackInfo
 	>();
-	const [packScriptUrl, setPackScriptUrl] = useState<string | undefined>();
+	const [packScriptUrl, setPackScriptUrl] = useState<string>();
 	// 类型：组件[]
-	const [components, setComponents] = useState<Record<string, ComponentInfo[]> | undefined>()
+	const [components, setComponents] = useState<Record<string, ComponentInfo[]>>()
 
 	useEffect(() => {
 		if (componentType) {
@@ -108,12 +108,12 @@ export function ComponentList({
 				</a>
 			</div>
 			<div className={styles.componentSelect}>
-				{options.length > 0 && <Select
+				<Select
 					options={options}
 					onChange={onSelect}
 					value={selectedPack?.id}
 					style={{ width: "100%", border: "none" }}
-				></Select>}
+				/>
 			</div>
 			<div className={styles.componentListBox}>
 				<Skeleton loading={loading}>

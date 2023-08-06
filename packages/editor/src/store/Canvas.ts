@@ -162,6 +162,7 @@ export default class Canvas {
 				});
 			}
 		} else {
+			message.error("没有相关页面信息")
 			this.screenInfo = undefined;
 			this.layers = [];
 		}
@@ -381,7 +382,7 @@ export default class Canvas {
 		}
 
 		let packInfo: any = this.packLoadedMap.get(packId);
-		if (packInfo.then) {
+		if (packInfo && packInfo.then) {
 			// 其它图层正在请求，等待结果返回
 			const rel = await packInfo;
 			if (!rel) {
@@ -399,7 +400,7 @@ export default class Canvas {
 
 			const rel = await reqPackDetail;
 			if (!rel) {
-				message.error("没有相关组件");
+				message.error({content:`id: ${packId} 没有相关组件`, key: packId});
 				this.packLoadedMap.delete(packId);
 				return;
 			}

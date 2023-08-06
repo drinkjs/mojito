@@ -1,11 +1,5 @@
-import { useState } from "react";
-import {
-	Modal,
-	Form,
-	Input,
-	Cascader,
-	message,
-} from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { Modal, Form, Input, Cascader, message } from "antd";
 import { ModalFuncProps } from "antd/lib/modal";
 import { useGlobalStore } from "@/store";
 import { get as reqGet } from "@/common/request";
@@ -16,53 +10,99 @@ const layout = {
 };
 
 interface Props extends ModalFuncProps {
-	value?: ComponentInfo;
+	value?: ComponentPackInfo;
 }
 
-export default function AddComponent({value, onCancel, ...restProps}: Props) {
+export default function AddComponent({
+	value,
+	onCancel,
+	onOk,
+	...restProps
+}: Props) {
 	const { componentStore } = useGlobalStore();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState(false);
 	const [packInfo, setPackInfo] = useState<ComponentPackInfo>();
 
-	const onOk = () => {
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const getMojitoPack = (url?: string) => {
+		if (loading) return;
+
+		setPackInfo(undefined);
+		if (url) {
+			setLoading(true);
+			setPackInfo(undefined);
+			reqGet<ComponentPackInfo>(url)
+				.then((data) => {
+					if (data && data.components && data.components.length) {
+						setPackInfo(data);
+					} else {
+						message.error("没有可用的组件");
+					}
+					form.setFieldValue("name", value?.name ?? data?.name);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		}
+	};
+
+	/**
+	 * 更新时先获取组件库信息
+	 */
+	useEffect(() => {
+		setPackInfo(undefined);
+		if (value && value.packJson) {
+			getMojitoPack(value.packJson);
+		}
+	}, [value]);
+
+	const add = () => {
 		if (!packInfo || packInfo.components.length === 0) {
-			message.error("No Components Export");
+			message.error("没有可用的组件");
 			return;
 		}
 
 		form.validateFields().then((values) => {
 			if (packInfo) {
-        setLoading(true);
-				componentStore.addComponent({ ...packInfo, ...values, type: values.type[values.type.length - 1] }).then(()=>{
-          message.success("新增成功");
-          if(onCancel)
-            onCancel();
-        }).finally(()=>{
-          setLoading(false);
-        })
+				setLoading(true);
+
+				if (value) {
+					componentStore
+						.updateComponentLib({
+							...packInfo,
+							...values,
+							id: value.id,
+							type: values.type[values.type.length - 1],
+						})
+						.then((rel) => {
+							if (rel) {
+								message.success("修改成功");
+								if (onOk) onOk();
+							}
+						})
+						.finally(() => {
+							setLoading(false);
+						});
+				} else {
+					componentStore
+						.addComponentLib({
+							...packInfo,
+							...values,
+							type: values.type[values.type.length - 1],
+						})
+						.then((rel) => {
+							if (rel) {
+								message.success("新增成功");
+								if (onOk) onOk();
+							}
+						})
+						.finally(() => {
+							setLoading(false);
+						});
+				}
 			}
 		});
-	};
-
-	const getMojitoPack = (e: React.FocusEvent<HTMLInputElement>) => {
-		if (loading) return;
-
-		const url = e.target.value;
-		if (url) {
-			setLoading(true);
-			setPackInfo(undefined);
-			reqGet<ComponentPackInfo>(url).then((data)=>{
-				if (data && data.components && data.components.length) {
-					setPackInfo(data);
-				}else{
-					message.error("No Components Export");
-				}
-				form.setFieldValue("name", data?.name);
-			}).finally(() => {
-				setLoading(false);
-			});
-		}
 	};
 
 	return (
@@ -70,8 +110,8 @@ export default function AddComponent({value, onCancel, ...restProps}: Props) {
 			title={value ? "编辑组件" : "新增组件"}
 			maskClosable={false}
 			{...restProps}
-			onOk={onOk}
-      onCancel={onCancel}
+			onOk={add}
+			onCancel={onCancel}
 			destroyOnClose
 			confirmLoading={componentStore.addLoading || loading}
 			okText="确定"
@@ -82,23 +122,27 @@ export default function AddComponent({value, onCancel, ...restProps}: Props) {
 					label="组件库地址"
 					name="packJson"
 					rules={[{ required: true, message: "此项不能为空" }]}
+					initialValue={value?.packJson}
 				>
-					<Input placeholder="mojito-pack.json" onBlur={getMojitoPack} />
+					<Input
+						placeholder="mojito-pack.json"
+						disabled={!!value}
+						onBlur={(e) => getMojitoPack(e.target.value)}
+					/>
 				</Form.Item>
 				<Form.Item
 					label="组件库名称"
 					name="name"
-					rules={[
-						{ required: true, message: "此项不能为空" },
-						{ max: 20, message: "20字以内" },
-					]}
+					initialValue={value?.name}
+					rules={[{ required: true, message: "此项不能为空" }, { max: 20 }]}
 				>
-					<Input placeholder="请输入组件中文名称(20字以内)" />
+					<Input disabled placeholder="组件库名称" />
 				</Form.Item>
 				<Form.Item
 					label="组件库类型"
 					name="type"
 					rules={[{ required: true, message: "此项不能为空" }]}
+					initialValue={value?.type ? [value?.type] : undefined}
 				>
 					<Cascader
 						fieldNames={{ label: "name", value: "id" }}

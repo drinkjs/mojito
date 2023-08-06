@@ -7,13 +7,9 @@ export default class Components {
 
 	typeComponentPacks: ComponentPackInfo[] = [];
 
-	systemComponent: ComponentInfo[] = [];
-
 	componentInfo: ComponentInfo | null = null;
 
 	getTypeTreeLoading = false;
-
-	getComponentInfoLoading = false;
 
 	addLoading = false;
 
@@ -21,8 +17,14 @@ export default class Components {
 
 	currSelectType: string | null = null;
 
-	constructor(){
-		makeObservable(this, {currSelectType: false});
+	getLibsLoading = false;
+
+	componentLibs: ComponentPackInfo[] = [];
+
+	iconfont?: { id: string, url?: string }
+
+	constructor() {
+		makeObservable(this, { currSelectType: false });
 	}
 
 	/**
@@ -31,10 +33,19 @@ export default class Components {
 	async getTypeTree() {
 		this.getTypeTreeLoading = true;
 		const data = await service.getTypeTree();
-    this.getTypeTreeLoading = false;
+		this.getTypeTreeLoading = false;
 		if (data) {
-      this.typeTree = this.formatTypes(data);
+			this.typeTree = this.formatTypes(data);
 		}
+	}
+
+	/**
+	 * 组件类树
+	 */
+	async getUserTypeTree() {
+		this.getTypeTreeLoading = true;
+		const data = await service.getUserTypeTree().catch(() => null);
+		return data;
 	}
 
 	/**
@@ -63,23 +74,28 @@ export default class Components {
 	 */
 	async addType(data: ComponentTypeTree) {
 		this.addTypeLoading = true;
-		await service.addType(data);
-		message.success("添加成功");
-		this.getTypeTree();
+		const rel = await service.addType(data).catch(() => null);
+		if (rel) {
+			message.success("添加成功");
+			this.getTypeTree();
+		}
 		this.addTypeLoading = false;
+		return rel;
 	}
 
 	/**
-	 * 添加分类
-	 * @param data
+	 * 删除分类
+	 * @param id
 	 * @returns
 	 */
 	async removeType(id: string) {
 		this.addTypeLoading = true;
-		await service.removeType(id);
-		message.success("删除成功");
-		this.getTypeTree();
-		this.addTypeLoading = false;
+		service.removeType(id).then(() => {
+			message.success("删除成功");
+			this.getTypeTree();
+		}).finally(() => {
+			this.addTypeLoading = false;
+		});
 	}
 
 	/**
@@ -89,21 +105,25 @@ export default class Components {
 	 */
 	async updateType(data: ComponentTypeTree) {
 		this.addTypeLoading = true;
-		await service.updateType(data);
-		message.success("更新成功");
-		this.getTypeTree();
+		const rel = await service.updateType(data).catch(() => null);
+		if (rel) {
+			message.success("更新成功");
+			this.getTypeTree();
+		}
 		this.addTypeLoading = false;
+		return rel
 	}
 
 	/**
 	 * 增加组件
 	 * @param params
 	 */
-	async addComponent(params: ComponentPackInfo) {
-		service.addComponent(params).then(()=>{
-			if(this.currSelectType){
+	async addComponentLib(params: ComponentPackInfo) {
+		return service.addComponent(params).then(() => {
+			if (this.currSelectType) {
 				this.getTypeComponent(this.currSelectType);
 			}
+			return true;
 		})
 	}
 
@@ -111,11 +131,25 @@ export default class Components {
 	 * 更新组件
 	 * @param params
 	 */
-	async updateComponent(params: ComponentInfo) {
-		this.addLoading = true;
-		const data = await service.updateComponent(params);
-		this.addLoading = false;
-		return data;
+	async updateComponentLib(params: ComponentPackInfo) {
+		return service.updateComponent(params).then(() => {
+			if (this.currSelectType) {
+				this.getTypeComponent(this.currSelectType);
+			}
+			return true;
+		})
+	}
+
+	/**
+	 * 组件库
+	 */
+	async getComponentLibs(type: string) {
+		this.getLibsLoading = true;
+		service.getComponentLibs(type).then((data) => {
+			this.componentLibs = data || []
+		}).finally(() => {
+			this.getLibsLoading = false;
+		})
 	}
 
 	/**
@@ -129,21 +163,55 @@ export default class Components {
 	}
 
 	/**
-	 * 组件详情
+	 * 删除组件库
 	 * @param id
 	 */
-	async getComponentInfo(id: string) {
-		this.getComponentInfoLoading = true;
-		const data = service.getComponentInfo(id);
-		this.getComponentInfoLoading = false;
-		this.componentInfo = data;
+	async removeComponentLib(id: string) {
+		return service.removeComponentLib(id).then(() => {
+			return true;
+		})
 	}
 
 	/**
-	 * 系统组件
-	 * @param id
+	 * get iconfont
 	 */
-	async removeComponent(id: string) {
-		return service.removeComponent(id);
+	async getIconFont() {
+		return service.getIconFont().then((data) => {
+			if (data) {
+				this.iconfont = data
+			}
+		})
+	}
+
+	/**
+	 * add iconfont
+	 */
+	async addIconFont(url: string) {
+		this.addTypeLoading = true;
+		return service.addIconFont(url).then((id) => {
+			message.success("操作成功");
+			if (id) {
+				this.iconfont = { url, id }
+			}
+			return true;
+		}).finally(()=>{
+			this.addTypeLoading = false;
+		})
+	}
+
+	/**
+	 * add iconfont
+	 */
+	async updateIconFont(params: { url?: string, id: string }) {
+		this.addTypeLoading = true;
+		return service.updateIconFont(params).then((data) => {
+			message.success("操作成功");
+			if (data) {
+				this.iconfont = params.url ? params : undefined;
+			}
+			return true;
+		}).finally(()=>{
+			this.addTypeLoading = false;
+		})
 	}
 }
