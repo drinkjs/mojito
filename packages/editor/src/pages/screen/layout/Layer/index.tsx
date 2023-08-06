@@ -5,7 +5,7 @@ import React, {
 	useCallback,
 	useMemo,
 } from "react";
-import _ from "lodash-es";
+import { merge } from "lodash-es";
 import { useNavigate } from "react-router-dom";
 import Render, { ComponentMountEvent, RenderAction } from "./Render";
 import styles from "./index.module.css";
@@ -78,13 +78,19 @@ const Layer: React.FC<LayerProps> = ({
 	/**
 	 * onMessage消息处理
 	 */
-	const messageHandler = useCallback((e: any) => {
-		const { layerNames, args, target } = e.detail;
-		if(layerNames.includes(data.name) && eventHandlers.current[MojitoLayerEvent.onMessage]){
-			// 调用事件处理函数
-			eventHandlers.current[MojitoLayerEvent.onMessage](...args, target);
-		}
-	}, [data])
+	const messageHandler = useCallback(
+		(e: any) => {
+			const { layerNames, args, target } = e.detail;
+			if (
+				layerNames.includes(data.name) &&
+				eventHandlers.current[MojitoLayerEvent.onMessage]
+			) {
+				// 调用事件处理函数
+				eventHandlers.current[MojitoLayerEvent.onMessage](...args, target);
+			}
+		},
+		[data]
+	);
 
 	/**
 	 * 如果组件设置了onMessage才监听事件
@@ -93,8 +99,12 @@ const Layer: React.FC<LayerProps> = ({
 		if (onMessageFlag) {
 			document.addEventListener(MojitoLayerEvent.sendMessage, messageHandler);
 		}
-		return ()=> document.removeEventListener(MojitoLayerEvent.sendMessage, messageHandler);
-	}, [onMessageFlag, messageHandler])
+		return () =>
+			document.removeEventListener(
+				MojitoLayerEvent.sendMessage,
+				messageHandler
+			);
+	}, [onMessageFlag, messageHandler]);
 
 	/**
 	 * 给playground调用,处理同步事件
@@ -133,7 +143,7 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const callUpdateProps = useCallback(
 		(props: Record<string, any>) => {
-			data.props = _.merge(data.props, props);
+			data.props = merge(data.props, props);
 			canvasStore.refreshLayer([data.id]);
 		},
 		[data, canvasStore]
@@ -143,7 +153,7 @@ const Layer: React.FC<LayerProps> = ({
 	 * 合并props
 	 */
 	const componentProps = useMemo(() => {
-		return _.merge(data.props, {
+		return merge(data.props, {
 			__style: data.style,
 			__display: enable ? "editor" : "viewer",
 			__updateProps: callUpdateProps,
@@ -198,7 +208,6 @@ const Layer: React.FC<LayerProps> = ({
 				// 调用onMount事件
 				eventHandlers.current[MojitoLayerEvent.onMount]();
 			}
-
 		},
 		[data, canvasStore, enable, defaultWidth, defaultHeight]
 	);
@@ -219,18 +228,21 @@ const Layer: React.FC<LayerProps> = ({
 				}
 			},
 			// 路由
-			navigate: (to:string)=>{
-				navigate(to)
+			navigate: (to: string) => {
+				navigate(to);
 			},
 			// 向其他组件发送消息
 			sendMessage: (layerNames: string | string[], ...args: any[]) => {
-				document.dispatchEvent(new CustomEvent(MojitoLayerEvent.sendMessage, {
-					detail: {
-						layerNames: typeof layerNames === "string" ? [layerNames] : layerNames,
-						target: { name: data.name, id: data.id },
-						args
-					}
-				}));
+				document.dispatchEvent(
+					new CustomEvent(MojitoLayerEvent.sendMessage, {
+						detail: {
+							layerNames:
+								typeof layerNames === "string" ? [layerNames] : layerNames,
+							target: { name: data.name, id: data.id },
+							args,
+						},
+					})
+				);
 			},
 		}),
 		[data, navigate]
@@ -291,8 +303,9 @@ const Layer: React.FC<LayerProps> = ({
 		// 处理边框
 		const borderObj: any = {};
 		const border: Border = (data.style.border as any) || {};
-		const borderCss = `${border.borderWidth ?? 0}px ${border.borderStyle ?? "none"
-			} ${border.borderColor || ""}`;
+		const borderCss = `${border.borderWidth ?? 0}px ${
+			border.borderStyle ?? "none"
+		} ${border.borderColor || ""}`;
 		if (
 			border &&
 			border.borderPosition &&

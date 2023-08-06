@@ -1,6 +1,6 @@
 import * as service from "@/services/screen";
 import { makeObservable } from "fertile";
-import _ from "lodash-es";
+import { cloneDeep, merge } from "lodash-es";
 import { message } from "antd";
 import { getPackDetail } from "@/services/component";
 import { formatPackScriptUrl, smallId } from "@/common/util";
@@ -36,7 +36,7 @@ export default class Canvas {
 	// 缓存组件库信息
 	packLoadedMap: Map<string, PackLoadInfo | Promise<ComponentPackInfo | undefined>> = new Map();
 	// 已经加载过的组件
-	loadedPackComponent: Map<string,Record<string, Constructor<MojitoComponent>>> = new Map();
+	loadedPackComponent: Map<string, Record<string, Constructor<MojitoComponent>>> = new Map();
 	// 图层的dom节点
 	layerDomCache: Map<string, HTMLDivElement> = new Map();
 	// 组件的配置信息，用于右侧属性和事件配置
@@ -95,7 +95,7 @@ export default class Canvas {
 	 * @returns
 	 */
 	private addUndoData(data?: ScreenDetail) {
-		this.undoData.push(_.cloneDeep(data || this.screenInfo!));
+		this.undoData.push(cloneDeep(data || this.screenInfo!));
 		if (this.undoData.length >= MAX_UNDO) {
 			this.undoData.shift();
 		}
@@ -107,7 +107,7 @@ export default class Canvas {
 	 * @returns
 	 */
 	private addRedoData(data?: ScreenDetail) {
-		this.redoData.push(_.cloneDeep(data || this.screenInfo!));
+		this.redoData.push(cloneDeep(data || this.screenInfo!));
 		if (this.redoData.length >= MAX_UNDO) {
 			this.redoData.shift();
 		}
@@ -353,7 +353,7 @@ export default class Canvas {
 		layer: LayerInfo,
 		packInfo: PackLoadInfo
 	) {
-		if(!this.screenInfo) return;
+		if (!this.screenInfo) return;
 
 		this.addUndoData();
 		this.mouseDownEvent = undefined;
@@ -400,7 +400,7 @@ export default class Canvas {
 
 			const rel = await reqPackDetail;
 			if (!rel) {
-				message.error({content:`id: ${packId} 没有相关组件`, key: packId});
+				message.error({ content: `id: ${packId} 没有相关组件`, key: packId });
 				this.packLoadedMap.delete(packId);
 				return;
 			}
@@ -492,7 +492,7 @@ export default class Canvas {
 		layerIds.forEach((id, index) => {
 			const layer = this.layers.find((v) => v.id === id);
 			if (layer) {
-				layer.style = _.merge(layer.style, isArr ? style[index] : style);
+				layer.style =merge(layer.style, isArr ? style[index] : style);
 			}
 		});
 		this.refreshLayer(layerIds);
@@ -728,25 +728,25 @@ export default class Canvas {
 		}
 	}
 
-	updateProps(layer:LayerInfo, props:Record<string, any>){
+	updateProps(layer: LayerInfo, props: Record<string, any>) {
 		this.addUndoData();
 		layer.props = { ...layer.props, ...props };
 		this.refreshLayer([layer.id]);
 	}
 
-	updateStyle(layer:LayerInfo, styles:Record<string, any>){
+	updateStyle(layer: LayerInfo, styles: Record<string, any>) {
 		this.addUndoData();
 		layer.style = { ...layer.style, ...styles };
 		this.refreshLayer([layer.id]);
 	}
 
-	updateEventHandler(layer:LayerInfo, event:LayerEvent){
+	updateEventHandler(layer: LayerInfo, event: LayerEvent) {
 		// this.addUndoData();
 		layer.eventHandler = { ...layer.eventHandler, ...event };
 		this.refreshLayer([layer.id]);
 	}
 
-	eventLock(layer:LayerInfo, isLock:boolean){
+	eventLock(layer: LayerInfo, isLock: boolean) {
 		this.addUndoData();
 		layer.eventLock = isLock;
 		this.refreshLayer([layer.id]);

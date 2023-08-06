@@ -6,7 +6,7 @@ import PageSetting from "./PageSetting";
 import PropsSetting from "./PropsSetting";
 import StyleSetting from "./StyleSetting";
 import { useCanvasStore } from "../../hook";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Tooltip } from "antd";
 import classNames from "classnames";
 import IconFont from "@/components/IconFont";

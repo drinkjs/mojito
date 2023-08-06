@@ -68,6 +68,7 @@ const  evnetReducer = (state: ReducerState, action: ReducerAction)=> {
 }
 
 export default function EventSetting() {
+	const [building, setBuilding] = useState(false)
 	const { canvasStore } = useCanvasStore();
 	const [events, setEvents] = useState<EventOptions[]>([]);
 	const [eventState, dispatch] = useReducer<
@@ -151,11 +152,12 @@ export default function EventSetting() {
 	 * 编译代码
 	 * @returns
 	 */
-	const build = () => {
+	const build = async () => {
 		if (callbackCode && callbackCode.sourceCode) {
+			setBuilding(true);
 			try {
 				// 编译代码
-				const { code } = compileCode(
+				const { code } = await compileCode(
 					callbackCode.sourceCode.replace(/[\n\r]+/g, "")
 				);
 				const runRel = code ? runCode(code) : null;
@@ -171,6 +173,8 @@ export default function EventSetting() {
 			} catch (e) {
 				console.error(e);
 				message.error("编译失败");
+			}finally{
+				setBuilding(false)
 			}
 		} else {
 			dispatch({
@@ -224,6 +228,7 @@ export default function EventSetting() {
 							type="primary"
 							disabled={!callbackCode?.sourceCode}
 							onClick={build}
+							loading={building}
 						>
 							编译
 						</Button>

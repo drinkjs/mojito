@@ -1,4 +1,4 @@
-import {get, post, upload} from '../common/request';
+import {get, post} from '../common/request';
 
 /**
  * 新增页面

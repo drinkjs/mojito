@@ -1,4 +1,4 @@
-import { Table, Button, Space, Modal, Form, Input, message } from "antd";
+import { Table, Button, Space, Modal, message } from "antd";
 import { useState, useMemo } from "react";
 import {
 	PlusOutlined,
@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 // import IconFont from "@/components/IconFont";
 import { useGlobalStore } from "@/store";
-import { getTreeAllParent, getTreeItem } from "@mojito/common/util";
+// import { getTreeAllParent } from "@mojito/common/util";
 import styles from "./index.module.css";
 import AddType from "./AddType";
 import AddIconFont from "./AddIconFont";
@@ -24,9 +24,8 @@ export default function ComponentTypeList({
 	IconFont: any
 }) {
 	const { componentStore } = useGlobalStore();
-	const [form] = Form.useForm();
 	const [value, setValue] = useState<ComponentTypeTree>();
-	const [parentValue, setParentValue] = useState<string[]>();
+	// const [parentValue, setParentValue] = useState<string[]>();
 	const [showAdd, setShowAdd] = useState(false);
 	const [showAddIconFont, setShowAddIconFont] = useState(false);
 	const [modal, contextHolder] = Modal.useModal();
@@ -83,7 +82,7 @@ export default function ComponentTypeList({
 		setShowAdd(false);
 		setShowAddIconFont(false);
 		setValue(undefined);
-		setParentValue(undefined);
+		// setParentValue(undefined);
 	};
 
 	const onRemove = (recond: ComponentTypeTree) => {
@@ -103,12 +102,12 @@ export default function ComponentTypeList({
 	const onEdit = (recond: ComponentTypeTree) => {
 		setValue(recond);
 		setShowAdd(true);
-		const pv = getTreeAllParent(componentStore.typeTree, recond.id, true);
-		if (pv.length > 0) {
-			setParentValue(pv.map((v) => v.id));
-		} else {
-			setParentValue(undefined);
-		}
+		// const pv = getTreeAllParent(componentStore.typeTree, recond.id, true);
+		// if (pv.length > 0) {
+		// 	setParentValue(pv.map((v) => v.id));
+		// } else {
+		// 	setParentValue(undefined);
+		// }
 	};
 
 	// const filterOpts = () => {

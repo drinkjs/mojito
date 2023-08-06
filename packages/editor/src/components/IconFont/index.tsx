@@ -38,7 +38,7 @@ export const IconLink = ({
         })}
         style={{ ...style, cursor: 'pointer' }}
         type={icon}
-        onClick={(e) => {
+        onClick={() => {
           if (!disabled && onClick) {
             onClick();
           }

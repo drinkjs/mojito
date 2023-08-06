@@ -1,5 +1,5 @@
 import Editor, { loader, Monaco } from "@monaco-editor/react";
-import _ from "lodash-es";
+import {isEqual, } from "lodash-es";
 import { useDebounceFn, useUpdateEffect } from "ahooks";
 import { useCallback, useRef, useState } from "react";
 
@@ -37,7 +37,7 @@ export default function CodeEditor({
 				setCode((oldValue) =>{
 					if(!oldValue){
 						return value;
-					}else if(!_.isEqual(JSON.parse(value), JSON.parse(oldValue))){
+					}else if(!isEqual(JSON.parse(value), JSON.parse(oldValue))){
 						return value;
 					}
 					return oldValue;

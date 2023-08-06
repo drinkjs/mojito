@@ -16,7 +16,7 @@ interface Props {
 }
 
 const ComponentListItem = memo(({ value, scriptUrl, external, packId, packName, packVersion }: Props)=>{
-  const [{ opacity }, dragRef] = useDrag(
+  const [, dragRef] = useDrag(
     () => ({
       type: 'ADD_COMPONENT',
       item: { exportName: value.exportName, name:value.name, scriptUrl, external, packId, packName, packVersion  },

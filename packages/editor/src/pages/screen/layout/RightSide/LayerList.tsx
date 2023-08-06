@@ -2,7 +2,7 @@ import IconFont from "@/components/IconFont";
 import { Modal, Typography } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
-import { DndProvider, DropTargetMonitor, useDrag, useDrop } from "react-dnd";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useCanvasStore } from "../../hook";
 import styles from "./index.module.css";

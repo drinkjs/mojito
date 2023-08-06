@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import * as babel from "@babel/standalone";
+// import { transform } from "@babel/standalone";
 
 export function dateFormat(date: string | Date, format?: string) {
 	if (!format) {
@@ -20,7 +20,8 @@ export function smallId() {
 	return Date.now().toString(36);
 }
 
-export function compileCode(input: string) {
+export async function compileCode(input: string) {
+	const babel = await import("@babel/standalone")
 	const result = babel.transform(input, {
 		presets: [
 			"env",
@@ -30,11 +31,12 @@ export function compileCode(input: string) {
 	return result;
 }
 
-export function runCode(code:string){
-  try{
-    const exports = {}; 
-    return eval(code);
-  }catch(e){
-    console.error(e)
-  }
+export function runCode(code: string) {
+	try {
+		const exports = {};
+		console.log(exports)
+		return eval(code);
+	} catch (e) {
+		console.error(e)
+	}
 }

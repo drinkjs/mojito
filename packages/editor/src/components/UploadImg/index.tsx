@@ -37,7 +37,7 @@ const UploadImg = (props: Props) => {
   }, [value]);
 
   const beforeUpload = 
-(file: RcFile, FileList: RcFile[]) => {
+(file: RcFile) => {
       if (
         file.type === 'image/png' ||
         file.type === 'image/jpg' ||

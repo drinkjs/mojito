@@ -49,7 +49,7 @@ export default function ProjectList({onSelect}: ProjectListProps){
   /**
      * 新增项目
      */
-   const handleOk = (e: any) => {
+   const handleOk = () => {
       if (!projectName) {
         message.warning("请输入项目名称");
         return;

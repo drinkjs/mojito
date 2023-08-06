@@ -1,4 +1,4 @@
-import { InputNumber, Slider, Row, Col, Space } from "antd";
+import { InputNumber, Slider } from "antd";
 
 export default function StyleSlider(props: {
 	value?: number;

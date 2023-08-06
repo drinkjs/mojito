@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import IconFont from "@/components/IconFont";
 import { useGlobalStore } from "@/store";
-import { Popover, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { Reducer, useEffect, useMemo, useReducer, useState } from "react";
 import ComponentTypeList from "./ComponentTypeList";
 import { ComponentList } from "./ComponentList";
@@ -20,7 +20,7 @@ type ReducerAction =
 	| { type: "showComponent"; payload: boolean }
 	| { type: "showCategory"; payload: boolean };
 
-const listReducer = (sate: ReducerState, action: ReducerAction) => {
+const listReducer = (_: ReducerState, action: ReducerAction) => {
 	const { type, payload } = action;
 	switch (type) {
 		case "showLibs":
