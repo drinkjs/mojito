@@ -1,6 +1,4 @@
-import { useUpdateEffect } from "ahooks";
 import { Col, InputNumber, Row, Select } from "antd";
-import { useState } from "react";
 import { ColorSetting } from "./ColorSetting";
 import ItemLabel from "./ItemLabel";
 
@@ -82,18 +80,6 @@ export const FontSetting = (props: {
 	labelStyle?: React.CSSProperties;
 }) => {
 	const { onChange, labelStyle, value } = props;
-	const [font, setFont] = useState<Font | undefined>(value);
-
-	useUpdateEffect(() => {
-		if (value !== font) {
-			setFont(value);
-		}
-	}, [value]);
-
-	useUpdateEffect(() => {
-		onChange(font);
-	}, [font]);
-
 	return (
 		<>
 			<h4
@@ -107,7 +93,7 @@ export const FontSetting = (props: {
 				<ColorSetting
 					value={value ? value.color : undefined}
 					onChange={(color?: string) => {
-						setFont({ ...font, color });
+						onChange({...value, color})
 					}}
 				/>
 			</h4>
@@ -117,8 +103,8 @@ export const FontSetting = (props: {
 					<Select
 						style={{ width: "100%", marginTop: "6px" }}
 						value={value ? value.fontFamily : undefined}
-						onChange={(val) => {
-							setFont({ ...font, fontFamily: val });
+						onChange={(fontFamily) => {
+							onChange({...value, fontFamily});
 						}}
 						allowClear
 					>
@@ -134,7 +120,7 @@ export const FontSetting = (props: {
 						value={value && value.fontSize ? value.fontSize : 14}
 						style={{ width: "100%", marginTop: "6px" }}
 						onChange={(val) => {
-							setFont({ ...font, fontSize: val ?? undefined });
+							onChange({...value, fontSize: val ?? undefined});
 						}}
 					/>
 				</Col>
@@ -143,8 +129,8 @@ export const FontSetting = (props: {
 					<Select
 						style={{ width: "100%", marginTop: "6px" }}
 						value={value ? value.fontWeight : undefined}
-						onChange={(val) => {
-							setFont({ ...font, fontWeight: val });
+						onChange={(fontWeight) => {
+							onChange({...value, fontWeight});
 						}}
 						allowClear
 					>
@@ -164,8 +150,8 @@ export const FontSetting = (props: {
 					<Select
 						style={{ width: "100%", marginTop: "6px" }}
 						value={value ? value.textAlign : undefined}
-						onChange={(val) => {
-							setFont({ ...font, textAlign: val });
+						onChange={(textAlign) => {
+							onChange({...value, textAlign});
 						}}
 					>
 						<Option value="left">left</Option>

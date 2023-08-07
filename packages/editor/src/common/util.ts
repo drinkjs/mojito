@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-// import { transform } from "@babel/standalone";
+import { minify } from "terser";
 
 export function dateFormat(date: string | Date, format?: string) {
 	if (!format) {
@@ -20,9 +20,13 @@ export function smallId() {
 	return Date.now().toString(36);
 }
 
+let babel: any
 export async function compileCode(input: string) {
-	const babel = await import("@babel/standalone")
-	const result = babel.transform(input, {
+	if (!babel) {
+		babel = await import("@babel/standalone")
+	}
+	const min = await minify(input);
+	const result = babel.transform(min.code, {
 		presets: [
 			"env",
 		],

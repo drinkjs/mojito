@@ -16,8 +16,8 @@ export function ColorSetting(props: {
       <Space.Compact block>
         <ColorPicker
           size="small"
-          value={value || defaultColor || "#000"}
-          onChangeComplete={(color)=>{
+          value={value || defaultColor || "#000000"}
+          onChange={(color)=>{
             onChange(color.toHexString())
           }}
         />

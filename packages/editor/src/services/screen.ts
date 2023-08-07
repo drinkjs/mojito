@@ -48,6 +48,8 @@ export const deleteScreen = (id: string) => get('/screen/delete', { id });
  */
 export const getScreenDetail = (id: string) => get<{screenInfo: ScreenDetail, packInfo?:ComponentPackInfo[]}>('/screen/editor/detail', { id });
 
+export const getViewerScreenDetail = (id: string) => get<{screenInfo: ScreenDetail, packInfo?:ComponentPackInfo[]}>('/screen/viewer/detail', { id });
+
 /**
  * 更新封面
  * @param {*} params

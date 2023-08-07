@@ -5,6 +5,7 @@ import Root from "./Root";
 
 const Project = lazy(() => import("../pages/project"));
 const Screen = lazy(() => import("../pages/screen"));
+const Preview = lazy(() => import("../pages/screen/Preview"));
 
 export const router = createBrowserRouter([
 	{
@@ -17,8 +18,12 @@ export const router = createBrowserRouter([
 				element: <Project />,
 			},
 			{
-				path: "screen/:id",
+				path: "editor/:id",
 				element: <Screen />,
+			},
+			{
+				path: "preview/:id",
+				element: <Preview />,
 			},
 		],
 	},

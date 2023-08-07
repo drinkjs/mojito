@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback } from "react";
 import styles from "../styles/screenList.module.css";
 import UploadImg from "@/components/UploadImg";
 import Image from "@/components/Image";
-import noData from "@/assets/noData.png";
+import noData from "@/assets/noData.webp";
 import { useNavigate } from "react-router-dom";
 import { dateFormat } from "@/common/util";
 
@@ -32,7 +32,7 @@ export default function ScreenList({ project }: ScreenListProps) {
 		if (project?.id) {
 			screenStore.getList(project.id);
 		} else {
-			screenStore.list = [];
+			// screenStore.list = [];
 		}
 	}, [project?.id, screenStore]);
 
@@ -124,8 +124,8 @@ export default function ScreenList({ project }: ScreenListProps) {
 	/**
 	 * 跳转到布局页面
 	 */
-	const gotoLayout = (data: ScreenInfo) => {
-			nav(`/screen/${data.id}`);
+	const gotoEditor = (data: ScreenInfo) => {
+			nav(`/editor/${data.id}`);
 	};
 
 	/**
@@ -179,7 +179,7 @@ export default function ScreenList({ project }: ScreenListProps) {
 						}}
 						description={
 							<span style={{ fontSize: "18px" }}>
-								{project ? "暂没页面信息" : "请选择项目"}
+								{project ? "暂没页面信息" : "暂无数据"}
 							</span>
 						}
 					>
@@ -211,7 +211,7 @@ export default function ScreenList({ project }: ScreenListProps) {
 													title="预览"
 													rel="noreferrer"
 													target="_blank"
-													href={`/view/${v.id}`}
+													href={`/preview/${v.id}`}
 													onClick={(e) => {
 														e.stopPropagation();
 													}}
@@ -239,7 +239,7 @@ export default function ScreenList({ project }: ScreenListProps) {
 											<div
 												className={styles.itemPre}
 												onClick={() => {
-													gotoLayout(v);
+													gotoEditor(v);
 												}}
 											>
 												{uploading !== v.id ? (
@@ -262,7 +262,7 @@ export default function ScreenList({ project }: ScreenListProps) {
 													{v.name}
 												</div>
 												<div style={{ fontSize: "12px", color: "#92abcf" }}>
-													{dateFormat(v.updateAt)}
+													最近更新时间：{dateFormat(v.updateAt)}
 												</div>
 											</div>
 										</div>

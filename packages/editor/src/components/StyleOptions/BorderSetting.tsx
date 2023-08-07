@@ -1,6 +1,4 @@
-import { useUpdateEffect } from "ahooks";
 import { Col, InputNumber, Row, Select } from "antd";
-import { useState } from "react";
 import { ColorSetting } from "./ColorSetting";
 import ItemLabel from "./ItemLabel";
 
@@ -19,17 +17,6 @@ export const BorderSetting = (props: {
 	onChange: (value?: Border) => void;
 }) => {
 	const { onChange, value } = props;
-	const [border, setBorder] = useState<Border | undefined>(value);
-
-	useUpdateEffect(()=>{
-		if(value !== border){
-			setBorder(value);
-		}
-	}, [value])
-
-	useUpdateEffect(() => {
-		onChange(border);
-	}, [border]);
 
 	return (
 		<>
@@ -44,7 +31,7 @@ export const BorderSetting = (props: {
 				<ColorSetting
 					value={value ? value.borderColor : undefined}
 					onChange={(borderColor?: string) => {
-						setBorder({ ...border, borderColor });
+						onChange({ ...value, borderColor });
 					}}
 				/>
 			</h4>
@@ -56,7 +43,7 @@ export const BorderSetting = (props: {
 						style={{ width: "100%", marginTop: "6px" }}
 						value={value ? value.borderStyle : undefined}
 						onChange={(val) => {
-							setBorder({ ...border, borderStyle: val });
+							onChange({ ...value, borderStyle: val });
 						}}
 					>
 						<Option value="none">none</Option>
@@ -77,7 +64,7 @@ export const BorderSetting = (props: {
 						value={value ? value.borderWidth : undefined}
 						style={{ width: "100%", marginTop: "6px" }}
 						onChange={(val) => {
-							setBorder({ ...border, borderWidth: val ?? undefined });
+							onChange({ ...value, borderWidth: val ?? undefined });
 						}}
 					/>
 				</Col>
@@ -87,7 +74,7 @@ export const BorderSetting = (props: {
 						style={{ width: "100%", marginTop: "6px" }}
 						value={value ? value.borderPosition : undefined}
 						onChange={(val) => {
-							setBorder({ ...border, borderPosition: val });
+							onChange({ ...value, borderPosition: val });
 						}}
 						allowClear
 						mode="multiple"
@@ -105,7 +92,7 @@ export const BorderSetting = (props: {
 						value={value ? value.borderRadius : undefined}
 						style={{ width: "100%", marginTop: "6px" }}
 						onChange={(val) => {
-							setBorder({ ...border, borderRadius: val ?? undefined });
+							onChange({ ...value, borderRadius: val ?? undefined });
 						}}
 					/>
 				</Col>

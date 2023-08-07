@@ -17,27 +17,29 @@ const toolStyles = {
 export default function Header() {
 	const [saveing, setSaveing] = useState(false);
 
-	const { canvasStore } = useCanvasStore();
+	const { id, canvasStore } = useCanvasStore();
 	const { scale, screenInfo } = canvasStore;
 
 	const isNoSelect = canvasStore.selectedLayers.size === 0;
 
 	const saveScreen = () => {
 		setSaveing(true);
-		canvasStore.saveScreen().then(() => {
-			message.success("保存成功")
-		}).finally(() => {
-			setSaveing(false);
-		})
-
+		canvasStore
+			.saveScreen()
+			.then(() => {
+				message.success("保存成功");
+			})
+			.finally(() => {
+				setSaveing(false);
+			});
 	};
 
 	const undo = () => {
-		canvasStore.undo()
+		canvasStore.undo();
 	};
 
 	const redo = () => {
-		canvasStore.redo()
+		canvasStore.redo();
 	};
 
 	const groupLayer = () => {
@@ -53,9 +55,12 @@ export default function Header() {
 			isAllGroup: canvasStore.isAllGroup,
 			isAllHide: canvasStore.isAllHide,
 			isAllLock: canvasStore.isAllLock,
-			currLayer: canvasStore.selectedLayers.size === 1 ? Array.from(canvasStore.selectedLayers)[0] : undefined
-		}
-	}, [canvasStore, canvasStore.selectedLayers])
+			currLayer:
+				canvasStore.selectedLayers.size === 1
+					? Array.from(canvasStore.selectedLayers)[0]
+					: undefined,
+		};
+	}, [canvasStore, canvasStore.selectedLayers]);
 
 	return (
 		<header className={styles.header}>
@@ -97,17 +102,21 @@ export default function Header() {
 				</div>
 			</section>
 			<section className={styles.toolBox}>
-				{currLayer && <Tooltip title="锁定后图层内组件将不会响应事件"><span style={{ ...toolStyles, fontSize: "12px" }}>
-					事件锁定
-					<Switch
-						size="small"
-						style={toolStyles}
-						checked={currLayer.eventLock}
-						onChange={(checked) => {
-							canvasStore.eventLock(currLayer, checked);
-						}}
-					/>
-				</span></Tooltip>}
+				{currLayer && (
+					<Tooltip title="锁定后图层内组件将不会响应事件">
+						<span style={{ ...toolStyles, fontSize: "12px" }}>
+							事件锁定
+							<Switch
+								size="small"
+								style={toolStyles}
+								checked={currLayer.eventLock}
+								onChange={(checked) => {
+									canvasStore.eventLock(currLayer, checked);
+								}}
+							/>
+						</span>
+					</Tooltip>
+				)}
 
 				{saveing ? (
 					<LoadingOutlined style={toolStyles} />
@@ -189,9 +198,7 @@ export default function Header() {
 					className={isAllLock ? undefined : styles.noLockHide}
 					style={toolStyles}
 					disabled={canvasStore.selectedLayers.size === 0}
-					title={
-						isAllLock ? "解锁组件(Ctrl+L)" : "锁定组件(Ctrl+L)"
-					}
+					title={isAllLock ? "解锁组件(Ctrl+L)" : "锁定组件(Ctrl+L)"}
 					onClick={() => {
 						canvasStore.lockLayer(!isAllLock);
 					}}
@@ -204,26 +211,20 @@ export default function Header() {
 					onClick={() => {
 						canvasStore.hideLayer(!isAllHide);
 					}}
-					title={
-						isAllHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"
-					}
+					title={isAllHide ? "显示组件(Ctrl+H)" : "隐藏组件(Ctrl+H)"}
 				/>
 				<IconLink
 					title="群组(Ctrl+G)"
 					icon="icon-hebing"
 					onClick={groupLayer}
-					disabled={
-						isAllGroup || canvasStore.selectedLayers.size < 2
-					}
+					disabled={isAllGroup || canvasStore.selectedLayers.size < 2}
 					style={toolStyles}
 				/>
 				<IconLink
 					title="解散(Ctrl+B)"
 					icon="icon-shoudongfenli"
 					onClick={disbandLayer}
-					disabled={
-						!isAllGroup || canvasStore.selectedLayers.size < 2
-					}
+					disabled={!isAllGroup || canvasStore.selectedLayers.size < 2}
 					style={toolStyles}
 				/>
 				<IconLink
@@ -240,7 +241,9 @@ export default function Header() {
 					disabled={canvasStore.redoData.length === 0}
 					style={toolStyles}
 				/>
-				<IconLink title="预览" icon="icon-chakan" style={toolStyles} />
+				<a rel="noreferrer" target="_blank" href={`/preview/${id}`}>
+					<IconLink title="预览" icon="icon-chakan" style={toolStyles} />
+				</a>
 			</section>
 		</header>
 	);

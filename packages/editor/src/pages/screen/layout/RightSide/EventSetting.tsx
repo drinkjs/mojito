@@ -236,7 +236,6 @@ export default function EventSetting() {
 				</div>
 				<div style={{ flexGrow: 1, paddingTop: "0.5em" }}>
 					<CodeEditor
-						// key={`${eventState.currLayer?.id}@${eventState.selectedEvent?.value}`}
 						readOnly={!selectedEvent}
 						language="javascript"
 						value={callbackCode?.sourceCode}

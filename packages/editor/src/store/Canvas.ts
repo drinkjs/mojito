@@ -142,9 +142,9 @@ export default class Canvas {
 	 * 页面布局详情
 	 * @param id
 	 */
-	async getDetail(id: string) {
+	async getDetail(id: string, isViewer?:boolean) {
 		this.getDetailLoading = true;
-		const data = await service.getScreenDetail(id);
+		const data = isViewer ? await service.getViewerScreenDetail(id) : await service.getScreenDetail(id);
 		if (data) {
 			this.screenInfo = data.screenInfo;
 			this.layers = this.screenInfo.layers || [];

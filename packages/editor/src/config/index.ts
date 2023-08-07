@@ -3,6 +3,9 @@ export const DefaultLayerSize = {
 	height: 200,
 };
 
+export const DefaulBackgroundColor = "#FFF";
+export const DefaultFontColor = "#000";
+
 export const DefaultPageSize = { width: 1920, height: 1080 };
 
 export const MojitoLayerEvent = {
@@ -25,4 +28,10 @@ export const MojitoLayerEventInfo = [
 		eventName: MojitoLayerEvent.onMessage,
 		name:"接收消息"
 	},
-]
+];
+
+export enum PageMode {
+	viewer = "viewer",
+	editor = "editor"
+}
+

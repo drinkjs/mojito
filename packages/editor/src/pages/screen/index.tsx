@@ -32,16 +32,13 @@ export default function Screen() {
 	);
 
 	useMount(() => {
-		document.title = "";
 		document.addEventListener("__MojitoStyleLoader__", onStyleLoader);
-		canvasStore.getDetail(id).then((data) => {
+		canvasStore.getDetail(id).then(() => {
 			syncHelper.join(id);
-			document.title = data?.screenInfo.name || "";
 		});
 	});
 
 	useUnmount(() => {
-		document.title = "";
 		destroyStore();
 		syncHelper.leave();
 		document.removeEventListener("__MojitoStyleLoader__", onStyleLoader);
@@ -71,7 +68,7 @@ export default function Screen() {
 								alignItems: "center",
 							}}
 						>
-							<Spin tip="Loading..." />
+							<Spin />
 						</div>
 					) : (
 						<Playground />

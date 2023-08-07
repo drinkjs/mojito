@@ -117,9 +117,9 @@ export default function Render({
 					loadComponent();
 				}
 			},
-			updateProps: (data) => {
+			updateProps: (props) => {
 				if (componentRef.current) {
-					componentRef.current.setProps(data);
+					componentRef.current.setProps(props);
 				}
 			},
 		}),
@@ -159,7 +159,7 @@ export default function Render({
 			<div className={styles.render}>
 				<div
 					ref={rootRef}
-					style={style}
+					style={{...style, background:"none"}}
 				></div>
 				{loading && (
 					<div className={styles.loading}>

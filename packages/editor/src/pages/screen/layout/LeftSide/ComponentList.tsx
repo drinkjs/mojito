@@ -92,8 +92,6 @@ export function ComponentList({
 		[typeComponentPacks]
 	);
 
-	console.log(components)
-
 	const categorys = components ? Object.keys(components) : undefined
 
 	return (

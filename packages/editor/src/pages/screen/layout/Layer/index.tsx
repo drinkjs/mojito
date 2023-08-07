@@ -24,8 +24,8 @@ export type LayerAction = {
 
 interface LayerProps extends React.HTMLAttributes<Element> {
 	data: LayerInfo;
-	defaultWidth: number;
-	defaultHeight: number;
+	defaultWidth?: number;
+	defaultHeight?: number;
 	enable?: boolean;
 	hide?: boolean;
 	onSelected?: (
@@ -69,11 +69,15 @@ const Layer: React.FC<LayerProps> = ({
 	});
 
 	useUpdateEffect(() => {
-		if (canvasStore.reloadLayerIds.includes(data.id) && renderRef.current) {
+		if (
+			canvasStore.reloadLayerIds.includes(data.id) &&
+			renderRef.current &&
+			enable
+		) {
 			// 强制重新加载组件
 			renderRef.current.reload();
 		}
-	}, [data.id, canvasStore.reloadLayerIds]);
+	}, [data.id, canvasStore.reloadLayerIds, enable]);
 
 	/**
 	 * onMessage消息处理
@@ -135,7 +139,6 @@ const Layer: React.FC<LayerProps> = ({
 		if (onRef) {
 			onRef(data.id, actionRef);
 		}
-		console.log("layer data", data);
 	}, [data, onRef, actionRef]);
 
 	/**
@@ -143,22 +146,11 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const callUpdateProps = useCallback(
 		(props: Record<string, any>) => {
-			data.props = merge(data.props, props);
+			data.props = { ...data.props, ...props };
 			canvasStore.refreshLayer([data.id]);
 		},
 		[data, canvasStore]
 	);
-
-	/**
-	 * 合并props
-	 */
-	const componentProps = useMemo(() => {
-		return merge(data.props, {
-			__style: data.style,
-			__display: enable ? "editor" : "viewer",
-			__updateProps: callUpdateProps,
-		});
-	}, [data, enable, callUpdateProps]);
 
 	/**
 	 * 选中组件
@@ -342,14 +334,26 @@ const Layer: React.FC<LayerProps> = ({
 		};
 	}, [hide, enable, data]);
 
+	/**
+	 * 合并props
+	 */
+	const componentProps = useMemo(() => {
+		return {
+			...data.props,
+			__style: layerStyle,
+			__display: enable ? "editor" : "viewer",
+			__updateProps: callUpdateProps,
+		};
+	}, [data, enable, callUpdateProps, layerStyle]);
+
 	return (
 		<div
 			{...restProps}
 			className={styles.layer}
 			ref={targetRef}
 			style={layerStyle}
-			onMouseDown={selectHandler}
-			onMouseOut={clearMouseEvent}
+			onMouseDown={enable ? selectHandler : undefined}
+			onMouseOut={enable ? clearMouseEvent : undefined}
 			id={data.id}
 		>
 			<Render

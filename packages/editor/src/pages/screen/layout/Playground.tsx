@@ -1,21 +1,13 @@
-import {
-	useKeyPress,
-	useMount,
-	useUnmount,
-} from "ahooks";
+import { useKeyPress, useMount, useUnmount } from "ahooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
 import { useCanvasStore } from "../hook";
 import styles from "../styles/playground.module.css";
-import Layer, { LayerAction } from "./Layer";
-import Changer, { ChangerAction } from "./Changer";
+import { ChangerAction } from "./Changer";
 import { message, Modal } from "antd";
 import { smallId } from "@/common/util";
-import { SyncData, syncHelper } from "@/common/syncHelper";
-import { MojitoEvent } from "@/common/eventer";
-
-const DefaulBackgroundColor = "#FFF";
-const DefaultFontColor = "#000";
+import { DefaultLayerSize, PageMode } from "@/config";
+import Viewer from "./Viewer";
 
 // 快捷键
 const MoveKeys = ["UpArrow", "DownArrow", "LeftArrow", "RightArrow"];
@@ -37,25 +29,9 @@ export default function Playground() {
 	const areaRef = useRef<HTMLDivElement | null>(null);
 	const zoomRef = useRef<HTMLDivElement | null>(null);
 	const changerRef = useRef<ChangerAction>();
-	const [defaultLayerSize, setDefaultLayerSize] = useState({
-		width: 300,
-		height: 200,
-	});
-	const layerActionRefs = useRef<Map<string, LayerAction>>(new Map).current
-	const { scale, screenInfo, layers } = canvasStore;
+	const [defaultLayerSize, setDefaultLayerSize] = useState(DefaultLayerSize);
+	const { scale, screenInfo } = canvasStore;
 	const pageLayout = screenInfo ? screenInfo.style : undefined;
-
-	/**
-	 * 组件事件同步回调
-	 */
-	const syncCallback = useCallback((event: MojitoEvent<SyncData>) => {
-		if(event.data){
-			const { to, data } = event.data;
-			to.forEach((key) => {
-				layerActionRefs.get(key)?.eventSync(data);
-			});
-		}
-	}, [layerActionRefs]);
 
 	/**
 	 * 页面构建完成
@@ -66,15 +42,12 @@ export default function Playground() {
 		canvasStore.zoomElement = zoomRef.current;
 		canvasStore.zoomAuto();
 		dropTarget(layoutRef);
-
-		syncHelper.on("sync", syncCallback);
 	});
 
 	/**
 	 * 退出编辑时保存数据
 	 */
 	useUnmount(() => {
-		syncHelper.off("sync", syncCallback);
 		canvasStore.saveScreen();
 	});
 
@@ -98,17 +71,25 @@ export default function Playground() {
 			accept: "ADD_COMPONENT",
 			drop: (
 				item: {
-					exportName: string,
-					name: string,
-					scriptUrl: string,
-					external: any,
-					packId: string,
-					packName:string,
-					packVersion:string
+					exportName: string;
+					name: string;
+					scriptUrl: string;
+					external: any;
+					packId: string;
+					packName: string;
+					packVersion: string;
 				},
 				monitor
 			) => {
-				const { name, scriptUrl, external, packId, packName, packVersion, exportName } = item;
+				const {
+					name,
+					scriptUrl,
+					external,
+					packId,
+					packName,
+					packVersion,
+					exportName,
+				} = item;
 				let x = 0;
 				let y = 0;
 
@@ -156,7 +137,12 @@ export default function Playground() {
 						},
 					};
 
-					canvasStore.addLayer(newLayer, {scriptUrl, external, name: packName, version: packVersion});
+					canvasStore.addLayer(newLayer, {
+						scriptUrl,
+						external,
+						name: packName,
+						version: packVersion,
+					});
 				}
 			},
 			collect: (monitor) => ({
@@ -173,7 +159,12 @@ export default function Playground() {
 	useKeyPress(
 		MoveKeys,
 		(event) => {
-			if (canvasStore.selectedLayers.size === 0 || !changerRef.current || document.activeElement !== document.body) return;
+			if (
+				canvasStore.selectedLayers.size === 0 ||
+				!changerRef.current ||
+				document.activeElement !== document.body
+			)
+				return;
 			event.preventDefault();
 			let valueX = 0;
 			let valueY = 0;
@@ -202,8 +193,12 @@ export default function Playground() {
 	useKeyPress(
 		SelectLayerActionKeys,
 		(event) => {
-			if (canvasStore.selectedLayers.size === 0 || document.activeElement !== document.body) return;
-			
+			if (
+				canvasStore.selectedLayers.size === 0 ||
+				document.activeElement !== document.body
+			)
+				return;
+
 			event.preventDefault();
 			switch (event.key) {
 				case "Escape":
@@ -247,7 +242,8 @@ export default function Playground() {
 	useKeyPress(
 		CanvasActionKeys,
 		(event) => {
-			if(document.activeElement !== document.body) return;
+			if (document.activeElement !== document.body)
+				return;
 
 			event.preventDefault();
 			switch (event.key) {
@@ -299,10 +295,6 @@ export default function Playground() {
 		[canvasStore]
 	);
 
-	const onRef = useCallback((layerId:string, ref:LayerAction)=>{
-		layerActionRefs.set(layerId, ref);
-	}, [layerActionRefs])
-
 	return (
 		<div
 			className={styles.playground}
@@ -310,45 +302,7 @@ export default function Playground() {
 		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>
-					{pageLayout && (
-						<div
-							style={{
-								...pageLayout,
-								backgroundColor:
-									pageLayout.backgroundColor || DefaulBackgroundColor,
-								backgroundImage: pageLayout.backgroundImage
-									? `url(${pageLayout.backgroundImage})`
-									: "none",
-								color: pageLayout.color || DefaultFontColor,
-								backgroundSize:
-									pageLayout.backgroundRepeat === "no-repeat"
-										? "100% 100%"
-										: undefined,
-								backgroundRepeat: pageLayout.backgroundRepeat,
-								position: "relative",
-								boxShadow: "3px 3px 15px rgb(0 0 0 / 15%)",
-								zIndex: 1,
-							}}
-							ref={layoutRef}
-						>
-							{layers &&
-								layers.map((v) => {
-									if (!v || !v.component) return null;
-									return (
-										<Layer
-											enable
-											defaultWidth={defaultLayerSize.width}
-											defaultHeight={defaultLayerSize.height}
-											data={v}
-											key={v.id}
-											onSelected={onSelectLayer}
-											onRef={onRef}
-										/>
-									);
-								})}
-							<Changer changerActionRef={changerRef} />
-						</div>
-					)}
+					<Viewer mode={PageMode.editor} onSelect={onSelectLayer} layoutRef={layoutRef} changerActionRef={changerRef} />
 				</div>
 			</div>
 			{/* <ConnectedMenu /> */}

@@ -3,6 +3,7 @@ import zhCN from "antd/locale/zh_CN";
 import { ConfigProvider, theme } from "antd";
 import { Outlet } from "react-router-dom";
 import { Suspense } from "react";
+import PageLoading from "@/components/PageLoading";
 
 // export const dark = {
 // 	borderRadius: 4,
@@ -35,7 +36,7 @@ export default function Root() {
 				},
 			}}
 		>
-			<Suspense fallback={<p>loading...</p>}>
+			<Suspense fallback={<PageLoading />}>
 				<Outlet />
 			</Suspense>
 		</ConfigProvider>
