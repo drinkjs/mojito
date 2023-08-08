@@ -4,8 +4,6 @@
   border-radius: 4px;
   margin-bottom: 12px;
   background-size: 264px 137px;
-  padding-top: 20px;
-  padding-left: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: relative;
@@ -16,14 +14,13 @@
   border-radius: 4px;
   height: 40px;
   line-height: 40px;
-  color: #92abcf;
   font-size: var(--base-size-20);
   padding: 0 12px;
   margin: 12px 0;
 }
 
 .projectItem:hover{
-  border: 1px dashed #3b50ff;
+  border: 1px dashed var(--font-color);
 }
 
 .projectItem:hover .toolBar{
@@ -31,12 +28,18 @@
 }
 
 .projectName{
-  color: #eee;
-  font-size: var(--base-size-20);
+  font-size: 22px;
+  padding: 0 12px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .projectItemSelected {
-  border: 1px solid #3b50ff;
+  border: 1px solid var(--font-color);
 }
 
 .toolBar {

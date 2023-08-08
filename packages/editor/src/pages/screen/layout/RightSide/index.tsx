@@ -57,12 +57,12 @@ const Tabs: AttributeTab[] = [
 	//   icon: 'icon-donghua',
 	//   render: (key?: string) => <Anime key={key} />
 	// },
-	{
-		label: "群组设置",
-		key: "group",
-		icon: "icon-changyongtubiao_xiangmuzushezhi",
-		render: () => <GroupSetting />,
-	},
+	// {
+	// 	label: "群组设置",
+	// 	key: "group",
+	// 	icon: "icon-changyongtubiao_xiangmuzushezhi",
+	// 	render: () => <GroupSetting />,
+	// },
 ];
 
 const LayerTabs = ["style", "props", "event"];

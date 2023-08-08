@@ -1,5 +1,5 @@
-import { Request } from '@mojito/common/network';
-import { localCache } from '@mojito/common/util';
+import { Request } from '@/common/network';
+import { localCache } from '@/common/util';
 import { message } from 'antd';
 import { v4 as uuid } from "uuid"
 

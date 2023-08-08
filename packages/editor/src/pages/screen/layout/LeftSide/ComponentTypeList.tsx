@@ -7,9 +7,7 @@ import {
 	CloseOutlined,
 	SettingOutlined,
 } from "@ant-design/icons";
-// import IconFont from "@/components/IconFont";
 import { useGlobalStore } from "@/store";
-// import { getTreeAllParent } from "@mojito/common/util";
 import styles from "./index.module.css";
 import AddType from "./AddType";
 import AddIconFont from "./AddIconFont";

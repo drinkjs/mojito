@@ -18,7 +18,7 @@ type EditorCallback = (value?: any) => void;
 const EditorComponent: Record<string, (...args: any[]) => React.ReactNode> = {
 	string: (onChange: EditorCallback, defaultValue?: string) => (
 		<Input.TextArea
-			value={defaultValue}
+			defaultValue={defaultValue}
 			onChange={(e) => onChange(e.target.value)}
 		/>
 	),

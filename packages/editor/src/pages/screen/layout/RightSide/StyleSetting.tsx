@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useCanvasStore } from "../../hook";
 import styles from "./index.module.css";
 
-const sizeItems = [
+const SizeItems = [
 	{
 		label: "X",
 		key: "x",
@@ -26,6 +26,44 @@ const sizeItems = [
 	{
 		label: "高",
 		key: "height",
+	},
+];
+
+const PaddingItems = [
+	{
+		label: "上",
+		key: "paddingTop",
+	},
+	{
+		label: "右",
+		key: "paddingRight",
+	},
+	{
+		label: "左",
+		key: "paddingLeft",
+	},
+	{
+		label: "下",
+		key: "paddingBottom",
+	},
+];
+
+const MarginItems = [
+	{
+		label: "上",
+		key: "marginTop",
+	},
+	{
+		label: "右",
+		key: "marginRight",
+	},
+	{
+		label: "左",
+		key: "marginLeft",
+	},
+	{
+		label: "下",
+		key: "marginBottom",
 	},
 ];
 
@@ -57,7 +95,47 @@ export default function StyleSetting() {
 			<div className={styles.attrItem}>
 				<h4>位置与尺寸</h4>
 				<Row gutter={[0, 6]}>
-					{sizeItems.map((v) => {
+					{SizeItems.map((v) => {
+						return (
+							<Col span={12} key={v.key}>
+								<SizeSetting
+									key={v.key}
+									label={v.label}
+									onChange={(value?: any) => {
+										onStyleChange({ [v.key]: value ?? 0 });
+									}}
+									value={currStyle[v.key]}
+									labelStyle={{ width: "1em" }}
+								/>
+							</Col>
+						);
+					})}
+				</Row>
+			</div>
+			<div className={styles.attrItem}>
+				<h4>内边距</h4>
+				<Row gutter={[0, 6]}>
+					{PaddingItems.map((v) => {
+						return (
+							<Col span={12} key={v.key}>
+								<SizeSetting
+									key={v.key}
+									label={v.label}
+									onChange={(value?: any) => {
+										onStyleChange({ [v.key]: value ?? 0 });
+									}}
+									value={currStyle[v.key]}
+									labelStyle={{ width: "1em" }}
+								/>
+							</Col>
+						);
+					})}
+				</Row>
+			</div>
+			<div className={styles.attrItem}>
+				<h4>外边距</h4>
+				<Row gutter={[0, 6]}>
+					{MarginItems.map((v) => {
 						return (
 							<Col span={12} key={v.key}>
 								<SizeSetting

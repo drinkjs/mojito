@@ -117,7 +117,7 @@ export const FontSetting = (props: {
 				<Col span={12}>
 					<ItemLabel style={labelStyle}>大小</ItemLabel>
 					<InputNumber
-						value={value && value.fontSize ? value.fontSize : 14}
+						value={value && value.fontSize ? value.fontSize : undefined}
 						style={{ width: "100%", marginTop: "6px" }}
 						onChange={(val) => {
 							onChange({...value, fontSize: val ?? undefined});

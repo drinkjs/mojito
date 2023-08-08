@@ -8,7 +8,7 @@ import {
 import { RcFile } from 'antd/lib/upload';
 import { UploadListType } from 'antd/lib/upload/interface';
 import styles from './index.module.css';
-import { localCache } from '@mojito/common/util';
+import { localCache } from '@/common/util';
 
 interface Props {
   onChange?: (filePath: string | undefined) => void;

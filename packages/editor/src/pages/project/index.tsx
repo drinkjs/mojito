@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ProjectList from "./components/ProjectList";
-import ScreenList from "./components/ScreenList";
+import ProjectList from "./layout/ProjectList";
+import ScreenList from "./layout/ScreenList";
 import styles from "./styles/index.module.css";
 
 export default function Project() {

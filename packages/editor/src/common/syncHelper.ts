@@ -1,4 +1,4 @@
-import WebSocketClient from '@mojito/common/network/WebSocketClient';
+import { WebSocketClient } from './network';
 import eventer from "./eventer"
 
 const eventUrl = '/ws';
@@ -25,9 +25,9 @@ class SyncHelper {
 
   pathnameNum = 0;
 
-  reconnectCallback?: (...args: any)=>any;
+  reconnectCallback?: (...args: any) => any;
 
-  constructor () {
+  constructor() {
     if (!WebsocketEnable) return;
     this.websocket = new WebSocketClient(`ws://${window.location.host}${WsPrefix}`); // 需要配置websocket代理
     this.websocket.connect();
@@ -46,15 +46,15 @@ class SyncHelper {
     });
   }
 
-  on (event: string, callback: (data:any)=>any) {
+  on(event: string, callback: (data: any) => any) {
     syncEventer.on(event, callback)
   }
 
-  off (event: string, callback: (data:any)=>any) {
+  off(event: string, callback: (data: any) => any) {
     syncEventer.off(event, callback)
   }
 
-  send (event: string, data?: any) {
+  send(event: string, data?: any) {
     if (this.websocket) this.websocket.emit(`${eventUrl}/${event}`, data);
   }
 
@@ -62,11 +62,11 @@ class SyncHelper {
    * 向服务器发送join消息
    * @param {*} pageId
    */
-  join (pageId: string) {
+  join(pageId: string) {
     this.send('join', { pageId });
   }
 
-  leave () {
+  leave() {
     this.send('leave');
   }
 
@@ -74,7 +74,7 @@ class SyncHelper {
    * 同步组件状态
    * @param {SyncData} stateData
    */
-  sync (stateData: SyncData) {
+  sync(stateData: SyncData) {
     this.send('sync', stateData);
   }
 }

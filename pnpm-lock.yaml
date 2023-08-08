@@ -63,9 +63,6 @@ importers:
       '@babel/standalone':
         specifier: ^7.22.5
         version: 7.22.5
-      '@mojito/common':
-        specifier: workspace:^
-        version: link:../common
       '@monaco-editor/react':
         specifier: ^4.5.1
         version: 4.5.1
@@ -111,6 +108,9 @@ importers:
       transform-parser:
         specifier: ^1.0.1
         version: 1.0.1
+      umi-request:
+        specifier: ^1.4.0
+        version: 1.4.0
       uuid:
         specifier: ^9.0.0
         version: 9.0.0

@@ -14,6 +14,7 @@ import { runCode } from "@/common/util";
 import { syncHelper } from "@/common/syncHelper";
 import { Border } from "@/components/StyleOptions";
 import { MojitoLayerEvent } from "@/config";
+import { lookup } from "dns";
 
 const EventSyncCallFlag = Symbol.for("EventSyncCallFlag");
 
@@ -52,6 +53,7 @@ const Layer: React.FC<LayerProps> = ({
 	const eventHandlers = useRef<Record<string, (...args: any[]) => any>>({});
 	// 是否设置了onMessage事件
 	const [onMessageFlag, setOnMessageFlag] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 
 	useMount(() => {
@@ -156,16 +158,15 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const selectHandler = useCallback(
 		(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-			if (!enable) return;
+			if (!enable || loading) return;
 
 			e.stopPropagation();
-			e.preventDefault();
-			targetRef.current?.focus();
+			document.body.focus();
 			if (onSelected) {
 				onSelected(data, e);
 			}
 		},
-		[data, enable, onSelected]
+		[data, enable, onSelected, loading]
 	);
 
 	/**
@@ -180,6 +181,7 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const onMount = useCallback(
 		({ size, componentOptions }: ComponentMountEvent) => {
+			setLoading(false)
 			if (enable) {
 				// 编辑状态
 				if (componentOptions) {
@@ -352,7 +354,7 @@ const Layer: React.FC<LayerProps> = ({
 			ref={targetRef}
 			style={layerStyle}
 			onMouseDown={enable ? selectHandler : undefined}
-			onMouseOut={enable ? clearMouseEvent : undefined}
+			onMouseUp={enable ? clearMouseEvent : undefined}
 			id={data.id}
 		>
 			<Render

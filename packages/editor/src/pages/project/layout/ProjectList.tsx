@@ -141,7 +141,7 @@ export default function ProjectList({onSelect}: ProjectListProps){
               }}
             >
               <div className={styles.projectName}>{item.name}</div>
-              <div style={{ marginTop: '12px' }}>{item.createAt && dateFormat(item.createAt)}</div>
+              {/* <div style={{ marginTop: '12px' }}>{item.createAt && dateFormat(item.createAt)}</div> */}
               <div className={styles.toolBar}>
                 <a
                   onClick={(e) => {

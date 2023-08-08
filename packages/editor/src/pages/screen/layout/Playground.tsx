@@ -277,9 +277,9 @@ export default function Playground() {
 	/**
 	 * 取消所有选中
 	 */
-	// const clearAllSelected = useCallback(() => {
-	// 	if (!actioning) canvasStore.cancelSelect();
-	// }, [canvasStore, actioning]);
+	const clearAllSelected = useCallback(() => {
+		canvasStore.cancelSelect();
+	}, [canvasStore]);
 
 	/**
 	 * 选中图层
@@ -299,6 +299,7 @@ export default function Playground() {
 		<div
 			className={styles.playground}
 			// onMouseDown={clearAllSelected}
+			onMouseDown={clearAllSelected}
 		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>

@@ -83,6 +83,8 @@ export default function Screen() {
 				{canvasStore.getDetailLoading ? (
 					<div
 						style={{
+							width:"100%",
+							height:"100%",
 							flex: 1,
 							display: "flex",
 							justifyContent: "center",

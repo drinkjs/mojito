@@ -44,3 +44,24 @@ export function runCode(code: string) {
 		console.error(e)
 	}
 }
+
+export const localCache = {
+  get(key:string){
+    const cache = localStorage.getItem(key);
+    if(cache){
+      try{
+        return JSON.parse(cache);
+      }catch{
+        return cache;
+      }
+    }
+  },
+
+  set(key:string, value:any){
+    if(typeof value === "object"){
+      localStorage.setItem(key, JSON.stringify(value));
+    }else{
+      localStorage.setItem(key, value);
+    }
+  }
+}
