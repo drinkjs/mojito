@@ -103,7 +103,7 @@ export default function Playground() {
 
 				const z =
 					canvasStore.layers && canvasStore.layers.length
-						? canvasStore.layers[canvasStore.layers.length - 1].style.z + 1
+						? canvasStore.layers[0].style.z + 1
 						: 1;
 				// 计算图层落下的位置
 				x = Math.round(x - defaultLayerSize.width / 2);

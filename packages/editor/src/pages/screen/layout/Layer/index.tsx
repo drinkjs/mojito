@@ -5,7 +5,6 @@ import React, {
 	useCallback,
 	useMemo,
 } from "react";
-import { merge } from "lodash-es";
 import { useNavigate } from "react-router-dom";
 import Render, { ComponentMountEvent, RenderAction } from "./Render";
 import styles from "./index.module.css";

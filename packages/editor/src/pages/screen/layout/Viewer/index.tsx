@@ -1,7 +1,7 @@
 import { MojitoEvent } from "@/common/eventer";
 import { SyncData, syncHelper } from "@/common/syncHelper";
 import { DefaulBackgroundColor, DefaultFontColor, PageMode } from "@/config";
-import { useMount, useUnmount, useUpdateEffect } from "ahooks";
+import { useMount, useUnmount } from "ahooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCanvasStore } from "../../hook";
 import Changer, { ChangerAction } from "../Changer";

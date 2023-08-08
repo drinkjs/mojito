@@ -357,7 +357,7 @@ export default class Canvas {
 
 		this.addUndoData();
 		this.mouseDownEvent = undefined;
-		this.layers.push(layer);
+		this.layers.unshift(layer);
 		// 缓存组件库加载信息
 		if (!this.packLoadedMap.has(layer.component.packId)) {
 			this.packLoadedMap.set(layer.component.packId, packInfo);
