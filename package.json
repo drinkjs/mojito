@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:editor": "cd packages/editor && pnpm run dev"
+    "start:editor": "pnpm -r --filter=./packages/editor run dev"
   },
   "keywords": [],
   "author": "",
