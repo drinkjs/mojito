@@ -1,9 +1,10 @@
 import "dayjs/locale/zh-cn";
 import zhCN from "antd/locale/zh_CN";
 import { ConfigProvider, theme } from "antd";
-import { Outlet } from "react-router-dom";
-import { Suspense } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { Suspense, useEffect } from "react";
 import PageLoading from "@/components/PageLoading";
+import { useGlobalStore } from "@/store";
 
 // export const dark = {
 // 	borderRadius: 4,
@@ -20,6 +21,16 @@ import PageLoading from "@/components/PageLoading";
 // };
 
 export default function Root() {
+	const { userStore } = useGlobalStore();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (token) {
+			userStore.userRefresh();
+		}
+	}, [userStore, navigate]);
+
 	return (
 		<ConfigProvider
 			locale={zhCN}

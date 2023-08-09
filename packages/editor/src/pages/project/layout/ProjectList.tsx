@@ -6,14 +6,13 @@ import { PlusOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 import styles from "../styles/projectList.module.css"
 import IconFont from "@/components/IconFont";
-import { dateFormat } from "@/common/util";
 
 export default function ProjectList({onSelect}: ProjectListProps){
 	const { projectStore } = useGlobalStore();
-	const [selected, setSelected] = useState<ProjectInfo | undefined>();
+	const [selected, setSelected] = useState<ProjectInfo>();
   const [visible, setVisible] = useState(false);
-  const [projectName, setProjectName] = useState<string | undefined>();
-  const [editProject, setEditProject] = useState<ProjectInfo | undefined>()
+  const [projectName, setProjectName] = useState<string>();
+  const [editProject, setEditProject] = useState<ProjectInfo>()
 
 	useMount(() => {
     if(projectStore.list.length === 0){

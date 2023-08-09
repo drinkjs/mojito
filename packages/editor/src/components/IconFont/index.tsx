@@ -6,7 +6,7 @@ import styles from './index.module.css';
 import classNames from'classnames';
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/c/font_2171422_vye18aei24n.js'
+  scriptUrl: '//at.alicdn.com/t/c/font_2171422_b8ebi695gzn.js'
 });
 
 export default IconFont;

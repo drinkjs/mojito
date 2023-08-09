@@ -8,6 +8,8 @@ export const DefaultFontColor = "#000";
 
 export const DefaultPageSize = { width: 1920, height: 1080 };
 
+export const UserCacheKey = "userInfo"
+
 export const MojitoLayerEvent = {
 	onMount: "__mojito_c_mount__",
 	onUnmount: "__mojito_c_unmount__",
