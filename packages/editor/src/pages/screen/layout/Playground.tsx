@@ -302,7 +302,7 @@ export default function Playground() {
 		>
 			<div className={styles.area} ref={areaRef}>
 				<div ref={zoomRef} style={{ margin: "auto" }}>
-					<Viewer mode={PageMode.editor} onSelect={onSelectLayer} layoutRef={layoutRef} changerActionRef={changerRef} />
+					<Viewer mode={PageMode.editor} onSelect={onSelectLayer} layoutRef={layoutRef} changerActionRef={changerRef} defaultSize={defaultLayerSize} />
 				</div>
 			</div>
 			{/* <ConnectedMenu /> */}

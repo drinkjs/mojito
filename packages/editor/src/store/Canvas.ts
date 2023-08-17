@@ -458,15 +458,15 @@ export default class Canvas {
 	 * @param height
 	 */
 	initLayerSize(layerId: string, width: number, height: number) {
-		if (this.screenInfo && this.screenInfo.layers) {
-			const layer = this.screenInfo.layers.find((v) => v.id === layerId);
+		if (this.screenInfo && this.layers) {
+			const layer = this.layers.find((v) => v.id === layerId);
 			if (layer) {
-				layer.style.x = layer.style.x + layer.style.width / 2 - width / 2;
-				layer.style.y = layer.style.y + layer.style.height / 2 - height / 2;
-				(layer.style.width = width),
-					(layer.style.height = height),
-					(layer.style = { ...layer.style });
-				this.screenInfo = { ...this.screenInfo };
+				layer.style.x = layer.style.x + (layer.style.width  - width) / 2;
+				layer.style.y = layer.style.y + (layer.style.height - height) / 2;
+				layer.style.width = width;
+				layer.style.height = height;
+				layer.style = { ...layer.style };
+				this.refreshLayer([layerId]);
 			}
 		}
 	}

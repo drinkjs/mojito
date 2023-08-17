@@ -13,6 +13,7 @@ export default function Viewer({
 	onSize,
 	layoutRef,
 	changerActionRef,
+	defaultSize
 }: {
 	mode?: PageMode;
 	onSelect?: (
@@ -21,7 +22,8 @@ export default function Viewer({
 	) => void;
 	layoutRef?: React.MutableRefObject<HTMLDivElement | null>;
 	changerActionRef?: React.MutableRefObject<ChangerAction | undefined>;
-	onSize?: (size:{ width: number, height: number }) => void;
+	onSize?: (size: { width: number; height: number }) => void;
+	defaultSize?: { width: number; height: number };
 }) {
 	const { canvasStore } = useCanvasStore();
 	const [scale, setScale] = useState(1);
@@ -76,7 +78,10 @@ export default function Viewer({
 		}
 		setScale(zoom);
 		if (onSize) {
-			onSize({width: pageLayout.width * zoom, height: pageLayout.height * zoom});
+			onSize({
+				width: pageLayout.width * zoom,
+				height: pageLayout.height * zoom,
+			});
 		}
 	}, [pageLayout, mode]);
 
@@ -118,6 +123,8 @@ export default function Viewer({
 							key={v.id}
 							onRef={onRef}
 							onSelected={onSelect}
+							defaultSize={defaultSize}
+
 						/>
 					);
 				})}

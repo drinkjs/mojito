@@ -23,8 +23,6 @@ export type LayerAction = {
 
 interface LayerProps extends React.HTMLAttributes<Element> {
 	data: LayerInfo;
-	defaultWidth?: number;
-	defaultHeight?: number;
 	enable?: boolean;
 	hide?: boolean;
 	onSelected?: (
@@ -32,14 +30,14 @@ interface LayerProps extends React.HTMLAttributes<Element> {
 		e?: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
 	onRef?: (id: string, actionRef: LayerAction) => void;
+	defaultSize?: { width: number; height: number };
 }
 
 const Layer: React.FC<LayerProps> = ({
 	data,
 	enable = false,
 	onSelected,
-	defaultWidth,
-	defaultHeight,
+	defaultSize,
 	onRef,
 	...restProps
 }) => {
@@ -187,13 +185,13 @@ const Layer: React.FC<LayerProps> = ({
 					canvasStore.layerComponentOptions.set(data.id, componentOptions);
 				}
 
-				if (size && data.isFirst) {
-					if (size.width !== defaultWidth || size.height !== defaultHeight) {
+				if (size && data.isFirst && defaultSize) {
+					data.isFirst = undefined;
+					if (size.width !== defaultSize.width || size.height !== defaultSize.height) {
 						console.log("layer init size", size);
 						canvasStore.initLayerSize(data.id, size.width, size.height);
 					}
 				}
-				data.isFirst = undefined;
 			}
 
 			if (eventHandlers.current[MojitoLayerEvent.onMount]) {
@@ -201,7 +199,7 @@ const Layer: React.FC<LayerProps> = ({
 				eventHandlers.current[MojitoLayerEvent.onMount]();
 			}
 		},
-		[data, canvasStore, enable, defaultWidth, defaultHeight]
+		[data, canvasStore, enable, defaultSize]
 	);
 
 	/**
