@@ -13,8 +13,6 @@ export class Request {
 
   constructor(opts?: ExtendOptionsInit) {
     this._req = extend({
-      requestType: "json",
-      credentials: 'include', // 默认请求是否带上cookie
       ...opts,
     });
   }

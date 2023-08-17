@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Modal, Form, Input, Cascader, message } from "antd";
 import { ModalFuncProps } from "antd/lib/modal";
 import { useGlobalStore } from "@/store";
-import { get as reqGet } from "@/common/request";
 
 const layout = {
 	labelCol: { span: 6 },
@@ -32,7 +31,12 @@ export default function AddComponent({
 		if (url) {
 			setLoading(true);
 			setPackInfo(undefined);
-			reqGet<ComponentPackInfo>(url)
+			fetch(url, {
+				method: "GET",
+			})
+				.then((res) => {
+					return res.json();
+				})
 				.then((data) => {
 					if (data && data.components && data.components.length) {
 						setPackInfo(data);

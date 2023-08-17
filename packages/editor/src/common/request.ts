@@ -3,6 +3,8 @@ import { message } from 'antd';
 import { ResponseError } from 'umi-request';
 
 const request = new Request({
+  requestType: "json",
+  credentials: 'include', // 默认请求是否带上cookie
   prefix: '/api',
   errorHandler: (error: ResponseError) => {
     message.error({content: error.message, key: error.message});
