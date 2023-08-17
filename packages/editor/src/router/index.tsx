@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy } from "react";
 import ErrorPage from "./ErrorPage";
 import Root from "./Root";
+import AuthorizedRoot from "./AuthorizedRoot";
 
 const Login = lazy(() => import("../pages/login"));
 const Authorized = lazy(() => import("../pages/login/Authorized"));
@@ -16,24 +17,30 @@ export const router = createBrowserRouter([
 		errorElement: <ErrorPage />,
 		children: [
 			{
-				path: "",
-				element: <Project />,
+				path:"",
+				element: <AuthorizedRoot />,
+				children: [
+					{
+						path:"",
+						element: <Project />,
+					},
+					{
+						path: "editor/:id",
+						element: <Screen />,
+					},
+					{
+						path: "preview/:id",
+						element: <Preview />,
+					},
+				],
 			},
 			{
 				path:"/login",
 				element: <Login />,
 			},
 			{
-				path:"/authorized/:from",
+				path: "/authorized/:from",
 				element: <Authorized />,
-			},
-			{
-				path: "editor/:id",
-				element: <Screen />,
-			},
-			{
-				path: "preview/:id",
-				element: <Preview />,
 			},
 		],
 	},

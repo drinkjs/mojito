@@ -3,8 +3,8 @@ import { GithubOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import styles from "./index.module.css";
 
-const redirect_uri = "http://localhost:5173/authorized"
-
+const { VITE_GITHUB_CLIENT_ID, VITE_AUTH_URL, VITE_GITEE_CLIENT_ID } =
+	import.meta.env;
 
 export default function Login() {
 	return (
@@ -23,7 +23,7 @@ export default function Login() {
 						onClick={() => {
 							const state = Date.now().toString(26);
 							localStorage.setItem("authState", state);
-							window.location.href = `https://github.com/login/oauth/authorize?client_id=21e685d469fb181c42ed&redirect_uri=${redirect_uri}/github&scope=user:email&state=${state}`;
+							window.location.href = `https://github.com/login/oauth/authorize?client_id=${VITE_GITHUB_CLIENT_ID}&redirect_uri=${VITE_AUTH_URL}/github&scope=user:email&state=${state}`;
 						}}
 					>
 						使用Github登录
@@ -40,7 +40,7 @@ export default function Login() {
 						onClick={() => {
 							const state = Date.now().toString(26);
 							localStorage.setItem("authState", state);
-							window.location.href = `https://gitee.com/oauth/authorize?client_id=d88e7880a49151cd39111a250398742bc4ef88bfbba0b61496ac6483576b3000&redirect_uri=${redirect_uri}/gitee&response_type=code&scope=user_info&state=${state}`;
+							window.location.href = `https://gitee.com/oauth/authorize?client_id=${VITE_GITEE_CLIENT_ID}&redirect_uri=${VITE_AUTH_URL}/gitee&response_type=code&scope=user_info&state=${state}`;
 						}}
 					>
 						使用Gitee登录

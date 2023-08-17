@@ -17,7 +17,7 @@
     "ahooks": "^3.7.8",
     "antd": "^5.7.2",
     "classnames": "^2.3.2",
-    "fertile": "^1.5.0",
+    "fertile": "^1.5.1",
     "lodash-es": "^4.17.21",
     "re-resizable": "^6.9.9",
     "react-dnd": "^16.0.1",

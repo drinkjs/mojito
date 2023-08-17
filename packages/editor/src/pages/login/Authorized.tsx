@@ -4,6 +4,8 @@ import { message } from "antd";
 import { useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
+const { VITE_AUTH_URL } = import.meta.env;
+
 export default function Authorized() {
 	const { from = "" } = useParams<{ from: string }>();
 	const { userStore } = useGlobalStore();
@@ -14,10 +16,7 @@ export default function Authorized() {
 		const code = searchParams.get("code");
 		const state = searchParams.get("state");
 
-		if (
-			(state !== localStorage.getItem("authState")) ||
-			!code
-		) {
+		if (state !== localStorage.getItem("authState") || !code) {
 			message.error("state参数验证失败");
 			navigate("/login");
 			return;
@@ -25,7 +24,7 @@ export default function Authorized() {
 		localStorage.removeItem("authState");
 
 		userStore
-			.userAuth(code, from, `http://localhost:5173/authorized/${from}`)
+			.userAuth(code, from, `${VITE_AUTH_URL}/${from}`)
 			.then((rel) => {
 				if (rel) {
 					navigate("/");

@@ -1,8 +1,8 @@
 import "dayjs/locale/zh-cn";
 import zhCN from "antd/locale/zh_CN";
 import { ConfigProvider, theme } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
-import { Suspense, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Suspense, useEffect, useState } from "react";
 import PageLoading from "@/components/PageLoading";
 import { useGlobalStore } from "@/store";
 
@@ -21,15 +21,6 @@ import { useGlobalStore } from "@/store";
 // };
 
 export default function Root() {
-	const { userStore } = useGlobalStore();
-	const navigate = useNavigate();
-
-	useEffect(() => {
-		const token = localStorage.getItem("token");
-		if (token) {
-			userStore.userRefresh();
-		}
-	}, [userStore, navigate]);
 
 	return (
 		<ConfigProvider
@@ -47,9 +38,7 @@ export default function Root() {
 				},
 			}}
 		>
-			<Suspense fallback={<PageLoading />}>
-				<Outlet />
-			</Suspense>
+			<Suspense fallback={<PageLoading />}><Outlet /></Suspense>
 		</ConfigProvider>
 	);
 }

@@ -5,7 +5,7 @@ import { ResponseError } from 'umi-request';
 const request = new Request({
   prefix: '/api',
   errorHandler: (error: ResponseError) => {
-    message.error(error.message);
+    message.error({content: error.message, key: error.message});
     // 阻断执行，并将错误信息传递下去
     return Promise.reject(error);
   }
