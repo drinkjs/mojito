@@ -14,7 +14,6 @@ import { runCode } from "@/common/util";
 import { syncHelper } from "@/common/syncHelper";
 import { Border } from "@/components/StyleOptions";
 import { MojitoLayerEvent } from "@/config";
-import { lookup } from "dns";
 
 const EventSyncCallFlag = Symbol.for("EventSyncCallFlag");
 

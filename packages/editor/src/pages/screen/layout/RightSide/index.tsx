@@ -1,6 +1,5 @@
 import { Resizable } from "re-resizable";
 import EventSetting from "./EventSetting";
-import GroupSetting from "./GroupSetting";
 import LayerList from "./LayerList";
 import PageSetting from "./PageSetting";
 import PropsSetting from "./PropsSetting";
