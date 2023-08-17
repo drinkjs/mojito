@@ -277,9 +277,9 @@ export default function Playground() {
 	/**
 	 * 取消所有选中
 	 */
-	const clearAllSelected = useCallback(() => {
-		canvasStore.cancelSelect();
-	}, [canvasStore]);
+	// const clearAllSelected = useCallback(() => {
+	// 	canvasStore.cancelSelect();
+	// }, [canvasStore]);
 
 	/**
 	 * 选中图层
