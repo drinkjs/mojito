@@ -1,13 +1,13 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { visualizer } from "rollup-plugin-visualizer"
+// import { visualizer } from "rollup-plugin-visualizer"
 import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const { VITE_HOST } = loadEnv(mode, process.cwd());
   return {
-    plugins: [react(), visualizer({ open: true })],
+    plugins: [react(), /* visualizer({ open: true }) */ ],
     resolve: {
       alias: {
         '@': path.resolve('./src') // @替代src
