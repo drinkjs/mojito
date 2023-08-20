@@ -12,7 +12,8 @@ export default function ProjectList({onSelect}: ProjectListProps){
 	const [selected, setSelected] = useState<ProjectInfo>();
   const [visible, setVisible] = useState(false);
   const [projectName, setProjectName] = useState<string>();
-  const [editProject, setEditProject] = useState<ProjectInfo>()
+  const [editProject, setEditProject] = useState<ProjectInfo>();
+  const [modal, contextHolder] = Modal.useModal();
 
 	useMount(() => {
     if(projectStore.list.length === 0){
@@ -98,7 +99,7 @@ export default function ProjectList({onSelect}: ProjectListProps){
    */
   const handleRemove = (e: React.MouseEvent<any>, data: ProjectInfo) => {
     e.stopPropagation();
-    Modal.confirm({
+    modal.confirm({
       title: `确定删除${data.name}?`,
       okText: '确定',
       cancelText: '取消',
@@ -179,6 +180,7 @@ export default function ProjectList({onSelect}: ProjectListProps){
             value={projectName}
           />
         </Modal>
+        {contextHolder}
 		</div>
 	);
 }
