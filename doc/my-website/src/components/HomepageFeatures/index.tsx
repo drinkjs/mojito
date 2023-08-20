@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
     Png: require('@site/static/img/css.png').default,
     description: (
       <>
-        基本于ShadowDOM样式隔离，确保组件样式互不干扰。通过消息事件组件间可以相互通信，甚至可以跨页面通信。
+        基本于ShadowDOM样式隔离，确保组件样式互不干扰。通过消息事件组件间可以相互通信。
       </>
     ),
   },

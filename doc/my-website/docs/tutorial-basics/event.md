@@ -1,43 +1,36 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # 事件处理
 
-Add **Markdown or React** files to `src/pages` to create a **standalone page**:
+配置组件事件回调函数
 
-- `src/pages/index.js` → `localhost:3000/`
-- `src/pages/foo.md` → `localhost:3000/foo`
-- `src/pages/foo/bar.js` → `localhost:3000/foo/bar`
+![事件处理](./img/event.jpg)
 
-## Create your first React Page
+### 系统事件
 
-Create a file at `src/pages/my-react-page.js`:
+- 组件加载：()=>void 组件加载完成时回调
+- 组件卸载：()=>void 组件卸载时回调
+- 接收消息：(...args, target)=>void 收到其他组件发送的消息时回调
 
-```jsx title="src/pages/my-react-page.js"
-import React from 'react';
-import Layout from '@theme/Layout';
+### 回调函数
+![回调函数](./img/event-code.jpg)
 
-export default function MyReactPage() {
-  return (
-    <Layout>
-      <h1>My React page</h1>
-      <p>This is a React page</p>
-    </Layout>
-  );
-}
-```
+### this
 
-A new page is now available at [http://localhost:3000/my-react-page](http://localhost:3000/my-react-page).
+每个回调函数都会自动注入this，this包括以下属性
+- getProps: (key?:string) => any 返回当前配置的props
+- setProps: (props: Record<string, any>) => void 配置当前组件的props
+- navigate: (to: string) => void 路由跳转
+- sendMessage: (layerNames: string | string[], ...args: any[]) => void 向指定的图层名发送消息
 
-## Create your first Markdown Page
+箭头函数没有this，所以如果要使用this请使用function定义回调函数
 
-Create a file at `src/pages/my-markdown-page.md`:
+### 事件同步
 
-```mdx title="src/pages/my-markdown-page.md"
-# My Markdown page
+开启事件同步后，当前组件事件响应会同步到远端的同一个页面下相同组件
 
-This is a Markdown page
-```
+### 组件间通讯
 
-A new page is now available at [http://localhost:3000/my-markdown-page](http://localhost:3000/my-markdown-page).
+组件间通讯主要通过sendMessage方法实现，接收消息的图层需要监听【接收消息】事件

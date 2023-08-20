@@ -4,40 +4,24 @@ sidebar_position: 4
 
 # 工具栏
 
-Add **Markdown or React** files to `src/pages` to create a **standalone page**:
+控制图层的位置和编辑状态
 
-- `src/pages/index.js` → `localhost:3000/`
-- `src/pages/foo.md` → `localhost:3000/foo`
-- `src/pages/foo/bar.js` → `localhost:3000/foo/bar`
+![组件列表](./img/tool.jpg)
 
-## Create your first React Page
+- 事件锁定：开启后组件不响应鼠标事件，以防止与图层交互事件冲突
+- 保存：立即保存当前页面的状态和数据，默认3秒自动保存一次
+- 左对齐：图层左对齐
+- 顶部对齐：图层顶部对齐
+- 右对齐：图层右对齐
+- 底部对齐：图层底部对齐
+- 水平居中：图层水平居中对齐
+- 垂直居中：图层垂直居中对齐
+- 刷新：重新加载组件
+- 锁定/解锁：锁定后图层只能选中不可拖动
+- 显示/隐藏：隐藏后在部署后图层不会显示，在编辑状态变为半透明
+- 群组：多个图层组合成一个图层
+- 解散：解散群组后的图层
+- 撤销：回退到上一步
+- 重做：重做上一步
+- 预览：打开一个非编辑状态页面
 
-Create a file at `src/pages/my-react-page.js`:
-
-```jsx title="src/pages/my-react-page.js"
-import React from 'react';
-import Layout from '@theme/Layout';
-
-export default function MyReactPage() {
-  return (
-    <Layout>
-      <h1>My React page</h1>
-      <p>This is a React page</p>
-    </Layout>
-  );
-}
-```
-
-A new page is now available at [http://localhost:3000/my-react-page](http://localhost:3000/my-react-page).
-
-## Create your first Markdown Page
-
-Create a file at `src/pages/my-markdown-page.md`:
-
-```mdx title="src/pages/my-markdown-page.md"
-# My Markdown page
-
-This is a Markdown page
-```
-
-A new page is now available at [http://localhost:3000/my-markdown-page](http://localhost:3000/my-markdown-page).
