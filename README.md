@@ -1,7 +1,7 @@
 <p align="center">
   <img height="200" src="./public/logo-black.png">
 </p>
-<p align="center">Mojito是一个可视化数据分析、数据展示和轻业务开发的平台</p>
+<p align="center">Mojito是一个低代码，可视化，可扩展开发平台</p>
 
 ## ✨ 特性
 
