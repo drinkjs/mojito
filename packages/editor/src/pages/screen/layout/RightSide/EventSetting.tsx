@@ -226,7 +226,7 @@ export default function EventSetting() {
 						<Button
 							size="small"
 							type="primary"
-							disabled={!callbackCode?.sourceCode}
+							// disabled={!callbackCode?.sourceCode}
 							onClick={build}
 							loading={building}
 						>
@@ -240,7 +240,6 @@ export default function EventSetting() {
 						language="javascript"
 						value={callbackCode?.sourceCode}
 						onChange={(code) => {
-							console.log("event code", code);
 							dispatch({
 								type: ReducerType.ChangeCode,
 								payload: { ...callbackCode, sourceCode: code },

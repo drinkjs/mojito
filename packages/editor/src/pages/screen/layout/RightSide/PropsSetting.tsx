@@ -122,13 +122,13 @@ export default function PropsSetting() {
 				key: `${v.layerId}${v.key}`,
 				label: v.description ? (
 					<div>
-						{v.name}
+						{v.key} {v.name}
 						<Tooltip title={v.description}>
 							<InfoCircleOutlined style={{ marginLeft: "0.5em" }} />
 						</Tooltip>
 					</div>
 				) : (
-					v.name
+					`${v.key} ${v.name}`
 				),
 				children: EditorComponent[editType] ? (
 					EditorComponent[editType](

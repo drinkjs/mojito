@@ -3,7 +3,7 @@
 </p>
 <p align="center">Mojito是一个低代码，可视化，可扩展开发平台</p>
 
-## ✨ 特性
+##  🔥特性
 
 - 点选、拖拽、缩放的可视化操作
 - 群组/解散、撤销/重做、图层显示/隐藏、锁定/解锁、对齐和排序
@@ -15,6 +15,15 @@
   <img width="800" src="./public/demo.jpg">
 </p>
 
+## 👆🏼 事件同步
+<p align="center">
+  <img src="./public/sync.webp">
+</p>
+
+## ✨ 组件通讯
+<p align="center">
+  <img src="./public/message.webp">
+</p>
 
 ## 📦 组件开发 Develop
 支持使用React或Vue及相关生态开发自定义组件库，组件和样式相互隔离，互不影响，组件间可以通过消息事件进行通信

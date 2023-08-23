@@ -1,5 +1,4 @@
 import "systemjs";
-// import { addStyles } from "@/common/styleLoader";
 import { addStyles, StyleObject } from "shadow-style-loader/lib/addStylesShadow"
 import * as service from "@/services/screen";
 import { makeObservable } from "fertile";

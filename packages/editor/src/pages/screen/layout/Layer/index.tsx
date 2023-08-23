@@ -6,6 +6,7 @@ import React, {
 	useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { cloneDeep } from "lodash-es";
 import Render, { ComponentMountEvent, RenderAction } from "./Render";
 import styles from "./index.module.css";
 import { useMount, useUnmount, useUpdateEffect } from "ahooks";
@@ -178,7 +179,7 @@ const Layer: React.FC<LayerProps> = ({
 	 */
 	const onMount = useCallback(
 		({ size, componentOptions }: ComponentMountEvent) => {
-			setLoading(false)
+			setLoading(false);
 			if (enable) {
 				// 编辑状态
 				if (componentOptions) {
@@ -187,7 +188,10 @@ const Layer: React.FC<LayerProps> = ({
 
 				if (size && data.isFirst && defaultSize) {
 					data.isFirst = undefined;
-					if (size.width !== defaultSize.width || size.height !== defaultSize.height) {
+					if (
+						size.width !== defaultSize.width ||
+						size.height !== defaultSize.height
+					) {
 						console.log("layer init size", size);
 						canvasStore.initLayerSize(data.id, size.width, size.height);
 					}
@@ -210,8 +214,19 @@ const Layer: React.FC<LayerProps> = ({
 			name: data.name,
 			id: data.id,
 			getProps: (key?: string) =>
-				key && data.props ? data.props[key] : data.props,
+				key && cloneDeep(data.props)
+					? data.props
+						? cloneDeep(data.props[key])
+						: undefined
+					: data.props,
 			setProps: (props: Record<string, any>) => {
+				if (renderRef.current) {
+					// 更新组件props
+					renderRef.current.updateProps(props);
+				}
+			},
+			saveProps: (props: Record<string, any>) => {
+				data.props = { ...data.props, ...props };
 				if (renderRef.current) {
 					// 更新组件props
 					renderRef.current.updateProps(props);

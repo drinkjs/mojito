@@ -2,6 +2,8 @@ import { Request } from '@/common/network';
 import { message } from 'antd';
 import { ResponseError } from 'umi-request';
 
+const { VITE_TOKEN } = import.meta.env;
+
 const request = new Request({
   requestType: "json",
   credentials: 'include', // 默认请求是否带上cookie
@@ -14,7 +16,7 @@ const request = new Request({
 });
 
 request.interceptors.request.use((_, options) => {
-  const token = localStorage.getItem("token") || "";
+  const token = localStorage.getItem("token") || VITE_TOKEN;
   return {
     options: { ...options, headers: { ...options.headers, "x-token": token } },
   };
