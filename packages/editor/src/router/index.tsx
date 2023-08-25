@@ -28,11 +28,11 @@ export const router = createBrowserRouter([
 						path: "editor/:id",
 						element: <Screen />,
 					},
-					{
-						path: "preview/:id",
-						element: <Preview />,
-					},
 				],
+			},
+			{
+				path: "preview/:id",
+				element: <Preview />,
 			},
 			{
 				path:"/login",
