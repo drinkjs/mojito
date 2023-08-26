@@ -20,7 +20,6 @@ import Moveable, {
 	OnResizeStart,
 	RectInfo,
 } from "react-moveable";
-import { flushSync } from "react-dom";
 import * as transformParser from "transform-parser";
 import { useCanvasStore } from "../hook";
 import { useUpdateEffect } from "ahooks";
@@ -391,7 +390,6 @@ export default function Changer({ changerActionRef }: ChangerProps) {
 
 	return (
 		<Moveable
-			flushSync={flushSync}
 			snappable
 			stopPropagation
 			throttleDrag={0}

@@ -28,7 +28,7 @@
 ## 📦 组件开发 Develop
 支持使用React或Vue及相关生态开发自定义组件库，组件和样式相互隔离，互不影响，组件间可以通过消息事件进行通信
 
-[组件库开发指南](http://mojito.drinkjs.com/document/docs/category/%E7%BB%84%E4%BB%B6%E5%BA%93%E5%BC%80%E5%8F%91)
+[组件库开发指南](http://mojito.drinkjs.com/document/)
 
 
 ## 📄 文档 Document
