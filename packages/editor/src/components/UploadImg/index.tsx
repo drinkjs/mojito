@@ -10,6 +10,8 @@ import { UploadListType } from 'antd/lib/upload/interface';
 import styles from './index.module.css';
 import { localCache } from '@/common/util';
 
+const { VITE_TOKEN } = import.meta.env;
+
 interface Props {
   onChange?: (filePath: string | undefined) => void;
   action?: string;
@@ -115,8 +117,7 @@ const UploadImg = (props: Props) => {
       onChange={onUpload}
       data={data}
       headers={{
-        // TODO 需要换成真实用户验证信息
-        "x-token": localCache.get("token")
+        "x-token": localCache.get("token") || VITE_TOKEN
       }}
     >
       {showPre()}
