@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useGlobalStore } from "@/store";
 
-const { VITE_TOKEN } = import.meta.env;
+const { VITE_TOKEN, MODE } = import.meta.env;
 
 export default function AuthorizedRoot() {
 	const { userStore } = useGlobalStore();
@@ -11,13 +11,19 @@ export default function AuthorizedRoot() {
 
 	useEffect(() => {
 		if (token) {
-      userStore.userRefresh();
-		}else{
-      navigate("/login");
-    }
+			userStore.userRefresh();
+		} else {
+			if (MODE === "development") {
+				userStore.userAuth("123456", "local").then(res =>{
+					if(res){
+						window.location.reload()
+					}
+				})
+			} else {
+				navigate("/login");
+			}
+		}
 	}, [userStore, navigate, token]);
 
-	return (
-    token ? <Outlet /> : null
-	);
+	return token ? <Outlet /> : null;
 }
