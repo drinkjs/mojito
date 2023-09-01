@@ -25,6 +25,12 @@
   <img src="./public/message.webp">
 </p>
 
+## 📄 后端代码
+
+[https://github.com/drinkjs/mojito-server](https://github.com/drinkjs/mojito-server)
+
+[https://gitee.com/drinkjs/mojito-server](https://gitee.com/drinkjs/mojito-server)
+
 ## 📦 组件开发 Develop
 支持使用React或Vue及相关生态开发自定义组件库，组件和样式相互隔离，互不影响，组件间可以通过消息事件进行通信
 
