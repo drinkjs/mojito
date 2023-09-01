@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useGlobalStore } from "@/store";
 
-const { VITE_TOKEN, MODE } = import.meta.env;
+const { VITE_TOKEN, VITE_NO_LOGIN } = import.meta.env;
 
 export default function AuthorizedRoot() {
 	const { userStore } = useGlobalStore();
@@ -13,7 +13,7 @@ export default function AuthorizedRoot() {
 		if (token) {
 			userStore.userRefresh();
 		} else {
-			if (MODE === "development") {
+			if (VITE_NO_LOGIN) {
 				userStore.userAuth("123456", "local").then(res =>{
 					if(res){
 						window.location.reload()
