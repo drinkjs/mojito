@@ -123,7 +123,18 @@ export default function PropsSetting() {
 				label: v.description ? (
 					<div>
 						{v.key} {v.name}
-						<Tooltip title={v.description}>
+						<Tooltip
+							title={
+								<>
+									{v.description
+										.trim()
+										.split("\n")
+										.map((text) => {
+											return <div key={text} style={{paddingLeft:`${text.split("\t").length}em`}}>{text}</div>;
+										})}
+								</>
+							}
+						>
 							<InfoCircleOutlined style={{ marginLeft: "0.5em" }} />
 						</Tooltip>
 					</div>
