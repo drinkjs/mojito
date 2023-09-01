@@ -73,7 +73,7 @@ export default function AddType({ value, onCancel, ...restProps }: Props) {
 				<Form.Item
 					label="图标"
 					name="icon"
-					rules={[{ required: true, message: "此项不能为空" }]}
+					rules={[{ message: "此项不能为空" }]}
 					initialValue={value?.icon}
 				>
 					<Input placeholder="请输入图标" />
