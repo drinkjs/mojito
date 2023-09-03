@@ -118,3 +118,7 @@ mojito build
 - 组件市场
 - 原形图生成可编辑页面
 - ...
+
+## 技术交流
+
+<img src="./public/wx.jpg" width="200">
